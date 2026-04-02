@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Onboarding Phase I & II — Risk Report</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #0f1117;
+      color: #e2e8f0;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      font-size: 15px;
+      line-height: 1.6;
+      padding: 40px 24px 80px;
+    }
+
+    .container { max-width: 1100px; margin: 0 auto; }
+
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, #1a1d2e 0%, #16192a 100%);
+      border: 1px solid #2d3148;
+      border-radius: 16px;
+      padding: 36px 40px;
+      margin-bottom: 32px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 20px;
+    }
+    .header-left h1 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+    .header-left p { color: #94a3b8; font-size: 0.95rem; }
+    .header-badge {
+      background: #6c63ff22;
+      border: 1px solid #6c63ff55;
+      color: #a78bfa;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    /* Summary cards */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+    .summary-card {
+      background: #1a1d2e;
+      border: 1px solid #2d3148;
+      border-radius: 12px;
+      padding: 20px 22px;
+      text-align: center;
+    }
+    .summary-card .num {
+      font-size: 2.4rem;
+      font-weight: 800;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+    .summary-card .label { font-size: 0.82rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; }
+    .c-red   .num { color: #f87171; }
+    .c-orange .num { color: #fb923c; }
+    .c-yellow .num { color: #fbbf24; }
+    .c-gray  .num { color: #94a3b8; }
+    .c-green .num { color: #00d4aa; }
+
+    /* Section */
+    .section { margin-bottom: 36px; }
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #2d3148;
+    }
+    .section-title .icon { font-size: 1.2rem; }
+
+    /* Table */
+    .table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid #2d3148; }
+    table { width: 100%; border-collapse: collapse; background: #1a1d2e; }
+    thead tr { background: #12152080; }
+    th {
+      padding: 12px 16px;
+      text-align: left;
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #64748b;
+      white-space: nowrap;
+    }
+    td {
+      padding: 12px 16px;
+      border-top: 1px solid #1e2235;
+      font-size: 0.88rem;
+      vertical-align: middle;
+    }
+    tr:hover td { background: #ffffff06; }
+
+    .project-name { font-weight: 600; color: #e2e8f0; }
+    .phase-badge {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .phase-i  { background: #6c63ff22; color: #a78bfa; border: 1px solid #6c63ff44; }
+    .phase-ii { background: #0891b222; color: #38bdf8; border: 1px solid #0891b244; }
+
+    .days-badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+    .days-critical { background: #7f1d1d44; color: #fca5a5; border: 1px solid #7f1d1d; }
+    .days-high     { background: #7c2d1244; color: #fb923c; border: 1px solid #7c2d1255; }
+    .days-med      { background: #78350f44; color: #fbbf24; border: 1px solid #78350f55; }
+    .days-today    { background: #14532d44; color: #4ade80; border: 1px solid #14532d; }
+
+    .date-missing { color: #ef4444; font-style: italic; font-size: 0.82rem; }
+    .date-ok { color: #94a3b8; }
+    .date-warn { color: #fbbf24; }
+    .date-expired { color: #f87171; font-weight: 600; }
+
+    .pm-name { color: #00d4aa; font-weight: 500; }
+
+    /* PM Scorecard */
+    .scorecard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+    }
+    .pm-card {
+      background: #1a1d2e;
+      border: 1px solid #2d3148;
+      border-radius: 12px;
+      padding: 18px 20px;
+    }
+    .pm-card .pm-title {
+      font-weight: 700;
+      color: #e2e8f0;
+      margin-bottom: 12px;
+      font-size: 0.95rem;
+    }
+    .pm-stat {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.83rem;
+      padding: 4px 0;
+      border-bottom: 1px solid #ffffff08;
+    }
+    .pm-stat:last-child { border-bottom: none; }
+    .pm-stat .stat-label { color: #94a3b8; }
+    .pm-stat .stat-val { font-weight: 700; }
+    .val-red    { color: #f87171; }
+    .val-orange { color: #fb923c; }
+    .val-green  { color: #00d4aa; }
+    .val-gray   { color: #64748b; }
+
+    /* Footer */
+    .footer {
+      margin-top: 48px;
+      padding-top: 20px;
+      border-top: 1px solid #2d3148;
+      text-align: center;
+      color: #475569;
+      font-size: 0.8rem;
+    }
+
+    @media (max-width: 640px) {
+      .header { flex-direction: column; }
+      .header-badge { align-self: flex-start; }
+      body { padding: 20px 14px 60px; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-left">
+      <h1>Onboarding Phase I &amp; II — Risk Report</h1>
+      <p>Active portfolio review · Prepared for Lauren Swygert, Sr. PM Team Lead · Rev.io</p>
+    </div>
+    <div class="header-badge">As of March 24, 2026</div>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="summary-grid">
+    <div class="summary-card c-red">
+      <div class="num">2</div>
+      <div class="label">Critically Overdue<br/>(100+ days)</div>
+    </div>
+    <div class="summary-card c-orange">
+      <div class="num">14</div>
+      <div class="label">Overdue<br/>(Forecast Passed)</div>
+    </div>
+    <div class="summary-card c-yellow">
+      <div class="num">2</div>
+      <div class="label">Grad Date<br/>Expiring</div>
+    </div>
+    <div class="summary-card c-gray">
+      <div class="num">12</div>
+      <div class="label">Missing<br/>Key Dates</div>
+    </div>
+    <div class="summary-card c-green">
+      <div class="num">33</div>
+      <div class="label">Total Active<br/>Projects</div>
+    </div>
+  </div>
+
+  <!-- Section 1: Critically Overdue -->
+  <div class="section">
+    <div class="section-title"><span class="icon">🚨</span> Critically Overdue — Forecast Missed by 100+ Days</div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Project</th>
+            <th>Phase</th>
+            <th>Start Date</th>
+            <th>Forecast Date</th>
+            <th>Grad Date</th>
+            <th>Days Late</th>
+            <th>PM</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="project-name">Cloudli - CMV Migration</td>
+            <td><span class="phase-badge phase-ii">Phase II</span></td>
+            <td class="date-ok">Jan 7, 2025</td>
+            <td class="date-expired">Aug 25, 2025</td>
+            <td class="date-missing">— not set —</td>
+            <td><span class="days-badge days-critical">211 days</span></td>
+            <td class="pm-name">Marshall Harris</td>
+          </tr>
+          <tr>
+            <td class="project-name">Tricom Tech</td>
+            <td><span class="phase-badge phase-ii">Phase II</span></td>
+            <td class="date-ok">Jul 10, 2025</td>
+            <td class="date-expired">Sep 29, 2025</td>
+            <td class="date-missing">— not set —</td>
+            <td><span class="days-badge days-critical">176 days</span></td>
+            <td class="pm-name">Lauren Swygert</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Section 2: Overdue -->
+  <div class="section">
+    <div class="section-title"><span class="icon">🔴</span> Overdue — Current Forecast Date Has Passed</div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Project</th>
+            <th>Phase</th>
+            <th>Forecast Date</th>
+            <th>Grad Date</th>
+            <th>Days Late</th>
+            <th>PM</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="project-name">CrossPath</td>
+            <td><span class="phase-badge phase-ii">Phase II</span></td>
+            <td class="date-expired">Jan 19, 2026</td>
+            <td class="date-warn">Mar 27, 2026</td>
+            <td><span class="days-badge days-high">64 days</span></td>
+            <td class="pm-name">Stephanie Okada / Francesca Thayer</td>
+          </tr>
+          <tr>
+            <td class="project-name">Prestige Technology Solutions</td>
+            <td><span class="phase-badge phase-ii">Phase II</span></td>
+            <td class="date-expired">Jan 27, 2026</td>
+            <td class="date-expired">Mar 19, 2026 ✗</td>
+            <td><span class="days-badge days-high">56 days</span></td>
+            <td class="pm-name">JD Caulkins</td>
+          </tr>
+          <tr>
+            <td class="project-name">TCG Tech Services</td>
+            <td><span class="phase-badge phase-i">Phase I</span></td>
+            <td class="date-expired">Feb 10, 2026</td>
+            <td class="date-warn">Mar 31, 2026</td>
+            <td><span class="days-badge days-high">43 days</span></td>
+            <td class="pm-name">JD Caulkins</td>
+          </tr>
+          <tr>
+            <td class="project-name">SouthLight Services</td>
+            <td><span class="phase-badge phase-ii">Phase II</span></td>
+            <td class="date-expired">Feb 23, 2026</td>
+            <td class="date-warn">Apr 14, 2026</td>
+            <td><span class="days-badge days-med">29 days</span></td>
+            <td class="pm-name">Francesca Thayer</td>
+          </tr>
+          <tr>
+            <td class="project-name">Accelerated Technologies</td>
+            <td><span class="phase-badge phase-ii">Phase II</span></td>
+            <td class="date-expired">Feb 26, 2026</td>
+            <td class="date-warn">May 12, 2026</td>
+            <td><span class="days-badge days-med">27 days</span></td>
+            <td class="pm-name">Francesca Thayer</td>
+          </tr>
+          <tr>
+            <td class="project-name">Kloud7</td>
+            <td><span class="phase-badge phase-i">Phase I</span></td>
+            <td class="date-expired">Feb 27, 2026</td>
+            <td class="date-missing">— not set —</td>
+            <td><span class="days-badge days-med">25 days</span></td>
+            <td class="pm-name">Alex Tucker</td>
+          </tr>
+          <tr>
+            <td class="project-name">CCOR</td>
+            <td><span class="phase-badge phase-i">Phase I</span></td>
+            <td class="date-expired">Mar 2, 2026</td>
+            <td class="date-warn">Apr 21, 2026</td>
+            <td><span class="days-badge days-med">22 days</span></td>
+            <td class="pm-name">JD Caulkins</td>
+          </tr>
+          <tr>
+            <td class="project-name">Red Gap</td>
+            <td><span class="phase-badge phase-i">Phase I</span></td>
+            <td class="date-expired">Mar 4, 2026</td>
+            <td class="date-missing">— not set —</td>
+            <td><span class="days-badge days-med">20 days</span></td>
+            <td class="pm-name">Marshall Harris</td>
+          </tr>
+          <tr>
+            <td class="project-name">Orkestra</td>
+            <td><span class="phase-badge phase-i">Phase I</span></td>
+            <td class="date-expired">Mar 11, 2026</td>
+            <td class="date-missing">— not set —</td>
+            <td><span class="days-badge days-med">13 days</span></td>
+            <td class="pm-name">Lauren Swygert</td>
+          </tr>
+          <tr>
+            <td class="project-name">Rhode Island Telephone</td>
+            <td><span class="phase-badge phase-i">Phase I</span></td>
+            <td class="date-expired">Mar 11, 2026</td>
+            <td class="date-warn">Apr 20, 2026</td>
+            <td><span class="days-badge days-med">13 days</span></td>
+            <td class="pm-name">Alexis Ligon</td>
+          </tr>
+          <tr>
+            <td class="project-name">Automated Telecom</td>
+            <td><span class="phase-badge phase-i">Phase I</span></td>
+            <td class="date-expired">Mar 18, 2026</td>
+            <td class="date-warn">May 29, 2026</td>
+            <td><span class="days-badge days-med">6 days</span></td>
+            <td class="pm-name">Alexis Ligon</td>
+          </tr>
+          <tr>
+            <td class="project-name">Genesis Systems</td>
+            <td><span class="phase-badge phase-i">Phase I</span></td>
+            <td class="date-expired">Mar 20, 2026</td>
+            <td class="date-missing">— not set —</td>
+            <td><span class="days-badge days-med">4 days</span></td>
+            <td class="pm-name">Stephanie Okada</td>
+          </tr>
+          <tr>
+            <td class="project-name">Xclutel</td>
+            <td><span class="phase-badge phase-i">Phase I</span></td>
+            <td class="date-expired">Mar 23, 2026</td>
+            <td class="date-warn">Jun 22, 2026</td>
+            <td><span class="days-badge days-med">1 day</span></td>
+            <td class="pm-name">Alexis Ligon</td>
+          </tr>
+          <tr>
+            <td class="project-name">805 Voip</td>
+            <td><span class="phase-badge phase-i">Phase I</span></td>
+            <td class="date-expired">Mar 24, 2026</td>
+            <td class="date-warn">May 22, 2026</td>
+            <td><span class="days-badge days-today">Due Today</span></td>
+            <td class="pm-name">Alexis Ligon</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Section 3: Grad Date Expiring -->
+  <div class="section">
+    <div class="section-title"><span class="icon">⚠️</span> Graduation Date Expired or Expiring Within 7 Days</div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Project</th>
+            <th>Phase</th>
+            <th>Graduation Date</th>
+            <th>Status</th>
+            <th>PM</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="project-name">Prestige Technology Solutions</td>
+            <td><span class="phase-badge phase-ii">Phase II</span></td>
+            <td class="date-expired">Mar 19, 2026</td>
+            <td><span class="days-badge days-high">5 days ago</span></td>
+            <td class="pm-name">JD Caulkins</td>
+          </tr>
+          <tr>
+            <td class="project-name">CrossPath</td>
+            <td><span class="phase-badge phase-ii">Phase II</span></td>
+            <td class="date-warn">Mar 27, 2026</td>
+            <td><span class="days-badge days-today">3 days left</span></td>
+            <td class="pm-name">Stephanie Okada / Francesca Thayer</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Section 4: Missing Dates -->
+  <div class="section">
+    <div class="section-title"><span class="icon">⚪</span> Missing Key Dates (No Forecast and/or No Graduation Date)</div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Project</th>
+            <th>Phase</th>
+            <th>Start Date</th>
+            <th>Missing</th>
+            <th>PM</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="project-name">White Label Communications</td>
+            <td><span class="phase-badge phase-i">Phase I</span></td>
+            <td class="date-ok">Nov 25, 2025</td>
+            <td class="date-missing">Forecast + Grad</td>
+            <td class="pm-name">Stephanie Okada</td>
+          </tr>
+          <tr>
+            <td class="project-name">Louisville Tech</td>
+            <td><span class="phase-badge phase-i">Phase I</span></td>
+            <td class="date-ok">Dec 23, 2025</td>
+            <td class="date-missing">Forecast + Grad</td>
+            <td class="pm-name">Francesca Thayer</td>
+          </tr>
+          <tr>
+            <td class="project-name">Double Eagle</td>
+            <td><span class="phase-badge phase-i">Phase I</span></td>
+            <td class="date-ok">Feb 1, 2026</td>
+            <td class="date-missing">Forecast + Grad</td>
+            <td class="pm-name">JD Caulkins / Francesca Thayer</td>
+          </tr>
+          <tr>
+            <td class="project-name">Wyoming.com</td>
+            <td><span class="phase-badge phase-i">Phase I</span></td>
+            <td class="date-ok">Jan 6, 2026</td>
+            <td class="date-missing">Grad date</td>
+            <td class="pm-name">Marshall Harris</td>
+          </tr>
+          <tr>
+            <td class="project-name">Cloudli - BabyTel Migration</td>
+            <td><span class="phase-badge phase-i">Phase I</span></td>
+            <td class="date-ok">Aug 1, 2025</td>
+            <td class="date-missing">Grad date</td>
+            <td class="pm-name">Marshall Harris</td>
+          </tr>
+          <tr>
+            <td class="project-name">Cloudli - Cloudli Connect Migration</td>
+            <td><span class="phase-badge phase-i">Phase I</span></td>
+            <td class="date-ok">Mar 3, 2025</td>
+            <td class="date-missing">Grad date</td>
+            <td class="pm-name">Marshall Harris</td>
+          </tr>
+          <tr>
+            <td class="project-name">Popp Communications</td>
+            <td><span class="phase-badge phase-i">Phase I</span></td>
+            <td class="date-ok">Jul 1, 2025</td>
+            <td class="date-missing">Grad date</td>
+            <td class="pm-name">Marshall Harris</td>
+          </tr>
+          <tr>
+            <td class="project-name">Avalora (prev. VSR Network Technologies)</td>
+            <td><span class="phase-badge phase-i">Phase I</span></td>
+            <td class="date-ok">Jan 20, 2026</td>
+            <td class="date-missing">Grad date</td>
+            <td class="pm-name">Marshall Harris</td>
+          </tr>
+          <tr>
+            <td class="project-name">SummitOne</td>
+            <td><span class="phase-badge phase-i">Phase I</span></td>
+            <td class="date-ok">Dec 30, 2025</td>
+            <td class="date-missing">Grad date</td>
+            <td class="pm-name">Stephanie Okada</td>
+          </tr>
+          <tr>
+            <td class="project-name">Segra (White Label BoB)</td>
+            <td><span class="phase-badge phase-i">Phase I</span></td>
+            <td class="date-ok">Dec 19, 2025</td>
+            <td class="date-missing">Grad date</td>
+            <td class="pm-name">Stephanie Okada / Francesca Thayer</td>
+          </tr>
+          <tr>
+            <td class="project-name">Global Data Systems</td>
+            <td><span class="phase-badge phase-i">Phase I</span></td>
+            <td class="date-ok">Jan 29, 2026</td>
+            <td class="date-missing">Grad date</td>
+            <td class="pm-name">Stephanie Okada</td>
+          </tr>
+          <tr>
+            <td class="project-name">Orkestra</td>
+            <td><span class="phase-badge phase-i">Phase I</span></td>
+            <td class="date-ok">Jan 13, 2026</td>
+            <td class="date-missing">Grad date</td>
+            <td class="pm-name">Lauren Swygert</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Section 5: PM Scorecard -->
+  <div class="section">
+    <div class="section-title"><span class="icon">📊</span> PM Scorecard</div>
+    <div class="scorecard-grid">
+      <div class="pm-card">
+        <div class="pm-title">Marshall Harris</div>
+        <div class="pm-stat"><span class="stat-label">Critically Overdue</span><span class="stat-val val-red">1 (211 days)</span></div>
+        <div class="pm-stat"><span class="stat-label">Overdue</span><span class="stat-val val-red">2</span></div>
+        <div class="pm-stat"><span class="stat-label">Missing Dates</span><span class="stat-val val-orange">4</span></div>
+        <div class="pm-stat"><span class="stat-label">Total at Risk</span><span class="stat-val val-red">7</span></div>
+      </div>
+      <div class="pm-card">
+        <div class="pm-title">Alexis Ligon</div>
+        <div class="pm-stat"><span class="stat-label">Critically Overdue</span><span class="stat-val val-green">0</span></div>
+        <div class="pm-stat"><span class="stat-label">Overdue</span><span class="stat-val val-red">4</span></div>
+        <div class="pm-stat"><span class="stat-label">Missing Dates</span><span class="stat-val val-green">0</span></div>
+        <div class="pm-stat"><span class="stat-label">Total at Risk</span><span class="stat-val val-orange">4</span></div>
+      </div>
+      <div class="pm-card">
+        <div class="pm-title">JD Caulkins</div>
+        <div class="pm-stat"><span class="stat-label">Critically Overdue</span><span class="stat-val val-green">0</span></div>
+        <div class="pm-stat"><span class="stat-label">Overdue</span><span class="stat-val val-red">3</span></div>
+        <div class="pm-stat"><span class="stat-label">Missing Dates</span><span class="stat-val val-orange">1</span></div>
+        <div class="pm-stat"><span class="stat-label">Total at Risk</span><span class="stat-val val-orange">4</span></div>
+      </div>
+      <div class="pm-card">
+        <div class="pm-title">Francesca Thayer</div>
+        <div class="pm-stat"><span class="stat-label">Critically Overdue</span><span class="stat-val val-green">0</span></div>
+        <div class="pm-stat"><span class="stat-label">Overdue</span><span class="stat-val val-red">3</span></div>
+        <div class="pm-stat"><span class="stat-label">Missing Dates</span><span class="stat-val val-orange">3</span></div>
+        <div class="pm-stat"><span class="stat-label">Total at Risk</span><span class="stat-val val-orange">6</span></div>
+      </div>
+      <div class="pm-card">
+        <div class="pm-title">Stephanie Okada</div>
+        <div class="pm-stat"><span class="stat-label">Critically Overdue</span><span class="stat-val val-green">0</span></div>
+        <div class="pm-stat"><span class="stat-label">Overdue</span><span class="stat-val val-orange">2</span></div>
+        <div class="pm-stat"><span class="stat-label">Missing Dates</span><span class="stat-val val-orange">3</span></div>
+        <div class="pm-stat"><span class="stat-label">Total at Risk</span><span class="stat-val val-orange">5</span></div>
+      </div>
+      <div class="pm-card">
+        <div class="pm-title">Lauren Swygert</div>
+        <div class="pm-stat"><span class="stat-label">Critically Overdue</span><span class="stat-val val-red">1 (176 days)</span></div>
+        <div class="pm-stat"><span class="stat-label">Overdue</span><span class="stat-val val-orange">1</span></div>
+        <div class="pm-stat"><span class="stat-label">Missing Dates</span><span class="stat-val val-orange">1</span></div>
+        <div class="pm-stat"><span class="stat-label">Total at Risk</span><span class="stat-val val-orange">3</span></div>
+      </div>
+      <div class="pm-card">
+        <div class="pm-title">Alex Tucker</div>
+        <div class="pm-stat"><span class="stat-label">Critically Overdue</span><span class="stat-val val-green">0</span></div>
+        <div class="pm-stat"><span class="stat-label">Overdue</span><span class="stat-val val-orange">1</span></div>
+        <div class="pm-stat"><span class="stat-label">Missing Dates</span><span class="stat-val val-green">0</span></div>
+        <div class="pm-stat"><span class="stat-label">Total at Risk</span><span class="stat-val val-orange">1</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    Generated by Alfred · Rev.io Onboarding Operations · Data sourced live from Wrike · March 24, 2026
+  </div>
+
+</div>
+</body>
+</html>

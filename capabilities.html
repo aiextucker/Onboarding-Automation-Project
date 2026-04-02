@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Rev.io Alfred — Connections & Capabilities</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #0f1117;
+      color: #e2e8f0;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      font-size: 15px;
+      line-height: 1.6;
+      padding: 40px 24px 80px;
+    }
+
+    .container { max-width: 1100px; margin: 0 auto; }
+
+    /* Header */
+    .header {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+    .header .eyebrow {
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #6c63ff;
+      margin-bottom: 12px;
+    }
+    .header h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 10px;
+    }
+    .header p {
+      color: #94a3b8;
+      font-size: 0.95rem;
+      max-width: 600px;
+      margin: 0 auto 16px;
+    }
+    .updated-badge {
+      display: inline-block;
+      background: #6c63ff22;
+      border: 1px solid #6c63ff55;
+      color: #a78bfa;
+      padding: 4px 14px;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+
+    /* Section title */
+    .section-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #6c63ff;
+      margin-bottom: 20px;
+    }
+
+    /* Connection cards grid */
+    .connections-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 48px;
+    }
+
+    .conn-card {
+      background: #1a1d2e;
+      border: 1px solid #2d3148;
+      border-radius: 14px;
+      padding: 20px;
+      position: relative;
+      transition: border-color 0.2s;
+    }
+    .conn-card:hover { border-color: #6c63ff55; }
+
+    .conn-card .conn-icon {
+      font-size: 1.6rem;
+      margin-bottom: 10px;
+      display: block;
+    }
+    .conn-card .conn-name {
+      font-weight: 700;
+      color: #fff;
+      font-size: 0.95rem;
+      margin-bottom: 2px;
+    }
+    .conn-card .conn-sub {
+      font-size: 0.75rem;
+      color: #64748b;
+      margin-bottom: 12px;
+    }
+    .conn-card .conn-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-bottom: 12px;
+    }
+    .tag {
+      background: #ffffff0a;
+      border: 1px solid #ffffff12;
+      color: #94a3b8;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 0.72rem;
+    }
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
+    .status-live    { background: #00d4aa18; color: #00d4aa; border: 1px solid #00d4aa33; }
+    .status-pending { background: #fbbf2418; color: #fbbf24; border: 1px solid #fbbf2433; }
+    .status-new     { background: #6c63ff18; color: #a78bfa; border: 1px solid #6c63ff44; }
+
+    .new-badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: #6c63ff;
+      color: #fff;
+      font-size: 0.65rem;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: 10px;
+      letter-spacing: 0.04em;
+    }
+
+    /* Pipeline */
+    .pipeline {
+      background: #1a1d2e;
+      border: 1px solid #2d3148;
+      border-radius: 14px;
+      padding: 28px 32px;
+      margin-bottom: 48px;
+    }
+    .pipeline-title {
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+    .pipeline-sub { color: #64748b; font-size: 0.85rem; margin-bottom: 24px; }
+    .pipeline-flow {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+    .pipeline-step {
+      background: #12152080;
+      border: 1px solid #2d3148;
+      border-radius: 10px;
+      padding: 10px 14px;
+      text-align: center;
+      min-width: 110px;
+    }
+    .pipeline-step .step-icon { font-size: 1.2rem; display: block; margin-bottom: 4px; }
+    .pipeline-step .step-name { font-size: 0.75rem; font-weight: 700; color: #e2e8f0; }
+    .pipeline-step .step-sub  { font-size: 0.68rem; color: #64748b; }
+    .pipeline-step.new-step { border-color: #6c63ff55; background: #6c63ff0a; }
+    .pipeline-arrow { color: #6c63ff; font-size: 1.1rem; font-weight: 700; }
+    .pipeline-plus  { color: #94a3b8; font-size: 1rem; }
+
+    /* Use cases table */
+    .use-cases { margin-bottom: 48px; }
+    .table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid #2d3148; }
+    table { width: 100%; border-collapse: collapse; background: #1a1d2e; }
+    thead tr { background: #12152080; }
+    th {
+      padding: 12px 18px;
+      text-align: left;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #64748b;
+      white-space: nowrap;
+    }
+    td {
+      padding: 14px 18px;
+      border-top: 1px solid #1e2235;
+      font-size: 0.87rem;
+      vertical-align: top;
+    }
+    tr:hover td { background: #ffffff04; }
+
+    .uc-category {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #6c63ff;
+      padding: 10px 18px 4px;
+      border-top: 1px solid #2d3148;
+    }
+    .uc-name { font-weight: 600; color: #e2e8f0; margin-bottom: 3px; }
+    .uc-desc { color: #64748b; font-size: 0.82rem; }
+    .source-chips { display: flex; flex-wrap: wrap; gap: 4px; }
+    .chip {
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      border: 1px solid transparent;
+    }
+    .chip-sf      { background: #0891b218; color: #38bdf8; border-color: #0891b233; }
+    .chip-ff      { background: #f5922518; color: #fb923c; border-color: #f5922533; }
+    .chip-gh      { background: #ffffff12; color: #cbd5e1; border-color: #ffffff20; }
+    .chip-notion  { background: #ffffff12; color: #cbd5e1; border-color: #ffffff20; }
+    .chip-wrike   { background: #00d4aa18; color: #00d4aa; border-color: #00d4aa33; }
+    .chip-outlook { background: #6c63ff18; color: #a78bfa; border-color: #6c63ff33; }
+    .chip-teams   { background: #6c63ff18; color: #a78bfa; border-color: #6c63ff33; }
+
+    ul.deliverables { list-style: none; padding: 0; }
+    ul.deliverables li { padding: 2px 0; color: #94a3b8; font-size: 0.83rem; }
+    ul.deliverables li::before { content: "→ "; color: #6c63ff; font-weight: 700; }
+
+    .row-new td { background: #6c63ff06; }
+    .row-new td:first-child { border-left: 2px solid #6c63ff; }
+
+    .coming-soon td { opacity: 0.6; }
+    .coming-soon .uc-name::after {
+      content: " · Coming Soon";
+      color: #fbbf24;
+      font-size: 0.72rem;
+      font-weight: 600;
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      color: #475569;
+      font-size: 0.78rem;
+      padding-top: 24px;
+      border-top: 1px solid #2d3148;
+    }
+
+    @media (max-width: 640px) {
+      body { padding: 20px 14px 60px; }
+      .header h1 { font-size: 1.5rem; }
+      .pipeline-flow { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="eyebrow">Alfred · Rev.io Intelligence Agent</div>
+    <h1>Connections &amp; Capabilities</h1>
+    <p>What Alfred is connected to, what data is available, and what can be produced automatically — today and once pending connections are live.</p>
+    <span class="updated-badge">Updated March 24, 2026 · Wrike + Notion added today</span>
+  </div>
+
+  <!-- Active Connections -->
+  <div class="section-label">Section 01 · 🔌 Active Connections</div>
+  <div class="connections-grid">
+
+    <div class="conn-card">
+      <span class="conn-icon">☁️</span>
+      <div class="conn-name">Salesforce</div>
+      <div class="conn-sub">rev-io.my.salesforce.com · v59.0</div>
+      <div class="conn-tags">
+        <span class="tag">Account</span>
+        <span class="tag">Contact</span>
+        <span class="tag">Opportunity</span>
+        <span class="tag">Task</span>
+        <span class="tag">Lead</span>
+      </div>
+      <span class="status-pill status-live">● Live</span>
+    </div>
+
+    <div class="conn-card">
+      <span class="conn-icon">📣</span>
+      <div class="conn-name">Outreach</div>
+      <div class="conn-sub">Via Salesforce Task records</div>
+      <div class="conn-tags">
+        <span class="tag">Email threads</span>
+        <span class="tag">Call activity</span>
+        <span class="tag">Sequences</span>
+      </div>
+      <span class="status-pill status-live">● Live</span>
+    </div>
+
+    <div class="conn-card">
+      <span class="conn-icon">🐙</span>
+      <div class="conn-name">GitHub</div>
+      <div class="conn-sub">ftimothy2013 · Contents API</div>
+      <div class="conn-tags">
+        <span class="tag">Onboarding-Automation-</span>
+        <span class="tag">PSA-Service-issues</span>
+      </div>
+      <span class="status-pill status-live">● Live</span>
+    </div>
+
+    <div class="conn-card">
+      <span class="conn-icon">🎙️</span>
+      <div class="conn-name">Fireflies.ai</div>
+      <div class="conn-sub">api.fireflies.ai · GraphQL</div>
+      <div class="conn-tags">
+        <span class="tag">Transcripts</span>
+        <span class="tag">Summaries</span>
+        <span class="tag">Action items</span>
+      </div>
+      <span class="status-pill status-live">● Live</span>
+    </div>
+
+    <div class="conn-card">
+      <div class="new-badge">NEW</div>
+      <span class="conn-icon">📋</span>
+      <div class="conn-name">Wrike</div>
+      <div class="conn-sub">www.wrike.com · API v4</div>
+      <div class="conn-tags">
+        <span class="tag">Onboarding Space</span>
+        <span class="tag">Projects</span>
+        <span class="tag">Tasks</span>
+        <span class="tag">Custom Fields</span>
+        <span class="tag">PM Assignments</span>
+      </div>
+      <span class="status-pill status-new">● Live · Added today</span>
+    </div>
+
+    <div class="conn-card">
+      <div class="new-badge">NEW</div>
+      <span class="conn-icon">📓</span>
+      <div class="conn-name">Notion</div>
+      <div class="conn-sub">api.notion.com · v1 · Read-only</div>
+      <div class="conn-tags">
+        <span class="tag">PSA Clients DB</span>
+        <span class="tag">Client Interactions</span>
+        <span class="tag">Onboarding Dashboard</span>
+        <span class="tag">Forecast Tracker</span>
+      </div>
+      <span class="status-pill status-new">● Live · Added today</span>
+    </div>
+
+    <div class="conn-card">
+      <span class="conn-icon">📧</span>
+      <div class="conn-name">Microsoft Outlook</div>
+      <div class="conn-sub">graph.microsoft.com · v1.0</div>
+      <div class="conn-tags">
+        <span class="tag">Inbox</span>
+        <span class="tag">Calendar</span>
+        <span class="tag">Send mail</span>
+      </div>
+      <span class="status-pill status-pending">⏳ Pending Azure registration</span>
+    </div>
+
+    <div class="conn-card">
+      <span class="conn-icon">💬</span>
+      <div class="conn-name">Microsoft Teams</div>
+      <div class="conn-sub">OpenClaw msteams plugin · installed</div>
+      <div class="conn-tags">
+        <span class="tag">Channel posts</span>
+        <span class="tag">Scheduled briefs</span>
+        <span class="tag">Alerts</span>
+      </div>
+      <span class="status-pill status-pending">⏳ Pending webhook config</span>
+    </div>
+
+  </div>
+
+  <!-- Pipeline -->
+  <div class="section-label">Section 02 · ⚡ Automation Pipeline</div>
+  <div class="pipeline">
+    <div class="pipeline-title">How data flows from a deal closing to an SA-ready brief</div>
+    <div class="pipeline-sub">Onboarding automation pipeline — current + planned connections</div>
+    <div class="pipeline-flow">
+      <div class="pipeline-step">
+        <span class="step-icon">🤝</span>
+        <div class="step-name">Deal Closes</div>
+        <div class="step-sub">SF Closed-Won</div>
+      </div>
+      <div class="pipeline-arrow">→</div>
+      <div class="pipeline-step">
+        <span class="step-icon">☁️</span>
+        <div class="step-name">SF Pull</div>
+        <div class="step-sub">Account + Opp fields</div>
+      </div>
+      <div class="pipeline-plus">+</div>
+      <div class="pipeline-step">
+        <span class="step-icon">🎙️</span>
+        <div class="step-name">Transcript Pull</div>
+        <div class="step-sub">Fireflies + Outreach</div>
+      </div>
+      <div class="pipeline-arrow">→</div>
+      <div class="pipeline-step">
+        <span class="step-icon">📋</span>
+        <div class="step-name">Sales Brief</div>
+        <div class="step-sub">Auto-populated</div>
+      </div>
+      <div class="pipeline-arrow">→</div>
+      <div class="pipeline-step new-step">
+        <span class="step-icon">📓</span>
+        <div class="step-name">Notion</div>
+        <div class="step-sub">Client page (live)</div>
+      </div>
+      <div class="pipeline-arrow">→</div>
+      <div class="pipeline-step new-step">
+        <span class="step-icon">📋</span>
+        <div class="step-name">Wrike Project</div>
+        <div class="step-sub">PM assigned + tracked</div>
+      </div>
+      <div class="pipeline-arrow">→</div>
+      <div class="pipeline-step">
+        <span class="step-icon">💬</span>
+        <div class="step-name">Teams Brief</div>
+        <div class="step-sub">SA alert (pending)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Use Cases -->
+  <div class="section-label">Section 03 · 🎯 Use Cases &amp; Deliverables</div>
+  <div class="use-cases">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Use Case</th>
+            <th>Data Sources</th>
+            <th>Deliverables Produced</th>
+          </tr>
+        </thead>
+        <tbody>
+
+          <!-- Onboarding Automation -->
+          <tr><td colspan="3" class="uc-category">Onboarding Automation</td></tr>
+
+          <tr>
+            <td>
+              <div class="uc-name">📋 Auto-populate Sales Brief on Closed-Won</div>
+              <div class="uc-desc">Pull SF + transcript data and generate a pre-filled brief for SAs</div>
+            </td>
+            <td>
+              <div class="source-chips">
+                <span class="chip chip-sf">SF</span>
+                <span class="chip chip-ff">Outreach</span>
+                <span class="chip chip-ff">Fireflies</span>
+              </div>
+            </td>
+            <td>
+              <ul class="deliverables">
+                <li>Pre-filled Sales Brief HTML (green = auto, red = gaps)</li>
+                <li>Gap list — follow-up questions auto-sent to Sales rep</li>
+                <li>Notion client page created with brief content</li>
+              </ul>
+            </td>
+          </tr>
+
+          <tr>
+            <td>
+              <div class="uc-name">🔍 Client intelligence pull for any account</div>
+              <div class="uc-desc">On-demand full account summary from SF + Outreach</div>
+            </td>
+            <td>
+              <div class="source-chips">
+                <span class="chip chip-sf">SF</span>
+                <span class="chip chip-ff">Outreach</span>
+              </div>
+            </td>
+            <td>
+              <ul class="deliverables">
+                <li>Full account + opportunity + contact summary</li>
+                <li>Recent email activity digest</li>
+                <li>Key signals: PSA, accounting SW, RMM, payment processor</li>
+              </ul>
+            </td>
+          </tr>
+
+          <tr>
+            <td>
+              <div class="uc-name">🗺️ Salesforce → Brief field mapping</div>
+              <div class="uc-desc">Field-by-field mapping of what SF captures vs. what's still a gap</div>
+            </td>
+            <td>
+              <div class="source-chips">
+                <span class="chip chip-sf">SF</span>
+                <span class="chip chip-gh">GitHub</span>
+              </div>
+            </td>
+            <td>
+              <ul class="deliverables">
+                <li>Published HTML mapping doc (auto vs gap vs enrich)</li>
+                <li>Gap analysis — which SF fields Sales needs to own at close</li>
+              </ul>
+            </td>
+          </tr>
+
+          <!-- Portfolio Risk Intelligence -->
+          <tr><td colspan="3" class="uc-category">Portfolio Risk Intelligence · New Today</td></tr>
+
+          <tr class="row-new">
+            <td>
+              <div class="uc-name">⚠️ Phase I &amp; II Overdue Project Report</div>
+              <div class="uc-desc">Live pull of all active onboarding projects with overdue forecasts, missing dates, and PM accountability</div>
+            </td>
+            <td>
+              <div class="source-chips">
+                <span class="chip chip-wrike">Wrike</span>
+              </div>
+            </td>
+            <td>
+              <ul class="deliverables">
+                <li>Published HTML risk report — overdue by PM, days late, grad dates</li>
+                <li>PM scorecard — at-risk count per project manager</li>
+                <li>Flags: critically overdue (100+ days), missing forecast + grad dates</li>
+              </ul>
+            </td>
+          </tr>
+
+          <tr class="row-new">
+            <td>
+              <div class="uc-name">📵 Ghost Client Analysis</div>
+              <div class="uc-desc">Identify clients with repeated no-show or no-response interactions and surface their full engagement timeline</div>
+            </td>
+            <td>
+              <div class="source-chips">
+                <span class="chip chip-notion">Notion</span>
+              </div>
+            </td>
+            <td>
+              <ul class="deliverables">
+                <li>Ghost client list — ranked by no-show/no-response count</li>
+                <li>Status per client (Off Track, RTS-Ghosting, In Progress, Canceled)</li>
+                <li>Full interaction timeline on demand per client</li>
+                <li>SA assignment + onboarding type breakdown</li>
+              </ul>
+            </td>
+          </tr>
+
+          <tr class="row-new">
+            <td>
+              <div class="uc-name">📊 Daily Onboarding Portfolio Brief</div>
+              <div class="uc-desc">Scheduled morning brief combining Wrike project risk + Notion ghost client flags for the onboarding team</div>
+            </td>
+            <td>
+              <div class="source-chips">
+                <span class="chip chip-wrike">Wrike</span>
+                <span class="chip chip-notion">Notion</span>
+                <span class="chip chip-teams">Teams</span>
+              </div>
+            </td>
+            <td>
+              <ul class="deliverables">
+                <li>Daily Teams channel post — overdue projects + ghost clients</li>
+                <li>PM-level accountability summary</li>
+                <li>New flags since last run highlighted</li>
+              </ul>
+            </td>
+          </tr>
+
+          <!-- Reporting & Analysis -->
+          <tr><td colspan="3" class="uc-category">Reporting &amp; Analysis</td></tr>
+
+          <tr>
+            <td>
+              <div class="uc-name">📊 PSA onboarding call analysis</div>
+              <div class="uc-desc">566 calls analyzed — SA time, top questions, methodology scores</div>
+            </td>
+            <td>
+              <div class="source-chips">
+                <span class="chip chip-ff">Fireflies</span>
+                <span class="chip chip-sf">SF</span>
+              </div>
+            </td>
+            <td>
+              <ul class="deliverables">
+                <li>Published HTML report — call volume, SA time, top questions</li>
+                <li>Segmented by SA, vertical, complexity tier</li>
+              </ul>
+            </td>
+          </tr>
+
+          <tr>
+            <td>
+              <div class="uc-name">⚠️ PSA performance &amp; access issues analysis</div>
+              <div class="uc-desc">705 calls, Sep 2025–Mar 2026 — recurring issue patterns by category</div>
+            </td>
+            <td>
+              <div class="source-chips">
+                <span class="chip chip-ff">Fireflies</span>
+                <span class="chip chip-sf">SF</span>
+              </div>
+            </td>
+            <td>
+              <ul class="deliverables">
+                <li>Published HTML report — severity breakdown, SA impact</li>
+                <li>Recurring issue patterns by category</li>
+              </ul>
+            </td>
+          </tr>
+
+          <!-- Process Design -->
+          <tr><td colspan="3" class="uc-category">Process Design &amp; Documentation</td></tr>
+
+          <tr>
+            <td>
+              <div class="uc-name">🚀 Future state onboarding design</div>
+              <div class="uc-desc">Before vs. after comparison, go-live tiers, Jump Start session structure</div>
+            </td>
+            <td>
+              <div class="source-chips">
+                <span class="chip chip-ff">Fireflies</span>
+                <span class="chip chip-gh">GitHub</span>
+              </div>
+            </td>
+            <td>
+              <ul class="deliverables">
+                <li>Published HTML process doc — short-term + near-term redesign</li>
+                <li>Before vs. after comparison, go-live tiers</li>
+              </ul>
+            </td>
+          </tr>
+
+          <tr>
+            <td>
+              <div class="uc-name">🎯 Sales discovery guide</div>
+              <div class="uc-desc">What Sales must collect at close and why it matters for onboarding</div>
+            </td>
+            <td>
+              <div class="source-chips">
+                <span class="chip chip-sf">SF</span>
+                <span class="chip chip-gh">GitHub</span>
+              </div>
+            </td>
+            <td>
+              <ul class="deliverables">
+                <li>Published HTML guide — Core 8, field-by-field, how it feeds onboarding</li>
+              </ul>
+            </td>
+          </tr>
+
+          <!-- Coming Soon -->
+          <tr><td colspan="3" class="uc-category">Coming Soon · Pending Connections</td></tr>
+
+          <tr class="coming-soon">
+            <td>
+              <div class="uc-name">📓 Auto-create Notion client page at close</div>
+              <div class="uc-desc">Notion page created with pre-populated brief on Closed-Won</div>
+            </td>
+            <td>
+              <div class="source-chips">
+                <span class="chip chip-sf">SF</span>
+                <span class="chip chip-notion">Notion</span>
+              </div>
+            </td>
+            <td>
+              <ul class="deliverables">
+                <li>Notion page created with brief on Closed-Won</li>
+                <li>SA assigned, kickoff date set, gaps flagged inline</li>
+              </ul>
+            </td>
+          </tr>
+
+          <tr class="coming-soon">
+            <td>
+              <div class="uc-name">📧 SA brief delivery via email</div>
+              <div class="uc-desc">Branded HTML email sent to SA 48hrs before kickoff</div>
+            </td>
+            <td>
+              <div class="source-chips">
+                <span class="chip chip-sf">SF</span>
+                <span class="chip chip-outlook">Outlook</span>
+              </div>
+            </td>
+            <td>
+              <ul class="deliverables">
+                <li>Branded HTML email to SA with full brief 48hrs before kickoff</li>
+                <li>Gap follow-up email auto-sent to Sales rep</li>
+              </ul>
+            </td>
+          </tr>
+
+          <tr class="coming-soon">
+            <td>
+              <div class="uc-name">📬 Closed-Won alert to onboarding team</div>
+              <div class="uc-desc">Instant Teams/email alert when deal closes with key details</div>
+            </td>
+            <td>
+              <div class="source-chips">
+                <span class="chip chip-sf">SF</span>
+                <span class="chip chip-teams">Teams</span>
+                <span class="chip chip-outlook">Outlook</span>
+              </div>
+            </td>
+            <td>
+              <ul class="deliverables">
+                <li>Instant alert to onboarding team on Closed-Won</li>
+                <li>Includes client name, MRR, tier, SA assigned, kickoff target</li>
+              </ul>
+            </td>
+          </tr>
+
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="footer">
+    Alfred · Rev.io Onboarding Intelligence · Updated March 24, 2026 · Wrike + Notion connected today
+  </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PSA Onboarding Stick Rate — Cohort Analysis</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #0f1117;
+    color: #e2e8f0;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 32px 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  h1 { font-size: 1.8rem; font-weight: 700; color: #fff; margin-bottom: 4px; }
+  h2 { font-size: 1.1rem; font-weight: 600; color: #a0aec0; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 16px; }
+  .subtitle { color: #718096; font-size: 0.9rem; margin-bottom: 32px; }
+
+  /* Summary cards */
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 16px;
+    margin-bottom: 40px;
+  }
+  .card {
+    background: #1a1d2e;
+    border: 1px solid #2d3250;
+    border-radius: 12px;
+    padding: 20px 16px;
+    text-align: center;
+  }
+  .card .val {
+    font-size: 2.2rem;
+    font-weight: 700;
+    line-height: 1.1;
+    margin-bottom: 4px;
+  }
+  .card .lbl { font-size: 0.75rem; color: #718096; text-transform: uppercase; letter-spacing: 0.06em; }
+  .card.accent .val { color: #6c63ff; }
+  .card.green .val  { color: #00d4aa; }
+  .card.red .val    { color: #fc8181; }
+  .card.yellow .val { color: #f6c90e; }
+  .card.blue .val   { color: #63b3ed; }
+
+  /* Section layout */
+  .section { margin-bottom: 48px; }
+
+  /* Charts grid */
+  .charts-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 48px;
+  }
+  .chart-box {
+    background: #1a1d2e;
+    border: 1px solid #2d3250;
+    border-radius: 12px;
+    padding: 24px;
+  }
+  .chart-box h2 { margin-bottom: 8px; }
+  .chart-box .note { color: #718096; font-size: 0.8rem; margin-bottom: 16px; }
+  .chart-wrap { position: relative; height: 280px; }
+
+  /* Table */
+  .tbl-wrap { overflow-x: auto; border-radius: 12px; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #1a1d2e;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  thead tr { background: #12152a; }
+  th {
+    padding: 12px 14px;
+    text-align: right;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #718096;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    border-bottom: 1px solid #2d3250;
+    white-space: nowrap;
+  }
+  th:first-child { text-align: left; }
+  td {
+    padding: 11px 14px;
+    text-align: right;
+    border-bottom: 1px solid #1e2235;
+    font-variant-numeric: tabular-nums;
+  }
+  td:first-child { text-align: left; font-weight: 600; color: #e2e8f0; }
+  tr:last-child td { border-bottom: none; }
+  tr.total-row td {
+    background: #12152a;
+    font-weight: 700;
+    border-top: 2px solid #2d3250;
+    color: #e2e8f0;
+  }
+  .stick-hi  { color: #00d4aa; font-weight: 700; }
+  .stick-mid { color: #f6c90e; font-weight: 700; }
+  .stick-lo  { color: #fc8181; font-weight: 700; }
+  .cancel-hi { color: #fc8181; }
+  .cancel-mid{ color: #f6c90e; }
+  .cancel-lo { color: #00d4aa; }
+
+  /* Insight boxes */
+  .insights {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+    margin-top: 32px;
+  }
+  .insight {
+    background: #1a1d2e;
+    border: 1px solid #2d3250;
+    border-radius: 10px;
+    padding: 18px 20px;
+    border-left: 4px solid #6c63ff;
+  }
+  .insight.warn { border-left-color: #fc8181; }
+  .insight.ok   { border-left-color: #00d4aa; }
+  .insight.caution { border-left-color: #f6c90e; }
+  .insight h3 { font-size: 0.85rem; font-weight: 700; margin-bottom: 6px; color: #fff; }
+  .insight p  { font-size: 0.82rem; color: #a0aec0; line-height: 1.5; }
+
+  /* Status pill badges */
+  .pill {
+    display: inline-block;
+    border-radius: 20px;
+    padding: 2px 10px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .pill-grad     { background: #00d4aa22; color: #00d4aa; }
+  .pill-active   { background: #6c63ff22; color: #9f97ff; }
+  .pill-cancel   { background: #fc818122; color: #fc8181; }
+  .pill-rts      { background: #f6c90e22; color: #f6c90e; }
+  .pill-hold     { background: #63b3ed22; color: #63b3ed; }
+  .pill-nko      { background: #a0aec022; color: #a0aec0; }
+
+  /* Maturity warning banner */
+  .banner {
+    background: #1a1d2e;
+    border: 1px solid #f6c90e44;
+    border-left: 4px solid #f6c90e;
+    border-radius: 8px;
+    padding: 12px 16px;
+    color: #a0aec0;
+    font-size: 0.82rem;
+    margin-bottom: 24px;
+  }
+  .banner strong { color: #f6c90e; }
+
+  .footer {
+    margin-top: 48px;
+    padding-top: 24px;
+    border-top: 1px solid #2d3250;
+    color: #4a5568;
+    font-size: 0.78rem;
+    text-align: center;
+  }
+
+  @media (max-width: 700px) {
+    .charts-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<h1>🎯 PSA Onboarding — Stick Rate Analysis</h1>
+<p class="subtitle">Non-Tigerpaw clients only &nbsp;·&nbsp; Sold July 2025 – March 2026 &nbsp;·&nbsp; 137 clients &nbsp;·&nbsp; Generated March 31, 2026</p>
+
+<!-- Summary Cards -->
+<div class="cards">
+  <div class="card accent">
+    <div class="val">137</div>
+    <div class="lbl">Clients Sold</div>
+  </div>
+  <div class="card green">
+    <div class="val">72%</div>
+    <div class="lbl">Overall Stick Rate</div>
+  </div>
+  <div class="card red">
+    <div class="val">38</div>
+    <div class="lbl">Total Canceled</div>
+  </div>
+  <div class="card yellow">
+    <div class="val">25</div>
+    <div class="lbl">Canceled – Functionality</div>
+  </div>
+  <div class="card green">
+    <div class="val">14</div>
+    <div class="lbl">Graduated</div>
+  </div>
+  <div class="card blue">
+    <div class="val">17</div>
+    <div class="lbl">RTS (Stalled)</div>
+  </div>
+</div>
+
+<!-- Maturity Warning -->
+<div class="banner">
+  <strong>⚠️ Maturity caveat:</strong> 2026 cohorts (Jan–Mar) show high stick rates but are too new to be meaningful. Cancellations typically surface 60–120 days post-sale. These months need a full quarter before rates stabilize.
+</div>
+
+<!-- Charts Row -->
+<div class="charts-grid">
+
+  <div class="chart-box">
+    <h2>Stick Rate by Cohort Month</h2>
+    <p class="note">Mature cohorts (Jul–Dec 2025) only &mdash; recent months excluded from trend line</p>
+    <div class="chart-wrap">
+      <canvas id="stickChart"></canvas>
+    </div>
+  </div>
+
+  <div class="chart-box">
+    <h2>Cancel Reasons</h2>
+    <p class="note">All 38 cancellations broken down by type</p>
+    <div class="chart-wrap">
+      <canvas id="cancelChart"></canvas>
+    </div>
+  </div>
+
+  <div class="chart-box">
+    <h2>Cohort Composition</h2>
+    <p class="note">Where each month's clients ended up by current status</p>
+    <div class="chart-wrap">
+      <canvas id="stackedChart"></canvas>
+    </div>
+  </div>
+
+  <div class="chart-box">
+    <h2>Current Status Distribution</h2>
+    <p class="note">All 137 non-TP clients, latest status</p>
+    <div class="chart-wrap">
+      <canvas id="statusChart"></canvas>
+    </div>
+  </div>
+
+</div>
+
+<!-- Cohort Table -->
+<div class="section">
+  <h2>Month-by-Month Cohort Breakdown</h2>
+  <div class="banner" style="border-left-color:#6c63ff; border-color:#6c63ff44;">
+    <strong>NKO (Never Kicked Off)</strong> = awaiting scheduling, not stalled. Counted separately from On Hold/RTS.
+  </div>
+  <div class="tbl-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Month Sold</th>
+          <th>Sold</th>
+          <th>Canceled</th>
+          <th>Cancel %</th>
+          <th>RTS</th>
+          <th>Active</th>
+          <th>On Hold</th>
+          <th>NKO / Off Track</th>
+          <th>Graduated</th>
+          <th>Stick Rate</th>
+          <th>Maturity</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Jul 2025</td>
+          <td>25</td>
+          <td>11</td>
+          <td class="cancel-hi">44%</td>
+          <td>4</td>
+          <td>2</td>
+          <td>2</td>
+          <td>1</td>
+          <td>5</td>
+          <td class="stick-lo">56%</td>
+          <td><span class="pill pill-grad">Mature</span></td>
+        </tr>
+        <tr>
+          <td>Aug 2025</td>
+          <td>16</td>
+          <td>5</td>
+          <td class="cancel-mid">31%</td>
+          <td>1</td>
+          <td>3</td>
+          <td>2</td>
+          <td>3</td>
+          <td>2</td>
+          <td class="stick-mid">69%</td>
+          <td><span class="pill pill-grad">Mature</span></td>
+        </tr>
+        <tr>
+          <td>Sep 2025</td>
+          <td>16</td>
+          <td>6</td>
+          <td class="cancel-hi">38%</td>
+          <td>4</td>
+          <td>2</td>
+          <td>2</td>
+          <td>0</td>
+          <td>2</td>
+          <td class="stick-mid">62%</td>
+          <td><span class="pill pill-grad">Mature</span></td>
+        </tr>
+        <tr>
+          <td>Oct 2025</td>
+          <td>18</td>
+          <td>4</td>
+          <td class="cancel-mid">22%</td>
+          <td>4</td>
+          <td>3</td>
+          <td>5</td>
+          <td>1</td>
+          <td>1</td>
+          <td class="stick-mid">78%</td>
+          <td><span class="pill pill-grad">Mature</span></td>
+        </tr>
+        <tr>
+          <td>Nov 2025</td>
+          <td>9</td>
+          <td>5</td>
+          <td class="cancel-hi">56%</td>
+          <td>1</td>
+          <td>2</td>
+          <td>0</td>
+          <td>0</td>
+          <td>1</td>
+          <td class="stick-lo">44%</td>
+          <td><span class="pill pill-grad">Mature</span></td>
+        </tr>
+        <tr>
+          <td>Dec 2025</td>
+          <td>16</td>
+          <td>5</td>
+          <td class="cancel-mid">31%</td>
+          <td>0</td>
+          <td>6</td>
+          <td>2</td>
+          <td>1</td>
+          <td>2</td>
+          <td class="stick-mid">69%</td>
+          <td><span class="pill pill-rts">Maturing</span></td>
+        </tr>
+        <tr>
+          <td>Jan 2026</td>
+          <td>10</td>
+          <td>1</td>
+          <td class="cancel-lo">10%</td>
+          <td>2</td>
+          <td>5</td>
+          <td>1</td>
+          <td>1</td>
+          <td>0</td>
+          <td class="stick-hi">90%</td>
+          <td><span class="pill pill-hold">Too Early</span></td>
+        </tr>
+        <tr>
+          <td>Feb 2026</td>
+          <td>15</td>
+          <td>1</td>
+          <td class="cancel-lo">7%</td>
+          <td>1</td>
+          <td>12</td>
+          <td>0</td>
+          <td>1</td>
+          <td>0</td>
+          <td class="stick-hi">93%</td>
+          <td><span class="pill pill-hold">Too Early</span></td>
+        </tr>
+        <tr>
+          <td>Mar 2026</td>
+          <td>12</td>
+          <td>0</td>
+          <td class="cancel-lo">0%</td>
+          <td>0</td>
+          <td>6</td>
+          <td>1</td>
+          <td>4</td>
+          <td>1</td>
+          <td class="stick-hi">100%</td>
+          <td><span class="pill pill-nko">Too Early</span></td>
+        </tr>
+        <tr class="total-row">
+          <td>TOTAL</td>
+          <td>137</td>
+          <td>38</td>
+          <td class="cancel-mid">28%</td>
+          <td>17</td>
+          <td>41</td>
+          <td>15</td>
+          <td>12</td>
+          <td>14</td>
+          <td class="stick-mid">72%</td>
+          <td>—</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Insights -->
+<div class="section">
+  <h2>Key Observations</h2>
+  <div class="insights">
+    <div class="insight warn">
+      <h3>🔴 Functionality is the #1 churn driver</h3>
+      <p>25 of 38 cancels (66%) are "Canceled – Functionality." Add 7 RTS-Functionality and 7 On Hold-Functionality and you have <strong>39 clients</strong> impacted by product gap issues. This is a Sales expectation problem, not an onboarding problem.</p>
+    </div>
+    <div class="insight warn">
+      <h3>🔴 November 2025 — worst cohort</h3>
+      <p>5 of 9 clients sold in November canceled (56%). Worth reviewing who the Sales reps were that month and whether deal quality or client fit was an issue. Small sample but the worst rate in the dataset.</p>
+    </div>
+    <div class="insight caution">
+      <h3>🟡 RTS clients are not counted as canceled — yet</h3>
+      <p>17 clients in RTS status are technically "stuck." If even half eventually cancel, the real stick rate for mature cohorts drops another 5–8 points. RTS-Ghosting (9 clients) is the highest-risk sub-bucket.</p>
+    </div>
+    <div class="insight caution">
+      <h3>🟡 Mature cohort stick rate: ~62%</h3>
+      <p>Ignoring the immature 2026 months, Jul–Nov 2025 (the cohorts with real data) average a <strong>58% stick rate</strong>. The overall 72% figure is inflated by early-stage clients who haven't had time to cancel yet.</p>
+    </div>
+    <div class="insight ok">
+      <h3>🟢 Oct 2025 is the standout</h3>
+      <p>18 sold, only 4 canceled, 78% stick rate — best among mature cohorts. Worth examining what was different about deal quality or SA execution that month.</p>
+    </div>
+    <div class="insight ok">
+      <h3>🟢 NKO is scheduling lag, not churn risk</h3>
+      <p>5 NKO clients are awaiting kickoff scheduling — not stalled or at-risk. Once scheduled they move to active pipeline. Track them separately from RTS/On Hold to avoid overstating the stall rate.</p>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  Rev.io PSA Onboarding &nbsp;·&nbsp; Data source: Notion PSA Onboarding Dashboard &nbsp;·&nbsp; Excludes existing Tigerpaw clients &nbsp;·&nbsp; Alfred / OpenClaw
+</div>
+
+<script>
+const months = ['Jul 25','Aug 25','Sep 25','Oct 25','Nov 25','Dec 25','Jan 26','Feb 26','Mar 26'];
+
+// Stick rate chart
+new Chart(document.getElementById('stickChart'), {
+  type: 'bar',
+  data: {
+    labels: months,
+    datasets: [
+      {
+        label: 'Stick Rate %',
+        data: [56, 69, 62, 78, 44, 69, 90, 93, 100],
+        backgroundColor: months.map((_, i) => i >= 6 ? '#6c63ff55' : (
+          [56,69,62,78,44,69][i] < 60 ? '#fc818188' : '#00d4aa88'
+        )),
+        borderColor: months.map((_, i) => i >= 6 ? '#6c63ff' : (
+          [56,69,62,78,44,69][i] < 60 ? '#fc8181' : '#00d4aa'
+        )),
+        borderWidth: 2,
+        borderRadius: 6,
+      },
+      {
+        label: 'Cancel Rate %',
+        data: [44, 31, 38, 22, 56, 31, 10, 7, 0],
+        backgroundColor: months.map((_, i) => i >= 6 ? '#fc818122' : '#fc818155'),
+        borderColor: months.map((_, i) => i >= 6 ? '#fc818166' : '#fc8181'),
+        borderWidth: 1,
+        borderRadius: 4,
+        borderDash: [],
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { labels: { color: '#a0aec0', font: { size: 11 } } },
+      tooltip: {
+        callbacks: {
+          label: ctx => `${ctx.dataset.label}: ${ctx.raw}%`
+        }
+      }
+    },
+    scales: {
+      x: { ticks: { color: '#718096' }, grid: { color: '#2d3250' } },
+      y: {
+        min: 0, max: 100,
+        ticks: { color: '#718096', callback: v => v + '%' },
+        grid: { color: '#2d3250' }
+      }
+    }
+  }
+});
+
+// Cancel reasons doughnut
+new Chart(document.getElementById('cancelChart'), {
+  type: 'doughnut',
+  data: {
+    labels: ['Functionality', 'Client Business', 'Sales/Unable to KO', 'Client Bandwidth', 'Client Ghosted'],
+    datasets: [{
+      data: [25, 7, 3, 2, 1],
+      backgroundColor: ['#fc8181cc','#f6c90ecc','#63b3edcc','#6c63ffcc','#a0aec0cc'],
+      borderColor: '#0f1117',
+      borderWidth: 3,
+      hoverOffset: 8
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    cutout: '62%',
+    plugins: {
+      legend: {
+        position: 'bottom',
+        labels: { color: '#a0aec0', font: { size: 11 }, padding: 12, boxWidth: 12 }
+      },
+      tooltip: {
+        callbacks: {
+          label: ctx => ` ${ctx.label}: ${ctx.raw} clients (${Math.round(ctx.raw/38*100)}% of cancels)`
+        }
+      }
+    }
+  }
+});
+
+// Stacked bar — cohort composition
+new Chart(document.getElementById('stackedChart'), {
+  type: 'bar',
+  data: {
+    labels: months,
+    datasets: [
+      { label: 'Graduated',      data: [5,2,2,1,1,2,0,0,1], backgroundColor: '#00d4aa99', borderRadius: 3 },
+      { label: 'Active',         data: [2,3,2,3,2,6,5,12,6], backgroundColor: '#6c63ff99', borderRadius: 3 },
+      { label: 'RTS',            data: [4,1,4,4,1,0,2,1,0], backgroundColor: '#f6c90e99', borderRadius: 3 },
+      { label: 'On Hold',        data: [2,2,2,5,0,2,1,0,1], backgroundColor: '#63b3ed99', borderRadius: 3 },
+      { label: 'NKO/Off Track',  data: [1,3,0,1,0,1,1,1,4], backgroundColor: '#a0aec066', borderRadius: 3 },
+      { label: 'Canceled',       data: [11,5,6,4,5,5,1,1,0], backgroundColor: '#fc818199', borderRadius: 3 },
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { labels: { color: '#a0aec0', font: { size: 11 }, boxWidth: 12 } }
+    },
+    scales: {
+      x: { stacked: true, ticks: { color: '#718096' }, grid: { color: '#2d3250' } },
+      y: { stacked: true, ticks: { color: '#718096' }, grid: { color: '#2d3250' } }
+    }
+  }
+});
+
+// Current status pie
+new Chart(document.getElementById('statusChart'), {
+  type: 'doughnut',
+  data: {
+    labels: ['In Progress (41)', 'Canceled (38)', 'RTS (17)', 'On Hold (15)', 'Graduated (14)', 'NKO (5)', 'Off Track (7)'],
+    datasets: [{
+      data: [41, 38, 17, 15, 14, 5, 7],
+      backgroundColor: ['#6c63ffcc','#fc8181cc','#f6c90ecc','#63b3edcc','#00d4aacc','#a0aec0cc','#ed8936cc'],
+      borderColor: '#0f1117',
+      borderWidth: 3,
+      hoverOffset: 8
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    cutout: '55%',
+    plugins: {
+      legend: {
+        position: 'bottom',
+        labels: { color: '#a0aec0', font: { size: 11 }, padding: 10, boxWidth: 12 }
+      },
+      tooltip: {
+        callbacks: {
+          label: ctx => ` ${ctx.raw} clients (${Math.round(ctx.raw/137*100)}%)`
+        }
+      }
+    }
+  }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Transition Document — PSA Onboarding Operations</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #0f1117;
+      color: #e2e8f0;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      font-size: 15px;
+      line-height: 1.7;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, #1a1d2e 0%, #16192a 100%);
+      border: 1px solid #2d3154;
+      border-radius: 12px;
+      padding: 40px;
+      margin-bottom: 32px;
+      text-align: center;
+    }
+
+    .header h1 {
+      font-size: 28px;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 8px;
+      letter-spacing: -0.3px;
+    }
+
+    .header .subtitle {
+      color: #94a3b8;
+      font-size: 14px;
+      margin-top: 6px;
+    }
+
+    .header .badge {
+      display: inline-block;
+      background: rgba(108, 99, 255, 0.15);
+      border: 1px solid rgba(108, 99, 255, 0.4);
+      color: #a8a2ff;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 14px;
+      border-radius: 20px;
+      margin-top: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+
+    /* Section cards */
+    .section {
+      background: #1a1d2e;
+      border: 1px solid #2d3154;
+      border-radius: 10px;
+      padding: 28px 32px;
+      margin-bottom: 20px;
+      transition: border-color 0.2s;
+    }
+
+    .section:hover {
+      border-color: #6c63ff;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .section-number {
+      background: linear-gradient(135deg, #6c63ff, #8b83ff);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .section-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: -0.2px;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      padding-left: 48px;
+    }
+
+    ul li {
+      position: relative;
+      color: #cbd5e1;
+      padding: 5px 0;
+      font-size: 14px;
+    }
+
+    ul li::before {
+      content: '';
+      position: absolute;
+      left: -20px;
+      top: 13px;
+      width: 6px;
+      height: 6px;
+      background: #00d4aa;
+      border-radius: 50%;
+    }
+
+    /* Highlight for notable items */
+    .highlight-item::before {
+      background: #6c63ff !important;
+    }
+
+    .highlight-item {
+      color: #e2e8f0 !important;
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      color: #4a5568;
+      font-size: 12px;
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 1px solid #1e2235;
+    }
+
+    /* Print */
+    @media print {
+      body { background: #fff; color: #111; }
+      .section { border: 1px solid #ddd; }
+      .section-number { background: #6c63ff; }
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      .header { padding: 28px 20px; }
+      .section { padding: 22px 20px; }
+      ul { padding-left: 36px; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <h1>PSA Onboarding Operations</h1>
+    <div class="subtitle">Role Transition Document</div>
+    <div class="badge">Confidential — Internal Use Only</div>
+  </div>
+
+  <!-- Section 1 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-number">1</div>
+      <div class="section-title">Forecasting &amp; Performance Management</div>
+    </div>
+    <ul>
+      <li>Own and deliver monthly forecasting</li>
+      <li>Identify risks, trends, and operational challenges</li>
+      <li>Communicate performance insights and mitigation plans</li>
+    </ul>
+  </div>
+
+  <!-- Section 2 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-number">2</div>
+      <div class="section-title">Cross-Functional Operations Leadership</div>
+    </div>
+    <ul>
+      <li>Lead daily PSA standup meetings</li>
+      <li>Track and drive resolution of open issues and questions</li>
+      <li>Ensure follow-through across Product, Engineering, and Operations</li>
+      <li>Ensure materials and changes are documented for external and internal docs</li>
+      <li>Coordinate and support training initiatives</li>
+    </ul>
+  </div>
+
+  <!-- Section 3 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-number">3</div>
+      <div class="section-title">Ticketing &amp; Escalation Management</div>
+    </div>
+    <ul>
+      <li>Monitor onboarding ticket queue and July channel activity</li>
+      <li>Assign ownership across Product and Engineering teams</li>
+      <li>Escalate critical issues to ensure timely resolution</li>
+      <li>Maintain visibility into high-priority client-impacting items</li>
+      <li>Consolidate Engineering RCA for client communication</li>
+    </ul>
+  </div>
+
+  <!-- Section 4 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-number">4</div>
+      <div class="section-title">Product Feedback &amp; Roadmap Coordination</div>
+    </div>
+    <ul>
+      <li>Collect and track feature requests and enhancement needs</li>
+      <li>Facilitate weekly alignment meetings with Product (Leslie and Serge)</li>
+      <li>Ensure updates are communicated internally and externally</li>
+      <li>Advocate for client needs in product discussions</li>
+    </ul>
+  </div>
+
+  <!-- Section 5 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-number">5</div>
+      <div class="section-title">Portfolio Oversight &amp; Risk Management</div>
+    </div>
+    <ul>
+      <li>Monitor data quality across onboarding portfolios</li>
+      <li>Identify and manage at-risk accounts across portfolio</li>
+      <li>Conduct audits and implement triggers for risk detection</li>
+      <li class="highlight-item">Drive process improvements — including transition of audit functions to Alfred</li>
+    </ul>
+  </div>
+
+  <!-- Section 6 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-number">6</div>
+      <div class="section-title">Key Account &amp; Partner Management</div>
+    </div>
+    <ul>
+      <li>Primary point of contact for John's / Ahelio Tech</li>
+      <li>Manage relationship and communication with Cloudli</li>
+      <li>Ownership of French localization efforts with Cloudli</li>
+    </ul>
+  </div>
+
+  <!-- Section 7 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-number">7</div>
+      <div class="section-title">Executive &amp; Board-Level Reporting</div>
+    </div>
+    <ul>
+      <li>Develop quarterly presentations and board deck materials</li>
+      <li>Provide insights on onboarding performance, risks, and strategic initiatives</li>
+    </ul>
+  </div>
+
+  <div class="footer">
+    Rev.io — PSA Onboarding Operations &nbsp;|&nbsp; Prepared March 2026
+  </div>
+
+</div>
+</body>
+</html>

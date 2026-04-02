@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Activation PSA Forecast Methodology — Rev.io</title>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --surface2: #21253a;
+      --accent: #6c63ff;
+      --accent2: #00d4aa;
+      --warn: #ffa94d;
+      --danger: #ff6b6b;
+      --muted: #7b7f9e;
+      --text: #e8eaf6;
+      --text-dim: #b0b4cc;
+      --border: rgba(255,255,255,0.07);
+      --radius: 14px;
+      --radius-sm: 8px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      font-size: 15px;
+      line-height: 1.65;
+    }
+
+    /* HERO */
+    .hero {
+      background: linear-gradient(135deg, #0d1520 0%, #0f1f35 50%, #0f1117 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 60px 24px 50px;
+      text-align: center;
+    }
+    .hero-eyebrow {
+      font-size: 12px; font-weight: 700; letter-spacing: 2px;
+      text-transform: uppercase; color: var(--accent2); margin-bottom: 16px;
+    }
+    .hero h1 {
+      font-size: clamp(24px, 5vw, 38px); font-weight: 800;
+      line-height: 1.15; letter-spacing: -0.5px; margin-bottom: 14px;
+    }
+    .hero h1 span { color: var(--accent2); }
+    .hero-sub {
+      font-size: clamp(14px, 2.5vw, 16px); color: var(--text-dim);
+      max-width: 620px; margin: 0 auto 32px;
+    }
+    .hero-badges {
+      display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;
+    }
+    .hero-badge {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 8px 18px;
+      font-size: 13px; font-weight: 600;
+    }
+    .hero-badge span { color: var(--accent2); margin-right: 6px; }
+
+    /* CONTENT */
+    .content { max-width: 900px; margin: 0 auto; padding: 0 20px 80px; }
+
+    /* PRINCIPLE BANNER */
+    .principle-banner {
+      background: linear-gradient(135deg, rgba(108,99,255,0.12), rgba(0,212,170,0.08));
+      border: 1px solid rgba(108,99,255,0.3);
+      border-radius: var(--radius);
+      padding: 28px 32px;
+      margin: 40px 0 32px;
+      position: relative;
+      overflow: hidden;
+    }
+    .principle-banner::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+    }
+    .principle-label {
+      font-size: 11px; font-weight: 700; letter-spacing: 2px;
+      text-transform: uppercase; color: var(--accent); margin-bottom: 10px;
+    }
+    .principle-title {
+      font-size: 19px; font-weight: 800; margin-bottom: 14px; color: #fff;
+    }
+    .principle-body {
+      color: var(--text-dim); font-size: 14px; line-height: 1.7;
+    }
+    .principle-body strong { color: var(--text); }
+    .principle-bullets {
+      list-style: none; margin-top: 14px; display: flex; flex-direction: column; gap: 8px;
+    }
+    .principle-bullets li {
+      display: flex; align-items: flex-start; gap: 10px;
+      font-size: 14px; color: var(--text-dim);
+    }
+    .principle-bullets li::before {
+      content: '→';
+      color: var(--accent2); font-weight: 700; flex-shrink: 0; margin-top: 1px;
+    }
+
+    /* FORECAST TIERS */
+    .tiers-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 16px;
+      margin-top: 8px;
+    }
+
+    .tier-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .tier-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 4px;
+      background: var(--tier-color, var(--accent));
+      border-radius: var(--radius) var(--radius) 0 0;
+    }
+
+    .tier-header {
+      display: flex; align-items: center; gap: 12px;
+    }
+    .tier-badge {
+      font-size: 13px; font-weight: 800;
+      padding: 5px 14px; border-radius: 20px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--tier-color, var(--accent));
+      color: var(--tier-color, var(--accent));
+      white-space: nowrap;
+    }
+    .tier-name {
+      font-size: 16px; font-weight: 800; color: #fff;
+    }
+    .tier-def {
+      font-size: 13px; color: var(--text-dim); font-style: italic;
+      border-left: 3px solid var(--tier-color, var(--accent));
+      padding-left: 12px; line-height: 1.6;
+    }
+
+    .tier-section-title {
+      font-size: 11px; font-weight: 700; letter-spacing: 1.5px;
+      text-transform: uppercase; color: var(--muted); margin-bottom: 6px;
+    }
+    .tier-list {
+      list-style: none; display: flex; flex-direction: column; gap: 6px;
+    }
+    .tier-list li {
+      font-size: 13px; color: var(--text-dim);
+      display: flex; align-items: flex-start; gap: 8px;
+    }
+    .tier-list li .dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--tier-color, var(--accent));
+      flex-shrink: 0; margin-top: 6px;
+    }
+    .tier-list li .dot-x {
+      width: 6px; height: 6px; flex-shrink: 0; margin-top: 4px;
+      color: var(--danger); font-size: 12px; font-weight: 900; line-height: 1.1;
+    }
+
+    .confidence-bar-wrap {
+      margin-top: 4px;
+    }
+    .confidence-label {
+      display: flex; justify-content: space-between;
+      font-size: 12px; color: var(--muted); margin-bottom: 6px;
+    }
+    .confidence-bar {
+      height: 6px; background: rgba(255,255,255,0.07); border-radius: 3px; overflow: hidden;
+    }
+    .confidence-fill {
+      height: 100%; border-radius: 3px;
+      background: var(--tier-color, var(--accent));
+    }
+
+    /* SECTION HEADER */
+    .section { margin-top: 48px; }
+    .section-label {
+      font-size: 11px; font-weight: 700; letter-spacing: 2.5px;
+      text-transform: uppercase; color: var(--accent); margin-bottom: 8px;
+    }
+    .section-title { font-size: clamp(17px, 3vw, 21px); font-weight: 700; margin-bottom: 4px; }
+    .section-divider {
+      width: 40px; height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      border-radius: 2px; margin: 12px 0 22px;
+    }
+
+    /* FORECAST STRUCTURE TABLE */
+    .structure-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    .structure-table th {
+      text-align: left; padding: 12px 16px;
+      background: var(--surface2);
+      color: var(--muted); font-size: 11px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 1px;
+      border-bottom: 1px solid var(--border);
+    }
+    .structure-table td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-dim);
+      vertical-align: top;
+    }
+    .structure-table tr:last-child td { border-bottom: none; }
+    .structure-table tr:hover td { background: rgba(255,255,255,0.02); }
+    .structure-table .tier-chip {
+      display: inline-block;
+      font-size: 12px; font-weight: 700;
+      padding: 3px 12px; border-radius: 12px;
+      border: 1px solid; white-space: nowrap;
+    }
+
+    /* GOVERNANCE */
+    .governance-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px;
+    }
+    .gov-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 18px 20px;
+    }
+    .gov-icon { font-size: 22px; margin-bottom: 10px; }
+    .gov-title { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 6px; }
+    .gov-desc { font-size: 13px; color: var(--text-dim); line-height: 1.5; }
+
+    /* LESSONS LEARNED */
+    .lessons-card {
+      background: var(--surface);
+      border: 1px solid rgba(255,169,77,0.25);
+      border-radius: var(--radius);
+      padding: 28px 32px;
+      position: relative; overflow: hidden;
+    }
+    .lessons-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--warn), #ff6b6b);
+    }
+    .lessons-label {
+      font-size: 11px; font-weight: 700; letter-spacing: 2px;
+      text-transform: uppercase; color: var(--warn); margin-bottom: 10px;
+    }
+    .lessons-title {
+      font-size: 17px; font-weight: 800; margin-bottom: 18px; color: #fff;
+    }
+    .lesson-item {
+      display: flex; gap: 14px; align-items: flex-start;
+      margin-bottom: 16px;
+    }
+    .lesson-item:last-child { margin-bottom: 0; }
+    .lesson-icon {
+      font-size: 20px; flex-shrink: 0; margin-top: 1px;
+    }
+    .lesson-text {
+      font-size: 14px; color: var(--text-dim); line-height: 1.65;
+    }
+    .lesson-text strong { color: var(--text); }
+
+    /* BACK LINK */
+    .back-link {
+      display: inline-flex; align-items: center; gap: 6px;
+      color: var(--muted); font-size: 13px; text-decoration: none;
+      margin: 28px 0 0;
+      transition: color 0.15s;
+    }
+    .back-link:hover { color: var(--accent2); }
+
+    /* FOOTER */
+    .footer {
+      text-align: center;
+      color: var(--muted); font-size: 12px;
+      padding: 32px 20px 40px;
+      border-top: 1px solid var(--border);
+      margin-top: 60px;
+    }
+
+    @media (max-width: 600px) {
+      .hero { padding: 40px 20px 36px; }
+      .content { padding: 0 16px 60px; }
+      .tiers-grid { grid-template-columns: 1fr; }
+      .governance-grid { grid-template-columns: 1fr 1fr; }
+      .lessons-card { padding: 22px 20px; }
+      .principle-banner { padding: 22px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-eyebrow">Rev.io PSA Onboarding · Operations</div>
+  <h1>Activation <span>Forecast Methodology</span></h1>
+  <div class="hero-sub">
+    Gated, readiness-based forecasting — not linear progress. Commit, Upside, and Pipeline tiers with defined criteria, confidence bands, and governance rules.
+  </div>
+  <div class="hero-badges">
+    <div class="hero-badge"><span>🎯</span> Gated by Readiness</div>
+    <div class="hero-badge"><span>📋</span> 3-Tier Structure</div>
+    <div class="hero-badge"><span>🔒</span> No-Exceptions Rule</div>
+    <div class="hero-badge"><span>🔄</span> Weekly Revalidation</div>
+  </div>
+</div>
+
+<div class="content">
+
+  <a class="back-link" href="index.html">← Back to Intelligence Hub</a>
+
+  <!-- CORE PRINCIPLE -->
+  <div class="principle-banner">
+    <div class="principle-label">Core Principle</div>
+    <div class="principle-title">Forecasting is gated, not linear</div>
+    <div class="principle-body">
+      <strong>Progress % alone does not determine readiness.</strong> A client can be 70% complete and still not be forecastable. What matters is whether the critical path is clear and the blockers are gone.
+    </div>
+    <ul class="principle-bullets">
+      <li>Progress (% complete) alone does not determine readiness</li>
+      <li>Critical path completion is required for forecast inclusion — data imports, product catalog</li>
+      <li>Unresponsive clients and incomplete data migrations are automatic disqualifiers</li>
+    </ul>
+  </div>
+
+  <!-- FORECAST TIERS -->
+  <div class="section">
+    <div class="section-label">Forecast Tiers</div>
+    <div class="section-title">📅 30 / 60 / 90-Day Bands</div>
+    <div class="section-divider"></div>
+    <div class="tiers-grid">
+
+      <!-- 30-Day -->
+      <div class="tier-card" style="--tier-color: #00d4aa;">
+        <div class="tier-header">
+          <div class="tier-badge">30-Day</div>
+          <div class="tier-name">Commit</div>
+        </div>
+        <div class="tier-def">Clients ready to launch within 30 days with high confidence.</div>
+
+        <div>
+          <div class="tier-section-title">Criteria</div>
+          <ul class="tier-list">
+            <li><div class="dot"></div>80% complete</li>
+            <li><div class="dot"></div>All critical milestones complete</li>
+          </ul>
+        </div>
+
+        <div>
+          <div class="tier-section-title">Remaining Work Allowed</div>
+          <ul class="tier-list">
+            <li><div class="dot"></div>Final QA / validation</li>
+            <li><div class="dot"></div>Minor configuration</li>
+            <li><div class="dot"></div>Launch coordination</li>
+          </ul>
+        </div>
+
+        <div>
+          <div class="tier-section-title">Not Allowed</div>
+          <ul class="tier-list">
+            <li><div class="dot-x">✕</div>Data import not complete</li>
+            <li><div class="dot-x">✕</div>Product catalog not complete</li>
+            <li><div class="dot-x">✕</div>Unresponsive customer</li>
+          </ul>
+        </div>
+
+        <div class="confidence-bar-wrap">
+          <div class="confidence-label">
+            <span>Confidence</span>
+            <span style="color: #00d4aa; font-weight: 700;">80–90%+</span>
+          </div>
+          <div class="confidence-bar">
+            <div class="confidence-fill" style="width: 87%;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 60-Day -->
+      <div class="tier-card" style="--tier-color: #ffa94d;">
+        <div class="tier-header">
+          <div class="tier-badge">60-Day</div>
+          <div class="tier-name">Upside</div>
+        </div>
+        <div class="tier-def">Clients progressing well but not yet fully de-risked.</div>
+
+        <div>
+          <div class="tier-section-title">Criteria</div>
+          <ul class="tier-list">
+            <li><div class="dot"></div>40%+ milestone completion</li>
+          </ul>
+        </div>
+
+        <div>
+          <div class="tier-section-title">Required</div>
+          <ul class="tier-list">
+            <li><div class="dot"></div>Data Import started</li>
+            <li><div class="dot"></div>Processes and Ticketing started</li>
+          </ul>
+        </div>
+
+        <div>
+          <div class="tier-section-title">Characteristics</div>
+          <ul class="tier-list">
+            <li><div class="dot"></div>Work still on critical path</li>
+            <li><div class="dot"></div>Some dependencies remain</li>
+            <li><div class="dot"></div>Eligible to be pulled forward — not committed</li>
+          </ul>
+        </div>
+
+        <div class="confidence-bar-wrap">
+          <div class="confidence-label">
+            <span>Confidence</span>
+            <span style="color: #ffa94d; font-weight: 700;">60–80%</span>
+          </div>
+          <div class="confidence-bar">
+            <div class="confidence-fill" style="width: 70%;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 90-Day -->
+      <div class="tier-card" style="--tier-color: #7b7f9e;">
+        <div class="tier-header">
+          <div class="tier-badge">90-Day</div>
+          <div class="tier-name">Pipeline</div>
+        </div>
+        <div class="tier-def">Early-stage clients with meaningful work remaining.</div>
+
+        <div>
+          <div class="tier-section-title">Criteria</div>
+          <ul class="tier-list">
+            <li><div class="dot"></div>25–40% complete</li>
+          </ul>
+        </div>
+
+        <div>
+          <div class="tier-section-title">Characteristics</div>
+          <ul class="tier-list">
+            <li><div class="dot"></div>Dependencies still being defined</li>
+            <li><div class="dot"></div>Higher execution and customer risk</li>
+            <li><div class="dot"></div>Not suitable for near-term forecasting</li>
+          </ul>
+        </div>
+
+        <div class="confidence-bar-wrap">
+          <div class="confidence-label">
+            <span>Confidence</span>
+            <span style="color: #7b7f9e; font-weight: 700;">40–60%</span>
+          </div>
+          <div class="confidence-bar">
+            <div class="confidence-fill" style="width: 50%;"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- FORECAST STRUCTURE -->
+  <div class="section">
+    <div class="section-label">Monthly View</div>
+    <div class="section-title">📊 Forecast Structure</div>
+    <div class="section-divider"></div>
+    <div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden;">
+      <table class="structure-table">
+        <thead>
+          <tr>
+            <th>Tier</th>
+            <th>Label</th>
+            <th>Description</th>
+            <th>Confidence</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="tier-chip" style="color:#00d4aa; border-color:#00d4aa;">30-Day</span></td>
+            <td style="font-weight:700; color:#fff;">Commit</td>
+            <td>High-confidence activations — all gates passed, ready to launch</td>
+            <td style="color:#00d4aa; font-weight:700;">80–90%+</td>
+          </tr>
+          <tr>
+            <td><span class="tier-chip" style="color:#ffa94d; border-color:#ffa94d;">60-Day</span></td>
+            <td style="font-weight:700; color:#fff;">Upside</td>
+            <td>Pull-forward candidates — progressing well, some risk remains</td>
+            <td style="color:#ffa94d; font-weight:700;">60–80%</td>
+          </tr>
+          <tr>
+            <td><span class="tier-chip" style="color:#7b7f9e; border-color:#7b7f9e;">90-Day</span></td>
+            <td style="font-weight:700; color:#fff;">Pipeline</td>
+            <td>Future activations — early stage, not near-term forecastable</td>
+            <td style="color:#7b7f9e; font-weight:700;">40–60%</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- GOVERNANCE -->
+  <div class="section">
+    <div class="section-label">Process</div>
+    <div class="section-title">🔒 Forecast Governance</div>
+    <div class="section-divider"></div>
+    <div class="governance-grid">
+      <div class="gov-card">
+        <div class="gov-icon">🔄</div>
+        <div class="gov-title">Weekly Revalidation</div>
+        <div class="gov-desc">All clients in the forecast are revalidated every week — no stale entries.</div>
+      </div>
+      <div class="gov-card">
+        <div class="gov-icon">🚫</div>
+        <div class="gov-title">No Exceptions Rule</div>
+        <div class="gov-desc">30-day inclusion requires all gates passed. Now being enforced with no exceptions.</div>
+      </div>
+      <div class="gov-card">
+        <div class="gov-icon">👤</div>
+        <div class="gov-title">Single Owner</div>
+        <div class="gov-desc">Every client in the forecast has one accountable owner. No shared ownership.</div>
+      </div>
+      <div class="gov-card">
+        <div class="gov-icon">📋</div>
+        <div class="gov-title">Fact-Based Only</div>
+        <div class="gov-desc">No "heroics." No counting on client engagement. All inclusion must be fact-based.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LESSONS LEARNED -->
+  <div class="section">
+    <div class="section-label">Continuous Improvement</div>
+    <div class="section-title">💡 Key Improvements — Jan–Feb 2026</div>
+    <div class="section-divider"></div>
+    <div class="lessons-card">
+      <div class="lessons-label">Lessons Learned</div>
+      <div class="lessons-title">What changed and why</div>
+
+      <div class="lesson-item">
+        <div class="lesson-icon">📐</div>
+        <div class="lesson-text">
+          <strong>Milestone-based inclusion replaced progress % gating.</strong> Forecast inclusion is now based on detailed milestone completion, giving more visibility into actual readiness rather than a misleading overall progress number.
+        </div>
+      </div>
+
+      <div class="lesson-item">
+        <div class="lesson-icon">🎯</div>
+        <div class="lesson-text">
+          <strong>Critical milestone completion is now required — not optional.</strong> Implementing a hard gate on critical path items eliminated premature forecasting and significantly improved accuracy. Data imports and product catalog must be done.
+        </div>
+      </div>
+
+      <div class="lesson-item">
+        <div class="lesson-icon">⚠️</div>
+        <div class="lesson-text">
+          <strong>No more relying on heroics or client responsiveness.</strong> The team needs to stop leaning on last-minute effort or optimistic client engagement assumptions. Forecast entries must be fact-based and defensible at the time of entry.
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  ⚡ Rev.io Intelligence Stack · Activation PSA Forecast Methodology · March 2026
+</div>
+
+</body>
+</html>

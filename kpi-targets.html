@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rev.io PSA — Onboarding KPI Targets 2026</title>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --surface2: #21253a;
+      --surface3: #262a3e;
+      --accent: #6c63ff;
+      --accent2: #00d4aa;
+      --warn: #ffa94d;
+      --danger: #ff6b6b;
+      --muted: #7b7f9e;
+      --text: #e8eaf6;
+      --text-dim: #b0b4cc;
+      --border: rgba(255,255,255,0.07);
+      --radius: 14px;
+      --radius-sm: 8px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      font-size: 15px;
+      line-height: 1.65;
+    }
+
+    /* HERO */
+    .hero {
+      background: linear-gradient(135deg, #0d1f1a 0%, #0f1f35 50%, #0f1117 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 60px 24px 50px;
+      text-align: center;
+    }
+    .hero-eyebrow { font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--accent2); margin-bottom: 16px; }
+    .hero h1 { font-size: clamp(24px, 5vw, 40px); font-weight: 800; line-height: 1.15; letter-spacing: -0.5px; margin-bottom: 14px; }
+    .hero h1 span { color: var(--accent2); }
+    .hero-sub { font-size: clamp(14px, 2.5vw, 17px); color: var(--text-dim); max-width: 660px; margin: 0 auto 32px; }
+    .hero-stats { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+    .hero-stat { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px 22px; text-align: center; }
+    .hero-stat-val { font-size: 22px; font-weight: 800; color: var(--accent2); line-height: 1.2; }
+    .hero-stat-lbl { font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 3px; }
+
+    /* LAYOUT */
+    .content { max-width: 1000px; margin: 0 auto; padding: 0 20px 80px; }
+    .section { margin-top: 52px; }
+    .section-label { font-size: 11px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
+    .section-title { font-size: clamp(18px, 3.5vw, 24px); font-weight: 700; margin-bottom: 4px; }
+    .section-divider { width: 40px; height: 3px; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 2px; margin: 12px 0 22px; }
+    .section-desc { color: var(--text-dim); font-size: 14px; margin-bottom: 24px; }
+
+    /* PRIORITY CARDS */
+    .priority-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; margin-bottom: 8px; }
+    .priority-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 22px;
+      position: relative;
+      overflow: hidden;
+    }
+    .priority-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--pc-color, var(--accent2)); }
+    .priority-card-num { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+    .priority-card-kpi { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+    .priority-card-target { font-size: 24px; font-weight: 800; color: var(--accent2); line-height: 1.1; margin-bottom: 6px; }
+    .priority-card-why { font-size: 12px; color: var(--text-dim); line-height: 1.5; }
+
+    /* KPI TABLE */
+    .kpi-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 8px; }
+    .kpi-table thead tr { background: rgba(108,99,255,0.07); }
+    .kpi-table th {
+      text-align: left; padding: 10px 14px;
+      font-size: 11px; font-weight: 700; letter-spacing: 0.8px;
+      text-transform: uppercase; color: var(--muted);
+      border-bottom: 1px solid var(--border);
+    }
+    .kpi-table td { padding: 12px 14px; border-bottom: 1px solid rgba(255,255,255,0.04); vertical-align: top; line-height: 1.5; }
+    .kpi-table tbody tr:hover td { background: rgba(108,99,255,0.025); }
+    .kpi-table td:first-child { width: 36px; text-align: center; font-size: 17px; }
+    .kpi-table td:nth-child(2) { color: var(--text); font-weight: 500; }
+    .kpi-table td.baseline { color: var(--danger); font-weight: 600; font-size: 13px; }
+    .kpi-table td.target { color: var(--accent2); font-weight: 700; font-size: 14px; }
+    .kpi-table td.notes { color: var(--muted); font-size: 12px; }
+
+    /* PROGRESS BAR */
+    .bar-wrap { background: var(--surface2); border-radius: 4px; height: 6px; margin-top: 6px; overflow: hidden; }
+    .bar { height: 6px; border-radius: 4px; background: linear-gradient(90deg, var(--accent), var(--accent2)); }
+
+    /* STAR BADGE */
+    .star { display: inline-block; background: rgba(255,169,77,0.15); color: var(--warn); border-radius: 4px; padding: 1px 7px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-left: 6px; vertical-align: middle; }
+
+    /* INSIGHT BOX */
+    .insight-box { background: rgba(0,212,170,0.05); border: 1px solid rgba(0,212,170,0.15); border-radius: var(--radius-sm); padding: 18px 22px; margin-top: 28px; }
+    .insight-box-title { font-size: 13px; font-weight: 700; color: var(--accent2); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .insight-box p { font-size: 13px; color: var(--text-dim); line-height: 1.6; }
+    .insight-box strong { color: var(--text); }
+
+    /* CATEGORY HEADER ROW */
+    .cat-row td { background: rgba(108,99,255,0.06) !important; color: var(--accent) !important; font-size: 11px !important; font-weight: 700 !important; text-transform: uppercase !important; letter-spacing: 1.5px !important; padding: 8px 14px !important; border-bottom: 1px solid var(--border) !important; }
+
+    .footer { text-align: center; padding: 32px 24px; font-size: 12px; color: var(--muted); border-top: 1px solid var(--border); }
+
+    @media (max-width: 640px) {
+      .kpi-table td.notes { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-eyebrow">Rev.io PSA · Onboarding Transformation · Year 1</div>
+  <h1>Annual KPI <span>Targets 2026</span></h1>
+  <p class="hero-sub">Baseline today vs. Year 1 targets across time, pre-configuration, SA performance, client experience, and automation pipeline health.</p>
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <div class="hero-stat-val">~60 days</div>
+      <div class="hero-stat-lbl">Avg. Go-Live Today</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-val">1–6 wks</div>
+      <div class="hero-stat-lbl">Year 1 Target</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-val">~10%</div>
+      <div class="hero-stat-lbl">Pre-Config at KO Today</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-val">≥60%</div>
+      <div class="hero-stat-lbl">Pre-Config Target</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-val">14–23</div>
+      <div class="hero-stat-lbl">SA Score Today (/ 100)</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-val">≥60</div>
+      <div class="hero-stat-lbl">SA Score Target</div>
+    </div>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- PRIORITY 4 -->
+  <div class="section">
+    <div class="section-label">Section 01</div>
+    <div class="section-title">⭐ Top 4 Priority KPIs</div>
+    <div class="section-divider"></div>
+    <p class="section-desc">If you're presenting to leadership, lead with these. They're the most visible, most measurable, and most directly tied to client satisfaction and SA capacity.</p>
+
+    <div class="priority-grid">
+      <div class="priority-card" style="--pc-color: var(--accent2);">
+        <div class="priority-card-num">Priority 1</div>
+        <div class="priority-card-kpi">Days to Go-Live by Tier</div>
+        <div class="priority-card-target">1–6 wks</div>
+        <div class="priority-card-why">Was ~60 days for everything. Simple clients live in 1 week. Most visible metric to leadership and clients alike.</div>
+      </div>
+      <div class="priority-card" style="--pc-color: var(--accent);">
+        <div class="priority-card-num">Priority 2</div>
+        <div class="priority-card-kpi">SA Methodology Score</div>
+        <div class="priority-card-target">≥60 / 100</div>
+        <div class="priority-card-why">Fireflies tracks this automatically. Today: 14–23. The leading indicator of onboarding quality — if this moves, everything else follows.</div>
+      </div>
+      <div class="priority-card" style="--pc-color: var(--warn);">
+        <div class="priority-card-num">Priority 3</div>
+        <div class="priority-card-kpi">Sales Brief Completion at Close</div>
+        <div class="priority-card-target">≥85%</div>
+        <div class="priority-card-why">Currently ~0%. The forcing function for everything downstream. SF validation rules make this enforceable without asking nicely.</div>
+      </div>
+      <div class="priority-card" style="--pc-color: var(--danger);">
+        <div class="priority-card-num">Priority 4</div>
+        <div class="priority-card-kpi">KO Calls Re-Collecting Sales Data</div>
+        <div class="priority-card-target">≤20%</div>
+        <div class="priority-card-why">Today 84–90% of every call re-asks what Sales already knew. Getting this below 20% is the clearest proof the pipeline is working.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FULL KPI TABLE -->
+  <div class="section">
+    <div class="section-label">Section 02</div>
+    <div class="section-title">📊 Full KPI Dashboard</div>
+    <div class="section-divider"></div>
+
+    <table class="kpi-table">
+      <thead>
+        <tr>
+          <th></th>
+          <th>KPI</th>
+          <th>Baseline Today</th>
+          <th>Year 1 Target</th>
+          <th>How We Measure</th>
+        </tr>
+      </thead>
+      <tbody>
+
+        <!-- TIME & EFFICIENCY -->
+        <tr class="cat-row"><td colspan="5">⏱ Time &amp; Efficiency</td></tr>
+
+        <tr>
+          <td>🟢</td>
+          <td>Avg. days to go-live — Simple <span class="star">Priority</span></td>
+          <td class="baseline">~60 days</td>
+          <td class="target">≤7 days</td>
+          <td class="notes">No data import, no token migration, no integrations. Jump Starts complete the engagement.</td>
+        </tr>
+        <tr>
+          <td>🔵</td>
+          <td>Avg. days to go-live — Medium</td>
+          <td class="baseline">~60 days</td>
+          <td class="target">≤21 days</td>
+          <td class="notes">1 system import or token migration. Primary variable: client data delivery speed.</td>
+        </tr>
+        <tr>
+          <td>🟡</td>
+          <td>Avg. days to go-live — Complex</td>
+          <td class="baseline">~60 days</td>
+          <td class="target">≤42 days</td>
+          <td class="notes">Multi-system import, multiple integrations. SA assesses at end of JS2 and plans accordingly.</td>
+        </tr>
+        <tr>
+          <td>⚡</td>
+          <td>Time from close to kickoff</td>
+          <td class="baseline">Variable — days</td>
+          <td class="target">Same day / next day</td>
+          <td class="notes">CEO mandate already set. Tracked via Opportunity.Kickoff_Call_Date__c vs. CloseDate.</td>
+        </tr>
+        <tr>
+          <td>🕐</td>
+          <td>Avg. SA hours per onboarding</td>
+          <td class="baseline">~13 hrs</td>
+          <td class="target">≤8 hrs</td>
+          <td class="notes">Derived from 566 calls / ~44 clients. Jump Start model replaces open-ended weekly sessions.</td>
+        </tr>
+
+        <!-- PRE-CONFIG & DATA QUALITY -->
+        <tr class="cat-row"><td colspan="5">🎯 Pre-Configuration &amp; Data Quality</td></tr>
+
+        <tr>
+          <td>⚙️</td>
+          <td>Instance pre-config % at kickoff</td>
+          <td class="baseline">~10% default</td>
+          <td class="target">≥60%</td>
+          <td class="notes">SA survey at start of JS1 — what was already built vs. what needed to be done from scratch.</td>
+        </tr>
+        <tr>
+          <td>📋</td>
+          <td>Sales Brief completion rate at close <span class="star">Priority</span></td>
+          <td class="baseline">~0%</td>
+          <td class="target">≥85%</td>
+          <td class="notes">SF validation rules on Closed-Won. Tracked via brief fields populated / total fields.</td>
+        </tr>
+        <tr>
+          <td>🔑</td>
+          <td>Core 8 capture rate per deal</td>
+          <td class="baseline">Unknown</td>
+          <td class="target">≥90%</td>
+          <td class="notes">Automated check: how many of the 8 required fields are non-null at time of brief generation.</td>
+        </tr>
+        <tr>
+          <td>❓</td>
+          <td>Avg. gaps per brief requiring SA follow-up</td>
+          <td class="baseline">~8 (the whole brief)</td>
+          <td class="target">≤3</td>
+          <td class="notes">Counted automatically at brief generation — fields still null after SF pull + transcript enrichment.</td>
+        </tr>
+
+        <!-- SA PERFORMANCE -->
+        <tr class="cat-row"><td colspan="5">🏆 SA Performance</td></tr>
+
+        <tr>
+          <td>📈</td>
+          <td>SA methodology score (early-stage) <span class="star">Priority</span></td>
+          <td class="baseline">14–23 / 100</td>
+          <td class="target">≥60 / 100</td>
+          <td class="notes">Scored from Fireflies transcripts — structured questions asked, pre-work confirmed, platform navigation vs. re-discovery time.</td>
+        </tr>
+        <tr>
+          <td>🔁</td>
+          <td>% KO calls re-collecting Sales data <span class="star">Priority</span></td>
+          <td class="baseline">84–90%</td>
+          <td class="target">≤20%</td>
+          <td class="notes">Fireflies transcript analysis — flag calls where "What PSA are you on?" / "How many users?" appear in session 1.</td>
+        </tr>
+        <tr>
+          <td>👥</td>
+          <td>SA capacity — clients per SA per month</td>
+          <td class="baseline">Baseline TBD</td>
+          <td class="target">+30% vs. baseline</td>
+          <td class="notes">Freed by eliminating re-discovery and open-ended session structure. Measure after 90 days of Jump Start model.</td>
+        </tr>
+
+        <!-- CLIENT EXPERIENCE -->
+        <tr class="cat-row"><td colspan="5">😊 Client Experience</td></tr>
+
+        <tr>
+          <td>🌟</td>
+          <td>Client "felt known at kickoff" — positive</td>
+          <td class="baseline">Low (blank instance)</td>
+          <td class="target">≥80%</td>
+          <td class="notes">1-question pulse survey sent at end of JS1: "Did you feel Rev.io already understood your business before today's session?"</td>
+        </tr>
+        <tr>
+          <td>📂</td>
+          <td>Data import CSV delivered before JS2</td>
+          <td class="baseline">Rarely — mid-engagement</td>
+          <td class="target">≥70% of Medium/Complex</td>
+          <td class="notes">Clock starts at close, not when SA first mentions the format. Tracked in Onboarding Tracker.</td>
+        </tr>
+        <tr>
+          <td>✅</td>
+          <td>Onboarding Tracker: On Track at end of JS2</td>
+          <td class="baseline">Unknown</td>
+          <td class="target">≥75%</td>
+          <td class="notes">SA formally assesses health at end of Jump Start 2. On Track = go-live path clear with no blockers.</td>
+        </tr>
+        <tr>
+          <td>⏸️</td>
+          <td>Clients on Hold or RTS at 60 days</td>
+          <td class="baseline">Unknown — quietly compounds</td>
+          <td class="target">≤10%</td>
+          <td class="notes">Structured Hold/RTS cadence prevents open-ended drift. Tracked in Onboarding Tracker.</td>
+        </tr>
+
+        <!-- PIPELINE HEALTH -->
+        <tr class="cat-row"><td colspan="5">🔌 Automation Pipeline Health</td></tr>
+
+        <tr>
+          <td>🤖</td>
+          <td>Closed-Won → brief auto-generated</td>
+          <td class="baseline">0%</td>
+          <td class="target">100%</td>
+          <td class="notes">Every Closed-Won triggers SF pull + Outreach/Fireflies scrape → brief. No manual step required.</td>
+        </tr>
+        <tr>
+          <td>☁️</td>
+          <td>SF Core 6 gap fields populated at close</td>
+          <td class="baseline">Low — routinely blank</td>
+          <td class="target">≥90%</td>
+          <td class="notes">Core 6: Requires_Data_Conversion, Kickoff_Date, Rev_io_Edition, X1_Concern, X1_Feature, RMM_Platform. Enforced via validation rules.</td>
+        </tr>
+        <tr>
+          <td>📓</td>
+          <td>Notion client page created at close</td>
+          <td class="baseline">0%</td>
+          <td class="target">100%</td>
+          <td class="notes">Pending Notion connection. Once live — every brief auto-pushes to the client's Notion page.</td>
+        </tr>
+
+      </tbody>
+    </table>
+
+    <div class="insight-box">
+      <div class="insight-box-title">💡 How to Read the Baseline</div>
+      <p>The ~60-day go-live and 14–23 SA methodology scores come from the <strong>566-call analysis</strong> (Nov 2025–Mar 2026). Several baselines are listed as "Unknown" — that's not a gap in the data, it's a gap in what we've been tracking. Setting these KPIs now means Year 1 establishes the baseline <em>and</em> moves the number simultaneously. The automation pipeline produces the measurement data as a byproduct of doing the work.</p>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  ⚡ Rev.io Intelligence Stack · PSA Onboarding KPI Targets · Year 1 · March 2026
+</div>
+
+</body>
+</html>

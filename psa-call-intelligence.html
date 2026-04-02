@@ -1,0 +1,1190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PSA Call Intelligence — Rev.io</title>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --surface2: #21253a;
+      --accent: #6c63ff;
+      --accent2: #00d4aa;
+      --warn: #ffa94d;
+      --danger: #ff6b6b;
+      --muted: #7b7f9e;
+      --text: #e8eaf6;
+      --text-dim: #b0b4cc;
+      --border: rgba(255,255,255,0.07);
+      --radius: 14px;
+      --radius-sm: 8px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      font-size: 15px;
+      line-height: 1.65;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      background: linear-gradient(135deg, #12142a 0%, #1a1040 50%, #0f1117 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 60px 24px 48px;
+      text-align: center;
+    }
+    .hero-eyebrow {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--accent2);
+      margin-bottom: 16px;
+    }
+    .hero h1 {
+      font-size: clamp(24px, 5vw, 42px);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.5px;
+      margin-bottom: 14px;
+    }
+    .hero h1 span { color: var(--accent); }
+    .hero-sub {
+      font-size: clamp(14px, 2.5vw, 18px);
+      color: var(--text-dim);
+      max-width: 560px;
+      margin: 0 auto 28px;
+      font-style: italic;
+    }
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+    }
+    .hero-tag {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 5px 14px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    /* ── LAYOUT ── */
+    .content {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 20px 80px;
+    }
+
+    /* ── SECTION LABELS ── */
+    .section { margin-top: 56px; }
+    .section-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+    .section-title {
+      font-size: clamp(18px, 3.5vw, 26px);
+      font-weight: 700;
+      margin-bottom: 4px;
+      line-height: 1.25;
+    }
+    .section-title .emoji { margin-right: 8px; }
+    .section-divider {
+      width: 40px;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      border-radius: 2px;
+      margin: 14px 0 24px;
+    }
+
+    /* ── STAT CARDS ── */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px 20px;
+      text-align: center;
+    }
+    .stat-num {
+      font-size: 36px;
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 4px;
+      color: var(--text);
+    }
+    .stat-num.accent { color: var(--accent); }
+    .stat-num.green { color: var(--accent2); }
+    .stat-num.warn { color: var(--warn); }
+    .stat-label {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* ── ALERT BANNERS ── */
+    .alert-stack { display: flex; flex-direction: column; gap: 10px; margin-bottom: 0; }
+    .alert-banner {
+      border-radius: var(--radius-sm);
+      padding: 14px 18px;
+      font-size: 13px;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+    .alert-success {
+      background: rgba(0,212,170,0.08);
+      border: 1px solid rgba(0,212,170,0.2);
+    }
+    .alert-warn {
+      background: rgba(255,169,77,0.08);
+      border: 1px solid rgba(255,169,77,0.2);
+    }
+    .alert-danger {
+      background: rgba(255,107,107,0.08);
+      border: 1px solid rgba(255,107,107,0.25);
+    }
+    .alert-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+    .alert-body { color: var(--text-dim); }
+    .alert-body strong { color: var(--text); }
+    .alert-success .alert-label { color: var(--accent2); font-weight: 700; margin-bottom: 2px; font-size: 12px; }
+    .alert-warn .alert-label { color: var(--warn); font-weight: 700; margin-bottom: 2px; font-size: 12px; }
+    .alert-danger .alert-label { color: var(--danger); font-weight: 700; margin-bottom: 2px; font-size: 12px; }
+
+    /* ── SA PROFILE CARDS ── */
+    .sa-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+    }
+    .sa-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+    }
+    .sa-card.graduated {
+      border-color: rgba(0,212,170,0.25);
+    }
+    .sa-name {
+      font-weight: 800;
+      font-size: 15px;
+      margin-bottom: 4px;
+      color: var(--text);
+    }
+    .sa-badge {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      background: rgba(0,212,170,0.15);
+      color: var(--accent2);
+      border: 1px solid rgba(0,212,170,0.3);
+      border-radius: 10px;
+      padding: 1px 8px;
+      margin-bottom: 14px;
+    }
+    .sa-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .sa-stat-item { text-align: center; }
+    .sa-stat-num { font-size: 18px; font-weight: 800; color: var(--text); }
+    .sa-stat-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+    .sa-talk-bar {
+      margin-bottom: 12px;
+    }
+    .sa-talk-label { font-size: 11px; color: var(--muted); margin-bottom: 5px; }
+    .sa-talk-track {
+      height: 8px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 4px;
+      overflow: hidden;
+      position: relative;
+    }
+    .sa-talk-fill {
+      height: 100%;
+      border-radius: 4px;
+      background: var(--accent);
+    }
+    .sa-talk-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      margin-top: 3px;
+    }
+    .sa-talk-sa { color: var(--accent); font-weight: 700; }
+    .sa-talk-client { color: var(--accent2); font-weight: 700; }
+    .sa-sentiment {
+      display: flex;
+      gap: 8px;
+      font-size: 12px;
+    }
+    .sentiment-pos {
+      background: rgba(0,212,170,0.12);
+      color: var(--accent2);
+      border-radius: 4px;
+      padding: 2px 8px;
+      font-weight: 700;
+    }
+    .sentiment-neg {
+      background: rgba(255,107,107,0.12);
+      color: var(--danger);
+      border-radius: 4px;
+      padding: 2px 8px;
+      font-weight: 700;
+    }
+    .sentiment-flag {
+      background: rgba(255,169,77,0.12);
+      color: var(--warn);
+      border-radius: 4px;
+      padding: 2px 8px;
+      font-weight: 700;
+    }
+
+    /* ── CHARTS PLACEHOLDER ── */
+    .chart-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+    }
+    .chart-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+    }
+    .chart-title {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .chart-subtitle {
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 18px;
+    }
+    /* Mini bar chart */
+    .mini-bar-group { display: flex; flex-direction: column; gap: 10px; }
+    .mini-bar-row { display: flex; align-items: center; gap: 10px; font-size: 12px; }
+    .mini-bar-label { min-width: 70px; color: var(--text-dim); font-weight: 600; }
+    .mini-bar-track {
+      flex: 1;
+      height: 20px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 4px;
+      overflow: hidden;
+      position: relative;
+    }
+    .mini-bar-fill {
+      height: 100%;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      padding-left: 8px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #fff;
+      transition: width 0.4s ease;
+    }
+    .mini-bar-val { min-width: 28px; text-align: right; font-weight: 700; font-size: 12px; }
+
+    /* Monthly volume chart */
+    .month-chart { display: flex; flex-direction: column; gap: 7px; }
+    .month-row { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+    .month-label { min-width: 36px; color: var(--muted); font-size: 11px; }
+    .month-bars { display: flex; gap: 3px; flex: 1; align-items: flex-end; height: 40px; }
+    .month-bar-wrap { display: flex; flex-direction: column; align-items: center; gap: 2px; flex: 1; }
+    .month-bar {
+      width: 100%;
+      border-radius: 3px 3px 0 0;
+      min-height: 3px;
+    }
+
+    /* Sentiment chart bars */
+    .sentiment-chart { display: flex; flex-direction: column; gap: 12px; }
+    .senti-row { }
+    .senti-label { font-size: 12px; color: var(--text-dim); margin-bottom: 5px; font-weight: 600; }
+    .senti-bars { display: flex; gap: 4px; height: 10px; border-radius: 5px; overflow: hidden; }
+    .senti-pos { background: var(--accent2); }
+    .senti-neg { background: var(--danger); }
+    .senti-neutral { background: rgba(255,255,255,0.08); flex: 1; }
+    .senti-legend {
+      display: flex; gap: 14px; margin-top: 12px; font-size: 11px;
+    }
+    .senti-leg-item { display: flex; align-items: center; gap: 5px; color: var(--muted); }
+    .senti-leg-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+    /* ── BADGES ── */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      border-radius: 20px;
+      padding: 3px 10px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      white-space: nowrap;
+    }
+    .badge-green {
+      background: rgba(0, 212, 170, 0.15);
+      color: var(--accent2);
+      border: 1px solid rgba(0, 212, 170, 0.3);
+    }
+    .badge-yellow {
+      background: rgba(255, 169, 77, 0.15);
+      color: var(--warn);
+      border: 1px solid rgba(255, 169, 77, 0.3);
+    }
+    .badge-red {
+      background: rgba(255, 107, 107, 0.15);
+      color: var(--danger);
+      border: 1px solid rgba(255, 107, 107, 0.3);
+    }
+
+    /* ── AT-RISK CARDS ── */
+    .risk-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      margin-bottom: 14px;
+      position: relative;
+      overflow: hidden;
+    }
+    .risk-card::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+    }
+    .risk-card.escalate::before { background: var(--danger); }
+    .risk-card.watch::before { background: var(--warn); }
+    .risk-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 14px;
+      gap: 12px;
+    }
+    .risk-company { font-size: 16px; font-weight: 800; color: var(--text); }
+    .risk-meta { font-size: 11px; color: var(--muted); margin-top: 3px; }
+    .risk-body { color: var(--text-dim); font-size: 13px; margin-bottom: 14px; }
+    .risk-bullets { list-style: none; padding: 0; }
+    .risk-bullets li {
+      font-size: 13px;
+      color: var(--text-dim);
+      padding: 4px 0;
+      padding-left: 18px;
+      position: relative;
+    }
+    .risk-bullets li::before {
+      content: "→";
+      position: absolute;
+      left: 0;
+      color: var(--danger);
+      font-size: 12px;
+    }
+    .risk-action {
+      background: rgba(255,107,107,0.08);
+      border: 1px solid rgba(255,107,107,0.2);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-top: 12px;
+    }
+    .risk-action strong { color: var(--danger); }
+    .risk-card.watch .risk-bullets li::before { color: var(--warn); }
+    .risk-card.watch .risk-action {
+      background: rgba(255,169,77,0.08);
+      border-color: rgba(255,169,77,0.2);
+    }
+    .risk-card.watch .risk-action strong { color: var(--warn); }
+
+    /* ── TONY SECTION ── */
+    .dual-role-banner {
+      background: linear-gradient(135deg, rgba(108,99,255,0.1), rgba(0,212,170,0.07));
+      border: 1px solid rgba(108, 99, 255, 0.2);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      margin-bottom: 20px;
+      font-size: 13px;
+      color: var(--text-dim);
+    }
+    .dual-role-banner strong { color: var(--text); }
+    .tony-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+    .tony-stat {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      text-align: center;
+    }
+    .tony-stat-num { font-size: 32px; font-weight: 800; color: var(--accent); margin-bottom: 2px; }
+    .tony-stat-num.total { color: var(--accent2); }
+    .tony-stat-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+    .call-type-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .call-type-item {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      text-align: center;
+    }
+    .call-type-num { font-size: 22px; font-weight: 800; color: var(--text); }
+    .call-type-label { font-size: 11px; color: var(--muted); }
+    .performance-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    .perf-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+    }
+    .perf-title { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; }
+    .perf-highlight { font-size: 13px; color: var(--accent2); font-style: italic; margin-top: 8px; }
+
+    /* ── GRADUATION TABLE ── */
+    .grad-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    .grad-table th {
+      text-align: left;
+      padding: 10px 14px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
+      background: var(--surface2);
+    }
+    .grad-table td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-dim);
+      vertical-align: middle;
+    }
+    .grad-table tr:last-child td { border-bottom: none; }
+    .grad-table tr:hover td { background: rgba(255,255,255,0.02); }
+    .table-wrapper {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      overflow-x: auto;
+      margin-bottom: 20px;
+    }
+
+    .finding-box {
+      background: linear-gradient(135deg, rgba(108,99,255,0.07), rgba(0,212,170,0.05));
+      border: 1px solid rgba(108,99,255,0.2);
+      border-radius: var(--radius);
+      padding: 20px 22px;
+      margin-top: 16px;
+    }
+    .finding-box h4 {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: var(--accent);
+    }
+
+    /* ── RECOMMENDATIONS ── */
+    .rec-list { display: flex; flex-direction: column; gap: 14px; }
+    .rec-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+    .rec-num {
+      background: var(--accent);
+      color: #fff;
+      font-weight: 800;
+      font-size: 14px;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .rec-num.danger { background: var(--danger); }
+    .rec-num.warn { background: var(--warn); color: #1a1d27; }
+    .rec-num.green { background: var(--accent2); color: #1a1d27; }
+    .rec-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+    .rec-body { font-size: 13px; color: var(--text-dim); }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 28px 24px;
+      text-align: center;
+    }
+    .footer-brand {
+      font-weight: 800;
+      font-size: 14px;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+    .footer-meta { font-size: 12px; color: var(--muted); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 600px) {
+      .hero { padding: 40px 16px 32px; }
+      .performance-row { grid-template-columns: 1fr; }
+      .sa-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── HERO ── -->
+<div class="hero">
+  <div class="hero-eyebrow">⚡ Rev.io Intelligence Stack</div>
+  <h1>PSA <span>Call Intelligence</span><br>Onboarding Team Analysis</h1>
+  <div class="hero-sub">Sentiment, talk ratios, at-risk accounts, and graduation signals — Nov 2025 to Mar 2026</div>
+  <div class="hero-meta">
+    <span class="hero-tag">📞 610 total calls</span>
+    <span class="hero-tag">⏱️ 449 hours analyzed</span>
+    <span class="hero-tag">👥 4 Solutions Analysts</span>
+    <span class="hero-tag">📅 Nov 2025 – Mar 2026</span>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- ── SECTION 1: EXECUTIVE SUMMARY ── -->
+  <div class="section">
+    <div class="section-label">Section 01</div>
+    <div class="section-title"><span class="emoji">📊</span>Executive Summary</div>
+    <div class="section-divider"></div>
+
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-num accent">610</div>
+        <div class="stat-label">Total Calls</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">449</div>
+        <div class="stat-label">Total Hours</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num green">33%</div>
+        <div class="stat-label">Avg Positive Sentiment</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num warn">49%</div>
+        <div class="stat-label">Avg Client Talk Time</div>
+      </div>
+    </div>
+
+    <div class="alert-stack">
+      <div class="alert-banner alert-success">
+        <div class="alert-icon">✅</div>
+        <div class="alert-body">
+          <div class="alert-label">SUCCESS</div>
+          <strong>Nicole's graduation cohort outperforms.</strong> 7 graduated clients average 42% positive sentiment vs 33% for active clients — and Nicole talks 5% less than them, signalling healthier dynamics.
+        </div>
+      </div>
+      <div class="alert-banner alert-warn">
+        <div class="alert-icon">⚠️</div>
+        <div class="alert-body">
+          <div class="alert-label">WATCH</div>
+          <strong>High SA talk ratios across the team.</strong> Nicole (57%) and Kegan (54%) dominate call airtime. Graduated clients correlate with lower SA talk% — this pattern is worth coaching toward.
+        </div>
+      </div>
+      <div class="alert-banner alert-warn">
+        <div class="alert-icon">⚠️</div>
+        <div class="alert-body">
+          <div class="alert-label">WATCH</div>
+          <strong>Newport Network stalling under Halle.</strong> 27 calls, 4+ months, no graduation signal. Positive sentiment has dropped from ~35% to ~20% in the last 3 calls. Immediate escalation warranted.
+        </div>
+      </div>
+      <div class="alert-banner alert-danger">
+        <div class="alert-icon">🚨</div>
+        <div class="alert-body">
+          <div class="alert-label">ESCALATE</div>
+          <strong>Midwest Specialists showing elevated negative sentiment.</strong> 10% negative vs 6% team baseline across 8 calls with Kegan. Longest session was 94 minutes — complexity likely contributing.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SECTION 2: SA PROFILES ── -->
+  <div class="section">
+    <div class="section-label">Section 02</div>
+    <div class="section-title"><span class="emoji">👥</span>SA Profiles</div>
+    <div class="section-divider"></div>
+
+    <div class="sa-grid">
+
+      <!-- Nicole Hills -->
+      <div class="sa-card graduated">
+        <div class="sa-name">Nicole Hills</div>
+        <div class="sa-badge">7 Graduated</div>
+        <div class="sa-stats">
+          <div class="sa-stat-item">
+            <div class="sa-stat-num">227</div>
+            <div class="sa-stat-label">Calls</div>
+          </div>
+          <div class="sa-stat-item">
+            <div class="sa-stat-num">178h</div>
+            <div class="sa-stat-label">Hours</div>
+          </div>
+          <div class="sa-stat-item">
+            <div class="sa-stat-num">47m</div>
+            <div class="sa-stat-label">Avg Dur.</div>
+          </div>
+        </div>
+        <div class="sa-talk-bar">
+          <div class="sa-talk-label">Talk Time Split</div>
+          <div class="sa-talk-track">
+            <div class="sa-talk-fill" style="width:57%"></div>
+          </div>
+          <div class="sa-talk-labels">
+            <span class="sa-talk-sa">SA 57%</span>
+            <span class="sa-talk-client">Client 43%</span>
+          </div>
+        </div>
+        <div class="sa-sentiment">
+          <span class="sentiment-pos">33% Positive</span>
+          <span class="sentiment-neg">6% Negative</span>
+        </div>
+        <div style="margin-top:8px;">
+          <span class="sentiment-flag" style="font-size:11px;">57 Flagged &gt;70%</span>
+        </div>
+      </div>
+
+      <!-- Kegan Ehlers -->
+      <div class="sa-card">
+        <div class="sa-name">Kegan Ehlers</div>
+        <div style="height:24px; margin-bottom:14px;"></div>
+        <div class="sa-stats">
+          <div class="sa-stat-item">
+            <div class="sa-stat-num">167</div>
+            <div class="sa-stat-label">Calls</div>
+          </div>
+          <div class="sa-stat-item">
+            <div class="sa-stat-num">103h</div>
+            <div class="sa-stat-label">Hours</div>
+          </div>
+          <div class="sa-stat-item">
+            <div class="sa-stat-num">37m</div>
+            <div class="sa-stat-label">Avg Dur.</div>
+          </div>
+        </div>
+        <div class="sa-talk-bar">
+          <div class="sa-talk-label">Talk Time Split</div>
+          <div class="sa-talk-track">
+            <div class="sa-talk-fill" style="width:54%"></div>
+          </div>
+          <div class="sa-talk-labels">
+            <span class="sa-talk-sa">SA 54%</span>
+            <span class="sa-talk-client">Client 46%</span>
+          </div>
+        </div>
+        <div class="sa-sentiment">
+          <span class="sentiment-pos">33% Positive</span>
+          <span class="sentiment-neg">6% Negative</span>
+        </div>
+        <div style="margin-top:8px;">
+          <span class="sentiment-flag" style="font-size:11px;">45 Flagged &gt;70%</span>
+        </div>
+      </div>
+
+      <!-- Halle Taylor -->
+      <div class="sa-card">
+        <div class="sa-name">Halle Taylor</div>
+        <div style="height:24px; margin-bottom:14px;"></div>
+        <div class="sa-stats">
+          <div class="sa-stat-item">
+            <div class="sa-stat-num">134</div>
+            <div class="sa-stat-label">Calls</div>
+          </div>
+          <div class="sa-stat-item">
+            <div class="sa-stat-num">104h</div>
+            <div class="sa-stat-label">Hours</div>
+          </div>
+          <div class="sa-stat-item">
+            <div class="sa-stat-num">47m</div>
+            <div class="sa-stat-label">Avg Dur.</div>
+          </div>
+        </div>
+        <div class="sa-talk-bar">
+          <div class="sa-talk-label">Talk Time Split</div>
+          <div class="sa-talk-track">
+            <div class="sa-talk-fill" style="width:49%; background: var(--accent2);"></div>
+          </div>
+          <div class="sa-talk-labels">
+            <span class="sa-talk-sa">SA 49%</span>
+            <span class="sa-talk-client" style="color:var(--accent2);">Client 51%</span>
+          </div>
+        </div>
+        <div class="sa-sentiment">
+          <span class="sentiment-pos">31% Positive</span>
+          <span class="sentiment-neg">6% Negative</span>
+        </div>
+        <div style="margin-top:8px;">
+          <span class="sentiment-flag" style="font-size:11px;">21 Flagged &gt;70%</span>
+        </div>
+      </div>
+
+      <!-- Tony Mehner -->
+      <div class="sa-card">
+        <div class="sa-name">Tony Mehner</div>
+        <div style="font-size:11px; color:var(--warn); font-weight:700; margin-bottom:14px;">Non-demo (onboarding only)</div>
+        <div class="sa-stats">
+          <div class="sa-stat-item">
+            <div class="sa-stat-num">82</div>
+            <div class="sa-stat-label">Calls</div>
+          </div>
+          <div class="sa-stat-item">
+            <div class="sa-stat-num">64h</div>
+            <div class="sa-stat-label">Hours</div>
+          </div>
+          <div class="sa-stat-item">
+            <div class="sa-stat-num">47m</div>
+            <div class="sa-stat-label">Avg Dur.</div>
+          </div>
+        </div>
+        <div class="sa-talk-bar">
+          <div class="sa-talk-label">Talk Time Split</div>
+          <div class="sa-talk-track">
+            <div class="sa-talk-fill" style="width:42%; background: var(--accent2);"></div>
+          </div>
+          <div class="sa-talk-labels">
+            <span class="sa-talk-sa">SA 42%</span>
+            <span class="sa-talk-client" style="color:var(--accent2);">Client 58%</span>
+          </div>
+        </div>
+        <div class="sa-sentiment">
+          <span class="sentiment-pos">36% Positive</span>
+          <span class="sentiment-neg">6% Negative</span>
+        </div>
+        <div style="margin-top:8px;">
+          <span class="sentiment-flag" style="font-size:11px;">10 Flagged &gt;70%</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── SECTION 3: CHARTS ── -->
+  <div class="section">
+    <div class="section-label">Section 03</div>
+    <div class="section-title"><span class="emoji">📈</span>Call Volume &amp; Sentiment</div>
+    <div class="section-divider"></div>
+
+    <div class="chart-grid">
+
+      <!-- Monthly Volume -->
+      <div class="chart-card">
+        <div class="chart-title">Monthly Call Volume by SA</div>
+        <div class="chart-subtitle">Nov 2025 – Mar 2026 · *Mar partial</div>
+        <div class="mini-bar-group">
+          <div style="font-size:11px; color:var(--muted); margin-bottom:6px; display:flex; gap:14px;">
+            <span style="display:flex;align-items:center;gap:4px;"><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--accent);"></span>Nicole</span>
+            <span style="display:flex;align-items:center;gap:4px;"><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--accent2);"></span>Kegan</span>
+            <span style="display:flex;align-items:center;gap:4px;"><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--warn);"></span>Halle</span>
+            <span style="display:flex;align-items:center;gap:4px;"><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--muted);"></span>Tony</span>
+          </div>
+          <div class="mini-bar-row">
+            <span class="mini-bar-label">Nicole</span>
+            <div class="mini-bar-track">
+              <div class="mini-bar-fill" style="width:85%; background:var(--accent);">227 calls</div>
+            </div>
+          </div>
+          <div class="mini-bar-row">
+            <span class="mini-bar-label">Kegan</span>
+            <div class="mini-bar-track">
+              <div class="mini-bar-fill" style="width:62%; background:var(--accent2);">167 calls</div>
+            </div>
+          </div>
+          <div class="mini-bar-row">
+            <span class="mini-bar-label">Halle</span>
+            <div class="mini-bar-track">
+              <div class="mini-bar-fill" style="width:50%; background:var(--warn); color:#1a1d27;">134 calls</div>
+            </div>
+          </div>
+          <div class="mini-bar-row">
+            <span class="mini-bar-label">Tony</span>
+            <div class="mini-bar-track">
+              <div class="mini-bar-fill" style="width:31%; background:var(--muted);">82 calls</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SA Talk Time -->
+      <div class="chart-card">
+        <div class="chart-title">SA Talk Time Comparison</div>
+        <div class="chart-subtitle">Lower SA% = more client engagement</div>
+        <div class="mini-bar-group">
+          <div class="mini-bar-row">
+            <span class="mini-bar-label">Nicole</span>
+            <div class="mini-bar-track">
+              <div class="mini-bar-fill" style="width:57%; background:var(--danger);">57%</div>
+            </div>
+            <span class="mini-bar-val" style="color:var(--danger);">57%</span>
+          </div>
+          <div class="mini-bar-row">
+            <span class="mini-bar-label">Kegan</span>
+            <div class="mini-bar-track">
+              <div class="mini-bar-fill" style="width:54%; background:var(--warn); color:#1a1d27;">54%</div>
+            </div>
+            <span class="mini-bar-val" style="color:var(--warn);">54%</span>
+          </div>
+          <div class="mini-bar-row">
+            <span class="mini-bar-label">Halle</span>
+            <div class="mini-bar-track">
+              <div class="mini-bar-fill" style="width:49%; background:var(--accent2); color:#1a1d27;">49%</div>
+            </div>
+            <span class="mini-bar-val" style="color:var(--accent2);">49%</span>
+          </div>
+          <div class="mini-bar-row">
+            <span class="mini-bar-label">Tony</span>
+            <div class="mini-bar-track">
+              <div class="mini-bar-fill" style="width:42%; background:var(--accent2); color:#1a1d27;">42%</div>
+            </div>
+            <span class="mini-bar-val" style="color:var(--accent2);">42%</span>
+          </div>
+        </div>
+        <div style="margin-top:14px; background:rgba(0,212,170,0.08); border:1px solid rgba(0,212,170,0.15); border-radius:6px; padding:8px 12px; font-size:12px; color:var(--accent2);">
+          🏆 Tony has the best client talk ratio — 58% client-led
+        </div>
+      </div>
+
+      <!-- Sentiment by Call Type -->
+      <div class="chart-card" style="grid-column: 1 / -1;">
+        <div class="chart-title">Sentiment by Call Type</div>
+        <div class="chart-subtitle">Positive vs Negative % across call categories</div>
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:14px; margin-top:4px;">
+          <div>
+            <div class="senti-label">Check-ins</div>
+            <div class="senti-bars">
+              <div class="senti-pos" style="width:38%;"></div>
+              <div class="senti-neg" style="width:5%;"></div>
+              <div class="senti-neutral"></div>
+            </div>
+            <div style="font-size:11px; color:var(--muted); margin-top:3px;">38% pos · 5% neg</div>
+          </div>
+          <div>
+            <div class="senti-label">Training Sessions</div>
+            <div class="senti-bars">
+              <div class="senti-pos" style="width:35%;"></div>
+              <div class="senti-neg" style="width:6%;"></div>
+              <div class="senti-neutral"></div>
+            </div>
+            <div style="font-size:11px; color:var(--muted); margin-top:3px;">35% pos · 6% neg</div>
+          </div>
+          <div>
+            <div class="senti-label">General Working Sessions</div>
+            <div class="senti-bars">
+              <div class="senti-pos" style="width:31%;"></div>
+              <div class="senti-neg" style="width:7%;"></div>
+              <div class="senti-neutral"></div>
+            </div>
+            <div style="font-size:11px; color:var(--muted); margin-top:3px;">31% pos · 7% neg</div>
+          </div>
+          <div>
+            <div class="senti-label">Presales Demos (Tony)</div>
+            <div class="senti-bars">
+              <div class="senti-pos" style="width:38%;"></div>
+              <div class="senti-neg" style="width:5%;"></div>
+              <div class="senti-neutral"></div>
+            </div>
+            <div style="font-size:11px; color:var(--accent2); margin-top:3px; font-weight:700;">38% pos · 5% neg — Team high</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── SECTION 4: AT-RISK ── -->
+  <div class="section">
+    <div class="section-label">Section 04</div>
+    <div class="section-title"><span class="emoji">🚨</span>At-Risk Accounts</div>
+    <div class="section-divider"></div>
+
+    <!-- Newport Network -->
+    <div class="risk-card escalate">
+      <div class="risk-header">
+        <div>
+          <div class="risk-company">Newport Network</div>
+          <div class="risk-meta">SA: Halle Taylor · Active Nov 10, 2025 – Mar 5, 2026 (4+ months)</div>
+        </div>
+        <span class="badge badge-red">🚨 Escalate</span>
+      </div>
+      <div class="risk-body">
+        Sentiment declining — started at ~35% positive, now ~20% in last 3 calls. Client has never graduated.
+      </div>
+      <ul class="risk-bullets">
+        <li>Weekly cadence: 60min working session + 30min check-in</li>
+        <li>No completion signal after 4+ months</li>
+        <li>Consistent rhythm but no forward momentum</li>
+        <li>27 total calls with zero graduation signal</li>
+      </ul>
+      <div class="risk-action">
+        <strong>Recommended action:</strong> Escalate to manager. Reset expectations with a defined graduation milestone and timeline. Co-call with senior SA within 2 weeks.
+      </div>
+    </div>
+
+    <!-- Midwest Specialists -->
+    <div class="risk-card watch">
+      <div class="risk-header">
+        <div>
+          <div class="risk-company">Midwest Specialists</div>
+          <div class="risk-meta">SA: Kegan Ehlers · Active Jan 16 – Mar 6, 2026</div>
+        </div>
+        <span class="badge badge-yellow">⚠️ Watch</span>
+      </div>
+      <div class="risk-body">
+        10% negative sentiment vs 6% team baseline — consistently elevated throughout engagement.
+      </div>
+      <ul class="risk-bullets" style="--danger: var(--warn);">
+        <li style="--accent: var(--warn);">Longest session: 94 minutes (Feb 11) — complexity indicator</li>
+        <li>Still active — ongoing engagement</li>
+        <li>Technical depth may be driving friction</li>
+        <li>8 calls total with no drop in negative sentiment</li>
+      </ul>
+      <div class="risk-action">
+        <strong>Recommended action:</strong> Review call recordings for recurring pain points. Consider co-call with senior SA or escalation path.
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── SECTION 5: TONY ── -->
+  <div class="section">
+    <div class="section-label">Section 05</div>
+    <div class="section-title"><span class="emoji">🎯</span>Tony Mehner — Presales + Onboarding</div>
+    <div class="section-divider"></div>
+
+    <div class="dual-role-banner">
+      Tony operates in a <strong>dual role unique among the SA team</strong> — running presales demos alongside standard onboarding. His data above reflects onboarding calls only. Combined with demos, he's the most active caller on the team by raw volume.
+    </div>
+
+    <div class="tony-stats-grid">
+      <div class="tony-stat">
+        <div class="tony-stat-num">62</div>
+        <div class="tony-stat-label">Demo Calls</div>
+      </div>
+      <div class="tony-stat">
+        <div class="tony-stat-num">82</div>
+        <div class="tony-stat-label">Onboarding Calls</div>
+      </div>
+      <div class="tony-stat">
+        <div class="tony-stat-num total">144</div>
+        <div class="tony-stat-label">Total Calls</div>
+      </div>
+    </div>
+
+    <p style="font-size:13px; color:var(--muted); margin-bottom:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px;">Call Type Breakdown (Onboarding)</p>
+    <div class="call-type-grid">
+      <div class="call-type-item">
+        <div class="call-type-num">34</div>
+        <div class="call-type-label">Check-ins</div>
+      </div>
+      <div class="call-type-item">
+        <div class="call-type-num">28</div>
+        <div class="call-type-label">General</div>
+      </div>
+      <div class="call-type-item">
+        <div class="call-type-num">11</div>
+        <div class="call-type-label">Training</div>
+      </div>
+      <div class="call-type-item">
+        <div class="call-type-num">7</div>
+        <div class="call-type-label">Internal</div>
+      </div>
+      <div class="call-type-item">
+        <div class="call-type-num">2</div>
+        <div class="call-type-label">Other</div>
+      </div>
+    </div>
+
+    <div class="performance-row">
+      <div class="perf-card">
+        <div class="perf-title">Demo Performance</div>
+        <div class="sa-sentiment">
+          <span class="sentiment-pos" style="font-size:14px;">38% Positive</span>
+          <span class="sentiment-neg" style="font-size:14px;">5% Negative</span>
+        </div>
+        <div class="perf-highlight">Strong presales sentiment — highest positive rate on team</div>
+      </div>
+      <div class="perf-card">
+        <div class="perf-title">Onboarding Performance</div>
+        <div class="sa-sentiment">
+          <span class="sentiment-pos" style="font-size:14px;">36% Positive</span>
+          <span class="sentiment-neg" style="font-size:14px;">6% Negative</span>
+        </div>
+        <div class="perf-highlight">Above-team average — Tony's client talk ratio (58%) is the best on team</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── SECTION 6: GRADUATION ── -->
+  <div class="section">
+    <div class="section-label">Section 06</div>
+    <div class="section-title"><span class="emoji">🎓</span>Graduation Insights — Nicole Hills</div>
+    <div class="section-divider"></div>
+
+    <p style="color: var(--text-dim); font-size: 13px; margin-bottom: 18px;">
+      Analysis of Nicole's graduated clients (n=7) vs active non-graduated clients (n=100+). Graduated clients show measurably better outcomes across all indicators.
+    </p>
+
+    <div class="table-wrapper">
+      <table class="grad-table">
+        <thead>
+          <tr>
+            <th>Cohort</th>
+            <th>Clients</th>
+            <th>Avg Calls</th>
+            <th>Avg Positive</th>
+            <th>Avg Negative</th>
+            <th>SA Talk Dominance</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="badge badge-green">✅ Graduated</span></td>
+            <td style="font-weight:700; color:var(--text);">7</td>
+            <td style="color:var(--accent2); font-weight:700;">11 calls</td>
+            <td style="color:var(--accent2); font-weight:700;">42%</td>
+            <td>5%</td>
+            <td style="color:var(--accent2); font-size:12px;">+5% over client</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-yellow">🔄 Active (non-grad)</span></td>
+            <td style="font-weight:700; color:var(--text);">100+</td>
+            <td>8 calls</td>
+            <td>33%</td>
+            <td>6%</td>
+            <td style="color:var(--danger); font-size:12px;">+57% SA dominance</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="finding-box">
+      <h4>🔑 Key Insight</h4>
+      <p style="font-size:14px; color: var(--text-dim);">
+        Graduated clients received <strong style="color:var(--text);">3 more calls on average</strong>, had <strong style="color:var(--accent2);">9 points higher positive sentiment</strong>, and — critically — had Nicole talking only <strong style="color:var(--text);">5% more than them vs 57% more</strong> with active clients. 
+        <strong style="color:var(--accent2);">Lower SA talk% may be a graduation predictor worth tracking.</strong>
+      </p>
+    </div>
+  </div>
+
+  <!-- ── SECTION 7: RECOMMENDATIONS ── -->
+  <div class="section">
+    <div class="section-label">Section 07</div>
+    <div class="section-title"><span class="emoji">✅</span>Key Recommendations</div>
+    <div class="section-divider"></div>
+
+    <div class="rec-list">
+
+      <div class="rec-card">
+        <div class="rec-num danger">1</div>
+        <div>
+          <div class="rec-title">Escalate Newport Network immediately</div>
+          <div class="rec-body">Halle Taylor's client has 27 calls over 4+ months with declining sentiment (~20% positive in last 3 calls). Assign a graduation milestone date and co-call with a senior SA or manager within 2 weeks.</div>
+        </div>
+      </div>
+
+      <div class="rec-card">
+        <div class="rec-num warn">2</div>
+        <div>
+          <div class="rec-title">Investigate Midwest Specialists with Kegan</div>
+          <div class="rec-body">10% negative sentiment (vs 6% baseline) across 8 calls is a clear signal. Review recordings for recurring pain points — consider escalation path or additional technical resource.</div>
+        </div>
+      </div>
+
+      <div class="rec-card">
+        <div class="rec-num">3</div>
+        <div>
+          <div class="rec-title">Coach Nicole &amp; Kegan on talk ratio</div>
+          <div class="rec-body">Nicole (57% SA talk) and Kegan (54%) both over-dominate calls. Nicole's own graduation data shows lower SA talk% correlates with better outcomes. Run targeted coaching on listening and facilitation techniques.</div>
+        </div>
+      </div>
+
+      <div class="rec-card">
+        <div class="rec-num">4</div>
+        <div>
+          <div class="rec-title">Define graduation criteria and enforce it</div>
+          <div class="rec-body">Nicole has 7 graduated clients vs 100+ active — the ratio suggests graduation isn't happening systematically. Set explicit criteria (e.g., X calls + platform milestones) and track it as a KPI.</div>
+        </div>
+      </div>
+
+      <div class="rec-card">
+        <div class="rec-num green">5</div>
+        <div>
+          <div class="rec-title">Leverage Tony's presales model for onboarding</div>
+          <div class="rec-body">Tony has the best client talk ratio (58% client) and the highest positive sentiment in demos (38%). His facilitation style is worth documenting and sharing as a coaching template for the team.</div>
+        </div>
+      </div>
+
+      <div class="rec-card">
+        <div class="rec-num green">6</div>
+        <div>
+          <div class="rec-title">Track SA talk% as a leading indicator</div>
+          <div class="rec-body">The graduation data suggests SA talk% predicts client outcomes. Add this to ongoing Fireflies reporting alongside sentiment. Set a team target (e.g., ≤50% SA talk) and review monthly.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <div class="footer-brand">⚡ Rev.io Intelligence Stack</div>
+  <div class="footer-meta">PSA Call Intelligence · 610 calls · Nov 2025–Mar 2026 · Powered by Fireflies + Alfred</div>
+</footer>
+
+</body>
+</html>

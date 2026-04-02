@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Classic Billing Onboarding Analysis | Rev.io</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0f1117; color: #e0e0e0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; line-height: 1.6; }
+  .header { background: linear-gradient(135deg, #1a1d2e 0%, #0f1117 100%); border-bottom: 2px solid #6c63ff; padding: 48px 40px 36px; }
+  .header h1 { font-size: 2.2rem; color: #fff; font-weight: 700; margin-bottom: 8px; }
+  .header .subtitle { color: #9a9ab0; font-size: 0.95rem; }
+  .header .subtitle span { color: #6c63ff; font-weight: 600; }
+  .container { max-width: 1200px; margin: 0 auto; padding: 40px; }
+  h2 { font-size: 1.4rem; color: #fff; font-weight: 700; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #2a2d4a; }
+  h3 { font-size: 1.05rem; color: #c0b8ff; font-weight: 600; margin-bottom: 12px; }
+  .section { background: #1a1d2e; border: 1px solid #2a2d4a; border-radius: 12px; padding: 28px; margin-bottom: 28px; }
+  .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 28px; }
+  .stat-card { background: #1a1d2e; border: 1px solid #2a2d4a; border-radius: 10px; padding: 20px; text-align: center; }
+  .stat-card .num { font-size: 2.2rem; font-weight: 800; color: #6c63ff; line-height: 1; margin-bottom: 6px; }
+  .stat-card .num.green { color: #00d4aa; }
+  .stat-card .num.amber { color: #f0a500; }
+  .stat-card .label { font-size: 0.78rem; color: #9a9ab0; text-transform: uppercase; letter-spacing: 0.05em; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+  th { background: #12142a; color: #9a9ab0; text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.06em; padding: 10px 12px; text-align: left; border-bottom: 1px solid #2a2d4a; }
+  td { padding: 10px 12px; border-bottom: 1px solid #1e2138; vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #1e2240; }
+  .bar-wrap { background: #12142a; border-radius: 4px; height: 8px; width: 100%; margin-top: 4px; }
+  .bar { height: 8px; border-radius: 4px; background: #6c63ff; }
+  .bar.green { background: #00d4aa; }
+  .bar.amber { background: #f0a500; }
+  .tag { display: inline-block; padding: 2px 9px; border-radius: 12px; font-size: 0.73rem; font-weight: 600; margin: 2px; }
+  .tag.purple { background: rgba(108,99,255,0.2); color: #9990ff; border: 1px solid rgba(108,99,255,0.3); }
+  .tag.green { background: rgba(0,212,170,0.15); color: #00d4aa; border: 1px solid rgba(0,212,170,0.3); }
+  .tag.amber { background: rgba(240,165,0,0.15); color: #f0b833; border: 1px solid rgba(240,165,0,0.3); }
+  .tag.red { background: rgba(255,80,80,0.12); color: #ff7a7a; border: 1px solid rgba(255,80,80,0.25); }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media(max-width:700px){ .two-col { grid-template-columns: 1fr; } .stat-grid { grid-template-columns: repeat(2,1fr); } }
+  .checklist li { list-style: none; padding: 7px 0 7px 28px; position: relative; border-bottom: 1px solid #1e2138; font-size: 0.9rem; }
+  .checklist li:last-child { border-bottom: none; }
+  .checklist li::before { content: "✦"; position: absolute; left: 0; color: #6c63ff; font-size: 0.8rem; top: 8px; }
+  .checklist li strong { color: #c0b8ff; }
+  .finding { background: #12142a; border-left: 3px solid #6c63ff; padding: 12px 16px; margin-bottom: 10px; border-radius: 0 6px 6px 0; font-size: 0.88rem; }
+  .finding.green { border-left-color: #00d4aa; }
+  .finding.amber { border-left-color: #f0a500; }
+  .finding.red { border-left-color: #ff5050; }
+  .sa-card { background: #12142a; border: 1px solid #2a2d4a; border-radius: 8px; padding: 16px; }
+  .sa-name { font-size: 1rem; font-weight: 700; color: #fff; margin-bottom: 4px; }
+  .sa-stat { font-size: 0.78rem; color: #9a9ab0; margin-bottom: 8px; }
+  .footnote { font-size: 0.78rem; color: #666; margin-top: 16px; font-style: italic; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Classic Billing Onboarding Analysis</h1>
+  <div class="subtitle">Based on analysis of <span>91 configuration calls</span> &nbsp;|&nbsp; Sept 2025 – Mar 2026 &nbsp;|&nbsp; <span>Tim Smith · Conner Sharp · Andrew Millington · Jen Stout</span></div>
+</div>
+
+<div class="container">
+
+  <!-- STAT CARDS -->
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="num">91</div>
+      <div class="label">Calls Analyzed</div>
+    </div>
+    <div class="stat-card">
+      <div class="num">4</div>
+      <div class="label">Solution Architects</div>
+    </div>
+    <div class="stat-card">
+      <div class="num green">65.9</div>
+      <div class="label">Total SA Hours</div>
+    </div>
+    <div class="stat-card">
+      <div class="num amber">20+</div>
+      <div class="label">Unique Client Engagements</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="num green">~60%</div>
+      <div class="label">Pre-Configurable at Close</div>
+    </div>
+  </div>
+
+  <!-- EXECUTIVE SUMMARY -->
+  <div class="section">
+    <h2>Executive Summary</h2>
+    <div class="finding green">
+      <strong>The same problem exists in Classic Billing as PSA.</strong> Across 91 configuration calls and 65+ hours of SA time, the same data is being collected session after session — product catalog, QuickBooks version, payment processor, carrier rate decks, GL codes — all of which Sales either knew at close or could have captured with 5 targeted questions.
+    </div>
+    <div class="finding">
+      <strong>Three configuration areas dominate every engagement:</strong> Bill Center / billing profiles (75% of calls), payment processing setup (72%), and product catalog build (51%). These three alone account for the majority of early onboarding hours.
+    </div>
+    <div class="finding amber">
+      <strong>QuickBooks integration is a recurring friction point.</strong> Appearing in 38% of calls — and causing dedicated follow-up calls in nearly every engagement — the QBO/QBD question (which version? credentials? GL code mapping?) is consistently unresolved at kickoff and costs 1–3 additional calls per client to resolve.
+    </div>
+    <div class="finding red">
+      <strong>Product catalog is the #1 blocker.</strong> Clients arrive to onboarding without a completed product catalog in 100% of cases. SAs spend 1–4 sessions just helping clients map their products into Rev.io format. This data exists at sales time — it's what was quoted.
+    </div>
+  </div>
+
+  <!-- CALL VOLUME -->
+  <div class="section">
+    <h2>Call Volume &amp; Distribution by SA</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Solution Architect</th>
+          <th>Calls Analyzed</th>
+          <th>Hours</th>
+          <th>Avg Call Length</th>
+          <th>Primary Clients</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Andrew Millington</strong></td>
+          <td>24</td>
+          <td>25.2 hrs</td>
+          <td>63 min</td>
+          <td>SoundLine, Voda Voice &amp; Data, Telechoice, Automated Telecom, Tricom, DirecTech, Double Eagle, Greenwire</td>
+        </tr>
+        <tr>
+          <td><strong>Tim Smith</strong></td>
+          <td>24</td>
+          <td>20.6 hrs</td>
+          <td>52 min</td>
+          <td>Red Gap, Kloud7, SouthLight, Zultys, White Label, Razorline, Rhode Island, TCG Tech</td>
+        </tr>
+        <tr>
+          <td><strong>Conner Sharp</strong></td>
+          <td>25</td>
+          <td>10.1 hrs</td>
+          <td>24 min</td>
+          <td>Xclutel, Crosspath, Global Data Systems, Lyra, Run Central, 805 VoIP, ClearRate</td>
+        </tr>
+        <tr>
+          <td><strong>Jen Stout</strong></td>
+          <td>18</td>
+          <td>10.0 hrs</td>
+          <td>33 min</td>
+          <td>Prestige (weekly), BlueEdge, TelCloud, ECNTEL, Avalora, Cloudli</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="footnote">Note: Andrew and Tim handle the longest, most complex engagements (carrier integrations, ODIN/BroadWorks, ConnectWise). Conner and Jen's shorter average reflects focused troubleshooting and integration-specific calls.</p>
+  </div>
+
+  <!-- CLIENT VERTICALS -->
+  <div class="section">
+    <h2>Client Profiles &amp; Verticals</h2>
+    <div class="two-col">
+      <div>
+        <h3>Client Types</h3>
+        <table>
+          <thead><tr><th>Vertical</th><th>Examples</th><th>Complexity</th></tr></thead>
+          <tbody>
+            <tr><td>VoIP / UCaaS Providers</td><td>Zultys, SoundLine, 805 VoIP</td><td><span class="tag amber">High</span></td></tr>
+            <tr><td>Telecom / CLEC / ISP</td><td>Voda Voice &amp; Data, SouthLight, Razorline, Rhode Island</td><td><span class="tag amber">High</span></td></tr>
+            <tr><td>Managed Service Providers (MSP)</td><td>Kloud7, TCG Tech, Double Eagle</td><td><span class="tag red">Very High</span></td></tr>
+            <tr><td>Telecom Resellers / Agents</td><td>Crosspath, Xclutel, Run Central, Lyra</td><td><span class="tag purple">Medium</span></td></tr>
+            <tr><td>Enterprise / White Label</td><td>White Label, Global Data Systems</td><td><span class="tag amber">High</span></td></tr>
+            <tr><td>Migrations (TRX/Legacy)</td><td>ClearRate, Automated Telecom, Tricom</td><td><span class="tag red">Very High</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <h3>Most Active Client Series (by call volume)</h3>
+        <table>
+          <thead><tr><th>Client</th><th>Calls</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td>Crosspath</td><td>8</td><td>Long QBO + product catalog build</td></tr>
+            <tr><td>Xclutel</td><td>7</td><td>DocuSign + QBO + collections</td></tr>
+            <tr><td>Red Gap</td><td>6</td><td>ODIN integration, deep dev work</td></tr>
+            <tr><td>Prestige</td><td>6+</td><td>Weekly cadence, complex migration</td></tr>
+            <tr><td>Voda Voice &amp; Data</td><td>5</td><td>Carrier rates, usage plans, QBO</td></tr>
+            <tr><td>Global Data Systems</td><td>4</td><td>Product catalog, usage plans</td></tr>
+            <tr><td>SoundLine</td><td>5</td><td>QBO bugs, bill out, invoice corrections</td></tr>
+            <tr><td>Kloud7</td><td>4+</td><td>ConnectWise + CPQ integration</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONFIGURATION AREAS -->
+  <div class="section">
+    <h2>Configuration Areas — What Gets Built in Every Engagement</h2>
+    <p style="font-size:0.85rem;color:#9a9ab0;margin-bottom:16px;">Frequency across 91 calls analyzed</p>
+    <table>
+      <thead>
+        <tr><th>Configuration Area</th><th>Frequency</th><th>% of Calls</th><th>Complexity Signal</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Bill Center / Billing Profiles</strong></td>
+          <td>69 / 91</td>
+          <td>
+            75%
+            <div class="bar-wrap"><div class="bar green" style="width:75%"></div></div>
+          </td>
+          <td><span class="tag amber">High — requires bill profile decisions, invoice layout, lead days, due dates</span></td>
+        </tr>
+        <tr>
+          <td><strong>Payment Processing Setup</strong></td>
+          <td>66 / 91</td>
+          <td>
+            72%
+            <div class="bar-wrap"><div class="bar green" style="width:72%"></div></div>
+          </td>
+          <td><span class="tag amber">High — TRX merchant setup, ACH/CC config, auto-pay, bounce emails</span></td>
+        </tr>
+        <tr>
+          <td><strong>Reporting Setup</strong></td>
+          <td>64 / 91</td>
+          <td>
+            70%
+            <div class="bar-wrap"><div class="bar" style="width:70%"></div></div>
+          </td>
+          <td><span class="tag purple">Medium — comparative reports, billing reports, commission reports</span></td>
+        </tr>
+        <tr>
+          <td><strong>Product Catalog Build</strong></td>
+          <td>47 / 91</td>
+          <td>
+            51%
+            <div class="bar-wrap"><div class="bar" style="width:51%"></div></div>
+          </td>
+          <td><span class="tag red">Very High — clients arrive without catalog, multiple sessions to complete</span></td>
+        </tr>
+        <tr>
+          <td><strong>Data Import / Migration</strong></td>
+          <td>41 / 91</td>
+          <td>
+            45%
+            <div class="bar-wrap"><div class="bar" style="width:45%"></div></div>
+          </td>
+          <td><span class="tag amber">High — customer imports, bulk uploads, token migrations, starting balances</span></td>
+        </tr>
+        <tr>
+          <td><strong>QuickBooks Integration (QBO/QBD)</strong></td>
+          <td>35 / 91</td>
+          <td>
+            38%
+            <div class="bar-wrap"><div class="bar" style="width:38%"></div></div>
+          </td>
+          <td><span class="tag red">Very High — credentials, GL mapping, SKU matching, sync troubleshooting</span></td>
+        </tr>
+        <tr>
+          <td><strong>Email Templates / Notifications</strong></td>
+          <td>35 / 91</td>
+          <td>
+            38%
+            <div class="bar-wrap"><div class="bar" style="width:38%"></div></div>
+          </td>
+          <td><span class="tag purple">Medium — welcome email, dunning, payment bounce, bill notification</span></td>
+        </tr>
+        <tr>
+          <td><strong>Collections / Dunning Config</strong></td>
+          <td>34 / 91</td>
+          <td>
+            37%
+            <div class="bar-wrap"><div class="bar" style="width:37%"></div></div>
+          </td>
+          <td><span class="tag purple">Medium — collection templates, disconnect policy, suspension rules</span></td>
+        </tr>
+        <tr>
+          <td><strong>Tax Configuration</strong></td>
+          <td>30 / 91</td>
+          <td>
+            32%
+            <div class="bar-wrap"><div class="bar" style="width:32%"></div></div>
+          </td>
+          <td><span class="tag red">Very High — SureTax/CSI mapping, exemptions, safe harbor, Avalara</span></td>
+        </tr>
+        <tr>
+          <td><strong>Carrier / Usage Plan Integration</strong></td>
+          <td>29 / 91</td>
+          <td>
+            31%
+            <div class="bar-wrap"><div class="bar" style="width:31%"></div></div>
+          </td>
+          <td><span class="tag red">Very High — SkySwitch, CDR imports, rate decks, usage group rules</span></td>
+        </tr>
+        <tr>
+          <td><strong>DocuSign / E-Sign Setup</strong></td>
+          <td>19 / 91</td>
+          <td>
+            20%
+            <div class="bar-wrap"><div class="bar" style="width:20%"></div></div>
+          </td>
+          <td><span class="tag purple">Medium — contract templates, signing workflows</span></td>
+        </tr>
+        <tr>
+          <td><strong>Agent / Commission Setup</strong></td>
+          <td>22 / 91</td>
+          <td>
+            24%
+            <div class="bar-wrap"><div class="bar" style="width:24%"></div></div>
+          </td>
+          <td><span class="tag amber">High — agent list, commission %, plan types, reseller configs</span></td>
+        </tr>
+        <tr>
+          <td><strong>User Setup / Access / SSO</strong></td>
+          <td>13 / 91</td>
+          <td>
+            14%
+            <div class="bar-wrap"><div class="bar" style="width:14%"></div></div>
+          </td>
+          <td><span class="tag purple">Medium — roles, permissions, SSO quote required</span></td>
+        </tr>
+        <tr>
+          <td><strong>Customer Portal (Bill Center)</strong></td>
+          <td>12 / 91</td>
+          <td>
+            13%
+            <div class="bar-wrap"><div class="bar" style="width:13%"></div></div>
+          </td>
+          <td><span class="tag purple">Medium — branding, logo/favicon, marketing colors, access setup</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- CORE QUESTIONS -->
+  <div class="section">
+    <h2>The Classic Billing Core Questions — What SAs Ask in Every Engagement</h2>
+    <p style="font-size:0.85rem;color:#9a9ab0;margin-bottom:20px;">These are the questions that appear consistently across all four SAs and all client types. The Classic Billing equivalent of PSA's "Core 8."</p>
+
+    <div class="two-col">
+      <div>
+        <h3>Core 10 — Asked in Virtually Every Engagement</h3>
+        <ul class="checklist">
+          <li><strong>1. What products/services do you bill for?</strong> — Service types, product names, recurring vs one-time, providers. Clients always arrive without a completed product catalog.</li>
+          <li><strong>2. QuickBooks: Online or Desktop? Do you use it?</strong> — Version determines integration approach. QBD = no direct sync. Credentials and admin user required before kickoff.</li>
+          <li><strong>3. What payment processor are you using?</strong> — TRX, Stripe, other? Are you keeping the same merchant account? Need merchant credentials before payment config.</li>
+          <li><strong>4. What are your billing cycle and invoice dates?</strong> — Bill profile: cycle start, lead days, due days, invoice layout (1-col vs 2-col), proration rules.</li>
+          <li><strong>5. What is your collections policy?</strong> — Days until dunning, number of notices, suspension triggers, disconnect thresholds, attorney referral process.</li>
+          <li><strong>6. What carrier(s) are you using?</strong> — SkySwitch, Windstream, Verizon, NetSapiens, BroadWorks, etc. Determines usage plan setup and CDR import method.</li>
+          <li><strong>7. What tax engine are you using?</strong> — SureTax, CSI, Avalara, VoIP Innovations? Any tax-exempt customers? Safe harbor rate?</li>
+          <li><strong>8. Do you have agents / resellers? What's their commission structure?</strong> — Agent list, commission %, plan type (flat vs tiered), reseller vs agent model.</li>
+          <li><strong>9. What email notifications do you want to send customers?</strong> — Welcome email, invoice notification, payment receipt, payment bounce, disconnect warning.</li>
+          <li><strong>10. What logo, branding, and company info should appear on invoices/portal?</strong> — Logo (183x110 JPEG), favicon, marketing colors, legal company name, billing contact.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Additional Questions (Complex Clients)</h3>
+        <ul class="checklist">
+          <li><strong>What are your GL codes?</strong> — Required for QBO integration; clients often need to pull their CPA or accountant into a dedicated call.</li>
+          <li><strong>Do you need DocuSign / e-signature on contracts?</strong> — Contract template, signing workflow, which fields to auto-populate.</li>
+          <li><strong>What is your migration source system?</strong> — TRX token migration, legacy billing data, starting balances, invoice number continuity.</li>
+          <li><strong>How do you handle customer credits and advance payments?</strong> — Credit application rules, prepaid customers, refund process.</li>
+          <li><strong>Do you have resellers who white-label your service?</strong> — Sub-instance config, reseller billing profiles, commission pass-through.</li>
+          <li><strong>What are your usage rate plans?</strong> — Per-minute rates by destination, included minutes, pooling rules, overage rates. Requires carrier rate decks.</li>
+          <li><strong>Do you need SSO?</strong> — Integration cost quote required; not included by default.</li>
+          <li><strong>What integrations does your PSA/CRM use?</strong> — ConnectWise, Autotask, Zendesk — determines ticket/order workflow config.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- CLIENT DATA INVENTORY -->
+  <div class="section">
+    <h2>Client Data Inventory — What Clients Supply During Onboarding</h2>
+    <p style="font-size:0.85rem;color:#9a9ab0;margin-bottom:16px;">Categorized inventory of data clients provide across configuration sessions</p>
+    <table>
+      <thead>
+        <tr><th>Category</th><th>Data Elements Collected</th><th>Format / Delivery</th><th>When Collected</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Product Catalog</strong></td>
+          <td>Service types, product names, providers, rate plans, usage plans, included minutes, overage rates, one-time vs recurring flag, SKUs</td>
+          <td>Rev.io spreadsheet template (provided by SA via Zendesk ticket)</td>
+          <td><span class="tag red">Sessions 1–3</span></td>
+        </tr>
+        <tr>
+          <td><strong>QuickBooks</strong></td>
+          <td>QBO/QBD version, admin user email, integration user password, GL codes by product category, customer name matching, existing SKUs in QB</td>
+          <td>Form via ticket + screen share; sometimes requires accountant to join</td>
+          <td><span class="tag red">Mid-onboarding (dedicated call)</span></td>
+        </tr>
+        <tr>
+          <td><strong>Payment Processing</strong></td>
+          <td>Merchant account credentials (TRX), payment gateway type, ACH/CC acceptance, auto-pay enrollment policy, bounce fee amounts</td>
+          <td>Credentials shared via ticket; merchant contact info</td>
+          <td><span class="tag amber">Sessions 2–4</span></td>
+        </tr>
+        <tr>
+          <td><strong>Carrier / Usage</strong></td>
+          <td>Carrier name(s), rate decks (per-minute by destination), CDR format, SkySwitch credentials, usage pooling rules, toll-free rates, Canada/international treatment</td>
+          <td>Exports from carrier portal + rate spreadsheets</td>
+          <td><span class="tag red">Sessions 2–5 (often delayed)</span></td>
+        </tr>
+        <tr>
+          <td><strong>Tax Setup</strong></td>
+          <td>Tax engine choice (SureTax/CSI/Avalara), tax-exempt customer list + exemption certificates, safe harbor override rate, product tax code mapping</td>
+          <td>Spreadsheet + sometimes Comm Law Group involvement</td>
+          <td><span class="tag red">Mid-to-late onboarding</span></td>
+        </tr>
+        <tr>
+          <td><strong>Branding</strong></td>
+          <td>Company logo (183x110 JPEG), favicon, marketing colors (hex), legal company name, billing contact name/email/phone</td>
+          <td>Email / ticket attachment</td>
+          <td><span class="tag purple">Session 1–2</span></td>
+        </tr>
+        <tr>
+          <td><strong>Billing Configuration</strong></td>
+          <td>Billing cycle (monthly/quarterly/annual), invoice date, due date (net-X), lead days, invoice layout preference, proration rules, invoice number continuity (if migrating)</td>
+          <td>Discussed verbally + SA configures</td>
+          <td><span class="tag purple">Session 1–2</span></td>
+        </tr>
+        <tr>
+          <td><strong>Collections Policy</strong></td>
+          <td>Days to first dunning notice, number of notices, suspension threshold, disconnect threshold, collections attorney contact, bounce charge amount</td>
+          <td>Discussed verbally; SA configures templates</td>
+          <td><span class="tag purple">Sessions 2–3</span></td>
+        </tr>
+        <tr>
+          <td><strong>Agents / Commissions</strong></td>
+          <td>Agent list (name, email, commission %), commission plan type, reseller vs agent flag, payment frequency</td>
+          <td>Spreadsheet or verbal + SA configures</td>
+          <td><span class="tag amber">Sessions 3–5</span></td>
+        </tr>
+        <tr>
+          <td><strong>Customer Data (Migration)</strong></td>
+          <td>Customer list with addresses, emails, account numbers, starting balances, existing invoice IDs, payment methods on file, service history</td>
+          <td>Export from legacy system; SA runs import scripts</td>
+          <td><span class="tag amber">Mid-onboarding</span></td>
+        </tr>
+        <tr>
+          <td><strong>Email Templates</strong></td>
+          <td>Preferred wording for welcome email, invoice notification, payment receipt, dunning notices, disconnect warning; A/R contact info, legal disclaimers</td>
+          <td>Discussed verbally; SA writes/customizes</td>
+          <td><span class="tag purple">Sessions 2–4</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- INTEGRATIONS DEEP DIVE -->
+  <div class="section">
+    <h2>Integrations Deep Dive</h2>
+    <div class="two-col">
+      <div>
+        <h3>Accounting Integrations</h3>
+        <table>
+          <thead><tr><th>Integration</th><th>Prevalence</th><th>Key Friction Points</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>QuickBooks Online (QBO)</strong></td>
+              <td><div class="bar-wrap" style="margin-top:4px"><div class="bar green" style="width:75%"></div></div> ~75% of QB clients</td>
+              <td>GL code mapping requires accountant; SKU matching; Canadian customer sync issues; duplicate cleanup; invoice/payment sync bugs</td>
+            </tr>
+            <tr>
+              <td><strong>QuickBooks Desktop (QBD)</strong></td>
+              <td><div class="bar-wrap" style="margin-top:4px"><div class="bar" style="width:25%"></div></div> ~25% of QB clients</td>
+              <td>No direct integration; manual export/import workflow; often discovered late (client didn't mention Desktop at sales)</td>
+            </tr>
+            <tr>
+              <td><strong>No Accounting Integration</strong></td>
+              <td><div class="bar-wrap" style="margin-top:4px"><div class="bar amber" style="width:40%"></div></div> ~40% of engagements</td>
+              <td>Some clients opt out; others in migration from accounting system — needs discovery at sales</td>
+            </tr>
+          </tbody>
+        </table>
+        <br>
+        <h3>Payment Processors</h3>
+        <table>
+          <thead><tr><th>Processor</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td><strong>TRX</strong></td><td>Most common; token migration complexity for existing clients; IVR payment integration; merchant credential setup</td></tr>
+            <tr><td><strong>Intermedia</strong></td><td>Appears in TRX migration/integration context (ClearRate)</td></tr>
+            <tr><td><strong>Other / Unknown</strong></td><td>Some clients switching processors at onboarding — high complexity</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <h3>Carrier / Switch Integrations</h3>
+        <table>
+          <thead><tr><th>System</th><th>Clients</th><th>Integration Type</th></tr></thead>
+          <tbody>
+            <tr><td><strong>SkySwitch</strong></td><td>Multiple</td><td>CDR import, usage plans, rate deck config</td></tr>
+            <tr><td><strong>NetSapiens</strong></td><td>Rhode Island, others</td><td>Switch credentials, custom field mapping, DID sync</td></tr>
+            <tr><td><strong>BroadWorks / ODIN</strong></td><td>Red Gap, Kloud7</td><td>Deep API integration, custom dev work required</td></tr>
+            <tr><td><strong>Windstream / SpectraTel</strong></td><td>Voda Voice &amp; Data</td><td>Rate deck export, usage plan mapping</td></tr>
+            <tr><td><strong>VoIP Innovations</strong></td><td>Double Eagle</td><td>CSI tax source, rate comparison</td></tr>
+            <tr><td><strong>Zultys</strong></td><td>Tim Smith clients</td><td>Custom API, invoice migration, report logic</td></tr>
+          </tbody>
+        </table>
+        <br>
+        <h3>Business System Integrations</h3>
+        <table>
+          <thead><tr><th>System</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td><strong>ConnectWise (PSA)</strong></td><td>Kloud7 — CPQ, agreement sync, product bundles</td></tr>
+            <tr><td><strong>DocuSign</strong></td><td>Xclutel, Crosspath — contract signing workflows</td></tr>
+            <tr><td><strong>Zendesk</strong></td><td>Ticket-based support for async onboarding work</td></tr>
+            <tr><td><strong>SureTax / Avalara / CSI</strong></td><td>Tax engine — most clients already have one; which one must be confirmed at sales</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- WHAT SALES ALREADY HAS -->
+  <div class="section">
+    <h2>What Sales Already Has — The Automation Opportunity</h2>
+    <p style="font-size:0.85rem;color:#9a9ab0;margin-bottom:20px;">Data being collected in configuration sessions that Sales captured (or could capture) at deal close</p>
+    <table>
+      <thead>
+        <tr>
+          <th>Data Being Collected in Onboarding</th>
+          <th>Sales Already Has?</th>
+          <th>Where to Get It</th>
+          <th>Pre-Config Impact</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>QuickBooks version (QBO vs QBD)</strong></td>
+          <td><span class="tag green">Yes — Sales discussed this</span></td>
+          <td>Salesforce Opportunity / Outreach discovery call</td>
+          <td><span class="tag amber">Eliminates 1–2 calls</span></td>
+        </tr>
+        <tr>
+          <td><strong>Payment processor (TRX / other)</strong></td>
+          <td><span class="tag green">Yes — part of deal scope</span></td>
+          <td>Salesforce Opportunity (payment module)</td>
+          <td><span class="tag amber">Enables merchant config day 1</span></td>
+        </tr>
+        <tr>
+          <td><strong>Primary carrier / switch</strong></td>
+          <td><span class="tag green">Yes — in sales discovery</span></td>
+          <td>Outreach transcripts</td>
+          <td><span class="tag amber">SA can prep CDR import plan</span></td>
+        </tr>
+        <tr>
+          <td><strong>Product types / service catalog (basic)</strong></td>
+          <td><span class="tag green">Partially — quoted services list</span></td>
+          <td>Salesforce quote / CPQ data</td>
+          <td><span class="tag red">Biggest win — eliminates 2–4 sessions</span></td>
+        </tr>
+        <tr>
+          <td><strong>Tax engine (SureTax / CSI / Avalara)</strong></td>
+          <td><span class="tag amber">Often — included in pricing discussion</span></td>
+          <td>Outreach + Salesforce</td>
+          <td><span class="tag purple">SA can pre-configure tax mapping template</span></td>
+        </tr>
+        <tr>
+          <td><strong>Agent / reseller flag</strong></td>
+          <td><span class="tag green">Yes — deal structure</span></td>
+          <td>Salesforce Account type</td>
+          <td><span class="tag purple">Commission module can be pre-enabled</span></td>
+        </tr>
+        <tr>
+          <td><strong>Customer count / scale</strong></td>
+          <td><span class="tag green">Yes — in deal size / ARR</span></td>
+          <td>Salesforce Opportunity</td>
+          <td><span class="tag purple">Determines import approach (bulk vs manual)</span></td>
+        </tr>
+        <tr>
+          <td><strong>Company logo / branding</strong></td>
+          <td><span class="tag amber">Partial — website exists</span></td>
+          <td>Can be auto-fetched from company URL</td>
+          <td><span class="tag purple">Portal can be pre-branded</span></td>
+        </tr>
+        <tr>
+          <td><strong>Migration source system</strong></td>
+          <td><span class="tag green">Yes — reason for switching</span></td>
+          <td>Salesforce / Outreach</td>
+          <td><span class="tag amber">SA can prep migration scripts in advance</span></td>
+        </tr>
+        <tr>
+          <td><strong>Billing cycle preference</strong></td>
+          <td><span class="tag amber">Sometimes — monthly assumed but not confirmed</span></td>
+          <td>5-question follow-up to Sales rep</td>
+          <td><span class="tag purple">Bill profile pre-built before kickoff</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- PRE-CONFIG CHECKLIST -->
+  <div class="section">
+    <h2>Classic Billing Pre-Config Checklist — What Sales Must Capture at Close</h2>
+    <p style="font-size:0.85rem;color:#9a9ab0;margin-bottom:20px;">Modeled after the PSA "Core 8." These 10 data points, captured at deal close, enable ~60% of instance configuration before the kickoff call.</p>
+
+    <div class="two-col">
+      <div>
+        <h3>Must-Have at Close (Block Kickoff if Missing)</h3>
+        <ul class="checklist">
+          <li><strong>1. QuickBooks version</strong> — Online (QBO) or Desktop (QBD)? Using it at all? If yes, designate integration admin user and email at close.</li>
+          <li><strong>2. Payment processor</strong> — TRX or other? Same merchant account or new? Will they accept ACH? Credit card? Both?</li>
+          <li><strong>3. Primary carrier / switch</strong> — SkySwitch? NetSapiens? BroadWorks? Custom? This determines usage plan complexity and integration approach.</li>
+          <li><strong>4. Products &amp; services list</strong> — A basic list of what they bill customers for (Voice, Data, Hardware, SMS, etc.). This seeds the product catalog — the #1 blocker in every onboarding.</li>
+          <li><strong>5. Tax engine</strong> — SureTax, CSI, Avalara, VoIP Innovations, or other? Existing account or new? Any known tax-exempt customers?</li>
+          <li><strong>6. Migration source</strong> — What are they moving from? TRX token migration? Legacy billing system? Excel? Starting fresh? Determines import complexity.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Should-Have at Close (Capture in Sales Brief)</h3>
+        <ul class="checklist">
+          <li><strong>7. Agent / reseller model</strong> — Do they pay agent commissions? Reseller sub-instances? This enables commission module pre-config and agent list prep.</li>
+          <li><strong>8. Billing cycle</strong> — Monthly? Quarterly? Annual? Invoice date preference? Due date (net-30?). Enables bill profile build before kickoff.</li>
+          <li><strong>9. Collections policy</strong> — How many days before dunning? Do they disconnect for non-payment? This is configured in session 2–3 and is always re-collected.</li>
+          <li><strong>10. Customer count + company size</strong> — How many billing accounts? This determines whether bulk import is needed and scopes the migration work.</li>
+        </ul>
+        <br>
+        <div class="finding amber">
+          <strong>Quick wins that require zero sales effort:</strong><br>
+          Logo → fetch from company website<br>
+          Company legal name → from contract<br>
+          Billing contact email → from Salesforce Contact<br>
+          DocuSign need → from contract module flag
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SA METHODOLOGY -->
+  <div class="section">
+    <h2>SA Methodology Patterns</h2>
+    <div class="two-col">
+      <div class="sa-card">
+        <div class="sa-name">Andrew Millington</div>
+        <div class="sa-stat">24 calls · 25.2 hrs · Longest avg sessions (63 min)</div>
+        <p style="font-size:0.85rem;line-height:1.6">Handles the most technically complex carrier clients (SoundLine, Voda Voice &amp; Data, Telechoice). Deep expertise in usage plan config, QBO integration troubleshooting, and bill-out support. Uses Zendesk tickets extensively for async work between calls. Will join client with their accountant for GL code sessions. Often has to reverse-and-rebuild incorrect bills. Sends Rev.io University links proactively.</p>
+        <div style="margin-top:10px">
+          <span class="tag purple">QBO Expert</span>
+          <span class="tag green">Usage Plans</span>
+          <span class="tag amber">Bill-Out Support</span>
+        </div>
+      </div>
+      <div class="sa-card">
+        <div class="sa-name">Tim Smith</div>
+        <div class="sa-stat">24 calls · 20.6 hrs · Complex integration clients</div>
+        <p style="font-size:0.85rem;line-height:1.6">Handles the deepest technical integrations: ODIN/BroadWorks (Red Gap), ConnectWise/CPQ (Kloud7), custom API (Zultys). Works closely with dev team (Darnell Powers, Alex Hills) for integration bugs. Sessions often include live development debugging. Also handles white-label and migration scenarios. Manages long-running client relationships with recurring weekly cadences.</p>
+        <div style="margin-top:10px">
+          <span class="tag red">API/Dev Integrations</span>
+          <span class="tag purple">ODIN/BroadWorks</span>
+          <span class="tag amber">Migrations</span>
+        </div>
+      </div>
+      <div class="sa-card">
+        <div class="sa-name">Conner Sharp</div>
+        <div class="sa-stat">25 calls · 10.1 hrs · Shorter, focused sessions (24 min avg)</div>
+        <p style="font-size:0.85rem;line-height:1.6">Focuses on telecom reseller and agent clients (Xclutel, Crosspath). Expert in product catalog builds, DocuSign setup, and QBO integration initiation. Uses Zendesk ticket system as primary async workflow — sends worksheets via ticket, reviews partial completions, schedules calls only when needed. Highly efficient: many configuration tasks are completed between calls. Also handles commission and reseller configurations.</p>
+        <div style="margin-top:10px">
+          <span class="tag green">Product Catalog</span>
+          <span class="tag purple">DocuSign</span>
+          <span class="tag amber">Commissions</span>
+        </div>
+      </div>
+      <div class="sa-card">
+        <div class="sa-name">Jen Stout</div>
+        <div class="sa-stat">18 calls · 10.0 hrs · Long-term client management</div>
+        <p style="font-size:0.85rem;line-height:1.6">Manages Prestige — a complex, long-running weekly cadence that spans migration, comparative billing review, tax correction, and QBO setup. Also handles QBO credential issues, customer/contact data imports, and commission setup. Strong in migration reconciliation (identifying billing discrepancies between old and new system). Works closely with client's internal billing team through multi-week processes.</p>
+        <div style="margin-top:10px">
+          <span class="tag purple">QBO/Migrations</span>
+          <span class="tag amber">Tax Corrections</span>
+          <span class="tag green">Data Imports</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GAPS & OPEN QUESTIONS -->
+  <div class="section">
+    <h2>Gaps &amp; Open Questions — What's Consistently Missing or Collected Too Late</h2>
+    <table>
+      <thead>
+        <tr><th>Gap</th><th>Impact</th><th>Recommended Fix</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Product catalog arrives incomplete or missing</strong></td>
+          <td><span class="tag red">2–4 extra sessions</span></td>
+          <td>Add "services you bill for" as a required Sales field. Even a rough list cuts this in half.</td>
+        </tr>
+        <tr>
+          <td><strong>QBD vs QBO not confirmed until onboarding starts</strong></td>
+          <td><span class="tag red">1–2 extra sessions + integration rework</span></td>
+          <td>Required field at close. QBD = flag for manual workflow; no integration path.</td>
+        </tr>
+        <tr>
+          <td><strong>GL codes require accountant involvement — never pre-arranged</strong></td>
+          <td><span class="tag amber">Dedicated extra call</span></td>
+          <td>Prompt Sales to include "Who is your accountant / bookkeeper?" and schedule them for session 2 automatically.</td>
+        </tr>
+        <tr>
+          <td><strong>Carrier rate decks not provided at kickoff</strong></td>
+          <td><span class="tag amber">Delays usage plan config by 1–3 sessions</span></td>
+          <td>Add carrier rate deck export to kickoff prep checklist sent to client 2 weeks before Day 1.</td>
+        </tr>
+        <tr>
+          <td><strong>Tax-exempt customer list never pre-assembled</strong></td>
+          <td><span class="tag amber">Tax corrections required post-bill-out</span></td>
+          <td>Sales should ask "Do you have any tax-exempt customers?" — collect list at close.</td>
+        </tr>
+        <tr>
+          <td><strong>TRX merchant credentials not ready at kickoff</strong></td>
+          <td><span class="tag amber">Delays payment config by 1–2 sessions</span></td>
+          <td>Include TRX setup in the pre-kickoff client preparation email. Link to TRX merchant application if new account needed.</td>
+        </tr>
+        <tr>
+          <td><strong>Company logo not provided in correct format</strong></td>
+          <td><span class="tag purple">Minor delay, recurring friction</span></td>
+          <td>Specify exact requirements (183x110 JPEG) in kickoff prep. Auto-fetch from website as fallback.</td>
+        </tr>
+        <tr>
+          <td><strong>Migration data dumps not scoped or requested early</strong></td>
+          <td><span class="tag red">Mid-onboarding crisis for complex migrations</span></td>
+          <td>Migration source system should be captured at close — triggers early data export request.</td>
+        </tr>
+        <tr>
+          <td><strong>DocuSign decision made during onboarding, not at sale</strong></td>
+          <td><span class="tag purple">Adds 1 session, sometimes a surprise cost</span></td>
+          <td>Flag DocuSign as an add-on at deal close. Set expectation on cost and timeline before kickoff.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- AUTOMATION PIPELINE -->
+  <div class="section">
+    <h2>Recommended Automation Pipeline — Classic Billing</h2>
+    <div class="finding green">
+      <strong>The same automation opportunity exists here as in PSA onboarding.</strong> With the 10-item checklist captured at close, an SA can walk into kickoff with the following already done:
+    </div>
+    <br>
+    <table>
+      <thead>
+        <tr><th>Phase</th><th>Action</th><th>Requires</th><th>Eliminates</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="tag green">At Close</span></td>
+          <td>Deal closes → pull Outreach + Salesforce data → auto-populate Classic Billing Sales Brief</td>
+          <td>Salesforce Connected App + Outreach API (already have)</td>
+          <td>Session 1 re-collection entirely</td>
+        </tr>
+        <tr>
+          <td><span class="tag purple">48 hrs before kickoff</span></td>
+          <td>Auto-generate client prep email with: product catalog template, logo specs, carrier rate deck request, TRX credential checklist</td>
+          <td>Brief data + email template</td>
+          <td>2–3 sessions waiting for client assets</td>
+        </tr>
+        <tr>
+          <td><span class="tag purple">Day 1 — instance setup</span></td>
+          <td>Pre-configure: company info, billing cycle, bill profile template, payment module flag, tax engine selection, commission module on/off</td>
+          <td>Brief data → Rev.io API</td>
+          <td>First 30–45 min of every kickoff call</td>
+        </tr>
+        <tr>
+          <td><span class="tag amber">Day 1 — QBO</span></td>
+          <td>If QBO flagged: send integration setup instructions to client before kickoff; SA arrives with form ready</td>
+          <td>QB version from brief</td>
+          <td>1 dedicated extra call</td>
+        </tr>
+        <tr>
+          <td><span class="tag amber">Day 1 — product catalog</span></td>
+          <td>Pre-seed product catalog template with services from sales quote / Salesforce opportunity line items</td>
+          <td>Salesforce opportunity products</td>
+          <td>2–4 sessions of blank-slate product entry</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="finding" style="margin-top:16px">
+      <strong>Estimated time savings per client: 3–6 hours of SA time</strong> if the Sales Brief is completed at close and the pre-kickoff automation pipeline is in place. At 20+ active Classic Billing clients onboarded per year, that's <strong>60–120 hours of SA capacity recovered annually.</strong>
+    </div>
+  </div>
+
+  <p style="color:#555;font-size:0.78rem;text-align:center;padding:20px 0 40px">
+    Alfred for Rev.io · Classic Billing Onboarding Analysis · Generated Mar 17, 2026<br>
+    Based on 91 Outreach transcripts (Sept 2025 – Mar 2026) · Tim Smith · Conner Sharp · Andrew Millington · Jen Stout
+  </p>
+
+</div>
+</body>
+</html>

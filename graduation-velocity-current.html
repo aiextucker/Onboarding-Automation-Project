@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Graduation Velocity Analysis — Rev.io PSA</title>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --surface2: #21253a;
+      --accent: #6c63ff;
+      --accent2: #00d4aa;
+      --warn: #ffa94d;
+      --danger: #ff6b6b;
+      --muted: #7b7f9e;
+      --text: #e8eaf6;
+      --text-dim: #b0b4cc;
+      --border: rgba(255,255,255,0.07);
+      --radius: 14px;
+      --radius-sm: 8px;
+      --nicole: #6c63ff;
+      --kegan: #00d4aa;
+      --jeremy: #ffa94d;
+      --fran: #a78bfa;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      font-size: 15px;
+      line-height: 1.65;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #0d1520 0%, #0f1f35 50%, #0f1117 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 60px 24px 50px;
+      text-align: center;
+    }
+    .hero-eyebrow { font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--accent2); margin-bottom: 16px; }
+    .hero h1 { font-size: clamp(24px, 5vw, 38px); font-weight: 800; line-height: 1.15; letter-spacing: -0.5px; margin-bottom: 14px; }
+    .hero h1 span { color: var(--accent2); }
+    .hero-sub { font-size: clamp(14px, 2.5vw, 16px); color: var(--text-dim); max-width: 640px; margin: 0 auto 28px; }
+    .hero-meta { font-size: 12px; color: var(--muted); }
+
+    .content { max-width: 980px; margin: 0 auto; padding: 0 20px 80px; }
+
+    .back-link { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: 13px; text-decoration: none; margin: 28px 0 0; transition: color 0.15s; }
+    .back-link:hover { color: var(--accent2); }
+
+    /* VERDICT BANNER */
+    .verdict {
+      background: linear-gradient(135deg, rgba(0,212,170,0.1), rgba(108,99,255,0.08));
+      border: 1px solid rgba(0,212,170,0.3);
+      border-radius: var(--radius);
+      padding: 28px 32px;
+      margin: 36px 0 0;
+      position: relative; overflow: hidden;
+    }
+    .verdict::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--accent2), var(--accent)); }
+    .verdict-label { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--accent2); margin-bottom: 10px; }
+    .verdict-title { font-size: 19px; font-weight: 800; margin-bottom: 14px; color: #fff; }
+    .verdict-body { font-size: 14px; color: var(--text-dim); line-height: 1.75; }
+    .verdict-body strong { color: var(--text); }
+
+    /* SECTION */
+    .section { margin-top: 48px; }
+    .section-label { font-size: 11px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
+    .section-title { font-size: clamp(17px, 3vw, 21px); font-weight: 700; margin-bottom: 4px; }
+    .section-divider { width: 40px; height: 3px; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 2px; margin: 12px 0 22px; }
+
+    /* SA SUMMARY CARDS */
+    .sa-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; }
+    .sa-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      position: relative; overflow: hidden;
+    }
+    .sa-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: var(--sa-color); border-radius: var(--radius) var(--radius) 0 0; }
+    .sa-name { font-size: 16px; font-weight: 800; color: #fff; margin-bottom: 16px; }
+    .sa-stat { margin-bottom: 10px; }
+    .sa-stat-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 3px; }
+    .sa-stat-value { font-size: 20px; font-weight: 800; color: var(--sa-color); }
+    .sa-stat-sub { font-size: 12px; color: var(--text-dim); margin-top: 2px; }
+    .sa-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
+    .sa-tag { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 10px; background: rgba(255,255,255,0.05); color: var(--text-dim); border: 1px solid var(--border); }
+
+    /* TIMELINE CHART */
+    .timeline-wrap { overflow-x: auto; }
+    .timeline { min-width: 700px; }
+    .tl-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+    .tl-label { width: 180px; flex-shrink: 0; font-size: 13px; color: var(--text-dim); text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .tl-sa-badge { width: 58px; flex-shrink: 0; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 8px; text-align: center; }
+    .tl-track { flex: 1; position: relative; height: 28px; background: rgba(255,255,255,0.04); border-radius: 4px; overflow: hidden; }
+    .tl-bar { position: absolute; top: 4px; height: 20px; border-radius: 3px; display: flex; align-items: center; padding: 0 6px; }
+    .tl-bar-label { font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.9); white-space: nowrap; }
+    .tl-duration { width: 60px; flex-shrink: 0; font-size: 12px; color: var(--text-dim); text-align: right; }
+    .tl-header { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
+    .tl-header-track { flex: 1; display: flex; }
+
+    /* INSIGHTS */
+    .insight-list { display: flex; flex-direction: column; gap: 14px; }
+    .insight-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 20px 24px;
+      display: flex; gap: 16px; align-items: flex-start;
+    }
+    .insight-icon { font-size: 24px; flex-shrink: 0; margin-top: 2px; }
+    .insight-title { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 6px; }
+    .insight-body { font-size: 14px; color: var(--text-dim); line-height: 1.65; }
+    .insight-body strong { color: var(--text); }
+    .insight-card.green { border-color: rgba(0,212,170,0.2); }
+    .insight-card.warn { border-color: rgba(255,169,77,0.2); }
+    .insight-card.red { border-color: rgba(255,107,107,0.2); }
+    .insight-card.purple { border-color: rgba(108,99,255,0.2); }
+
+    /* DATA TABLE */
+    .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .data-table th { text-align: left; padding: 11px 14px; background: var(--surface2); color: var(--muted); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid var(--border); }
+    .data-table td { padding: 12px 14px; border-bottom: 1px solid var(--border); color: var(--text-dim); vertical-align: middle; }
+    .data-table tr:last-child td { border-bottom: none; }
+    .data-table tr:hover td { background: rgba(255,255,255,0.02); }
+    .sa-chip { display: inline-block; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 10px; }
+    .type-chip { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 6px; background: rgba(255,255,255,0.05); color: var(--text-dim); border: 1px solid var(--border); }
+    .dur-cell { font-weight: 700; }
+    .dur-fast { color: var(--accent2); }
+    .dur-mid { color: var(--warn); }
+    .dur-slow { color: var(--danger); }
+
+    /* COHORT */
+    .cohort-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .cohort-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 20px 22px; }
+    .cohort-title { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 14px; }
+    .cohort-row { display: flex; justify-content: space-between; align-items: center; font-size: 13px; padding: 6px 0; border-bottom: 1px solid var(--border); }
+    .cohort-row:last-child { border-bottom: none; }
+    .cohort-name { color: var(--text-dim); }
+    .cohort-val { font-weight: 700; }
+
+    /* RECS */
+    .rec-list { display: flex; flex-direction: column; gap: 12px; }
+    .rec-card { background: var(--surface); border: 1px solid rgba(108,99,255,0.2); border-radius: var(--radius-sm); padding: 18px 22px; display: flex; gap: 14px; align-items: flex-start; }
+    .rec-num { background: var(--accent); color: #fff; font-size: 12px; font-weight: 800; width: 26px; height: 26px; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .rec-title { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 5px; }
+    .rec-body { font-size: 13px; color: var(--text-dim); line-height: 1.6; }
+
+    .footer { text-align: center; color: var(--muted); font-size: 12px; padding: 32px 20px 40px; border-top: 1px solid var(--border); margin-top: 60px; }
+
+    @media (max-width: 640px) {
+      .cohort-grid { grid-template-columns: 1fr; }
+      .sa-grid { grid-template-columns: 1fr 1fr; }
+      .hero { padding: 40px 20px 34px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-eyebrow">Rev.io PSA Onboarding · Operations Analysis</div>
+  <h1><span>Graduation Velocity</span> Analysis</h1>
+  <div class="hero-sub">18 graduated accounts across all SAs — examining whether count differences reflect performance or portfolio composition.</div>
+  <div class="hero-meta">Data pulled from PSA Clients DB · March 2026 · 18 graduated accounts total</div>
+</div>
+
+<div class="content">
+  <a class="back-link" href="index.html">← Back to Intelligence Hub</a>
+
+  <!-- VERDICT -->
+  <div class="verdict">
+    <div class="verdict-label">Bottom Line Up Front</div>
+    <div class="verdict-title">Nicole's graduation count reflects portfolio size and timing — not a performance gap in others</div>
+    <div class="verdict-body">
+      Nicole graduated 11 of 18 accounts (61%) — but she also received <strong>the majority of accounts sold in the program's first 60 days</strong> (Jul–Sep 2025), giving her a natural head start on graduation timing. Kegan's 4 graduations average <strong>75 days KO→Grad</strong> vs. Nicole's 111 days — he's actually moving clients through faster when measured by duration. The more pressing story in this data isn't who graduated more; it's that <strong>two SA-led clients took 240+ days</strong> (iNet and AhelioTech) and represent a pattern worth diagnosing separately.
+    </div>
+  </div>
+
+  <!-- SA SUMMARY CARDS -->
+  <div class="section">
+    <div class="section-label">By Solutions Analyst</div>
+    <div class="section-title">👤 SA Graduation Summary</div>
+    <div class="section-divider"></div>
+    <div class="sa-grid">
+
+      <div class="sa-card" style="--sa-color: var(--nicole);">
+        <div class="sa-name">Nicole</div>
+        <div class="sa-stat">
+          <div class="sa-stat-label">Graduated</div>
+          <div class="sa-stat-value">11</div>
+          <div class="sa-stat-sub">of 18 total (61%)</div>
+        </div>
+        <div class="sa-stat">
+          <div class="sa-stat-label">Avg KO → Grad</div>
+          <div class="sa-stat-value">111 days</div>
+          <div class="sa-stat-sub">Range: 47–176 days</div>
+        </div>
+        <div class="sa-stat">
+          <div class="sa-stat-label">Total Grad MRR</div>
+          <div class="sa-stat-value">$5,608</div>
+        </div>
+        <div class="sa-tags">
+          <span class="sa-tag">6 SA Led</span>
+          <span class="sa-tag">5 Self-Serve</span>
+          <span class="sa-tag">3 Existing Billing</span>
+        </div>
+      </div>
+
+      <div class="sa-card" style="--sa-color: var(--kegan);">
+        <div class="sa-name">Kegan</div>
+        <div class="sa-stat">
+          <div class="sa-stat-label">Graduated</div>
+          <div class="sa-stat-value">4</div>
+          <div class="sa-stat-sub">of 18 total (22%)</div>
+        </div>
+        <div class="sa-stat">
+          <div class="sa-stat-label">Avg KO → Grad</div>
+          <div class="sa-stat-value">75 days</div>
+          <div class="sa-stat-sub">Range: 61–98 days — fastest SA</div>
+        </div>
+        <div class="sa-stat">
+          <div class="sa-stat-label">Total Grad MRR</div>
+          <div class="sa-stat-value">$3,326</div>
+        </div>
+        <div class="sa-tags">
+          <span class="sa-tag">2 Tigerpaw</span>
+          <span class="sa-tag">Mixed types</span>
+          <span class="sa-tag">Avg $832 MRR</span>
+        </div>
+      </div>
+
+      <div class="sa-card" style="--sa-color: var(--jeremy);">
+        <div class="sa-name">Jeremy</div>
+        <div class="sa-stat">
+          <div class="sa-stat-label">Graduated</div>
+          <div class="sa-stat-value">1</div>
+          <div class="sa-stat-sub">iNet Communications</div>
+        </div>
+        <div class="sa-stat">
+          <div class="sa-stat-label">KO → Grad</div>
+          <div class="sa-stat-value">240 days</div>
+          <div class="sa-stat-sub">Sold Jul 2025 — longest in cohort</div>
+        </div>
+        <div class="sa-stat">
+          <div class="sa-stat-label">MRR</div>
+          <div class="sa-stat-value">$315</div>
+        </div>
+        <div class="sa-tags">
+          <span class="sa-tag">SA Led</span>
+          <span class="sa-tag">Existing Billing</span>
+          <span class="sa-tag">Early cohort</span>
+        </div>
+      </div>
+
+      <div class="sa-card" style="--sa-color: var(--fran);">
+        <div class="sa-name">Fran</div>
+        <div class="sa-stat">
+          <div class="sa-stat-label">Graduated</div>
+          <div class="sa-stat-value">1</div>
+          <div class="sa-stat-sub">AhelioTech</div>
+        </div>
+        <div class="sa-stat">
+          <div class="sa-stat-label">KO → Grad</div>
+          <div class="sa-stat-value">252 days</div>
+          <div class="sa-stat-sub">Strategic account — key partner</div>
+        </div>
+        <div class="sa-stat">
+          <div class="sa-stat-label">MRR</div>
+          <div class="sa-stat-value">$2,800</div>
+          <div class="sa-stat-sub">Highest single-account MRR</div>
+        </div>
+        <div class="sa-tags">
+          <span class="sa-tag">SA Led</span>
+          <span class="sa-tag">Existing Billing</span>
+          <span class="sa-tag">Key partner</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- KEY INSIGHTS -->
+  <div class="section">
+    <div class="section-label">Analysis</div>
+    <div class="section-title">🔍 Key Findings</div>
+    <div class="section-divider"></div>
+    <div class="insight-list">
+
+      <div class="insight-card green">
+        <div class="insight-icon">📅</div>
+        <div>
+          <div class="insight-title">Nicole got the early accounts — graduation count follows assignment order</div>
+          <div class="insight-body">
+            Of the <strong>11 accounts sold before Oct 2025</strong> (the program's first ~90 days), <strong>Nicole received 7 of them</strong> — including 5 of the first 6 sold. First-assigned accounts naturally graduate first. This isn't a performance advantage; it's a timing artifact. Any SA given 7 accounts in Jul–Sep 2025 would show more graduations today than one who started receiving accounts in Oct–Dec 2025.
+          </div>
+        </div>
+      </div>
+
+      <div class="insight-card green">
+        <div class="insight-icon">⚡</div>
+        <div>
+          <div class="insight-title">Kegan's velocity is actually the fastest — 75 days avg vs. Nicole's 111</div>
+          <div class="insight-body">
+            When you measure what the SA controls — <strong>days from kickoff to graduation</strong> — Kegan averages <strong>75 days</strong> across 4 clients (range: 61–98). Nicole averages <strong>111 days</strong> across 11. Kegan is moving clients through onboarding ~30% faster than the current average. This is the more meaningful performance metric, not raw graduation count.
+          </div>
+        </div>
+      </div>
+
+      <div class="insight-card warn">
+        <div class="insight-icon">🐢</div>
+        <div>
+          <div class="insight-title">Long-duration outliers (240+ days) are the real signal — not headcount</div>
+          <div class="insight-body">
+            <strong>iNet Communications (Jeremy, 240 days)</strong> and <strong>AhelioTech (Fran, 252 days)</strong> are the two longest-running graduated accounts. Both are SA-led, both were early cohort (Jul 2025). AhelioTech is a strategic partner so duration may be justified — but iNet at $315 MRR taking 240 days warrants a retrospective. <strong>What caused the delay — client engagement, complexity, or something else?</strong> That answer is more useful than the graduation count debate.
+          </div>
+        </div>
+      </div>
+
+      <div class="insight-card purple">
+        <div class="insight-icon">🔄</div>
+        <div>
+          <div class="insight-title">Nicole's Self-Serve accounts average 112 days — same as her SA-led (111 days)</div>
+          <div class="insight-body">
+            Nicole handles 5 Self-Serve accounts and 6 SA-led accounts. Their average durations are nearly identical (112 vs. 111 days). This suggests <strong>self-serve isn't actually moving faster</strong> in her portfolio — which is worth investigating. Self-serve should theoretically graduate faster. Is there a client engagement pattern or bottleneck in the self-serve flow?
+          </div>
+        </div>
+      </div>
+
+      <div class="insight-card green">
+        <div class="insight-icon">📦</div>
+        <div>
+          <div class="insight-title">Ataraxis Solutions: 156-day KO→Grad reflects hold time, not SA pace</div>
+          <div class="insight-body">
+            Ataraxis (Nicole) has a 76-day gap between close and kickoff and a 156-day KO→Grad duration — but the account was placed on hold during that period. The hold time inflates the duration metric. This is not a performance indicator for Nicole; it should be excluded or adjusted when benchmarking her average velocity.
+          </div>
+        </div>
+      </div>
+
+      <div class="insight-card red">
+        <div class="insight-icon">👤</div>
+        <div>
+          <div class="insight-title">Bullfrog graduated in 16 days with no SA assigned — needs cleanup</div>
+          <div class="insight-body">
+            Bullfrog has no Solutions Analyst assigned in the DB and graduated in 16 days (sold Mar 5, KO Mar 11, Grad Mar 27). That's the fastest graduation in the dataset. <strong>Was this self-serve? Was it missed in assignment?</strong> Either way, the missing SA ownership is a data quality issue that should be corrected in Notion.
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- COHORT COMPARISON -->
+  <div class="section">
+    <div class="section-label">Context</div>
+    <div class="section-title">📊 Cohort Comparison</div>
+    <div class="section-divider"></div>
+    <div class="cohort-grid">
+
+      <div class="cohort-card">
+        <div class="cohort-title">Accounts Sold Jul–Oct 2025 (Early Cohort)</div>
+        <div class="cohort-row"><span class="cohort-name">Nicole</span><span class="cohort-val" style="color:var(--nicole);">7 accounts</span></div>
+        <div class="cohort-row"><span class="cohort-name">Kegan</span><span class="cohort-val" style="color:var(--kegan);">1 account</span></div>
+        <div class="cohort-row"><span class="cohort-name">Jeremy</span><span class="cohort-val" style="color:var(--jeremy);">1 account</span></div>
+        <div class="cohort-row"><span class="cohort-name">Fran</span><span class="cohort-val" style="color:var(--fran);">1 account</span></div>
+        <div class="cohort-row"><span class="cohort-name" style="color:var(--accent2);">Nicole's share of early accounts</span><span class="cohort-val" style="color:var(--accent2);">64%</span></div>
+      </div>
+
+      <div class="cohort-card">
+        <div class="cohort-title">Avg Days KO → Graduation</div>
+        <div class="cohort-row"><span class="cohort-name">Kegan</span><span class="cohort-val dur-fast">75 days ⚡</span></div>
+        <div class="cohort-row"><span class="cohort-name">Nicole</span><span class="cohort-val dur-mid">111 days</span></div>
+        <div class="cohort-row"><span class="cohort-name">Jeremy</span><span class="cohort-val dur-slow">240 days</span></div>
+        <div class="cohort-row"><span class="cohort-name">Fran</span><span class="cohort-val dur-slow">252 days*</span></div>
+        <div class="cohort-row"><span class="cohort-name" style="color:var(--muted);">* strategic partner account</span><span class="cohort-val" style="color:var(--muted);">—</span></div>
+      </div>
+
+      <div class="cohort-card">
+        <div class="cohort-title">Graduated MRR by SA</div>
+        <div class="cohort-row"><span class="cohort-name">Nicole</span><span class="cohort-val" style="color:var(--nicole);">$5,608</span></div>
+        <div class="cohort-row"><span class="cohort-name">Fran (AhelioTech)</span><span class="cohort-val" style="color:var(--fran);">$2,800</span></div>
+        <div class="cohort-row"><span class="cohort-name">Kegan</span><span class="cohort-val" style="color:var(--kegan);">$3,326</span></div>
+        <div class="cohort-row"><span class="cohort-name">Jeremy</span><span class="cohort-val" style="color:var(--jeremy);">$315</span></div>
+        <div class="cohort-row"><span class="cohort-name">Bullfrog (unassigned)</span><span class="cohort-val">$600</span></div>
+      </div>
+
+      <div class="cohort-card">
+        <div class="cohort-title">Self-Serve vs SA-Led Avg Duration</div>
+        <div class="cohort-row"><span class="cohort-name">Self-Serve (all)</span><span class="cohort-val dur-fast">~108 days</span></div>
+        <div class="cohort-row"><span class="cohort-name">SA-Led (all)</span><span class="cohort-val dur-mid">~137 days</span></div>
+        <div class="cohort-row"><span class="cohort-name">Nicole — SA Led</span><span class="cohort-val">111 days</span></div>
+        <div class="cohort-row"><span class="cohort-name">Nicole — Self-Serve</span><span class="cohort-val">112 days</span></div>
+        <div class="cohort-row"><span class="cohort-name">⚠️ Self-serve not faster for Nicole</span><span class="cohort-val" style="color:var(--warn);">Investigate</span></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- FULL DATA TABLE -->
+  <div class="section">
+    <div class="section-label">Raw Data</div>
+    <div class="section-title">📋 All Graduated Accounts</div>
+    <div class="section-divider"></div>
+    <div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; overflow-x: auto;">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Client</th>
+            <th>SA</th>
+            <th>Date Sold</th>
+            <th>KO Date</th>
+            <th>Grad Date</th>
+            <th>KO→Grad</th>
+            <th>Type</th>
+            <th>MRR</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Centra IP Networks</td><td><span class="sa-chip" style="background:rgba(108,99,255,0.15);color:#9d97ff;">Nicole</span></td><td>2025-07-31</td><td>2025-08-05</td><td>2025-09-30</td><td class="dur-cell dur-fast">56d</td><td><span class="type-chip">SA Led</span></td><td>$427</td></tr>
+          <tr><td>Secure Property Solutions</td><td><span class="sa-chip" style="background:rgba(108,99,255,0.15);color:#9d97ff;">Nicole</span></td><td>2025-08-11</td><td>2025-08-15</td><td>2025-10-01</td><td class="dur-cell dur-fast">47d</td><td><span class="type-chip">SA Led</span></td><td>$400</td></tr>
+          <tr><td>Merlin Communications</td><td><span class="sa-chip" style="background:rgba(0,212,170,0.12);color:#00d4aa;">Kegan</span></td><td>2025-07-31</td><td>2025-08-12</td><td>2025-10-30</td><td class="dur-cell dur-mid">79d</td><td><span class="type-chip">SA Led</span></td><td>$726</td></tr>
+          <tr><td>Trilogy</td><td><span class="sa-chip" style="background:rgba(0,212,170,0.12);color:#00d4aa;">Kegan</span></td><td>—</td><td>2025-08-29</td><td>2025-10-30</td><td class="dur-cell dur-mid">62d</td><td><span class="type-chip">Web - TP</span></td><td>$400</td></tr>
+          <tr><td>Tolleson Inc</td><td><span class="sa-chip" style="background:rgba(108,99,255,0.15);color:#9d97ff;">Nicole</span></td><td>2025-08-15</td><td>2025-08-21</td><td>2025-11-04</td><td class="dur-cell dur-mid">75d</td><td><span class="type-chip">SA Led</span></td><td>$796</td></tr>
+          <tr><td>Bard Locksmith &amp; Security</td><td><span class="sa-chip" style="background:rgba(108,99,255,0.15);color:#9d97ff;">Nicole</span></td><td>2025-07-16</td><td>2025-07-31</td><td>2026-01-23</td><td class="dur-cell dur-slow">176d</td><td><span class="type-chip">SA Led</span></td><td>$315</td></tr>
+          <tr><td>Pando Tech Solutions</td><td><span class="sa-chip" style="background:rgba(108,99,255,0.15);color:#9d97ff;">Nicole</span></td><td>2025-11-14</td><td>2025-11-19</td><td>2026-02-04</td><td class="dur-cell dur-mid">77d</td><td><span class="type-chip">Self-Serve</span></td><td>$500</td></tr>
+          <tr><td>Security Systems Unlimited</td><td><span class="sa-chip" style="background:rgba(108,99,255,0.15);color:#9d97ff;">Nicole</span></td><td>—</td><td>2025-09-08</td><td>2026-02-10</td><td class="dur-cell dur-slow">155d</td><td><span class="type-chip">SA Led</span></td><td>$800</td></tr>
+          <tr><td>Savvy Communications</td><td><span class="sa-chip" style="background:rgba(108,99,255,0.15);color:#9d97ff;">Nicole</span></td><td>2025-09-12</td><td>2025-09-30</td><td>2026-02-11</td><td class="dur-cell dur-slow">134d</td><td><span class="type-chip">Self-Serve</span></td><td>$400</td></tr>
+          <tr><td>MiSwitch</td><td><span class="sa-chip" style="background:rgba(108,99,255,0.15);color:#9d97ff;">Nicole</span></td><td>2025-09-30</td><td>2025-10-15</td><td>2026-02-20</td><td class="dur-cell dur-slow">128d</td><td><span class="type-chip">Self-Serve</span></td><td>$320</td></tr>
+          <tr><td>Savvy AI</td><td><span class="sa-chip" style="background:rgba(108,99,255,0.15);color:#9d97ff;">Nicole</span></td><td>2025-10-21</td><td>2025-11-03</td><td>2026-02-25</td><td class="dur-cell dur-mid">114d</td><td><span class="type-chip">Self-Serve</span></td><td>$500</td></tr>
+          <tr><td>Ataraxis Solutions</td><td><span class="sa-chip" style="background:rgba(108,99,255,0.15);color:#9d97ff;">Nicole</span></td><td>2025-07-10</td><td>2025-09-24</td><td>2026-02-27</td><td class="dur-cell dur-slow">156d</td><td><span class="type-chip">SA Led</span></td><td>$500</td></tr>
+          <tr><td>AhelioTech</td><td><span class="sa-chip" style="background:rgba(167,139,250,0.15);color:#c4b5fd;">Fran</span></td><td>2025-07-01</td><td>2025-07-08</td><td>2026-03-17</td><td class="dur-cell dur-slow">252d</td><td><span class="type-chip">SA Led</span></td><td>$2,800</td></tr>
+          <tr><td>Lantern Streaming Security</td><td><span class="sa-chip" style="background:rgba(108,99,255,0.15);color:#9d97ff;">Nicole</span></td><td>2025-12-02</td><td>2025-12-08</td><td>2026-03-23</td><td class="dur-cell dur-mid">105d</td><td><span class="type-chip">Self-Serve</span></td><td>$650</td></tr>
+          <tr><td>Xmission</td><td><span class="sa-chip" style="background:rgba(0,212,170,0.12);color:#00d4aa;">Kegan</span></td><td>2025-12-09</td><td>2025-12-17</td><td>2026-03-25</td><td class="dur-cell dur-mid">98d</td><td><span class="type-chip">Hybrid</span></td><td>$1,800</td></tr>
+          <tr><td>Bullfrog</td><td><span class="sa-chip" style="background:rgba(255,255,255,0.06);color:var(--warn);">⚠️ Unassigned</span></td><td>2026-03-05</td><td>2026-03-11</td><td>2026-03-27</td><td class="dur-cell dur-fast">16d</td><td><span class="type-chip">—</span></td><td>$600</td></tr>
+          <tr><td>iNet Communications</td><td><span class="sa-chip" style="background:rgba(255,169,77,0.12);color:#ffa94d;">Jeremy</span></td><td>2025-07-11</td><td>2025-07-30</td><td>2026-03-27</td><td class="dur-cell dur-slow">240d</td><td><span class="type-chip">SA Led</span></td><td>$315</td></tr>
+          <tr><td>Raven Tech LLC</td><td><span class="sa-chip" style="background:rgba(0,212,170,0.12);color:#00d4aa;">Kegan</span></td><td>2026-01-23</td><td>2026-01-28</td><td>2026-03-30</td><td class="dur-cell dur-fast">61d</td><td><span class="type-chip">Self-Serve - TP</span></td><td>$400</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- EARLY COHORT OPEN ACCOUNTS -->
+  <div class="section">
+    <div class="section-label">Portfolio Context</div>
+    <div class="section-title">🔍 Early Cohort (Jul–Sep 2025) — Accounts Still Open</div>
+    <div class="section-divider"></div>
+
+    <div class="insight-card warn" style="margin-bottom: 20px;">
+      <div class="insight-icon">📌</div>
+      <div>
+        <div class="insight-title">The graduation gap isn't a Nicole-vs-others story — it's a stuck-account story</div>
+        <div class="insight-body">
+          Nicole was assigned <strong>25 accounts in Jul–Sep 2025</strong>. Kegan got 15, Jeremy 9, Halle 6. The real question isn't why others haven't graduated as many — it's why <strong>Kegan has 11 early-cohort accounts still open</strong> and Jeremy has 6, most of them parked at 0% milestones in RTS or On Hold statuses. Note: Ataraxis Solutions (Nicole) was on hold during her open period — that KO-to-grad duration reflects hold time, not SA pace.
+        </div>
+      </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(440px, 1fr)); gap: 16px;">
+
+      <!-- Nicole -->
+      <div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden;">
+        <div style="background: rgba(108,99,255,0.12); border-bottom: 1px solid var(--border); padding: 14px 18px; display: flex; align-items: center; gap: 10px;">
+          <span style="font-size:13px; font-weight:800; color:#fff;">Nicole</span>
+          <span style="font-size:12px; color: var(--muted);">8 early-cohort accounts still open</span>
+          <span style="margin-left:auto; font-size:11px; font-weight:700; background:rgba(108,99,255,0.2); color:#9d97ff; padding:2px 10px; border-radius:10px;">25 assigned Jul–Sep '25</span>
+        </div>
+        <table class="data-table" style="font-size:12px;">
+          <thead><tr><th>Client</th><th>Status</th><th>KO Date</th><th>Age</th><th>%</th></tr></thead>
+          <tbody>
+            <tr><td>Silent Watchman Security</td><td><span style="color:var(--warn);">On Hold - Functionality</span></td><td>2025-08-07</td><td style="color:var(--danger);">235d</td><td>0%</td></tr>
+            <tr><td>Alarm24</td><td><span style="color:var(--danger);">Off Track</span></td><td>2025-08-27</td><td style="color:var(--danger);">215d</td><td>0%</td></tr>
+            <tr><td>Integrity Sound</td><td><span style="color:var(--danger);">Off Track</span></td><td>2025-09-02</td><td style="color:var(--danger);">209d</td><td>1%</td></tr>
+            <tr><td>Mr. PC Office</td><td><span style="color:var(--muted);">RTS - Ghosting</span></td><td>2025-09-03</td><td style="color:var(--danger);">208d</td><td>0%</td></tr>
+            <tr><td>Soundworks &amp; Security</td><td><span style="color:var(--danger);">Off Track</span></td><td>2025-09-24</td><td style="color:var(--warn);">187d</td><td>0%</td></tr>
+            <tr><td>Intec Security Solutions</td><td><span style="color:var(--muted);">RTS - Functionality</span></td><td>2025-10-10</td><td style="color:var(--warn);">171d</td><td>0%</td></tr>
+            <tr><td>Knight Security Alarm</td><td><span style="color:var(--accent2);">In Progress</span></td><td>2025-10-14</td><td style="color:var(--warn);">167d</td><td>0%</td></tr>
+            <tr><td>Hiscall</td><td><span style="color:var(--warn);">On Hold - Functionality</span></td><td>2026-04-01</td><td>KO pending</td><td>0%</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Kegan -->
+      <div style="background: var(--surface); border: 1px solid rgba(255,107,107,0.25); border-radius: var(--radius); overflow: hidden;">
+        <div style="background: rgba(255,107,107,0.08); border-bottom: 1px solid rgba(255,107,107,0.2); padding: 14px 18px; display: flex; align-items: center; gap: 10px;">
+          <span style="font-size:13px; font-weight:800; color:#fff;">Kegan</span>
+          <span style="font-size:12px; color: var(--muted);">11 early-cohort accounts still open</span>
+          <span style="margin-left:auto; font-size:11px; font-weight:700; background:rgba(255,107,107,0.15); color:#ff6b6b; padding:2px 10px; border-radius:10px;">⚠️ Most stuck</span>
+        </div>
+        <table class="data-table" style="font-size:12px;">
+          <thead><tr><th>Client</th><th>Status</th><th>KO Date</th><th>Age</th><th>%</th></tr></thead>
+          <tbody>
+            <tr><td>Input Group</td><td><span style="color:var(--muted);">RTS - Ghosting</span></td><td>2025-07-25</td><td style="color:var(--danger);">248d</td><td>0%</td></tr>
+            <tr><td>Royce Bravo</td><td><span style="color:var(--muted);">RTS - Ghosting</span></td><td>2025-08-06</td><td style="color:var(--danger);">236d</td><td>0%</td></tr>
+            <tr><td>Royce Integrated</td><td><span style="color:var(--muted);">RTS - Ghosting</span></td><td>2025-08-07</td><td style="color:var(--danger);">235d</td><td>0%</td></tr>
+            <tr><td>Grahek Technology</td><td><span style="color:var(--danger);">Off Track</span></td><td>2025-08-11</td><td style="color:var(--danger);">231d</td><td>1%</td></tr>
+            <tr><td>Dialog Telecom</td><td><span style="color:var(--muted);">RTS - Functionality</span></td><td>2025-10-08</td><td style="color:var(--warn);">173d</td><td>0%</td></tr>
+            <tr><td>Fastrack Virtual Guard</td><td><span style="color:var(--muted);">RTS - Ghosting</span></td><td>2025-10-09</td><td style="color:var(--warn);">172d</td><td>1%</td></tr>
+            <tr><td>Yeti Networks</td><td><span style="color:var(--warn);">On Hold - Functionality</span></td><td>2025-10-03</td><td style="color:var(--warn);">178d</td><td>0%</td></tr>
+            <tr><td>Midwest Technology</td><td><span style="color:var(--warn);">On Hold - Functionality</span></td><td>2025-10-13</td><td style="color:var(--warn);">168d</td><td>1%</td></tr>
+            <tr><td>HTI Systems</td><td><span style="color:var(--warn);">On Hold - Functionality</span></td><td>2025-12-05</td><td>115d</td><td>0%</td></tr>
+            <tr><td>A Sound Look</td><td><span style="color:var(--muted);">RTS - Client Bandwidth</span></td><td>2025-12-10</td><td>110d</td><td>0%</td></tr>
+            <tr><td>4Voice</td><td><span style="color:var(--accent2);">In Progress</span></td><td>2026-02-05</td><td>53d</td><td>1%</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Jeremy -->
+      <div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden;">
+        <div style="background: rgba(255,169,77,0.08); border-bottom: 1px solid var(--border); padding: 14px 18px; display: flex; align-items: center; gap: 10px;">
+          <span style="font-size:13px; font-weight:800; color:#fff;">Jeremy</span>
+          <span style="font-size:12px; color: var(--muted);">6 early-cohort accounts still open</span>
+          <span style="margin-left:auto; font-size:11px; font-weight:700; background:rgba(255,169,77,0.15); color:#ffa94d; padding:2px 10px; border-radius:10px;">9 assigned Jul–Sep '25</span>
+        </div>
+        <table class="data-table" style="font-size:12px;">
+          <thead><tr><th>Client</th><th>Status</th><th>KO Date</th><th>Age</th><th>%</th></tr></thead>
+          <tbody>
+            <tr><td>Blueline Telecom</td><td><span style="color:var(--danger);">Off Track</span></td><td>2025-07-18</td><td style="color:var(--danger);">255d</td><td>0%</td></tr>
+            <tr><td>Broadstar</td><td><span style="color:var(--muted);">RTS - Ghosting</span></td><td>2025-07-30</td><td style="color:var(--danger);">243d</td><td>0%</td></tr>
+            <tr><td>BlueEdge</td><td><span style="color:var(--warn);">On Hold - Client</span></td><td>2025-08-08</td><td style="color:var(--danger);">234d</td><td>0%</td></tr>
+            <tr><td>Atron Solutions</td><td><span style="color:var(--accent2);">In Progress</span></td><td>2025-08-12</td><td style="color:var(--danger);">230d</td><td>1%</td></tr>
+            <tr><td>Particle Communications</td><td><span style="color:var(--muted);">RTS - Ghosting</span></td><td>2025-09-17</td><td style="color:var(--warn);">194d</td><td>0%</td></tr>
+            <tr><td>JonRog Tech</td><td><span style="color:var(--accent2);">In Progress</span></td><td>2026-04-01</td><td>KO pending</td><td>0%</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Halle -->
+      <div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden;">
+        <div style="background: rgba(255,255,255,0.03); border-bottom: 1px solid var(--border); padding: 14px 18px; display: flex; align-items: center; gap: 10px;">
+          <span style="font-size:13px; font-weight:800; color:#fff;">Halle</span>
+          <span style="font-size:12px; color: var(--muted);">5 early-cohort accounts still open</span>
+          <span style="margin-left:auto; font-size:11px; font-weight:700; background:rgba(255,255,255,0.06); color:var(--muted); padding:2px 10px; border-radius:10px;">6 assigned Jul–Sep '25</span>
+        </div>
+        <table class="data-table" style="font-size:12px;">
+          <thead><tr><th>Client</th><th>Status</th><th>KO Date</th><th>Age</th><th>%</th></tr></thead>
+          <tbody>
+            <tr><td>Command Corp</td><td><span style="color:var(--accent2);">In Progress</span></td><td>2025-08-28</td><td style="color:var(--danger);">214d</td><td>1%</td></tr>
+            <tr><td>Semetra</td><td><span style="color:var(--warn);">On Hold - Functionality</span></td><td>2025-11-03</td><td>147d</td><td>0%</td></tr>
+            <tr><td>CallSprout</td><td><span style="color:var(--accent2);">In Progress</span></td><td>2025-11-10</td><td>140d</td><td>1%</td></tr>
+            <tr><td>Newport Network Solutions</td><td><span style="color:var(--accent2);">In Progress</span></td><td>2025-10-14</td><td style="color:var(--warn);">167d</td><td>0%</td></tr>
+            <tr><td>JFM-Prestige</td><td><span style="color:var(--accent2);">In Progress</span></td><td>2026-02-19</td><td>39d</td><td>1%</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- RECOMMENDATIONS -->
+  <div class="section">
+    <div class="section-label">Next Steps</div>
+    <div class="section-title">🎯 Recommendations</div>
+    <div class="section-divider"></div>
+    <div class="rec-list">
+      <div class="rec-card">
+        <div class="rec-num">1</div>
+        <div>
+          <div class="rec-title">Reframe the metric: use KO→Grad duration, not graduation count</div>
+          <div class="rec-body">Raw graduation count is heavily influenced by when accounts were assigned. Velocity (days from kickoff to graduation) is the controllable performance metric. By that measure, Kegan leads the team at 75 days avg. Socialize this framing before anyone takes the graduation count at face value.</div>
+        </div>
+      </div>
+      <div class="rec-card">
+        <div class="rec-num">2</div>
+        <div>
+          <div class="rec-title">Do a retrospective on iNet Communications (240 days, $315 MRR)</div>
+          <div class="rec-body">This is the clearest outlier that doesn't have a strategic explanation. Was the client unresponsive? Was there a complexity issue that wasn't flagged early? Understanding what happened here informs process, not performance reviews.</div>
+        </div>
+      </div>
+      <div class="rec-card">
+        <div class="rec-num">3</div>
+        <div>
+          <div class="rec-title">Assign SA ownership to Bullfrog in Notion</div>
+          <div class="rec-body">Bullfrog graduated in 16 days with no SA assigned — fastest in the dataset. Fix the data record so it doesn't create noise in reporting. If it was truly unassisted, flag it as a self-serve success story.</div>
+        </div>
+      </div>
+      <div class="rec-card">
+        <div class="rec-num">4</div>
+        <div>
+          <div class="rec-title">Investigate why Nicole's Self-Serve accounts aren't graduating faster than SA-led</div>
+          <div class="rec-body">Self-serve should reduce SA time and accelerate graduation. Nicole's self-serve average (112 days) is essentially the same as her SA-led average (111 days). Is the self-serve flow requiring as much SA involvement as SA-led? Is there a bottleneck in the client portal experience or handoff?</div>
+        </div>
+      </div>
+      <div class="rec-card">
+        <div class="rec-num">5</div>
+        <div>
+          <div class="rec-title">Track assigned account dates alongside graduation dates going forward</div>
+          <div class="rec-body">To make SA comparisons fair as the team grows, the DB should capture when an account was assigned to an SA (not just when it was sold or kicked off). This removes the timing artifact and makes velocity comparisons apples-to-apples across the team.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  ⚡ Rev.io Intelligence Stack · Graduation Velocity Analysis · March 2026 · 18 graduated accounts
+</div>
+
+</body>
+</html>

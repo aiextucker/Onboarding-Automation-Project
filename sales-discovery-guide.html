@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>What Sales Needs to Collect — Pre-Onboarding Discovery Guide</title>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --surface2: #21253a;
+      --accent: #6c63ff;
+      --accent2: #00d4aa;
+      --warn: #ffa94d;
+      --danger: #ff6b6b;
+      --muted: #7b7f9e;
+      --text: #e8eaf6;
+      --text-dim: #b0b4cc;
+      --border: rgba(255,255,255,0.07);
+      --radius: 14px;
+      --radius-sm: 8px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      font-size: 15px;
+      line-height: 1.65;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      background: linear-gradient(135deg, #12142a 0%, #1a1040 50%, #0f1117 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 60px 24px 48px;
+      text-align: center;
+    }
+    .hero-eyebrow {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--accent2);
+      margin-bottom: 16px;
+    }
+    .hero h1 {
+      font-size: clamp(24px, 5vw, 42px);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.5px;
+      margin-bottom: 14px;
+    }
+    .hero h1 span { color: var(--accent); }
+    .hero-sub {
+      font-size: clamp(14px, 2.5vw, 18px);
+      color: var(--text-dim);
+      max-width: 680px;
+      margin: 0 auto 28px;
+      font-style: italic;
+    }
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+    }
+    .hero-tag {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 5px 14px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    /* ── LAYOUT ── */
+    .content {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 20px 80px;
+    }
+
+    /* ── SECTION ── */
+    .section { margin-top: 56px; }
+    .section-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+    .section-title {
+      font-size: clamp(18px, 3.5vw, 26px);
+      font-weight: 700;
+      margin-bottom: 4px;
+      line-height: 1.25;
+    }
+    .section-divider {
+      width: 40px;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      border-radius: 2px;
+      margin: 14px 0 24px;
+    }
+
+    /* ── STAT CARDS ── */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px 20px;
+      text-align: center;
+    }
+    .stat-num {
+      font-size: 40px;
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 4px;
+      color: var(--accent);
+    }
+    .stat-num.green { color: var(--accent2); }
+    .stat-num.warn  { color: var(--warn); }
+    .stat-label { font-size: 12px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+    .stat-sub   { font-size: 11px; color: rgba(123,127,158,0.6); margin-top: 3px; }
+
+    /* ── PRIORITY TABLE ── */
+    .priority-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--surface);
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      margin-bottom: 24px;
+    }
+    .priority-table th {
+      background: var(--surface2);
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 12px 18px;
+      text-align: left;
+    }
+    .priority-table td {
+      padding: 14px 18px;
+      border-top: 1px solid var(--border);
+      vertical-align: top;
+      font-size: 14px;
+      color: var(--text-dim);
+    }
+    .priority-table td:first-child {
+      width: 40px;
+      text-align: center;
+      font-size: 18px;
+    }
+    .priority-table td strong {
+      color: var(--text);
+      display: block;
+      margin-bottom: 3px;
+    }
+    .priority-table tr:hover td { background: rgba(108,99,255,0.04); }
+
+    /* ── BADGE ── */
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+    .badge-accent  { background: rgba(108,99,255,0.15); color: var(--accent); }
+    .badge-green   { background: rgba(0,212,170,0.12);  color: var(--accent2); }
+    .badge-warn    { background: rgba(255,169,77,0.15); color: var(--warn); }
+
+    /* ── QUESTION GROUPS ── */
+    .q-group {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px 26px;
+      margin-bottom: 16px;
+    }
+    .q-group-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .q-group-icon { font-size: 22px; }
+    .q-group-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .q-group-freq {
+      margin-left: auto;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .q-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .q-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-size: 14px;
+      color: var(--text-dim);
+    }
+    .q-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent);
+      flex-shrink: 0;
+      margin-top: 7px;
+    }
+    .q-dot.green { background: var(--accent2); }
+    .q-dot.warn  { background: var(--warn); }
+
+    /* ── UNLOCK TABLE ── */
+    .unlock-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 14px;
+      margin-top: 8px;
+    }
+    .unlock-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 22px;
+    }
+    .unlock-card-header {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .unlock-card ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+    .unlock-card li {
+      font-size: 13px;
+      color: var(--text-dim);
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .unlock-card li::before {
+      content: '✓';
+      color: var(--accent2);
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    /* ── INSIGHT BOX ── */
+    .insight-box {
+      background: linear-gradient(135deg, rgba(108,99,255,0.08), rgba(0,212,170,0.05));
+      border: 1px solid rgba(108,99,255,0.25);
+      border-radius: var(--radius);
+      padding: 26px 28px;
+      margin-top: 24px;
+    }
+    .insight-box-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .insight-box p {
+      font-size: 14px;
+      color: var(--text-dim);
+      line-height: 1.7;
+    }
+    .insight-box p + p { margin-top: 10px; }
+    .insight-box strong { color: var(--text); }
+
+    /* ── GAP LIST ── */
+    .gap-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 12px;
+      margin-top: 8px;
+    }
+    .gap-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--danger);
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+      font-size: 13px;
+      color: var(--text-dim);
+    }
+    .gap-card strong {
+      display: block;
+      color: var(--text);
+      margin-bottom: 3px;
+      font-size: 13px;
+    }
+
+    /* ── FOOTER ── */
+    .footer {
+      text-align: center;
+      padding: 40px 20px;
+      border-top: 1px solid var(--border);
+      font-size: 12px;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-eyebrow">⚡ Rev.io Intelligence Stack</div>
+  <h1>What <span>Sales Needs to Collect</span></h1>
+  <p class="hero-sub">Pre-onboarding discovery guide — based on analysis of 566 PSA onboarding calls. Capture these data points at close to enable SA pre-configuration before kickoff.</p>
+  <div class="hero-meta">
+    <span class="hero-tag">📞 566 Calls Analyzed</span>
+    <span class="hero-tag">⏱️ 411.7 Hours on Calls</span>
+    <span class="hero-tag">👥 3 Solution Advisors</span>
+    <span class="hero-tag">📅 Nov 2025 – Mar 2026</span>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- SECTION 01: THE PROBLEM -->
+  <div class="section">
+    <div class="section-label">Section 01</div>
+    <div class="section-title">🔁 The Problem</div>
+    <div class="section-divider"></div>
+
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-num">90%</div>
+        <div class="stat-label">Of Calls</div>
+        <div class="stat-sub">Ask the same 4 questions</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num green">411</div>
+        <div class="stat-label">SA Hours</div>
+        <div class="stat-sub">In 5 months across 3 SAs</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num warn">Day 1</div>
+        <div class="stat-label">Start Point</div>
+        <div class="stat-sub">Currently blank. Should be 60%</div>
+      </div>
+    </div>
+
+    <div class="insight-box">
+      <div class="insight-box-title">🎯 This is a handoff gap, not a discovery gap</div>
+      <p>The top 4 questions — ticketing workflow, integrations, payment processor, data migration scope — come up in <strong>84–90% of every onboarding call</strong>. Sales already knows the answers at point of sale.</p>
+      <p>Capturing just <strong>4 data points at close</strong> enables billing setup, user account creation, integration configuration, and migration scoping to begin before the SA ever schedules a call. That's the difference between Day 1 starting blank and <strong>Day 1 starting at 60% configured</strong>.</p>
+    </div>
+  </div>
+
+  <!-- SECTION 02: THE CORE 7 -->
+  <div class="section">
+    <div class="section-label">Section 02</div>
+    <div class="section-title">🎯 The Core 8 — Capture at Close</div>
+    <div class="section-divider"></div>
+    <p style="color:var(--text-dim); margin-bottom:20px; font-size:14px;">These are the <strong style="color:var(--text)">8 questions</strong> that unlock the most pre-configuration. Ask these during the sales process — and as a structured 5-minute segment at the end of the closing call.</p>
+
+    <table class="priority-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Question</th>
+          <th>Why It Matters</th>
+          <th>Unlocks</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1️⃣</td>
+          <td><strong>Prior PSA / current system?</strong>Tigerpaw, ConnectWise, Halo, spreadsheets, nothing?</td>
+          <td>Determines migration path. Tigerpaw alone = 42+ clients needing a dedicated playbook. ConnectWise = 3 of last 12 wins.</td>
+          <td><span class="badge badge-accent">Data Import</span></td>
+        </tr>
+        <tr>
+          <td>2️⃣</td>
+          <td><strong>Accounting software?</strong>QuickBooks Online, Desktop, NetSuite, or other?</td>
+          <td>QuickBooks dominates (104 calls). QBO vs Desktop is a different connector — must know upfront. Desktop = no direct integration today.</td>
+          <td><span class="badge badge-accent">Integrations</span></td>
+        </tr>
+        <tr>
+          <td>3️⃣</td>
+          <td><strong>RMM tool?</strong>NinjaOne, Datto, ConnectWise Automate, or other?</td>
+          <td>RMM integration is a top-priority requirement for most MSPs. NinjaOne alone appeared in multiple recent wins. Defines integration queue on Day 1.</td>
+          <td><span class="badge badge-accent">Integrations</span></td>
+        </tr>
+        <tr>
+          <td>4️⃣</td>
+          <td><strong>Payment processor?</strong>Who processes payments today — same or switching?</td>
+          <td>Comes up in 89% of calls. SA currently re-discovers this every single engagement. Rev.io Payments already live for some billing clients.</td>
+          <td><span class="badge badge-accent">Payments Config</span></td>
+        </tr>
+        <tr>
+          <td>5️⃣</td>
+          <td><strong>How many users + what are their roles/job titles?</strong>e.g. Owner, Office Manager, Field Tech, Dispatcher, Billing Admin — list them out</td>
+          <td>Drives user account creation with correct Rev.io role mapping. Getting actual job titles means we can map to the right permissions (Technician / Dispatcher / Manager / Admin / Billing Admin) before Day 1 — not reconstructing the org chart live on the call.</td>
+          <td><span class="badge badge-accent">Admin / Users</span></td>
+        </tr>
+        <tr>
+          <td>6️⃣</td>
+          <td><strong>How do you dispatch?</strong>By department, geography, skill set, or a combination?</td>
+          <td>Gates the entire dispatch board configuration. Getting this wrong means the SA rebuilds the service board structure in session 1.</td>
+          <td><span class="badge badge-accent">Processes</span></td>
+        </tr>
+        <tr>
+          <td>7️⃣</td>
+          <td><strong>Invoice number sequence?</strong>Do you need continuity with your current system — no overlaps?</td>
+          <td>Invoice numbering continuity is a recurring concern raised in sales but re-discovered at onboarding. Must be set before any invoice is generated.</td>
+          <td><span class="badge badge-accent">Company Info</span></td>
+        </tr>
+        <tr>
+          <td>8️⃣</td>
+          <td><strong>SureTax credentials?</strong>Do they have a SureTax account — or will they need one set up?</td>
+          <td>SureTax is required for automated tax calculation. Credentials must be collected before tax config can be completed. Missing this delays the entire billing setup.</td>
+          <td><span class="badge badge-accent">Tax Config</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="insight-box" style="margin-top: 0;">
+      <div class="insight-box-title">💬 The Explicit Close</div>
+      <p>"Before we wrap up — we're going to set up your Rev.io environment <strong>before your first onboarding call</strong> so your team hits the ground running. Can I take 5 minutes to confirm a few details?" Then run through the 3–4 most relevant questions based on the call.</p>
+    </div>
+  </div>
+
+  <!-- SECTION 03: SECONDARY QUESTIONS -->
+  <div class="section">
+    <div class="section-label">Section 03</div>
+    <div class="section-title">📋 Secondary — Build the Instance Skeleton</div>
+    <div class="section-divider"></div>
+    <p style="color:var(--text-dim); margin-bottom:24px; font-size:14px;">These unlock the next layer of pre-configuration — get them in the sales process where possible.</p>
+
+    <div class="q-group">
+      <div class="q-group-header">
+        <span class="q-group-icon">💸</span>
+        <span class="q-group-title">Billing &amp; Invoicing</span>
+        <span class="q-group-freq">57% of calls</span>
+      </div>
+      <ul class="q-list">
+        <li><span class="q-dot"></span>Do they have recurring billing / RMR? (yes/no)</li>
+        <li><span class="q-dot"></span>Any tax-exempt clients? States with exemptions?</li>
+        <li><span class="q-dot"></span>Are GL codes ready — or does accountant need to provide them?</li>
+        <li><span class="q-dot"></span>Billing profile preferences: net terms, invoice format?</li>
+      </ul>
+    </div>
+
+    <div class="q-group">
+      <div class="q-group-header">
+        <span class="q-group-icon">🎫</span>
+        <span class="q-group-title">Ticketing &amp; Service Boards</span>
+        <span class="q-group-freq">90% of calls</span>
+      </div>
+      <ul class="q-list">
+        <li><span class="q-dot green"></span>How do tickets come in? (email, phone, portal, all?)</li>
+        <li><span class="q-dot green"></span>Do they need a customer-facing portal?</li>
+        <li><span class="q-dot green"></span>Dispatch board needed? (field service vs. internal only)</li>
+        <li><span class="q-dot green"></span>Custom ticket statuses or fields required?</li>
+      </ul>
+    </div>
+
+    <div class="q-group">
+      <div class="q-group-header">
+        <span class="q-group-icon">📦</span>
+        <span class="q-group-title">Data Migration</span>
+        <span class="q-group-freq">84% of calls</span>
+      </div>
+      <ul class="q-list">
+        <li><span class="q-dot warn"></span>Do they have a data export ready, or does it need to be pulled?</li>
+        <li><span class="q-dot warn"></span>Rough customer count — how big is the import?</li>
+        <li><span class="q-dot warn"></span>Parent-child account structure needed? (franchise, multi-location)</li>
+        <li><span class="q-dot warn"></span>Data quality — is it clean or will it need cleanup?</li>
+      </ul>
+    </div>
+
+    <div class="q-group">
+      <div class="q-group-header">
+        <span class="q-group-icon">🔌</span>
+        <span class="q-group-title">Integrations</span>
+        <span class="q-group-freq">90% of calls</span>
+      </div>
+      <ul class="q-list">
+        <li><span class="q-dot"></span>QuickBooks Online or Desktop? (Desktop = no direct integration today — flag early)</li>
+        <li><span class="q-dot"></span>RMM tool: NinjaOne, Datto, ConnectWise Automate, or other? (captured in Core 7 — confirm here)</li>
+        <li><span class="q-dot"></span>Outlook / Google Calendar sync needed?</li>
+        <li><span class="q-dot"></span>Other integrations: PandaDoc, HubSpot, Zoho, PAX8, etc.?</li>
+        <li><span class="q-dot"></span>Any custom API integrations required? (e.g. proprietary alarm monitoring systems)</li>
+      </ul>
+    </div>
+
+    <div class="q-group">
+      <div class="q-group-header">
+        <span class="q-group-icon">🏢</span>
+        <span class="q-group-title">Business Vertical &amp; Service Model</span>
+        <span class="q-group-freq">Gates config template</span>
+      </div>
+      <ul class="q-list">
+        <li><span class="q-dot green"></span>Primary vertical: MSP · Security Integrator · AV · Field Service · Multi-service?</li>
+        <li><span class="q-dot green"></span>Do they have field technicians? (dispatch board, mobile app, install projects)</li>
+        <li><span class="q-dot green"></span>Internal help desk, external client-facing service, or both?</li>
+        <li><span class="q-dot green"></span>Co-managed IT model? (affects user structure and client portal config)</li>
+      </ul>
+    </div>
+
+    <div class="q-group">
+      <div class="q-group-header">
+        <span class="q-group-icon">📄</span>
+        <span class="q-group-title">Quoting &amp; Contracts</span>
+        <span class="q-group-freq">31% of calls</span>
+      </div>
+      <ul class="q-list">
+        <li><span class="q-dot green"></span>Do they use a quoting tool today? (PandaDoc, manual, etc.)</li>
+        <li><span class="q-dot green"></span>Contracts month-to-month or multi-year?</li>
+        <li><span class="q-dot green"></span>Recurring agreements / RMR driven contracts?</li>
+      </ul>
+    </div>
+
+    <div class="q-group">
+      <div class="q-group-header">
+        <span class="q-group-icon">⏰</span>
+        <span class="q-group-title">Business Hours &amp; Holiday Hours</span>
+        <span class="q-group-freq">Required for SLA config</span>
+      </div>
+      <ul class="q-list">
+        <li><span class="q-dot"></span>What are their standard business hours? (e.g. Mon–Fri 8am–5pm)</li>
+        <li><span class="q-dot"></span>Do they offer after-hours or weekend support? Different SLA tiers?</li>
+        <li><span class="q-dot"></span>Which holidays do they observe? (sets holiday calendar in Rev.io)</li>
+        <li><span class="q-dot"></span>Do holiday hours affect SLA response time calculations?</li>
+      </ul>
+    </div>
+
+    <div class="q-group">
+      <div class="q-group-header">
+        <span class="q-group-icon">💬</span>
+        <span class="q-group-title">SMS Capabilities</span>
+        <span class="q-group-freq">Client communication config</span>
+      </div>
+      <ul class="q-list">
+        <li><span class="q-dot green"></span>Do they want to enable SMS notifications for their clients?</li>
+        <li><span class="q-dot green"></span>Use case: ticket updates, appointment reminders, billing alerts?</li>
+        <li><span class="q-dot green"></span>Do they have a business phone number to use for SMS — or need one provisioned?</li>
+      </ul>
+    </div>
+
+    <div class="q-group">
+      <div class="q-group-header">
+        <span class="q-group-icon">📦</span>
+        <span class="q-group-title">Inventory Management</span>
+        <span class="q-group-freq">55% of calls</span>
+      </div>
+      <ul class="q-list">
+        <li><span class="q-dot warn"></span>Will they be using inventory management? (yes / no / future)</li>
+        <li><span class="q-dot warn"></span>Do they track serialized assets? (equipment with serial numbers)</li>
+        <li><span class="q-dot warn"></span>Do they use purchase orders today?</li>
+        <li><span class="q-dot warn"></span>How big is the product catalog — rough SKU count?</li>
+        <li><span class="q-dot warn"></span>Warehouse / parts van tracking needed? (mobile inventory)</li>
+      </ul>
+    </div>
+
+    <div class="q-group">
+      <div class="q-group-header">
+        <span class="q-group-icon">📋</span>
+        <span class="q-group-title">Project Management</span>
+        <span class="q-group-freq">56% of calls</span>
+      </div>
+      <ul class="q-list">
+        <li><span class="q-dot green"></span>Will they be using project management? (yes / no / future)</li>
+        <li><span class="q-dot green"></span>Do they manage multi-phase installs or long-running client projects?</li>
+        <li><span class="q-dot green"></span>Do they need milestone billing tied to project phases?</li>
+        <li><span class="q-dot green"></span>How many active projects at a time — small team or complex multi-project?</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- SECTION 04: IF NOT BILLING CLIENT -->
+  <div class="section">
+    <div class="section-label">Section 04</div>
+    <div class="section-title">⚡ If NOT an Existing Billing Client</div>
+    <div class="section-divider"></div>
+    <p style="color:var(--text-dim); margin-bottom:24px; font-size:14px;">Existing Rev.io Billing clients already have company info, billing profiles, and accounting setup in the system. For <strong style="color:var(--text)">net-new clients</strong>, these additional items must be collected before the SA can configure billing.</p>
+
+    <div class="q-group" style="border-left: 3px solid var(--warn);">
+      <div class="q-group-header">
+        <span class="q-group-icon">📬</span>
+        <span class="q-group-title">Send: Bill Profile Questionnaire</span>
+        <span class="q-group-freq" style="color:var(--warn);">Net-new only</span>
+      </div>
+      <ul class="q-list">
+        <li><span class="q-dot warn"></span>Send the standard Bill Profile Questionnaire to the client before kickoff</li>
+        <li><span class="q-dot warn"></span>Covers: invoice format preferences, payment terms, late fees, credit limits, billing contact</li>
+        <li><span class="q-dot warn"></span>This must be returned and reviewed before the SA configures billing in the instance</li>
+      </ul>
+    </div>
+
+    <div class="q-group" style="border-left: 3px solid var(--warn);">
+      <div class="q-group-header">
+        <span class="q-group-icon">📅</span>
+        <span class="q-group-title">Accounting Periods</span>
+        <span class="q-group-freq" style="color:var(--warn);">Net-new only</span>
+      </div>
+      <ul class="q-list">
+        <li><span class="q-dot warn"></span>What are their accounting periods? (monthly, quarterly, fiscal year dates)</li>
+        <li><span class="q-dot warn"></span>When does their fiscal year start? (may differ from calendar year)</li>
+        <li><span class="q-dot warn"></span>Do they close books on a specific schedule — affects billing cycle alignment</li>
+      </ul>
+    </div>
+
+    <div class="q-group" style="border-left: 3px solid var(--warn);">
+      <div class="q-group-header">
+        <span class="q-group-icon">📎</span>
+        <span class="q-group-title">Collect: Existing Quote Template</span>
+        <span class="q-group-freq" style="color:var(--warn);">Net-new only</span>
+      </div>
+      <ul class="q-list">
+        <li><span class="q-dot warn"></span>Ask the client to send their current quote template (PDF, Word, or existing tool export)</li>
+        <li><span class="q-dot warn"></span>SA uses this to recreate their format and branding in Rev.io before kickoff</li>
+        <li><span class="q-dot warn"></span>Prevents session 1 being spent on "what do your quotes look like today?"</li>
+        <li><span class="q-dot warn"></span>Note any required fields: line item structure, discount display, terms, signature block</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- SECTION 05: NICE TO HAVE -->
+  <div class="section">
+    <div class="section-label">Section 05</div>
+    <div class="section-title">🗂️ Nice-to-Have — Full Pre-Config</div>
+    <div class="section-divider"></div>
+    <p style="color:var(--text-dim); margin-bottom:20px; font-size:14px;">Collect these for a fully scaffolded instance. Enables portal config, white-labeling, and inventory setup before Day 1.</p>
+
+    <div class="gap-grid">
+      <div class="gap-card" style="border-left-color: var(--accent2);">
+        <strong>Company basics</strong>
+        Legal name, billing address, shipping address
+      </div>
+      <div class="gap-card" style="border-left-color: var(--accent2);">
+        <strong>Service email address</strong>
+        Used for email connector setup — often missed until mid-session
+      </div>
+      <div class="gap-card" style="border-left-color: var(--accent2);">
+        <strong>Logo</strong>
+        For white-labeled portal and invoice branding
+      </div>
+        <div class="gap-card" style="border-left-color: var(--accent2);">
+        <strong>Mobile app users?</strong>
+        Field techs on phones — affects user setup and permissions
+      </div>
+      <div class="gap-card" style="border-left-color: var(--accent2);">
+        <strong>Time tracking / job costing?</strong>
+        Drives additional configuration requirements
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 06: COMMON GAPS -->
+  <div class="section">
+    <div class="section-label">Section 06</div>
+    <div class="section-title">🚨 Common Gaps Surfaced During Calls</div>
+    <div class="section-divider"></div>
+    <p style="color:var(--text-dim); margin-bottom:20px; font-size:14px;">These are problems SAs discover mid-session that cause delays. Most are preventable with a pre-onboarding brief.</p>
+
+    <div class="gap-grid">
+      <div class="gap-card">
+        <strong>No data template ready</strong>
+        SA provides CSV template on the call instead of it arriving pre-configured
+      </div>
+      <div class="gap-card">
+        <strong>Wrong migration assumptions</strong>
+        Scope gets re-defined during the session, wasting setup time
+      </div>
+      <div class="gap-card">
+        <strong>GL codes not mapped</strong>
+        SA walks through mapping in real-time with accountant absent
+      </div>
+      <div class="gap-card">
+        <strong>Email connector not configured</strong>
+        Discovered mid-session; blocks ticket ingestion workflow
+      </div>
+      <div class="gap-card">
+        <strong>User roles unclear</strong>
+        Org chart gets reconstructed live on the call
+      </div>
+      <div class="gap-card">
+        <strong>Payment processor unknown</strong>
+        Client needs to check and follow up — adds a delay cycle
+      </div>
+      <div class="gap-card">
+        <strong>Tax exemptions undocumented</strong>
+        Flagged for follow-up; billing config left incomplete
+      </div>
+      <div class="gap-card">
+        <strong>Prior system data quality issues</strong>
+        Identified on the call but not resolvable same day
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 07: WHAT THIS UNLOCKS -->
+  <div class="section">
+    <div class="section-label">Section 07</div>
+    <div class="section-title">🚀 What This Unlocks</div>
+    <div class="section-divider"></div>
+
+    <div class="unlock-grid">
+      <div class="unlock-card">
+        <div class="unlock-card-header"><span class="badge badge-accent">Core 8 Only</span></div>
+        <ul>
+          <li>Customer record + company settings</li>
+          <li>Invoice number sequence pre-set</li>
+          <li>User accounts with correct roles</li>
+          <li>Integration connections (QB, RMM, payments)</li>
+          <li>Dispatch board structure scaffolded</li>
+          <li>Config template selected by vertical</li>
+          <li>SureTax wired up before billing goes live</li>
+        </ul>
+      </div>
+      <div class="unlock-card">
+        <div class="unlock-card-header"><span class="badge badge-green">+ Secondary Tier</span></div>
+        <ul>
+          <li>Service board + ticket workflow structure</li>
+          <li>Migration template sent before kickoff</li>
+          <li>GL account mapping started ahead of time</li>
+          <li>Portal enabled or disabled per client needs</li>
+          <li>Billing cycle + recurring billing configured</li>
+        </ul>
+      </div>
+      <div class="unlock-card">
+        <div class="unlock-card-header"><span class="badge badge-warn">+ Nice-to-Have</span></div>
+        <ul>
+          <li>White-labeled portal + invoice branding</li>
+          <li>Inventory and asset config</li>
+          <li>Quoting scaffold pre-built</li>
+          <li>Email connector live on Day 1</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="insight-box" style="margin-top:28px;">
+      <div class="insight-box-title">🎯 The Automation Target: 8 Questions × Every New Win</div>
+      <p>If the sales team captures the Core 8 at close — prior PSA, accounting software, RMM tool, payment processor, user count + roles, dispatch model, invoice sequence, and SureTax credentials — then billing setup, user account creation, all integration configuration, dispatch board structure, tax configuration, and migration scoping can begin before the SA ever schedules a call.</p>
+      <p>That's the difference between Day 1 starting blank and <strong>Day 1 starting at 60–80% configured</strong>. The vertical + service model question selects the right config template, so the SA isn't building from scratch — they're reviewing and refining.</p>
+      <p>Eventually this flows directly into automated instance provisioning — no SA touch required for the baseline build.</p>
+    </div>
+  </div>
+
+
+  <!-- SECTION 08: CEO OPERATING PARAMETERS -->
+  <div class="section">
+    <div class="section-label">Section 08</div>
+    <div class="section-title">🎯 CEO Design Parameters — Non-Negotiable Constraints</div>
+    <div class="section-divider"></div>
+    <p style="color:var(--text-dim); margin-bottom:24px; font-size:14px;">From Brent Maropis to Fran Timothy, March 18 2026 — forwarded as design constraints for the onboarding automation pipeline. These are not aspirational. They are the operating parameters every workflow must be built to enforce.</p>
+
+    <div class="q-group" style="border-left: 3px solid var(--accent);">
+      <div class="q-group-header">
+        <span class="q-group-icon">⚡</span>
+        <span class="q-group-title">Parameter 1 — Kickoff Timeline: Same Day or Next Day. Always.</span>
+      </div>
+      <ul class="q-list">
+        <li><span class="q-dot"></span>Closes before lunch → kickoff scheduled that afternoon</li>
+        <li><span class="q-dot"></span>Closes after lunch → kickoff scheduled next morning</li>
+        <li><span class="q-dot"></span>Exceptions: rare, documented, shared accountability Sales + Onboarding</li>
+        <li><span class="q-dot"></span>Capacity scoring eliminated — replaced with batter's box rotation (next SA in line takes the next deal, no deliberation)</li>
+        <li><span class="q-dot warn"></span><strong style="color:var(--warn)">Automation implication:</strong> Pre-config must complete before kickoff. Deal closes at 11am → environment partially built by 2pm. Minutes, not hours.</li>
+      </ul>
+    </div>
+
+    <div class="q-group" style="border-left: 3px solid var(--accent);">
+      <div class="q-group-header">
+        <span class="q-group-icon">📊</span>
+        <span class="q-group-title">Parameter 2 — Status Definitions: Every Status Needs a Timeline and an Owner</span>
+      </div>
+      <ul class="q-list">
+        <li><span class="q-dot green"></span><strong style="color:var(--text)">On Track</strong> — client engaged, milestones on schedule; SA owns, reviewed weekly</li>
+        <li><span class="q-dot warn"></span><strong style="color:var(--text)">Off Track</strong> — behind on a milestone; SA escalates to Fran within 24 hours</li>
+        <li><span class="q-dot warn"></span><strong style="color:var(--text)">On Hold</strong> — hold date mandatory at time of status set; no hold date = immediate RTS</li>
+        <li><span class="q-dot"></span><strong style="color:var(--text)">RTS</strong> — Sales engages within 24hrs; no path back in 5 business days = formally canceled</li>
+        <li><span class="q-dot"></span><strong style="color:var(--text)">Cancel</strong> — specific subcategory required; no undocumented cancellations</li>
+      </ul>
+    </div>
+
+    <div class="q-group" style="border-left: 3px solid var(--accent);">
+      <div class="q-group-header">
+        <span class="q-group-icon">🚫</span>
+        <span class="q-group-title">Parameter 3 — Cancellation Reasons: "Other" and "Fail to Launch" Eliminated</span>
+      </div>
+      <ul class="q-list">
+        <li><span class="q-dot"></span><strong style="color:var(--text)">Functionality</strong> — must specify exact product or feature gap</li>
+        <li><span class="q-dot"></span><strong style="color:var(--text)">Client Initiated / Business Change</strong> — specific reason required (OOB, acquisition, budget cuts)</li>
+        <li><span class="q-dot warn"></span>Ambiguous cancellations escalate to Fran before logging</li>
+        <li><span class="q-dot warn"></span>If a client cancels, it inherently failed to launch — that data feeds back into improving the process</li>
+      </ul>
+    </div>
+
+    <div class="q-group" style="border-left: 3px solid var(--accent);">
+      <div class="q-group-header">
+        <span class="q-group-icon">⏱️</span>
+        <span class="q-group-title">Parameter 4 — Go-Live Duration Targets by Complexity</span>
+      </div>
+      <ul class="q-list">
+        <li><span class="q-dot green"></span>≤$700/mo, no data or payment migration → <strong style="color:var(--accent2)">live within 1 week</strong></li>
+        <li><span class="q-dot warn"></span>With payment migration → <strong style="color:var(--warn)">live within 3 weeks</strong></li>
+        <li><span class="q-dot"></span>Billing clients → defined, documented, tracked timeline</li>
+        <li><span class="q-dot warn"></span><strong style="color:var(--warn)">Automation implication:</strong> The 1-week target is only achievable if pre-config eliminates Day 1 setup time entirely for simple clients</li>
+      </ul>
+    </div>
+
+    <div class="q-group" style="border-left: 3px solid var(--accent);">
+      <div class="q-group-header">
+        <span class="q-group-icon">🤖</span>
+        <span class="q-group-title">Parameter 5 — Automated Cadence for On Hold / RTS (System-Driven, Not Manual)</span>
+      </div>
+      <ul class="q-list">
+        <li><span class="q-dot green"></span><strong style="color:var(--text)">Day 0</strong> — SA phone call</li>
+        <li><span class="q-dot green"></span><strong style="color:var(--text)">Day 2</strong> — No response → SA follow-up email</li>
+        <li><span class="q-dot warn"></span><strong style="color:var(--text)">Day 4</strong> — No response → escalate to Fran + automated email from Brent flagging cancellation risk; Sales copied</li>
+        <li><span class="q-dot warn"></span><strong style="color:var(--text)">Day 6</strong> — No response → Sales notified, account moves to RTS if still on hold</li>
+        <li><span class="q-dot"></span><strong style="color:var(--text)">Day 10 in RTS</strong> — No re-engagement → formally cancel + log reason</li>
+        <li><span class="q-dot"></span>Sales and Onboarding share accountability — this is not owned by one team</li>
+      </ul>
+    </div>
+
+    <div class="stat-grid" style="margin-top:24px;">
+      <div class="stat-card">
+        <div class="stat-num warn">~25%</div>
+        <div class="stat-label">Current</div>
+        <div class="stat-sub">Cancellation rate</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" style="color:var(--accent);">15%</div>
+        <div class="stat-label">2026 Target</div>
+        <div class="stat-sub">Cancellation rate</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num green">10%</div>
+        <div class="stat-label">Long-term</div>
+        <div class="stat-sub">Cancellation rate</div>
+      </div>
+    </div>
+
+    <div class="q-group" style="border-left: 3px solid var(--accent2); margin-top:16px;">
+      <div class="q-group-header">
+        <span class="q-group-icon">🚀</span>
+        <span class="q-group-title">Parameter 7 — Platform First: Revii AI in Every Instance, Every Time</span>
+      </div>
+      <ul class="q-list">
+        <li><span class="q-dot green"></span>Revii AI configured and enabled in every new instance before kickoff — not optional, not post-launch</li>
+        <li><span class="q-dot green"></span>Integration telemetry must be wired from Day 1, not retrofitted</li>
+        <li><span class="q-dot green"></span>Configuration schema must support long-term scalability — no shortcuts that create technical debt at go-live</li>
+        <li><span class="q-dot green"></span>Done correctly, this discipline delivers the best possible client experience</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- SECTION 09: KNOWLEDGE REQUIREMENTS -->
+  <div class="section">
+    <div class="section-label">Section 09</div>
+    <div class="section-title">🧠 Knowledge Requirements for Pre-Config Automation</div>
+    <div class="section-divider"></div>
+    <p style="color:var(--text-dim); margin-bottom:24px; font-size:14px;">The API surface is accessible. The transcript intelligence is flowing. The missing link is <strong style="color:var(--text)">institutional knowledge</strong> — the same tribal knowledge an experienced SA holds after 50+ onboardings. These are the 12 internal documents the automation needs to move from briefing the SA to doing the work before they ever open the account.</p>
+
+    <div class="q-group" style="border-left: 3px solid var(--danger);">
+      <div class="q-group-header">
+        <span class="q-group-icon">🔴</span>
+        <span class="q-group-title">Tier 1 — Gates Automation (Can't reliably pre-configure without these)</span>
+      </div>
+      <ul class="q-list">
+        <li><span class="q-dot"></span><strong style="color:var(--text)">PSA Configuration Schema Reference</strong> — ticket types and taxonomy, service board structure, user role definitions + permission matrix, SLA config options, order-of-operations for setup. Owner: Product / SA team</li>
+        <li><span class="q-dot"></span><strong style="color:var(--text)">Integration Setup Guides</strong> — QB Online/Desktop, NinjaOne, PAX8, HubSpot. Required auth credentials, field mappings, GL account mapping logic, known gotchas, what can be pre-wired vs. requires client credentials live. Owner: SA team + product integration docs</li>
+        <li><span class="q-dot"></span><strong style="color:var(--text)">Data Migration CSV Templates + Field Mapping Guide</strong> — exact CSV column structure for customers, contacts, products, assets, historical tickets. Field-level mapping from ConnectWise, Halo, HouseCall Pro, TigerPaw, Zoho → Rev.io. Max lookback window per data type. Owner: Data engineering team</li>
+        <li><span class="q-dot"></span><strong style="color:var(--text)">Required API Credentials &amp; Auth Flows Per Integration</strong> — exactly what the client needs to provide per integration (OAuth2? client ID/secret?), what can be pre-staged vs. requires live client presence, dev/sandbox mode availability. Owner: SA team</li>
+      </ul>
+    </div>
+
+    <div class="q-group" style="border-left: 3px solid var(--warn); margin-top:16px;">
+      <div class="q-group-header">
+        <span class="q-group-icon">🟡</span>
+        <span class="q-group-title">Tier 2 — Prevents Most Common Rework (Skipping these = second session wasted on corrections)</span>
+      </div>
+      <ul class="q-list">
+        <li><span class="q-dot warn"></span><strong style="color:var(--text)">Client-Type Configuration Templates</strong> — standard starting configs by vertical: MSP, Security Integrator, AV, Multi-service. Default service boards, ticket type sets, user role matrix, billing cycle structure per vertical. Owner: SA team + Brooke Lee</li>
+        <li><span class="q-dot warn"></span><strong style="color:var(--text)">Prior PSA Migration Runbooks</strong> — source-specific gotchas: ConnectWise, Halo, HouseCall Pro, Zoho, Autotask. What transfers cleanly, what needs transformation, what should be left behind, what the client must manually re-create. Owner: Data engineering team</li>
+        <li><span class="q-dot warn"></span><strong style="color:var(--text)">Top 10 Rework Patterns from SA Team</strong> — what SAs fix in session 2 because it was set wrong in session 1 (e.g. GL codes mapped wrong, billing cycle set to wrong cadence, ticket statuses missing states). 30 minutes with a senior SA. Owner: Nicole Hills, Kegan Ehlers, Halle Taylor, Tony Mehner</li>
+        <li><span class="q-dot warn"></span><strong style="color:var(--text)">Kickoff Session Agenda + What Gets Configured Live</strong> — which configurations are done with the client present vs. pre-built. Goal: SA shows up with 70% done, uses session time for the 30% that requires the client's judgment. Owner: SA manager / 13-milestone checklist</li>
+      </ul>
+    </div>
+
+    <div class="q-group" style="border-left: 3px solid var(--accent2); margin-top:16px;">
+      <div class="q-group-header">
+        <span class="q-group-icon">🟢</span>
+        <span class="q-group-title">Tier 3 — Best-in-Class Outcomes (Client goes live faster, never needs to undo anything)</span>
+      </div>
+      <ul class="q-list">
+        <li><span class="q-dot green"></span><strong style="color:var(--text)">GL Code Standard Mappings by Accounting Software</strong> — QB Online chart-of-accounts → Rev.io GL code structure. Reference table: QB account type → Rev.io GL category → typical account numbers for MSPs. Would auto-populate 80% of GL codes before anyone touches the keyboard. Owner: Finance / accounting team</li>
+        <li><span class="q-dot green"></span><strong style="color:var(--text)">Product Catalog Naming Conventions + Category Structure</strong> — standard taxonomy so catalog doesn't become a mess 6 months in. Prevents organic growth with inconsistent names, wrong GL codes, and duplicate entries. Owner: SA team</li>
+        <li><span class="q-dot green"></span><strong style="color:var(--text)">Invoice Template Library + Billing Cycle Playbook</strong> — standard templates by client type (MSP monthly, project milestone, mixed recurring + T&amp;M). Billing cycle guidance by revenue model. Owner: SA team + billing platform team</li>
+        <li><span class="q-dot green"></span><strong style="color:var(--text)">Feature Availability Matrix (Live vs. Roadmap)</strong> — what's GA, what's beta, what's roadmap-only. Prevents pre-configuring around features that don't exist yet (e.g. QB Desktop integration, sales pipeline). Owner: Product team (roadmap Notion page — read-only access available)</li>
+      </ul>
+    </div>
+
+    <div class="insight-box" style="margin-top:24px;">
+      <div class="insight-box-title">📋 The Ask — Four Conversations That Unlock This</div>
+      <p><strong>1. Senior SA (30 min)</strong> — Walk through a typical onboarding: what you configure each session, the 10 things you always fix, what you do before kickoff vs. live with client. Unlocks Tiers 1+2.</p>
+      <p><strong>2. Data Engineering (15 min)</strong> — Share CSV import templates and migration gotchas for ConnectWise, Halo, HouseCall Pro. Unlocks Tier 1 item 3.</p>
+      <p><strong>3. Integration Owner (15 min)</strong> — QB Online field mapping doc + NinjaOne/PAX8 setup guides. What can be pre-wired vs. needs client credentials live. Unlocks Tier 1 item 2.</p>
+      <p><strong>4. Product (async)</strong> — Share current feature availability matrix (GA vs. roadmap) so pre-config doesn't build around features that aren't live. Unlocks Tier 3 item 4.</p>
+    </div>
+  </div>
+
+  <!-- SECTION 10: API SURFACE & MILESTONES -->
+  <div class="section">
+    <div class="section-label">Section 10</div>
+    <div class="section-title">🔌 API Surface &amp; Onboarding Milestone Framework</div>
+    <div class="section-divider"></div>
+    <p style="color:var(--text-dim); margin-bottom:24px; font-size:14px;">What's confirmed working today in the Rev.io API and browser automation layer — and how pre-config maps to the 13 official onboarding milestones.</p>
+
+    <div class="q-group" style="border-left: 3px solid var(--accent2);">
+      <div class="q-group-header">
+        <span class="q-group-icon">✅</span>
+        <span class="q-group-title">Confirmed Working — Rev.io API</span>
+      </div>
+      <ul class="q-list">
+        <li><span class="q-dot green"></span><strong style="color:var(--text)">Customers</strong> — company, address, tags, custom fields (salesPerson, partnerStatus, agents, billing, taxation)</li>
+        <li><span class="q-dot green"></span><strong style="color:var(--text)">Contacts</strong> — name, email, phone, mobile, title, LinkedIn, address, primary flag</li>
+        <li><span class="q-dot green"></span><strong style="color:var(--text)">Users</strong> — full CRUD. Roles: Field Tech, Help Desk, Dispatcher, Ops Mgr, PM, Admin/Billing, Standard, Admin</li>
+        <li><span class="q-dot green"></span><strong style="color:var(--text)">Notes</strong> — full CRUD; create popup alerts &amp; high-priority flags linked to customers</li>
+        <li><span class="q-dot green"></span><strong style="color:var(--text)">Addresses</strong> — full CRUD confirmed live</li>
+        <li><span class="q-dot green"></span><strong style="color:var(--text)">Products</strong> — name, type, rate, cost, provider, proration, GL code (4,533 products in catalog)</li>
+        <li><span class="q-dot green"></span><strong style="color:var(--text)">Departments</strong> — Administrative, HR, Operations, Service, Purchasing, Sales</li>
+        <li><span class="q-dot warn"></span><strong style="color:var(--warn)">Tickets — CREATE blocked</strong> on PHP bug (reported to engineering 3/11/2026); UPDATE open tickets works</li>
+      </ul>
+    </div>
+
+    <div class="q-group" style="border-left: 3px solid var(--accent); margin-top:16px;">
+      <div class="q-group-header">
+        <span class="q-group-icon">🤖</span>
+        <span class="q-group-title">Beyond the API — Browser Automation (Playwright)</span>
+      </div>
+      <ul class="q-list">
+        <li><span class="q-dot"></span>Fully authenticated Playwright session on psademo.psarev.io running on the VM</li>
+        <li><span class="q-dot"></span>Can configure anything in the UI not yet in the API: ticket types, SLA policies, contract templates, integrations, business hours, workflow automation rules</li>
+        <li><span class="q-dot"></span>Session cookies saved and auto-refreshable</li>
+      </ul>
+    </div>
+
+    <p style="color:var(--text-dim); margin: 24px 0 16px; font-size:14px;">The 13 official onboarding milestones (618 records across active clients) — with pre-config potential ratings:</p>
+
+    <table class="priority-table">
+      <thead>
+        <tr>
+          <th>Milestone</th>
+          <th>SLA</th>
+          <th>What It Covers</th>
+          <th>Pre-Config Potential</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Week 1: Company Info</strong></td>
+          <td style="color:var(--muted); font-size:13px;">7 days</td>
+          <td style="font-size:13px; color:var(--text-dim);">Business profile, address, contacts, invoice settings</td>
+          <td><span class="badge badge-green">✅ HIGH</span></td>
+        </tr>
+        <tr>
+          <td><strong>Week 1: Product &amp; Assets</strong></td>
+          <td style="color:var(--muted); font-size:13px;">7 days</td>
+          <td style="font-size:13px; color:var(--text-dim);">Service catalog, product library</td>
+          <td><span class="badge badge-warn">⚠️ MEDIUM</span></td>
+        </tr>
+        <tr>
+          <td><strong>Week 1: Inventory Mgmt</strong></td>
+          <td style="color:var(--muted); font-size:13px;">7 days</td>
+          <td style="font-size:13px; color:var(--text-dim);">Equipment tracking, serialization</td>
+          <td><span class="badge badge-warn" style="background:rgba(255,107,107,0.12); color:var(--danger);">⚠️ LOW</span></td>
+        </tr>
+        <tr>
+          <td><strong>Week 3: Time Entry</strong></td>
+          <td style="color:var(--muted); font-size:13px;">21 days</td>
+          <td style="font-size:13px; color:var(--text-dim);">Labor categories, billing rates</td>
+          <td><span class="badge badge-warn">⚠️ MEDIUM</span></td>
+        </tr>
+        <tr>
+          <td><strong>Week 3: Quote Templates</strong></td>
+          <td style="color:var(--muted); font-size:13px;">21 days</td>
+          <td style="font-size:13px; color:var(--text-dim);">Quote structure, template setup</td>
+          <td><span class="badge badge-warn">⚠️ MEDIUM</span></td>
+        </tr>
+        <tr>
+          <td><strong>Data Import</strong></td>
+          <td style="color:var(--muted); font-size:13px;">—</td>
+          <td style="font-size:13px; color:var(--text-dim);">Migration from prior system</td>
+          <td><span class="badge badge-green">✅ HIGH</span></td>
+        </tr>
+        <tr>
+          <td><strong>Data Import Staging</strong></td>
+          <td style="color:var(--muted); font-size:13px;">21 days</td>
+          <td style="font-size:13px; color:var(--text-dim);">Validation, test imports</td>
+          <td><span class="badge badge-green">✅ HIGH</span></td>
+        </tr>
+        <tr>
+          <td><strong>Tax Configuration</strong></td>
+          <td style="color:var(--muted); font-size:13px;">21 days</td>
+          <td style="font-size:13px; color:var(--text-dim);">Tax codes, exemptions, rates</td>
+          <td><span class="badge badge-warn" style="background:rgba(255,107,107,0.12); color:var(--danger);">❌ LOW</span></td>
+        </tr>
+        <tr>
+          <td><strong>Integrations</strong></td>
+          <td style="color:var(--muted); font-size:13px;">21 days</td>
+          <td style="font-size:13px; color:var(--text-dim);">RMM, accounting, payment processor</td>
+          <td><span class="badge badge-green">✅ HIGH</span></td>
+        </tr>
+        <tr>
+          <td><strong>Payments Configuration</strong></td>
+          <td style="color:var(--muted); font-size:13px;">21 days</td>
+          <td style="font-size:13px; color:var(--text-dim);">Payment methods, processor setup</td>
+          <td><span class="badge badge-warn">⚠️ MEDIUM</span></td>
+        </tr>
+        <tr>
+          <td><strong>Processes</strong></td>
+          <td style="color:var(--muted); font-size:13px;">—</td>
+          <td style="font-size:13px; color:var(--text-dim);">Ticketing workflows, service desk config</td>
+          <td><span class="badge badge-warn">⚠️ MEDIUM</span></td>
+        </tr>
+        <tr>
+          <td><strong>Admin</strong></td>
+          <td style="color:var(--muted); font-size:13px;">—</td>
+          <td style="font-size:13px; color:var(--text-dim);">User accounts, roles, permissions</td>
+          <td><span class="badge badge-green">✅ HIGH</span></td>
+        </tr>
+        <tr>
+          <td><strong>Finalize / QA</strong></td>
+          <td style="color:var(--muted); font-size:13px;">—</td>
+          <td style="font-size:13px; color:var(--text-dim);">Testing, go-live prep</td>
+          <td><span class="badge badge-accent">— TBD</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<div class="footer">
+  ⚡ Rev.io Intelligence Stack · Based on 566 PSA onboarding calls · Nov 2025 – Mar 2026 · Powered by Fireflies.ai
+</div>
+
+</body>
+</html>

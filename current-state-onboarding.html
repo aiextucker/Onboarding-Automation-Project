@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rev.io PSA — Current State Onboarding Process</title>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --surface2: #21253a;
+      --surface3: #262a3e;
+      --accent: #6c63ff;
+      --accent2: #00d4aa;
+      --warn: #ffa94d;
+      --danger: #ff6b6b;
+      --muted: #7b7f9e;
+      --text: #e8eaf6;
+      --text-dim: #b0b4cc;
+      --border: rgba(255,255,255,0.07);
+      --radius: 14px;
+      --radius-sm: 8px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      font-size: 15px;
+      line-height: 1.65;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #12142a 0%, #1a1040 50%, #0f1117 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 60px 24px 48px;
+      text-align: center;
+    }
+    .hero-eyebrow {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--warn);
+      margin-bottom: 16px;
+    }
+    .hero h1 {
+      font-size: clamp(24px, 5vw, 40px);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.5px;
+      margin-bottom: 14px;
+    }
+    .hero h1 span { color: var(--accent); }
+    .hero-sub {
+      font-size: clamp(14px, 2.5vw, 17px);
+      color: var(--text-dim);
+      max-width: 680px;
+      margin: 0 auto 28px;
+    }
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+    }
+    .hero-tag {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 5px 14px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .content {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 0 20px 80px;
+    }
+
+    .section { margin-top: 56px; }
+    .section-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+    .section-title {
+      font-size: clamp(18px, 3.5vw, 26px);
+      font-weight: 700;
+      margin-bottom: 4px;
+      line-height: 1.25;
+    }
+    .section-divider {
+      width: 40px;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      border-radius: 2px;
+      margin: 14px 0 24px;
+    }
+
+    /* STAT CARDS */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px 18px;
+      text-align: center;
+    }
+    .stat-num {
+      font-size: 38px;
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 4px;
+      color: var(--accent);
+    }
+    .stat-num.green  { color: var(--accent2); }
+    .stat-num.warn   { color: var(--warn); }
+    .stat-num.danger { color: var(--danger); }
+    .stat-label { font-size: 12px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+    .stat-sub   { font-size: 11px; color: rgba(123,127,158,0.6); margin-top: 3px; }
+
+    /* PIPELINE */
+    .pipeline {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0;
+      margin-bottom: 32px;
+      align-items: stretch;
+    }
+    .pipe-step {
+      flex: 1;
+      min-width: 110px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0;
+      padding: 18px 14px;
+      text-align: center;
+      position: relative;
+    }
+    .pipe-step:first-child { border-radius: var(--radius) 0 0 var(--radius); }
+    .pipe-step:last-child  { border-radius: 0 var(--radius) var(--radius) 0; }
+    .pipe-step::after {
+      content: '›';
+      position: absolute;
+      right: -10px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 20px;
+      color: var(--muted);
+      z-index: 2;
+    }
+    .pipe-step:last-child::after { display: none; }
+    .pipe-step.warn  { border-top: 3px solid var(--warn); }
+    .pipe-step.danger { border-top: 3px solid var(--danger); }
+    .pipe-step.ok    { border-top: 3px solid var(--accent2); }
+    .pipe-icon { font-size: 22px; margin-bottom: 6px; }
+    .pipe-label { font-size: 12px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+    .pipe-sub   { font-size: 11px; color: var(--muted); }
+
+    /* CARDS */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px 26px;
+      margin-bottom: 14px;
+    }
+    .card.warn-border  { border-left: 3px solid var(--warn); }
+    .card.danger-border { border-left: 3px solid var(--danger); }
+    .card.green-border { border-left: 3px solid var(--accent2); }
+    .card-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Q / BULLET LIST */
+    .item-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .item-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-size: 14px;
+      color: var(--text-dim);
+    }
+    .dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--accent);
+      flex-shrink: 0;
+      margin-top: 7px;
+    }
+    .dot.warn   { background: var(--warn); }
+    .dot.danger { background: var(--danger); }
+    .dot.green  { background: var(--accent2); }
+
+    /* MILESTONE TABLE */
+    .milestone-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--surface);
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      margin-bottom: 24px;
+    }
+    .milestone-table th {
+      background: var(--surface2);
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 12px 16px;
+      text-align: left;
+    }
+    .milestone-table td {
+      padding: 13px 16px;
+      border-top: 1px solid var(--border);
+      vertical-align: top;
+      font-size: 13px;
+      color: var(--text-dim);
+    }
+    .milestone-table td:first-child { color: var(--text); font-weight: 600; }
+    .milestone-table tr:hover td { background: rgba(108,99,255,0.04); }
+    .milestone-table .phase-header td {
+      background: var(--surface2);
+      color: var(--accent);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 8px 16px;
+    }
+
+    /* BADGE */
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+    .badge-accent  { background: rgba(108,99,255,0.15); color: var(--accent); }
+    .badge-green   { background: rgba(0,212,170,0.12);  color: var(--accent2); }
+    .badge-warn    { background: rgba(255,169,77,0.15); color: var(--warn); }
+    .badge-danger  { background: rgba(255,107,107,0.15); color: var(--danger); }
+
+    /* INSIGHT BOX */
+    .insight-box {
+      background: linear-gradient(135deg, rgba(108,99,255,0.08), rgba(0,212,170,0.05));
+      border: 1px solid rgba(108,99,255,0.25);
+      border-radius: var(--radius);
+      padding: 24px 28px;
+      margin-top: 20px;
+    }
+    .insight-box-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+    .insight-box p {
+      font-size: 14px;
+      color: var(--text-dim);
+      line-height: 1.7;
+    }
+    .insight-box p + p { margin-top: 8px; }
+    .insight-box strong { color: var(--text); }
+
+    /* WARN BOX */
+    .warn-box {
+      background: rgba(255,107,107,0.06);
+      border: 1px solid rgba(255,107,107,0.2);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      margin-top: 16px;
+    }
+    .warn-box-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--danger);
+      margin-bottom: 10px;
+    }
+
+    /* GAP GRID */
+    .gap-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 12px;
+    }
+    .gap-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--danger);
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+      font-size: 13px;
+      color: var(--text-dim);
+    }
+    .gap-card strong {
+      display: block;
+      color: var(--text);
+      margin-bottom: 4px;
+      font-size: 13px;
+    }
+    .gap-card .impact {
+      font-size: 11px;
+      color: var(--danger);
+      font-weight: 700;
+      margin-top: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* CALL TIMELINE */
+    .call-timeline {
+      position: relative;
+      padding-left: 32px;
+    }
+    .call-timeline::before {
+      content: '';
+      position: absolute;
+      left: 10px;
+      top: 8px;
+      bottom: 8px;
+      width: 2px;
+      background: var(--border);
+    }
+    .call-item {
+      position: relative;
+      margin-bottom: 20px;
+    }
+    .call-item::before {
+      content: '';
+      position: absolute;
+      left: -26px;
+      top: 8px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--accent);
+      border: 2px solid var(--bg);
+    }
+    .call-item.warn::before { background: var(--warn); }
+    .call-item.danger::before { background: var(--danger); }
+    .call-item.green::before { background: var(--accent2); }
+    .call-num {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+    .call-item.warn .call-num { color: var(--warn); }
+    .call-item.danger .call-num { color: var(--danger); }
+    .call-item.green .call-num { color: var(--accent2); }
+    .call-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+    .call-desc {
+      font-size: 13px;
+      color: var(--text-dim);
+      line-height: 1.6;
+    }
+
+    .footer {
+      text-align: center;
+      padding: 40px 20px;
+      border-top: 1px solid var(--border);
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    @media (max-width: 640px) {
+      .pipeline { flex-direction: column; }
+      .pipe-step { border-radius: 0; }
+      .pipe-step:first-child { border-radius: var(--radius) var(--radius) 0 0; }
+      .pipe-step:last-child  { border-radius: 0 0 var(--radius) var(--radius); }
+      .pipe-step::after { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-eyebrow">📋 Process Documentation · As-Built · March 2026</div>
+  <h1>Rev.io PSA — <span>Current State</span> Onboarding</h1>
+  <p class="hero-sub">Documentation of the existing onboarding process as it runs today — the baseline against which all automation improvements will be measured.</p>
+  <div class="hero-meta">
+    <span class="hero-tag">⏱️ ~60 Day Average Duration</span>
+    <span class="hero-tag">📞 5–7 SA Sessions per Client</span>
+    <span class="hero-tag">🏁 10% Pre-Configured Instance</span>
+    <span class="hero-tag">📅 2–3 Weekly Calls</span>
+    <span class="hero-tag">👥 3 Active SAs</span>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- SECTION 01: BY THE NUMBERS -->
+  <div class="section">
+    <div class="section-label">Section 01</div>
+    <div class="section-title">📊 By the Numbers — Current State</div>
+    <div class="section-divider"></div>
+
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-num warn">~60</div>
+        <div class="stat-label">Days</div>
+        <div class="stat-sub">Average onboarding duration</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num danger">10%</div>
+        <div class="stat-label">Pre-Configured</div>
+        <div class="stat-sub">Default instance — not client-specific</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num warn">3</div>
+        <div class="stat-label">Calls</div>
+        <div class="stat-sub">Lost to configuration before usability</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num danger">~25%</div>
+        <div class="stat-label">Cancel Rate</div>
+        <div class="stat-sub">Current — target is 15%</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">411</div>
+        <div class="stat-label">SA Hours</div>
+        <div class="stat-sub">Across 566 calls in 5 months</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num danger">Weeks</div>
+        <div class="stat-label">Data Import</div>
+        <div class="stat-sub">Client data cleanup delays</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 02: PROCESS PIPELINE -->
+  <div class="section">
+    <div class="section-label">Section 02</div>
+    <div class="section-title">🗺️ End-to-End Process Flow — Today</div>
+    <div class="section-divider"></div>
+
+    <div class="pipeline">
+      <div class="pipe-step ok">
+        <div class="pipe-icon">🤝</div>
+        <div class="pipe-label">Deal Closes</div>
+        <div class="pipe-sub">Salesforce Closed-Won</div>
+      </div>
+      <div class="pipe-step warn">
+        <div class="pipe-icon">📋</div>
+        <div class="pipe-label">Manual Intake</div>
+        <div class="pipe-sub">Sales fills basic form</div>
+      </div>
+      <div class="pipe-step warn">
+        <div class="pipe-icon">👤</div>
+        <div class="pipe-label">SA Assignment</div>
+        <div class="pipe-sub">Manual — capacity-based</div>
+      </div>
+      <div class="pipe-step warn">
+        <div class="pipe-icon">📅</div>
+        <div class="pipe-label">Kickoff Scheduled</div>
+        <div class="pipe-sub">Sales books 1-hour call</div>
+      </div>
+      <div class="pipe-step warn">
+        <div class="pipe-icon">🖥️</div>
+        <div class="pipe-label">Instance Created</div>
+        <div class="pipe-sub">SLA: same day · 10% defaults</div>
+      </div>
+      <div class="pipe-step danger">
+        <div class="pipe-icon">⚙️</div>
+        <div class="pipe-label">Config Phase</div>
+        <div class="pipe-sub">Calls 1–3: building settings</div>
+      </div>
+      <div class="pipe-step danger">
+        <div class="pipe-icon">📦</div>
+        <div class="pipe-label">Data Import</div>
+        <div class="pipe-sub">Weeks: client cleanup</div>
+      </div>
+      <div class="pipe-step ok">
+        <div class="pipe-icon">🎓</div>
+        <div class="pipe-label">Usability Training</div>
+        <div class="pipe-sub">Once config is complete</div>
+      </div>
+      <div class="pipe-step ok">
+        <div class="pipe-icon">🚀</div>
+        <div class="pipe-label">Go-Live</div>
+        <div class="pipe-sub">~Day 60</div>
+      </div>
+    </div>
+
+    <div class="insight-box">
+      <div class="insight-box-title">⚡ The Core Problem</div>
+      <p>The client arrives at kickoff to a nearly blank Rev.io instance. The first 3 sessions are consumed rebuilding information that Sales already collected — prior system, integrations, user structure, dispatch model. Only <strong>after configuration is complete</strong> can the SA pivot to the actual value-add: teaching the client how to use the platform for their business. That pivot happens too late, too far into the engagement, when client patience is already strained.</p>
+    </div>
+  </div>
+
+  <!-- SECTION 03: STEP-BY-STEP -->
+  <div class="section">
+    <div class="section-label">Section 03</div>
+    <div class="section-title">🔍 Step-by-Step — Current Process Detail</div>
+    <div class="section-divider"></div>
+
+    <!-- STEP 1: DEAL CLOSE -->
+    <div class="card green-border">
+      <div class="card-title">✅ Step 1 — Deal Closes (Salesforce Closed-Won)</div>
+      <ul class="item-list">
+        <li><span class="dot green"></span>Opportunity marked Closed-Won in Salesforce</li>
+        <li><span class="dot green"></span>Trigger for the onboarding process to begin — currently manual</li>
+        <li><span class="dot green"></span>No automated handoff today; Sales manually initiates next steps</li>
+      </ul>
+    </div>
+
+    <!-- STEP 2: MANUAL INTAKE -->
+    <div class="card warn-border">
+      <div class="card-title">⚠️ Step 2 — Sales Completes Manual Intake Form</div>
+      <ul class="item-list">
+        <li><span class="dot warn"></span>Sales rep fills out a basic intake form — done manually after close</li>
+        <li><span class="dot warn"></span>Captures: <strong style="color:var(--text)">basic client data, number of seats, primary contact information</strong></li>
+        <li><span class="dot warn"></span>Does NOT capture: prior PSA, accounting software, RMM tool, dispatch model, invoice sequence, SureTax, GL codes, user roles — all re-discovered in onboarding</li>
+        <li><span class="dot warn"></span>No structured handoff brief — SA enters the engagement with minimal context from the sales process</li>
+        <li><span class="dot warn"></span>No Fireflies transcript review, no Salesforce signal extraction</li>
+      </ul>
+    </div>
+
+    <!-- STEP 3: SA ASSIGNMENT -->
+    <div class="card warn-border">
+      <div class="card-title">⚠️ Step 3 — Manual SA Assignment</div>
+      <ul class="item-list">
+        <li><span class="dot warn"></span>SA assigned manually based on capacity scoring and availability</li>
+        <li><span class="dot warn"></span>Deliberation adds delay between close and first contact</li>
+        <li><span class="dot warn"></span>No batter's box rotation — assignment is judgment-based, not systematic</li>
+        <li><span class="dot warn"></span>SA receives the intake form — has no broader context about the client from sales calls</li>
+      </ul>
+    </div>
+
+    <!-- STEP 4: KICKOFF SCHEDULING -->
+    <div class="card warn-border">
+      <div class="card-title">⚠️ Step 4 — Sales Schedules Kickoff Call</div>
+      <ul class="item-list">
+        <li><span class="dot warn"></span>Sales rep schedules the initial 1-hour kickoff call</li>
+        <li><span class="dot warn"></span>No fixed SLA on kickoff timing today — gap between close and kickoff is variable</li>
+        <li><span class="dot warn"></span>Instance is requested at this stage — SLA: same day creation</li>
+        <li><span class="dot warn"></span>Instance arrives with <strong style="color:var(--text)">~10% default configuration</strong> — generic, not client-specific</li>
+        <li><span class="dot warn"></span>No pre-configuration done before the client shows up</li>
+      </ul>
+    </div>
+
+    <!-- STEP 5: KICKOFF CALL -->
+    <div class="card warn-border">
+      <div class="card-title">⚠️ Step 5 — Kickoff Call (1 Hour)</div>
+      <ul class="item-list">
+        <li><span class="dot warn"></span>SA meets client for the first time — with limited pre-call context</li>
+        <li><span class="dot warn"></span>First significant time spent re-collecting information Sales already knew</li>
+        <li><span class="dot warn"></span>SA sets up the ongoing call cadence: <strong style="color:var(--text)">2–3 weekly sessions</strong></li>
+        <li><span class="dot warn"></span>Scheduling is client-driven — client can push back cadence based on their availability</li>
+        <li><span class="dot warn"></span>Client-controlled scheduling means no fixed go-live pressure early in the engagement</li>
+        <li><span class="dot warn"></span>SA begins identifying configuration requirements that should have been captured at close</li>
+      </ul>
+    </div>
+
+    <!-- STEP 6: CONFIGURATION PHASE -->
+    <div class="card danger-border">
+      <div class="card-title">🔴 Step 6 — Configuration Phase (Calls 1–3: Weeks 1–3+)</div>
+      <ul class="item-list">
+        <li><span class="dot danger"></span><strong style="color:var(--text)">First 3 calls consumed entirely by platform configuration</strong> — no usability training yet</li>
+        <li><span class="dot danger"></span>SA is building client-specific settings from scratch: company info, users, dispatch boards, integrations, invoice settings, billing config, tax setup</li>
+        <li><span class="dot danger"></span>Most of this data should have arrived pre-kickoff — it's being collected live on the call</li>
+        <li><span class="dot danger"></span>Configuration must be complete before SA can pivot to the platform's value: teaching the client how to run their business in Rev.io</li>
+        <li><span class="dot danger"></span>If 2–3 week call cadence, configuration phase alone spans weeks 1–3 minimum</li>
+        <li><span class="dot danger"></span>Client frustration begins here: "I thought we covered this in sales…"</li>
+        <li><span class="dot danger"></span>SA methodology scores during this phase: <strong style="color:var(--danger)">14–23/100</strong> (should be 60+) — all three SAs score red early-stage</li>
+      </ul>
+      <div class="warn-box" style="margin-top:16px;">
+        <div class="warn-box-title">⚡ Configuration Bottleneck — What SA Builds in Calls 1–3</div>
+        <ul class="item-list" style="margin-top:8px;">
+          <li><span class="dot danger"></span>Company profile, legal name, billing address</li>
+          <li><span class="dot danger"></span>User accounts with correct role mapping (reconstructing org chart live)</li>
+          <li><span class="dot danger"></span>Dispatch board structure and service boards</li>
+          <li><span class="dot danger"></span>Integration connections — QB, RMM, payment processor</li>
+          <li><span class="dot danger"></span>Invoice number sequence and format</li>
+          <li><span class="dot danger"></span>SureTax setup and tax configuration</li>
+          <li><span class="dot danger"></span>Ticket types, statuses, and workflow structure</li>
+          <li><span class="dot danger"></span>Business hours and holiday calendar</li>
+          <li><span class="dot danger"></span>GL code mapping (often done without accountant present)</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- STEP 7: DATA IMPORT -->
+    <div class="card danger-border">
+      <div class="card-title">🔴 Step 7 — Data Import (Major Duration Driver)</div>
+      <ul class="item-list">
+        <li><span class="dot danger"></span>Client must provide data in <strong style="color:var(--text)">Rev.io's specific CSV format</strong> — customers, contacts, products, ticket history</li>
+        <li><span class="dot danger"></span>Format requirements are given to client during onboarding — not pre-kickoff</li>
+        <li><span class="dot danger"></span>Client begins "cleaning up" their data — this process <strong style="color:var(--danger)">takes weeks</strong> and extends the engagement significantly</li>
+        <li><span class="dot danger"></span>Data quality issues surface mid-engagement, not pre-kickoff — scope gets re-defined on the call</li>
+        <li><span class="dot danger"></span>SA cannot complete certain milestones until import is done — creates a hard dependency and a wait state</li>
+        <li><span class="dot danger"></span>During the wait, client engagement can go cold — contributing to On Hold and RTS risk</li>
+        <li><span class="dot danger"></span>No current SLA or structured follow-up cadence for clients stalled at data import</li>
+      </ul>
+    </div>
+
+    <!-- STEP 8: USABILITY TRAINING -->
+    <div class="card">
+      <div class="card-title">📘 Step 8 — Usability Training (Starts Only After Config is Complete)</div>
+      <ul class="item-list">
+        <li><span class="dot green"></span>Once configuration is complete, SA pivots to platform training</li>
+        <li><span class="dot green"></span>This is the high-value work: teaching the client how Rev.io solves their specific business problems</li>
+        <li><span class="dot green"></span>SA methodology scores improve significantly mid and late-stage once configuration burden is lifted</li>
+        <li><span class="dot"></span>By this point, client has been in onboarding for weeks — patience may be thin</li>
+        <li><span class="dot warn"></span>Late pivot to value means shorter runway for training before go-live target</li>
+      </ul>
+    </div>
+
+    <!-- STEP 9: GO-LIVE -->
+    <div class="card green-border">
+      <div class="card-title">🚀 Step 9 — Go-Live (~Day 60)</div>
+      <ul class="item-list">
+        <li><span class="dot green"></span>Client graduates to live on Rev.io PSA</li>
+        <li><span class="dot green"></span>Average duration today: <strong style="color:var(--text)">~60 days</strong></li>
+        <li><span class="dot warn"></span>Simple clients (small, no migration) shouldn't take 60 days — the configuration front-load inflates every engagement</li>
+        <li><span class="dot warn"></span>Target under automation: <strong style="color:var(--warn)">≤1 week for simple clients</strong>, ≤3 weeks with payment migration</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- SECTION 04: SA CALL CADENCE -->
+  <div class="section">
+    <div class="section-label">Section 04</div>
+    <div class="section-title">📞 SA Call Cadence — Current Pattern</div>
+    <div class="section-divider"></div>
+    <p style="color:var(--text-dim); margin-bottom:24px; font-size:14px;">2–3 weekly calls per client. Client controls pace — SA meets their availability. No fixed go-live milestone pressure during the session cadence.</p>
+
+    <div class="card">
+      <div class="call-timeline">
+
+        <div class="call-item danger">
+          <div class="call-num">Kickoff — Hour 1</div>
+          <div class="call-title">Introductions + Discovery Re-Run</div>
+          <div class="call-desc">SA meets client. Re-collects information Sales already knew. Sets call cadence. Client sees blank (10% default) instance for the first time. Configuration requirements identified from scratch.</div>
+        </div>
+
+        <div class="call-item danger">
+          <div class="call-num">Call 2 — Week 2</div>
+          <div class="call-title">Core Configuration — Company, Users, Billing</div>
+          <div class="call-desc">Company profile, user accounts and roles, invoice settings, billing configuration. GL codes often require accountant follow-up — creates a hold cycle. Client starting to wonder when they'll actually use the platform.</div>
+        </div>
+
+        <div class="call-item danger">
+          <div class="call-num">Call 3 — Week 3</div>
+          <div class="call-title">Integrations + Dispatch + Tax Config</div>
+          <div class="call-desc">Integration connections (QB, RMM, payment processor), dispatch board structure, service boards, ticket types, SureTax and tax setup. This is still configuration — no platform training yet. Data import CSV format provided to client. The data cleanup clock starts.</div>
+        </div>
+
+        <div class="call-item warn">
+          <div class="call-num">Calls 4–5 — Weeks 4–6 (or later)</div>
+          <div class="call-title">Pivot to Usability — Ticketing, Workflows, Portal</div>
+          <div class="call-desc">Platform training begins. Ticket workflow, service board use, customer portal, reporting. Data import still pending — client is cleaning and formatting data. Engagement risk increases here if client momentum has slowed.</div>
+        </div>
+
+        <div class="call-item warn">
+          <div class="call-num">Calls 6–7 — Weeks 6–8 (variable)</div>
+          <div class="call-title">Data Import + QA + Final Config</div>
+          <div class="call-desc">Import file received (if ready). Data engineering validates and runs import. Final configuration adjustments, QA testing, go-live prep. Duration at this stage is entirely dependent on when the client delivered clean data.</div>
+        </div>
+
+        <div class="call-item green">
+          <div class="call-num">Final Call — ~Week 8–10</div>
+          <div class="call-title">Go-Live Sign-Off</div>
+          <div class="call-desc">Client confirmed live on Rev.io PSA. Handoff to support. Duration ranges from 45 to 90+ days depending on data complexity and client pace.</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 05: 13-MILESTONE CHECKLIST -->
+  <div class="section">
+    <div class="section-label">Section 05</div>
+    <div class="section-title">✅ SA Onboarding Checklist — 13 Milestones</div>
+    <div class="section-divider"></div>
+    <p style="color:var(--text-dim); margin-bottom:20px; font-size:14px;">The 13 official milestones the SA works through with every client. 618 records across active clients. Milestones are tracked per engagement — not all apply to every client.</p>
+
+    <table class="milestone-table">
+      <thead>
+        <tr>
+          <th>Milestone</th>
+          <th>SLA</th>
+          <th>What It Covers</th>
+          <th>Config or Training</th>
+          <th>Pre-Config Potential</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="phase-header">
+          <td colspan="5">📅 Phase 1 — Week 1 Milestones</td>
+        </tr>
+        <tr>
+          <td>Company Info</td>
+          <td><span class="badge badge-accent">7 days</span></td>
+          <td>Business profile, address, contacts, invoice settings</td>
+          <td><span class="badge badge-danger">Configuration</span></td>
+          <td><span class="badge badge-green">✅ HIGH</span></td>
+        </tr>
+        <tr>
+          <td>Product &amp; Assets</td>
+          <td><span class="badge badge-accent">7 days</span></td>
+          <td>Service catalog, product library setup</td>
+          <td><span class="badge badge-danger">Configuration</span></td>
+          <td><span class="badge badge-warn">⚠️ MEDIUM</span></td>
+        </tr>
+        <tr>
+          <td>Inventory Management</td>
+          <td><span class="badge badge-accent">7 days</span></td>
+          <td>Equipment tracking, serialized assets, POs</td>
+          <td><span class="badge badge-danger">Configuration</span></td>
+          <td><span class="badge badge-warn" style="background:rgba(255,107,107,0.12); color:var(--danger);">⚠️ LOW</span></td>
+        </tr>
+        <tr class="phase-header">
+          <td colspan="5">📅 Phase 2 — Week 3 Milestones</td>
+        </tr>
+        <tr>
+          <td>Time Entry</td>
+          <td><span class="badge badge-accent">21 days</span></td>
+          <td>Labor categories, technician billing rates</td>
+          <td><span class="badge badge-danger">Configuration</span></td>
+          <td><span class="badge badge-warn">⚠️ MEDIUM</span></td>
+        </tr>
+        <tr>
+          <td>Quote Templates</td>
+          <td><span class="badge badge-accent">21 days</span></td>
+          <td>Quote structure, formatting, template setup</td>
+          <td><span class="badge badge-warn">Config + Training</span></td>
+          <td><span class="badge badge-warn">⚠️ MEDIUM</span></td>
+        </tr>
+        <tr>
+          <td>Data Import</td>
+          <td><span class="badge badge-warn">Variable</span></td>
+          <td>Migration from prior system — customers, contacts, products, tickets</td>
+          <td><span class="badge badge-danger">Configuration</span></td>
+          <td><span class="badge badge-green">✅ HIGH</span></td>
+        </tr>
+        <tr>
+          <td>Data Import Staging</td>
+          <td><span class="badge badge-accent">21 days</span></td>
+          <td>Validation, test imports, data quality review</td>
+          <td><span class="badge badge-danger">Configuration</span></td>
+          <td><span class="badge badge-green">✅ HIGH</span></td>
+        </tr>
+        <tr>
+          <td>Tax Configuration</td>
+          <td><span class="badge badge-accent">21 days</span></td>
+          <td>SureTax setup, tax codes, exemptions, jurisdictions</td>
+          <td><span class="badge badge-danger">Configuration</span></td>
+          <td><span class="badge badge-warn" style="background:rgba(255,107,107,0.12); color:var(--danger);">❌ LOW</span></td>
+        </tr>
+        <tr>
+          <td>Integrations</td>
+          <td><span class="badge badge-accent">21 days</span></td>
+          <td>RMM, accounting software, payment processor connections</td>
+          <td><span class="badge badge-danger">Configuration</span></td>
+          <td><span class="badge badge-green">✅ HIGH</span></td>
+        </tr>
+        <tr>
+          <td>Payments Configuration</td>
+          <td><span class="badge badge-accent">21 days</span></td>
+          <td>Payment methods, processor setup, merchant account</td>
+          <td><span class="badge badge-danger">Configuration</span></td>
+          <td><span class="badge badge-warn">⚠️ MEDIUM</span></td>
+        </tr>
+        <tr class="phase-header">
+          <td colspan="5">📅 Phase 3 — Ongoing Milestones</td>
+        </tr>
+        <tr>
+          <td>Processes</td>
+          <td><span class="badge badge-warn">Ongoing</span></td>
+          <td>Ticketing workflows, service desk config, SLA policies</td>
+          <td><span class="badge badge-warn">Config + Training</span></td>
+          <td><span class="badge badge-warn">⚠️ MEDIUM</span></td>
+        </tr>
+        <tr>
+          <td>Admin</td>
+          <td><span class="badge badge-warn">Ongoing</span></td>
+          <td>User accounts, roles, permissions, security settings</td>
+          <td><span class="badge badge-danger">Configuration</span></td>
+          <td><span class="badge badge-green">✅ HIGH</span></td>
+        </tr>
+        <tr>
+          <td>Finalize / QA</td>
+          <td><span class="badge badge-warn">Ongoing</span></td>
+          <td>End-to-end testing, go-live prep, sign-off</td>
+          <td><span class="badge badge-green">Training</span></td>
+          <td><span class="badge badge-accent">— TBD</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="insight-box">
+      <div class="insight-box-title">📌 Key Finding — 9 of 13 Milestones Are Pure Configuration</div>
+      <p>Of the 13 milestones, <strong>9 are primarily configuration work</strong> that begins only after the client shows up to kickoff. Only 2 milestones (Quote Templates, Processes) blend configuration and training. Only 1 milestone (Finalize/QA) is pure training. The system is front-loaded with setup work that should be completed before the first client session.</p>
+    </div>
+  </div>
+
+  <!-- SECTION 06: TIME SUCKS -->
+  <div class="section">
+    <div class="section-label">Section 06</div>
+    <div class="section-title">🔴 Primary Duration Drivers — What's Killing the Timeline</div>
+    <div class="section-divider"></div>
+
+    <div class="gap-grid">
+      <div class="gap-card">
+        <strong>Blank Instance at Kickoff</strong>
+        Client logs in to a 10% default instance. Every configuration item must be discovered and built during paid SA session time.
+        <div class="impact">Impact: 3 full calls lost to setup</div>
+      </div>
+      <div class="gap-card">
+        <strong>Client Data Cleanup</strong>
+        CSV import format provided at kickoff, not pre-kickoff. Client begins cleanup mid-engagement — can take weeks. Creates hard wait state.
+        <div class="impact">Impact: 2–4 weeks of engagement freeze</div>
+      </div>
+      <div class="gap-card">
+        <strong>Client-Controlled Call Cadence</strong>
+        Client can push back the 2–3 weekly call schedule. No fixed go-live pressure. SA meets client demand — engagement can stretch indefinitely.
+        <div class="impact">Impact: Schedule slippage compounds duration</div>
+      </div>
+      <div class="gap-card">
+        <strong>GL Code Collection Without Accountant</strong>
+        GL mapping done live on the call — usually without the accountant present. Requires follow-up cycle. Blocks billing configuration completion.
+        <div class="impact">Impact: 1–2 week delay per engagement</div>
+      </div>
+      <div class="gap-card">
+        <strong>Information Sales Already Had</strong>
+        Prior PSA, accounting software, RMM tool, payment processor — re-discovered in sessions 1–3. Represents 84–90% of early call content.
+        <div class="impact">Impact: First 3 calls wasted on re-collection</div>
+      </div>
+      <div class="gap-card">
+        <strong>No Structured Hold/RTS Cadence</strong>
+        Clients who go quiet during data cleanup have no automated follow-up sequence. Engagements drift into On Hold without clear re-engagement triggers.
+        <div class="impact">Impact: Contributes to ~25% cancel rate</div>
+      </div>
+      <div class="gap-card">
+        <strong>Manual SA Assignment Deliberation</strong>
+        Capacity scoring adds delay between close and first SA contact. No systematic rotation — assignment is judgment-based.
+        <div class="impact">Impact: Gap between close and kickoff</div>
+      </div>
+      <div class="gap-card">
+        <strong>Email Connector Not Pre-Configured</strong>
+        Service email often missed until mid-session. Blocks ticket ingestion workflow — discovered only when client tries to test ticket creation.
+        <div class="impact">Impact: Session time + rework cycle</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 07: WHAT NEEDS TO CHANGE -->
+  <div class="section">
+    <div class="section-label">Section 07</div>
+    <div class="section-title">🎯 From 60 Days to &lt;1 Week — What Has to Change</div>
+    <div class="section-divider"></div>
+
+    <div class="card green-border">
+      <div class="card-title">Before Kickoff — The Automation Opportunity</div>
+      <ul class="item-list">
+        <li><span class="dot green"></span><strong style="color:var(--text)">Sales captures the Core 8 at close</strong> — prior PSA, accounting software, RMM, payment processor, users + roles, dispatch model, invoice sequence, SureTax</li>
+        <li><span class="dot green"></span><strong style="color:var(--text)">Fireflies transcripts pulled automatically</strong> on Closed-Won — signals extracted before kickoff</li>
+        <li><span class="dot green"></span><strong style="color:var(--text)">Instance pre-configured</strong> using Rev.io API + browser automation — customer record, contacts, users, invoice settings, integration flags, SA context note</li>
+        <li><span class="dot green"></span><strong style="color:var(--text)">CSV import templates sent to client at close</strong> — not at kickoff. Data cleanup starts immediately, runs in parallel</li>
+        <li><span class="dot green"></span><strong style="color:var(--text)">SA brief delivered 48 hours before kickoff</strong> — pre-configured items, open questions, client context from sales calls</li>
+        <li><span class="dot green"></span><strong style="color:var(--text)">Revii AI enabled before the client logs in</strong> — Platform First, every time</li>
+      </ul>
+    </div>
+
+    <div class="card green-border">
+      <div class="card-title">At Kickoff — What Changes</div>
+      <ul class="item-list">
+        <li><span class="dot green"></span>SA opens: <em>"We set this up based on your sales conversations. Here's what's done. Here's what we still need from you."</em></li>
+        <li><span class="dot green"></span>Session 1 goes straight to training — not setup</li>
+        <li><span class="dot green"></span>Client feels known and cared for from the first minute</li>
+        <li><span class="dot green"></span>Simple clients (≤$700/mo, no migration) go live within 1 week</li>
+        <li><span class="dot green"></span>Kickoff target: same day or next day after close — batter's box SA rotation, no deliberation</li>
+      </ul>
+    </div>
+
+    <div class="insight-box">
+      <div class="insight-box-title">🏁 The Target State</div>
+      <p>Instance arrives at <strong>60–80% pre-configured</strong> based on sales call intelligence. SA uses session time to refine, train, and handle the 20–40% that genuinely requires client input. Data import clock starts at close, not at kickoff. Simple clients are live in a week. Complex clients are measured in weeks, not months.</p>
+      <p style="margin-top:8px;">Early-stage SA methodology scores rise from <strong>14–23/100 → 60+</strong>. Not because SAs get better at early calls — but because pre-configuration means early calls are no longer setup sessions. They're training sessions. That's the entire difference.</p>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  ⚡ Rev.io Intelligence Stack · Current State Documentation · March 2026 · Baseline for Onboarding Automation Project
+</div>
+
+</body>
+</html>

@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rev.io — Salesforce → Sales Brief Field Mapping</title>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --surface2: #21253a;
+      --surface3: #262a3e;
+      --accent: #6c63ff;
+      --accent2: #00d4aa;
+      --warn: #ffa94d;
+      --danger: #ff6b6b;
+      --muted: #7b7f9e;
+      --text: #e8eaf6;
+      --text-dim: #b0b4cc;
+      --border: rgba(255,255,255,0.07);
+      --radius: 14px;
+      --radius-sm: 8px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      font-size: 15px;
+      line-height: 1.65;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #0d1520 0%, #0f2233 50%, #0f1117 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 60px 24px 48px;
+      text-align: center;
+    }
+    .hero-eyebrow {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--accent2);
+      margin-bottom: 16px;
+    }
+    .hero h1 {
+      font-size: clamp(22px, 5vw, 38px);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.5px;
+      margin-bottom: 14px;
+    }
+    .hero h1 span { color: var(--accent2); }
+    .hero-sub {
+      font-size: clamp(14px, 2.5vw, 16px);
+      color: var(--text-dim);
+      max-width: 700px;
+      margin: 0 auto 28px;
+    }
+    .hero-tags { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+    .hero-tag {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 5px 14px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .hero-tag.green { background: rgba(0,212,170,0.08); border-color: rgba(0,212,170,0.2); color: var(--accent2); }
+    .hero-tag.purple { background: rgba(108,99,255,0.1); border-color: rgba(108,99,255,0.25); color: var(--accent); }
+
+    .content { max-width: 1020px; margin: 0 auto; padding: 0 20px 80px; }
+
+    .section { margin-top: 56px; }
+    .section-label {
+      font-size: 11px; font-weight: 700; letter-spacing: 2.5px;
+      text-transform: uppercase; color: var(--accent); margin-bottom: 8px;
+    }
+    .section-title { font-size: clamp(18px, 3.5vw, 24px); font-weight: 700; margin-bottom: 4px; }
+    .section-divider {
+      width: 40px; height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      border-radius: 2px; margin: 14px 0 24px;
+    }
+    .section-desc { color: var(--text-dim); margin-bottom: 24px; font-size: 14px; }
+
+    /* STAT STRIP */
+    .stat-strip {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+      margin-bottom: 36px;
+    }
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 16px 18px;
+      text-align: center;
+    }
+    .stat-value { font-size: 22px; font-weight: 800; color: var(--accent2); line-height: 1.2; }
+    .stat-label { font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; }
+
+    /* MAPPING TABLE */
+    .map-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+    .map-table thead tr { background: rgba(108,99,255,0.07); }
+    .map-table th {
+      text-align: left;
+      padding: 10px 14px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
+    }
+    .map-table td {
+      padding: 11px 14px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      vertical-align: top;
+      line-height: 1.5;
+    }
+    .map-table tbody tr:hover td { background: rgba(108,99,255,0.03); }
+    .map-table td:first-child { width: 32px; text-align: center; font-size: 16px; }
+    .map-table td:nth-child(2) { color: var(--text); font-weight: 500; width: 200px; }
+    .map-table td:nth-child(3) { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 11.5px; color: var(--accent); width: 260px; }
+    .map-table td:nth-child(4) { color: var(--text-dim); }
+    .map-table td:last-child { width: 110px; }
+
+    /* STATUS BADGES */
+    .badge {
+      display: inline-block;
+      padding: 2px 9px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .badge-auto   { background: rgba(0,212,170,0.12); color: var(--accent2); }
+    .badge-gap    { background: rgba(255,107,107,0.12); color: var(--danger); }
+    .badge-enrich { background: rgba(255,169,77,0.12); color: var(--warn); }
+    .badge-partial { background: rgba(108,99,255,0.12); color: var(--accent); }
+
+    /* OBJECT HEADER */
+    .obj-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px 18px;
+      margin-bottom: 12px;
+    }
+    .obj-icon { font-size: 22px; }
+    .obj-name { font-weight: 700; font-size: 15px; }
+    .obj-sub { font-size: 12px; color: var(--muted); }
+
+    /* GAP BOX */
+    .gap-box {
+      background: rgba(255,107,107,0.05);
+      border: 1px solid rgba(255,107,107,0.15);
+      border-radius: var(--radius-sm);
+      padding: 18px 22px;
+      margin-top: 32px;
+    }
+    .gap-box-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--danger);
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .gap-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .gap-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 13px;
+      color: var(--text-dim);
+    }
+    .gap-list li::before {
+      content: '⚠';
+      color: var(--warn);
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .gap-list strong { color: var(--text); }
+
+    /* INSIGHT BOX */
+    .insight-box {
+      background: rgba(0,212,170,0.05);
+      border: 1px solid rgba(0,212,170,0.15);
+      border-radius: var(--radius-sm);
+      padding: 18px 22px;
+      margin-top: 32px;
+    }
+    .insight-box-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--accent2);
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .insight-box p { font-size: 13px; color: var(--text-dim); line-height: 1.6; }
+    .insight-box strong { color: var(--text); }
+
+    /* PIPELINE FLOW */
+    .pipeline {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      flex-wrap: wrap;
+      margin: 28px 0;
+    }
+    .pipe-step {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px 18px;
+      font-size: 13px;
+      font-weight: 600;
+      text-align: center;
+      flex: 1;
+      min-width: 120px;
+    }
+    .pipe-step .pipe-icon { font-size: 20px; margin-bottom: 4px; }
+    .pipe-step .pipe-label { color: var(--text-dim); font-size: 11px; font-weight: 400; margin-top: 2px; }
+    .pipe-arrow {
+      color: var(--muted);
+      font-size: 18px;
+      padding: 0 4px;
+      flex-shrink: 0;
+    }
+    .pipe-step.highlight { border-color: rgba(0,212,170,0.3); background: rgba(0,212,170,0.06); }
+
+    /* CHECKLIST BOX */
+    .checklist-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 20px 24px;
+      margin-top: 24px;
+    }
+    .checklist-title { font-size: 14px; font-weight: 700; margin-bottom: 14px; }
+    .checklist { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .checklist li { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; color: var(--text-dim); }
+    .checklist li .ck { color: var(--accent2); flex-shrink: 0; font-weight: 700; }
+    .checklist li strong { color: var(--text); }
+
+    .footer {
+      text-align: center;
+      padding: 32px 24px;
+      font-size: 12px;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+    }
+
+    @media (max-width: 640px) {
+      .map-table td:nth-child(3) { display: none; }
+      .pipeline { flex-direction: column; }
+      .pipe-arrow { transform: rotate(90deg); }
+    }
+  </style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-eyebrow">Onboarding Automation · Intelligence Layer</div>
+  <h1>Salesforce → <span>Sales Brief</span> Field Mapping</h1>
+  <p class="hero-sub">Every field Rev.io captures in Salesforce mapped to its Sales Brief section — what auto-populates, what's a gap, and what Sales needs to fill before Closed-Won.</p>
+  <div class="hero-tags">
+    <span class="hero-tag green">✅ Auto-populate on Closed-Won</span>
+    <span class="hero-tag purple">⚡ Enrich from transcript</span>
+    <span class="hero-tag">⚠️ Sales must fill at close</span>
+    <span class="hero-tag">🔴 Current gap in SF</span>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- STAT STRIP -->
+  <div class="section">
+    <div class="stat-strip">
+      <div class="stat-card">
+        <div class="stat-value">18</div>
+        <div class="stat-label">Fields Auto-Populate</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">7</div>
+        <div class="stat-label">Enrich from Transcript</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">6</div>
+        <div class="stat-label">Sales Must Fill at Close</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">~70%</div>
+        <div class="stat-label">Brief Auto-Coverage</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PIPELINE -->
+  <div class="section">
+    <div class="section-label">Section 01</div>
+    <div class="section-title">🔄 How the Pipeline Works</div>
+    <div class="section-divider"></div>
+    <p class="section-desc">On Closed-Won, the automation fires two parallel data pulls. The outputs merge into the Sales Brief before the SA ever touches it.</p>
+
+    <div class="pipeline">
+      <div class="pipe-step">
+        <div class="pipe-icon">🤝</div>
+        <div>Deal Closes</div>
+        <div class="pipe-label">SF Closed-Won trigger</div>
+      </div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step highlight">
+        <div class="pipe-icon">🗄️</div>
+        <div>SF Pull</div>
+        <div class="pipe-label">Account + Opportunity fields</div>
+      </div>
+      <div class="pipe-arrow">+</div>
+      <div class="pipe-step highlight">
+        <div class="pipe-icon">🎙️</div>
+        <div>Outreach Scrape</div>
+        <div class="pipe-label">All sales call transcripts</div>
+      </div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step">
+        <div class="pipe-icon">📋</div>
+        <div>Sales Brief</div>
+        <div class="pipe-label">Auto-populated for SA</div>
+      </div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step">
+        <div class="pipe-icon">🚀</div>
+        <div>Kickoff</div>
+        <div class="pipe-label">SA arrives ready</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 1: CLIENT & DEAL INFO -->
+  <div class="section">
+    <div class="section-label">Section 02</div>
+    <div class="section-title">📋 Brief Section 1 — Client &amp; Deal Info</div>
+    <div class="section-divider"></div>
+
+    <div class="obj-header">
+      <div class="obj-icon">🏢</div>
+      <div>
+        <div class="obj-name">Account + Opportunity Objects</div>
+        <div class="obj-sub">Salesforce standard + custom fields</div>
+      </div>
+    </div>
+
+    <table class="map-table">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Brief Field</th>
+          <th>SF Field</th>
+          <th>Notes</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>🏢</td>
+          <td>Company Name</td>
+          <td>Account.Name</td>
+          <td>Always populated</td>
+          <td><span class="badge badge-auto">Auto</span></td>
+        </tr>
+        <tr>
+          <td>📍</td>
+          <td>Location</td>
+          <td>Account.BillingCity / BillingState</td>
+          <td>Usually populated</td>
+          <td><span class="badge badge-auto">Auto</span></td>
+        </tr>
+        <tr>
+          <td>💰</td>
+          <td>MRR / Monthly Fees</td>
+          <td>Opportunity.Total_Monthly_Fees__c</td>
+          <td>Set at close</td>
+          <td><span class="badge badge-auto">Auto</span></td>
+        </tr>
+        <tr>
+          <td>🗓️</td>
+          <td>Close Date</td>
+          <td>Opportunity.CloseDate</td>
+          <td>Trigger date</td>
+          <td><span class="badge badge-auto">Auto</span></td>
+        </tr>
+        <tr>
+          <td>📑</td>
+          <td>Implementation Fees</td>
+          <td>Opportunity.Implementation_Fees__c</td>
+          <td>Sometimes blank — flag if null</td>
+          <td><span class="badge badge-partial">Partial</span></td>
+        </tr>
+        <tr>
+          <td>📦</td>
+          <td>Rev.io Edition / Package</td>
+          <td>Opportunity.Rev_io_Edition__c</td>
+          <td>Often not filled — Sales gap</td>
+          <td><span class="badge badge-gap">Gap</span></td>
+        </tr>
+        <tr>
+          <td>🧑‍💼</td>
+          <td>SA Assigned</td>
+          <td>Account.Account_Manager__c</td>
+          <td>May need round-robin logic at trigger</td>
+          <td><span class="badge badge-partial">Partial</span></td>
+        </tr>
+        <tr>
+          <td>🔁</td>
+          <td>Existing Billing Client?</td>
+          <td>Opportunity.Current_Billing_Customer__c</td>
+          <td>Boolean — always set</td>
+          <td><span class="badge badge-auto">Auto</span></td>
+        </tr>
+        <tr>
+          <td>🐯</td>
+          <td>Existing TigerPaw Client?</td>
+          <td>Opportunity.Current_TigerPaw_Customer__c</td>
+          <td>Boolean — always set</td>
+          <td><span class="badge badge-auto">Auto</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- SECTION 2: THE CORE 8 -->
+  <div class="section">
+    <div class="section-label">Section 03</div>
+    <div class="section-title">🔑 Brief Section 2 — The Core 8</div>
+    <div class="section-divider"></div>
+    <p class="section-desc">The 8 data points every SA needs at kickoff. This is where Salesforce + transcripts together can get to 80–90% coverage.</p>
+
+    <table class="map-table">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Core 8 Item</th>
+          <th>SF Field</th>
+          <th>Notes / Fallback</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1️⃣</td>
+          <td>Prior PSA / Current System</td>
+          <td>Account.PSA_Platform__c</td>
+          <td>Picklist — well-populated. Fallback: transcript scrape for PSA mentions.</td>
+          <td><span class="badge badge-auto">Auto</span></td>
+        </tr>
+        <tr>
+          <td>2️⃣</td>
+          <td>Accounting Software</td>
+          <td>Account.Accounting_Platform__c / Account.Billing_Platform__c</td>
+          <td>Two fields — both should be checked. QBO vs Desktop matters for integration.</td>
+          <td><span class="badge badge-auto">Auto</span></td>
+        </tr>
+        <tr>
+          <td>3️⃣</td>
+          <td>RMM Tool</td>
+          <td>Account.RMM_Platform__c + Opp.Are_they_using_RMM__c</td>
+          <td>Picklist exists. Boolean confirms whether in use. Supplement from transcript.</td>
+          <td><span class="badge badge-partial">Partial</span></td>
+        </tr>
+        <tr>
+          <td>4️⃣</td>
+          <td>Payment Processor</td>
+          <td>Account.Payment_Processor1__c (picklist) + Account.Payment_Processor__c (text)</td>
+          <td>Two fields — check both. Activity thread is often the richest source (as with NJOS).</td>
+          <td><span class="badge badge-enrich">Enrich</span></td>
+        </tr>
+        <tr>
+          <td>5️⃣</td>
+          <td>User Count + Roles</td>
+          <td>Opportunity.User_Count__c + Account.NumberOfEmployees</td>
+          <td>Count available. Roles/titles come from Contact records. Job titles should be scraped from transcript.</td>
+          <td><span class="badge badge-partial">Partial</span></td>
+        </tr>
+        <tr>
+          <td>6️⃣</td>
+          <td>Dispatch Model + Business Hours</td>
+          <td>—</td>
+          <td>Not captured in SF. Must come from transcript or Sales follow-up questionnaire.</td>
+          <td><span class="badge badge-enrich">Enrich</span></td>
+        </tr>
+        <tr>
+          <td>7️⃣</td>
+          <td>Invoice Number Sequence / Continuity</td>
+          <td>—</td>
+          <td>Not in SF. Transcript often mentions it. Flag as follow-up if not found.</td>
+          <td><span class="badge badge-enrich">Enrich</span></td>
+        </tr>
+        <tr>
+          <td>8️⃣</td>
+          <td>SureTax — existing or new?</td>
+          <td>Account.Tax_database__c</td>
+          <td>Picklist exists. Check if populated. Supplement from transcript.</td>
+          <td><span class="badge badge-partial">Partial</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- SECTION 3: ADDITIONAL CONFIG -->
+  <div class="section">
+    <div class="section-label">Section 04</div>
+    <div class="section-title">⚙️ Brief Section 3 — Additional Configuration</div>
+    <div class="section-divider"></div>
+
+    <table class="map-table">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Config Item</th>
+          <th>SF Field</th>
+          <th>Notes</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>💬</td>
+          <td>SMS / Texting</td>
+          <td>—</td>
+          <td>No SF field. Transcript signal only — listen for "text" or "SMS."</td>
+          <td><span class="badge badge-enrich">Enrich</span></td>
+        </tr>
+        <tr>
+          <td>🌐</td>
+          <td>Client Portal</td>
+          <td>Account.Enterprise_Customer_Portal_Enabled__c</td>
+          <td>Boolean — check if existing client. Otherwise transcript signal.</td>
+          <td><span class="badge badge-partial">Partial</span></td>
+        </tr>
+        <tr>
+          <td>📦</td>
+          <td>Inventory Management</td>
+          <td>—</td>
+          <td>No SF field. Transcript signal — "inventory," "parts," "warehouse."</td>
+          <td><span class="badge badge-enrich">Enrich</span></td>
+        </tr>
+        <tr>
+          <td>📁</td>
+          <td>Project Management</td>
+          <td>—</td>
+          <td>No SF field. Transcript signal — "projects," "install jobs."</td>
+          <td><span class="badge badge-enrich">Enrich</span></td>
+        </tr>
+        <tr>
+          <td>💼</td>
+          <td>Quoting</td>
+          <td>—</td>
+          <td>No SF field. Transcript signal — "quotes," "proposals."</td>
+          <td><span class="badge badge-enrich">Enrich</span></td>
+        </tr>
+        <tr>
+          <td>🔗</td>
+          <td>QuickBooks Integration</td>
+          <td>Account.Quickbooks_Integration__c + Opp.Are_they_using_QBO_Integration__c</td>
+          <td>Two booleans. QBO Desktop ≠ QBO Online for integration support — flag Desktop separately.</td>
+          <td><span class="badge badge-auto">Auto</span></td>
+        </tr>
+        <tr>
+          <td>🔗</td>
+          <td>ConnectWise Integration</td>
+          <td>Account.Connectwise_Integration__c</td>
+          <td>Boolean — check if MSP vertical.</td>
+          <td><span class="badge badge-auto">Auto</span></td>
+        </tr>
+        <tr>
+          <td>🔗</td>
+          <td>CRM in Use</td>
+          <td>Account.CRM__c + Opportunity.CRM__c</td>
+          <td>Both fields exist — check both. Often blank for MSPs.</td>
+          <td><span class="badge badge-partial">Partial</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- SECTION 4: MIGRATION & COMPLEXITY -->
+  <div class="section">
+    <div class="section-label">Section 05</div>
+    <div class="section-title">🔀 Brief Section 4 — Migration &amp; Complexity Tier</div>
+    <div class="section-divider"></div>
+    <p class="section-desc">These fields directly determine Simple / Medium / Complex go-live tier. If they're blank, the SA can't plan the engagement timeline.</p>
+
+    <table class="map-table">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Brief Field</th>
+          <th>SF Field</th>
+          <th>Notes</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>🔄</td>
+          <td>Token Migration Required?</td>
+          <td>Opportunity.Do_they_need_a_token_migration__c</td>
+          <td>Boolean — almost always filled. Critical for Medium tier flag.</td>
+          <td><span class="badge badge-auto">Auto</span></td>
+        </tr>
+        <tr>
+          <td>📂</td>
+          <td>Data Conversion Required?</td>
+          <td>Opportunity.Requires_Data_Conversion__c</td>
+          <td>Picklist — often null. <strong>Most common gap.</strong> Sales must fill at close.</td>
+          <td><span class="badge badge-gap">Gap</span></td>
+        </tr>
+        <tr>
+          <td>🌍</td>
+          <td>International Requirements?</td>
+          <td>Opportunity.International_Requirements__c</td>
+          <td>Boolean — flags multi-currency, tax complexity.</td>
+          <td><span class="badge badge-auto">Auto</span></td>
+        </tr>
+        <tr>
+          <td>🐯</td>
+          <td>TigerPaw Migration?</td>
+          <td>Account.TigerPaw_Account_Number__c + TigerPaw_Account_Status__c</td>
+          <td>If account has a TP number, migration playbook applies. Flag automatically.</td>
+          <td><span class="badge badge-auto">Auto</span></td>
+        </tr>
+        <tr>
+          <td>🔢</td>
+          <td>PSA User Count</td>
+          <td>Account.PSA_License__c + Opportunity.User_Count__c</td>
+          <td>Two fields — use whichever is populated. Drives license sizing.</td>
+          <td><span class="badge badge-auto">Auto</span></td>
+        </tr>
+        <tr>
+          <td>🗓️</td>
+          <td>Kickoff Call Date</td>
+          <td>Opportunity.Kickoff_Call_Date__c</td>
+          <td>Should be set at close — triggers SA calendar hold. Often blank.</td>
+          <td><span class="badge badge-gap">Gap</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- SECTION 5: CONTEXT & INTEL -->
+  <div class="section">
+    <div class="section-label">Section 06</div>
+    <div class="section-title">🧠 Brief Section 5 — Client Context &amp; SA Intel</div>
+    <div class="section-divider"></div>
+    <p class="section-desc">This is the qualitative layer — the "why" behind the deal. Often the richest data, and where Salesforce custom fields are most valuable when Sales fills them in.</p>
+
+    <table class="map-table">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Brief Field</th>
+          <th>SF Field</th>
+          <th>Notes</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>🔥</td>
+          <td>Pain Points / Business Issues</td>
+          <td>Opportunity.Business_Issue_Details__c + Business_Issues__c</td>
+          <td><strong>Highest value field in SF.</strong> When filled, this is a paragraph of discovery. Supplement + verify from transcript.</td>
+          <td><span class="badge badge-auto">Auto</span></td>
+        </tr>
+        <tr>
+          <td>⚠️</td>
+          <td>#1 Concern with Rev.io</td>
+          <td>Opportunity.X1_Concern_with_Rev_io__c</td>
+          <td>SA needs to know client objections going in. Often blank — Sales gap.</td>
+          <td><span class="badge badge-gap">Gap</span></td>
+        </tr>
+        <tr>
+          <td>🏆</td>
+          <td>#1 Impressive Feature</td>
+          <td>Opportunity.X1_Impressive_Feature__c</td>
+          <td>What sold them — SA should lean into this in JS1. Often blank.</td>
+          <td><span class="badge badge-gap">Gap</span></td>
+        </tr>
+        <tr>
+          <td>🤔</td>
+          <td>General Notes / Buying Motives</td>
+          <td>Opportunity.General_Notes_Buying_Motives__c</td>
+          <td>Free text — when filled, extremely useful for SA context.</td>
+          <td><span class="badge badge-partial">Partial</span></td>
+        </tr>
+        <tr>
+          <td>🏢</td>
+          <td>Vertical / Industry</td>
+          <td>Account.Vertical__c + Account.Industry</td>
+          <td>Drives JS2 training track (MSP vs security integrator vs mixed).</td>
+          <td><span class="badge badge-auto">Auto</span></td>
+        </tr>
+        <tr>
+          <td>🏢</td>
+          <td>Company Size</td>
+          <td>Account.NumberOfEmployees + Account.Company_Size__c</td>
+          <td>Two fields — use both. Helps scope onboarding complexity.</td>
+          <td><span class="badge badge-auto">Auto</span></td>
+        </tr>
+        <tr>
+          <td>💬</td>
+          <td>Migration Concerns / Red Flags</td>
+          <td>—</td>
+          <td>Not structured in SF. Primary transcript signal. Listen for hesitation, scope creep commitments, data concerns.</td>
+          <td><span class="badge badge-enrich">Enrich</span></td>
+        </tr>
+        <tr>
+          <td>📌</td>
+          <td>Commitments Made by Sales</td>
+          <td>—</td>
+          <td>Not in SF. Must come from transcript — listen for "we'll make sure," "I'll get that set up," "no problem."</td>
+          <td><span class="badge badge-enrich">Enrich</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- GAP ANALYSIS -->
+  <div class="section">
+    <div class="section-label">Section 07</div>
+    <div class="section-title">🔴 Salesforce Gap Analysis — What Sales Needs to Own</div>
+    <div class="section-divider"></div>
+    <p class="section-desc">These fields exist in Salesforce but are routinely blank at close. Requiring them before Closed-Won is the single highest-leverage process change Sales can make.</p>
+
+    <div class="gap-box">
+      <div class="gap-box-title">⚠️ Fields to Require at Closed-Won (Salesforce Validation Rule)</div>
+      <ul class="gap-list">
+        <li><strong>Opportunity.Requires_Data_Conversion__c</strong> — determines Simple vs Medium vs Complex tier. Blank = SA can't plan the engagement.</li>
+        <li><strong>Opportunity.Kickoff_Call_Date__c</strong> — should be set at close so the SA calendar hold triggers automatically.</li>
+        <li><strong>Opportunity.Rev_io_Edition__c</strong> — which billing package was sold. SA needs this for instance configuration.</li>
+        <li><strong>Opportunity.X1_Concern_with_Rev_io__c</strong> — top objection. SA walks in knowing what to address proactively.</li>
+        <li><strong>Opportunity.X1_Impressive_Feature__c</strong> — what sold them. SA can lean into this to build momentum in Jump Start 1.</li>
+        <li><strong>Account.RMM_Platform__c</strong> — required for integration planning. Often blank even when RMM is confirmed in conversation.</li>
+      </ul>
+    </div>
+
+    <div class="insight-box" style="margin-top:20px;">
+      <div class="insight-box-title">💡 Transcript as the Safety Net</div>
+      <p>When SF fields are blank, the Outreach scrape is the fallback. The transcript pipeline should flag any brief section where SF returned null and attempt to extract the answer from sales call audio. If transcript extraction also fails, those items become the <strong>5–7 follow-up questions</strong> sent to the Sales rep automatically before kickoff.</p>
+    </div>
+  </div>
+
+  <!-- LEGEND + CHECKLIST -->
+  <div class="section">
+    <div class="section-label">Section 08</div>
+    <div class="section-title">📊 Summary — What Auto-Populates vs. What Doesn't</div>
+    <div class="section-divider"></div>
+
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+      <div class="checklist-box">
+        <div class="checklist-title" style="color:var(--accent2);">✅ Auto-populates from Salesforce</div>
+        <ul class="checklist">
+          <li><span class="ck">✓</span> Company name, location, phone, website</li>
+          <li><span class="ck">✓</span> MRR, close date, one-time fees</li>
+          <li><span class="ck">✓</span> Prior PSA (PSA_Platform__c)</li>
+          <li><span class="ck">✓</span> Accounting platform / QuickBooks flag</li>
+          <li><span class="ck">✓</span> Token migration required (boolean)</li>
+          <li><span class="ck">✓</span> International requirements (boolean)</li>
+          <li><span class="ck">✓</span> User count (two fields — use both)</li>
+          <li><span class="ck">✓</span> Vertical / industry</li>
+          <li><span class="ck">✓</span> Company size / employee count</li>
+          <li><span class="ck">✓</span> TigerPaw migration flag</li>
+          <li><span class="ck">✓</span> Existing billing / TP client flags</li>
+          <li><span class="ck">✓</span> Business issues (when filled)</li>
+          <li><span class="ck">✓</span> Contacts — name, title, email</li>
+          <li><span class="ck">✓</span> QB and ConnectWise integration booleans</li>
+        </ul>
+      </div>
+      <div>
+        <div class="checklist-box" style="margin-bottom:16px;">
+          <div class="checklist-title" style="color:var(--accent);">⚡ Enrich from transcript</div>
+          <ul class="checklist">
+            <li><span class="ck" style="color:var(--accent);">→</span> Payment processor (supplement SF)</li>
+            <li><span class="ck" style="color:var(--accent);">→</span> Dispatch model + business hours</li>
+            <li><span class="ck" style="color:var(--accent);">→</span> Invoice number / continuity preference</li>
+            <li><span class="ck" style="color:var(--accent);">→</span> SMS, inventory, projects, quoting signals</li>
+            <li><span class="ck" style="color:var(--accent);">→</span> Migration concerns / red flags</li>
+            <li><span class="ck" style="color:var(--accent);">→</span> Commitments made by Sales</li>
+            <li><span class="ck" style="color:var(--accent);">→</span> User roles and job titles</li>
+          </ul>
+        </div>
+        <div class="checklist-box">
+          <div class="checklist-title" style="color:var(--danger);">🔴 Sales must fill at close</div>
+          <ul class="checklist">
+            <li><span class="ck" style="color:var(--danger);">!</span> <strong>Data conversion required?</strong></li>
+            <li><span class="ck" style="color:var(--danger);">!</span> <strong>Kickoff call date</strong></li>
+            <li><span class="ck" style="color:var(--danger);">!</span> <strong>Rev.io Edition / package</strong></li>
+            <li><span class="ck" style="color:var(--danger);">!</span> <strong>#1 concern with Rev.io</strong></li>
+            <li><span class="ck" style="color:var(--danger);">!</span> <strong>#1 impressive feature</strong></li>
+            <li><span class="ck" style="color:var(--danger);">!</span> <strong>RMM platform (if using RMM)</strong></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  ⚡ Rev.io Intelligence Stack · Salesforce → Sales Brief Mapping · March 2026
+</div>
+
+</body>
+</html>

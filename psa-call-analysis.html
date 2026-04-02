@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rev.io PSA: What Happens on 566 Onboarding Calls</title>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --surface2: #21253a;
+      --accent: #6c63ff;
+      --accent2: #00d4aa;
+      --warn: #ffa94d;
+      --danger: #ff6b6b;
+      --muted: #7b7f9e;
+      --text: #e8eaf6;
+      --text-dim: #b0b4cc;
+      --border: rgba(255,255,255,0.07);
+      --radius: 14px;
+      --radius-sm: 8px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      font-size: 15px;
+      line-height: 1.65;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      background: linear-gradient(135deg, #12142a 0%, #1a1040 50%, #0f1117 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 60px 24px 48px;
+      text-align: center;
+    }
+    .hero-eyebrow {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--accent2);
+      margin-bottom: 16px;
+    }
+    .hero h1 {
+      font-size: clamp(24px, 5vw, 42px);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.5px;
+      margin-bottom: 14px;
+    }
+    .hero h1 span { color: var(--accent); }
+    .hero-sub {
+      font-size: clamp(14px, 2.5vw, 18px);
+      color: var(--text-dim);
+      max-width: 620px;
+      margin: 0 auto 28px;
+      font-style: italic;
+    }
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+    }
+    .hero-tag {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 5px 14px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    /* ── LAYOUT ── */
+    .content {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 20px 80px;
+    }
+
+    /* ── SECTION LABELS ── */
+    .section { margin-top: 56px; }
+    .section-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+    .section-title {
+      font-size: clamp(18px, 3.5vw, 26px);
+      font-weight: 700;
+      margin-bottom: 4px;
+      line-height: 1.25;
+    }
+    .section-title .emoji { margin-right: 8px; }
+    .section-divider {
+      width: 40px;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      border-radius: 2px;
+      margin: 14px 0 24px;
+    }
+
+    /* ── STAT CARDS ── */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px 20px;
+      text-align: center;
+    }
+    .stat-num {
+      font-size: 40px;
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 4px;
+      color: var(--accent);
+    }
+    .stat-num.green { color: var(--accent2); }
+    .stat-num.warn { color: var(--warn); }
+    .stat-label { font-size: 12px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+    .stat-sub { font-size: 11px; color: rgba(123,127,158,0.6); margin-top: 3px; }
+
+    /* ── MONTH CHART ── */
+    .month-chart-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px 24px;
+      margin-top: 20px;
+    }
+    .month-chart-title {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 18px;
+    }
+    .month-bars {
+      display: flex;
+      align-items: flex-end;
+      gap: 14px;
+      height: 120px;
+    }
+    .month-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+    .month-count { font-size: 13px; font-weight: 800; color: var(--accent); }
+    .month-count.muted { color: var(--muted); }
+    .month-bar {
+      width: 100%;
+      background: linear-gradient(180deg, var(--accent), #4a43cc);
+      border-radius: 4px 4px 0 0;
+      min-height: 4px;
+    }
+    .month-bar.partial { background: linear-gradient(180deg, var(--muted), #4a4e6a); }
+    .month-label { font-size: 11px; color: var(--muted); text-align: center; }
+    .month-note { font-size: 11px; color: rgba(123,127,158,0.5); margin-top: 10px; }
+
+    /* ── SA CARDS ── */
+    .sa-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+    }
+    .sa-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      position: relative;
+      overflow: hidden;
+    }
+    .sa-card::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+    }
+    .sa-card.nicole::before { background: var(--accent); }
+    .sa-card.halle::before { background: #4f9cf9; }
+    .sa-card.kegan::before { background: var(--accent2); }
+    .sa-name { font-size: 16px; font-weight: 800; margin-bottom: 16px; }
+    .sa-card.nicole .sa-name { color: var(--accent); }
+    .sa-card.halle .sa-name { color: #4f9cf9; }
+    .sa-card.kegan .sa-name { color: var(--accent2); }
+    .sa-stat-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 7px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+    }
+    .sa-stat-row:last-child { border-bottom: none; }
+    .sa-stat-lbl { color: var(--text-dim); }
+    .sa-stat-val { font-weight: 700; color: var(--text); }
+
+    /* ── BAR CHARTS ── */
+    .bar-list { display: flex; flex-direction: column; gap: 10px; }
+    .bar-item { display: flex; align-items: center; gap: 12px; }
+    .bar-label {
+      width: 220px;
+      font-size: 13px;
+      color: var(--text-dim);
+      flex-shrink: 0;
+      text-align: right;
+    }
+    .bar-track {
+      flex: 1;
+      background: rgba(255,255,255,0.05);
+      border-radius: 6px;
+      height: 28px;
+      overflow: hidden;
+    }
+    .bar-fill {
+      height: 100%;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      padding-left: 10px;
+      font-size: 12px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.9);
+      min-width: 60px;
+      white-space: nowrap;
+    }
+    .bar-pct {
+      width: 44px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--muted);
+      flex-shrink: 0;
+      text-align: right;
+    }
+    .bar-v1 { background: linear-gradient(90deg, var(--accent), #8880ff); }
+    .bar-v2 { background: linear-gradient(90deg, #4f9cf9, #7ab8ff); }
+    .bar-v3 { background: linear-gradient(90deg, var(--accent2), #5ce0a0); color: #0f1117 !important; }
+    .bar-v4 { background: linear-gradient(90deg, #9b59f7, #b980ff); }
+    .bar-v5 { background: linear-gradient(90deg, var(--warn), #ffca7a); color: #0f1117 !important; }
+
+    /* ── KEYWORD CLOUD ── */
+    .keyword-cloud {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 4px;
+    }
+    .kw {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 5px 12px;
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+    .kw-count { color: rgba(123,127,158,0.7); font-size: 11px; margin-left: 4px; }
+    .kw.lg {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--accent);
+      border-color: rgba(108,99,255,0.3);
+      background: rgba(108,99,255,0.08);
+    }
+    .kw.md {
+      font-size: 13px;
+      font-weight: 600;
+      color: #4f9cf9;
+      border-color: rgba(79,156,249,0.3);
+      background: rgba(79,156,249,0.08);
+    }
+    .kw.sm {
+      font-size: 12px;
+      color: var(--accent2);
+      border-color: rgba(0,212,170,0.3);
+      background: rgba(0,212,170,0.07);
+    }
+
+    /* ── CARDS ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 16px;
+    }
+    .card h3 {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 14px;
+    }
+    .card ul { list-style: none; padding: 0; }
+    .card ul li {
+      font-size: 13px;
+      color: var(--text-dim);
+      padding: 6px 0;
+      padding-left: 18px;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      line-height: 1.4;
+    }
+    .card ul li:last-child { border-bottom: none; }
+    .card ul li::before {
+      content: "→";
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+      font-size: 11px;
+      top: 9px;
+    }
+    .card ul li strong { color: var(--text); }
+
+    /* ── TWO-COL ── */
+    .two-col {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    /* ── ACTION ITEM CARDS ── */
+    .ai-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+    }
+    .ai-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+    }
+    .ai-card h3 {
+      font-size: 15px;
+      font-weight: 800;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    .ai-card.nicole h3 { color: var(--accent); }
+    .ai-card.halle h3 { color: #4f9cf9; }
+    .ai-card.kegan h3 { color: var(--accent2); }
+    .ai-list { list-style: none; padding: 0; }
+    .ai-list li {
+      font-size: 12px;
+      color: var(--text-dim);
+      padding: 6px 0;
+      padding-left: 16px;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      line-height: 1.45;
+    }
+    .ai-list li:last-child { border-bottom: none; }
+    .ai-list li::before {
+      content: "→";
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+      font-size: 10px;
+      top: 9px;
+    }
+    .ai-card.halle .ai-list li::before { color: #4f9cf9; }
+    .ai-card.kegan .ai-list li::before { color: var(--accent2); }
+
+    /* ── INSIGHT CARDS ── */
+    .insight-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+    }
+    .insight-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+    }
+    .insight-icon { font-size: 28px; margin-bottom: 12px; }
+    .insight-card h3 { font-size: 15px; font-weight: 700; margin-bottom: 8px; color: var(--text); }
+    .insight-card p { font-size: 13px; color: var(--text-dim); }
+
+    /* ── FINDING BOX ── */
+    .finding-box {
+      background: linear-gradient(135deg, rgba(255,107,107,0.07), rgba(255,169,77,0.05));
+      border: 1px solid rgba(255,107,107,0.2);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      margin-top: 20px;
+    }
+    .finding-box h4 {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: var(--warn);
+    }
+    .finding-box p {
+      font-size: 14px;
+      color: var(--text-dim);
+    }
+    .finding-box p strong { color: var(--text); }
+    .finding-box.success {
+      background: linear-gradient(135deg, rgba(0,212,170,0.08), rgba(108,99,255,0.06));
+      border-color: rgba(0,212,170,0.25);
+    }
+    .finding-box.success h4 { color: var(--accent2); }
+
+    /* ── QUOTE BLOCK ── */
+    .quote-block {
+      background: var(--surface2);
+      border-left: 3px solid var(--danger);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      padding: 14px 18px;
+      margin: 8px 0;
+      font-size: 14px;
+      color: var(--text-dim);
+    }
+
+    /* ── BADGES ── */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      border-radius: 20px;
+      padding: 3px 10px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      white-space: nowrap;
+    }
+    .badge-green { background: rgba(0,212,170,0.15); color: var(--accent2); border: 1px solid rgba(0,212,170,0.3); }
+    .badge-yellow { background: rgba(255,169,77,0.15); color: var(--warn); border: 1px solid rgba(255,169,77,0.3); }
+    .badge-red { background: rgba(255,107,107,0.15); color: var(--danger); border: 1px solid rgba(255,107,107,0.3); }
+    .badge-purple { background: rgba(108,99,255,0.15); color: var(--accent); border: 1px solid rgba(108,99,255,0.3); }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 28px 24px;
+      text-align: center;
+    }
+    .footer-brand { font-weight: 800; font-size: 14px; color: var(--accent); margin-bottom: 6px; }
+    .footer-meta { font-size: 12px; color: var(--muted); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 640px) {
+      .hero { padding: 40px 16px 32px; }
+      .bar-label { width: 130px; font-size: 12px; }
+      .two-col, .ai-grid, .insight-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── HERO ── -->
+<div class="hero">
+  <div class="hero-eyebrow">⚡ Rev.io Intelligence Stack</div>
+  <h1>What Happens on <span>566 PSA</span><br>Onboarding Calls</h1>
+  <div class="hero-sub">A full analysis of every call run by Nicole Hills, Halle Taylor, and Kegan Ehlers — November 2025 through March 2026</div>
+  <div class="hero-meta">
+    <span class="hero-tag">📞 566 calls analyzed</span>
+    <span class="hero-tag">⏱️ 411.7 hours on calls</span>
+    <span class="hero-tag">👥 3 Solution Advisors</span>
+    <span class="hero-tag">📅 Nov 2025 – Mar 2026</span>
+    <span class="hero-tag">🔊 Powered by Fireflies.ai</span>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- ── SECTION 01: OVERVIEW ── -->
+  <div class="section">
+    <div class="section-label">Section 01</div>
+    <div class="section-title"><span class="emoji">📊</span>Overview</div>
+    <div class="section-divider"></div>
+
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-num">566</div>
+        <div class="stat-label">Total Calls Analyzed</div>
+        <div class="stat-sub">Nov 2025 — Mar 2026</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num green">411.7</div>
+        <div class="stat-label">Total Hours on Calls</div>
+        <div class="stat-sub">Avg 43.6 min per call</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num warn">3</div>
+        <div class="stat-label">Solution Advisors</div>
+        <div class="stat-sub">Nicole · Halle · Kegan</div>
+      </div>
+    </div>
+
+    <div class="month-chart-wrap">
+      <div class="month-chart-title">Calls by Month</div>
+      <div class="month-bars">
+        <div class="month-col">
+          <div class="month-count">89</div>
+          <div class="month-bar" style="height: calc(89 / 150 * 80px);"></div>
+          <div class="month-label">Nov '25</div>
+        </div>
+        <div class="month-col">
+          <div class="month-count">103</div>
+          <div class="month-bar" style="height: calc(103 / 150 * 80px);"></div>
+          <div class="month-label">Dec '25</div>
+        </div>
+        <div class="month-col">
+          <div class="month-count">150</div>
+          <div class="month-bar" style="height: 80px;"></div>
+          <div class="month-label">Jan '26</div>
+        </div>
+        <div class="month-col">
+          <div class="month-count">150</div>
+          <div class="month-bar" style="height: 80px;"></div>
+          <div class="month-label">Feb '26</div>
+        </div>
+        <div class="month-col">
+          <div class="month-count muted">74</div>
+          <div class="month-bar partial" style="height: calc(74 / 150 * 80px);"></div>
+          <div class="month-label" style="color:rgba(123,127,158,0.5);">Mar '26 ↗</div>
+        </div>
+      </div>
+      <div class="month-note">Mar 2026 partial — month still in progress</div>
+    </div>
+  </div>
+
+  <!-- ── SECTION 02: BY SA ── -->
+  <div class="section">
+    <div class="section-label">Section 02</div>
+    <div class="section-title"><span class="emoji">👤</span>By Solution Advisor</div>
+    <div class="section-divider"></div>
+    <p style="color:var(--text-dim); font-size:14px; margin-bottom:20px;">Call volume, total time invested, and average session length per SA. Nicole leads in both volume and average session length — her calls run 10 minutes longer than Kegan's on average.</p>
+
+    <div class="sa-grid">
+      <div class="sa-card nicole">
+        <div class="sa-name">Nicole Hills</div>
+        <div class="sa-stat-row"><span class="sa-stat-lbl">Calls</span><span class="sa-stat-val">237</span></div>
+        <div class="sa-stat-row"><span class="sa-stat-lbl">Total Hours</span><span class="sa-stat-val">185.8 hrs</span></div>
+        <div class="sa-stat-row"><span class="sa-stat-lbl">Avg Duration</span><span class="sa-stat-val">47.0 min</span></div>
+        <div class="sa-stat-row"><span class="sa-stat-lbl">Share of Volume</span><span class="sa-stat-val" style="color:var(--accent);">42%</span></div>
+      </div>
+      <div class="sa-card halle">
+        <div class="sa-name">Halle Taylor</div>
+        <div class="sa-stat-row"><span class="sa-stat-lbl">Calls</span><span class="sa-stat-val">147</span></div>
+        <div class="sa-stat-row"><span class="sa-stat-lbl">Total Hours</span><span class="sa-stat-val">114.3 hrs</span></div>
+        <div class="sa-stat-row"><span class="sa-stat-lbl">Avg Duration</span><span class="sa-stat-val">46.6 min</span></div>
+        <div class="sa-stat-row"><span class="sa-stat-lbl">Share of Volume</span><span class="sa-stat-val" style="color:#4f9cf9;">26%</span></div>
+      </div>
+      <div class="sa-card kegan">
+        <div class="sa-name">Kegan Ehlers</div>
+        <div class="sa-stat-row"><span class="sa-stat-lbl">Calls</span><span class="sa-stat-val">182</span></div>
+        <div class="sa-stat-row"><span class="sa-stat-lbl">Total Hours</span><span class="sa-stat-val">111.7 hrs</span></div>
+        <div class="sa-stat-row"><span class="sa-stat-lbl">Avg Duration</span><span class="sa-stat-val">36.8 min</span></div>
+        <div class="sa-stat-row"><span class="sa-stat-lbl">Share of Volume</span><span class="sa-stat-val" style="color:var(--accent2);">32%</span></div>
+      </div>
+    </div>
+
+    <div class="finding-box" style="margin-top:20px;">
+      <h4>🔑 Key Finding — Session Length Gap</h4>
+      <p>Nicole and Halle average ~47 min per call. Kegan runs 36.8 min — <strong>22% shorter</strong>. This likely reflects different client profiles (security integrators vs. MSPs/telecom) rather than efficiency gaps. Security clients tend to have more complex inventory and dispatch workflows that extend sessions.</p>
+    </div>
+  </div>
+
+  <!-- ── SECTION 03: QUESTIONS ASKED ── -->
+  <div class="section">
+    <div class="section-label">Section 03</div>
+    <div class="section-title"><span class="emoji">❓</span>What Questions Are SAs Asking?</div>
+    <div class="section-divider"></div>
+    <p style="color:var(--text-dim); font-size:14px; margin-bottom:20px;">Frequency analysis across all 566 call notes, action items, and summaries. These are the topics SAs probe clients on — ranked by how often they surface in calls.</p>
+
+    <div class="bar-list">
+      <div class="bar-item">
+        <div class="bar-label">Ticketing Workflow</div>
+        <div class="bar-track"><div class="bar-fill bar-v1" style="width:90%;">512 calls</div></div>
+        <div class="bar-pct">90%</div>
+      </div>
+      <div class="bar-item">
+        <div class="bar-label">Integration Needs</div>
+        <div class="bar-track"><div class="bar-fill bar-v1" style="width:90%;">510 calls</div></div>
+        <div class="bar-pct">90%</div>
+      </div>
+      <div class="bar-item">
+        <div class="bar-label">Payment Processor</div>
+        <div class="bar-track"><div class="bar-fill bar-v2" style="width:89%;">505 calls</div></div>
+        <div class="bar-pct">89%</div>
+      </div>
+      <div class="bar-item">
+        <div class="bar-label">Data Migration Scope</div>
+        <div class="bar-track"><div class="bar-fill bar-v2" style="width:84%;">476 calls</div></div>
+        <div class="bar-pct">84%</div>
+      </div>
+      <div class="bar-item">
+        <div class="bar-label">Billing &amp; Invoice Setup</div>
+        <div class="bar-track"><div class="bar-fill bar-v3" style="width:57%;">323 calls</div></div>
+        <div class="bar-pct">57%</div>
+      </div>
+      <div class="bar-item">
+        <div class="bar-label">Inventory &amp; Assets</div>
+        <div class="bar-track"><div class="bar-fill bar-v3" style="width:55%;">313 calls</div></div>
+        <div class="bar-pct">55%</div>
+      </div>
+      <div class="bar-item">
+        <div class="bar-label">Prior PSA / Migration Source</div>
+        <div class="bar-track"><div class="bar-fill bar-v4" style="width:55%;">309 calls</div></div>
+        <div class="bar-pct">55%</div>
+      </div>
+      <div class="bar-item">
+        <div class="bar-label">Accounting Software</div>
+        <div class="bar-track"><div class="bar-fill bar-v4" style="width:47%;">264 calls</div></div>
+        <div class="bar-pct">47%</div>
+      </div>
+      <div class="bar-item">
+        <div class="bar-label">User Count &amp; Roles</div>
+        <div class="bar-track"><div class="bar-fill bar-v5" style="width:46%;">263 calls</div></div>
+        <div class="bar-pct">46%</div>
+      </div>
+      <div class="bar-item">
+        <div class="bar-label">Quoting Setup</div>
+        <div class="bar-track"><div class="bar-fill bar-v5" style="width:31%;">174 calls</div></div>
+        <div class="bar-pct">31%</div>
+      </div>
+      <div class="bar-item">
+        <div class="bar-label">Customer Portal</div>
+        <div class="bar-track"><div class="bar-fill bar-v1" style="width:25%;">139 calls</div></div>
+        <div class="bar-pct">25%</div>
+      </div>
+      <div class="bar-item">
+        <div class="bar-label">Tax Setup</div>
+        <div class="bar-track"><div class="bar-fill bar-v2" style="width:17%;">94 calls</div></div>
+        <div class="bar-pct">17%</div>
+      </div>
+    </div>
+
+    <div class="finding-box" style="margin-top:20px;">
+      <h4>🚨 The Top 4 Are Being Asked Every Single Call</h4>
+      <p>Ticketing workflow, integration needs, payment processor, and data migration scope come up in <strong>84–90% of all calls</strong>. These aren't discovery questions — they're <strong>configuration prerequisites</strong>. Every SA is re-collecting them because nobody collected them at the point of sale. This is 4 questions that could be answered before kickoff, on every single account.</p>
+    </div>
+
+    <div class="two-col">
+      <div class="card">
+        <h3 style="color:var(--accent);">What Clients Are Answering</h3>
+        <ul>
+          <li><strong>QuickBooks</strong> — mentioned in 104 calls as the accounting integration</li>
+          <li><strong>Tigerpaw / Tiger Paw</strong> — prior PSA in 42+ calls (incl. spelling variants)</li>
+          <li><strong>Inventory management needs</strong> — raised unprompted in 87 calls</li>
+          <li><strong>ConnectWise</strong> — prior system or comparison benchmark</li>
+          <li><strong>Parent-child account structure</strong> — needed in 21 calls</li>
+          <li><strong>Custom fields required</strong> — mentioned in 31 calls</li>
+          <li><strong>Recurring billing / RMR</strong> — central concern in 29 calls</li>
+          <li><strong>Dispatch board setup</strong> — specific workflow ask in 14 calls</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3 style="color:#4f9cf9;">Common Client Gaps Surfaced</h3>
+        <ul>
+          <li><strong>No data template ready</strong> — SA provides CSV template on call</li>
+          <li><strong>Wrong migration assumptions</strong> — scope re-defined during session</li>
+          <li><strong>GL codes not mapped</strong> — SA walks through mapping in real-time</li>
+          <li><strong>Email connector not configured</strong> — discovered mid-session</li>
+          <li><strong>User roles unclear</strong> — org chart reconstructed on call</li>
+          <li><strong>Payment processor unknown</strong> — client needs to check and follow up</li>
+          <li><strong>Tax exemptions undocumented</strong> — flagged for follow-up</li>
+          <li><strong>Prior system data quality issues</strong> — identified, not resolved same day</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SECTION 04: PSA DATA CONFIGURED ── -->
+  <div class="section">
+    <div class="section-label">Section 04</div>
+    <div class="section-title"><span class="emoji">⚙️</span>What PSA Data Gets Configured</div>
+    <div class="section-divider"></div>
+    <p style="color:var(--text-dim); font-size:14px; margin-bottom:20px;">What SAs are actually building or setting up inside Rev.io during these calls — ranked by frequency across 566 sessions.</p>
+
+    <div class="bar-list">
+      <div class="bar-item">
+        <div class="bar-label">Invoicing &amp; Billing Config</div>
+        <div class="bar-track"><div class="bar-fill bar-v1" style="width:95%;">539 calls</div></div>
+        <div class="bar-pct">95%</div>
+      </div>
+      <div class="bar-item">
+        <div class="bar-label">Ticketing &amp; Service Boards</div>
+        <div class="bar-track"><div class="bar-fill bar-v1" style="width:95%;">537 calls</div></div>
+        <div class="bar-pct">95%</div>
+      </div>
+      <div class="bar-item">
+        <div class="bar-label">Integrations</div>
+        <div class="bar-track"><div class="bar-fill bar-v2" style="width:88%;">500 calls</div></div>
+        <div class="bar-pct">88%</div>
+      </div>
+      <div class="bar-item">
+        <div class="bar-label">Data Migration / Import</div>
+        <div class="bar-track"><div class="bar-fill bar-v2" style="width:84%;">477 calls</div></div>
+        <div class="bar-pct">84%</div>
+      </div>
+      <div class="bar-item">
+        <div class="bar-label">Quoting &amp; Contracts</div>
+        <div class="bar-track"><div class="bar-fill bar-v3" style="width:73%;">415 calls</div></div>
+        <div class="bar-pct">73%</div>
+      </div>
+      <div class="bar-item">
+        <div class="bar-label">User Accounts &amp; Roles</div>
+        <div class="bar-track"><div class="bar-fill bar-v3" style="width:72%;">406 calls</div></div>
+        <div class="bar-pct">72%</div>
+      </div>
+      <div class="bar-item">
+        <div class="bar-label">Contacts</div>
+        <div class="bar-track"><div class="bar-fill bar-v4" style="width:63%;">357 calls</div></div>
+        <div class="bar-pct">63%</div>
+      </div>
+      <div class="bar-item">
+        <div class="bar-label">Inventory / Assets</div>
+        <div class="bar-track"><div class="bar-fill bar-v4" style="width:63%;">355 calls</div></div>
+        <div class="bar-pct">63%</div>
+      </div>
+      <div class="bar-item">
+        <div class="bar-label">Products &amp; Services Catalog</div>
+        <div class="bar-track"><div class="bar-fill bar-v5" style="width:42%;">236 calls</div></div>
+        <div class="bar-pct">42%</div>
+      </div>
+      <div class="bar-item">
+        <div class="bar-label">Tax Configuration</div>
+        <div class="bar-track"><div class="bar-fill bar-v5" style="width:35%;">196 calls</div></div>
+        <div class="bar-pct">35%</div>
+      </div>
+      <div class="bar-item">
+        <div class="bar-label">Company / Customer Record</div>
+        <div class="bar-track"><div class="bar-fill bar-v1" style="width:29%;">162 calls</div></div>
+        <div class="bar-pct">29%</div>
+      </div>
+      <div class="bar-item">
+        <div class="bar-label">Payment Processing Setup</div>
+        <div class="bar-track"><div class="bar-fill bar-v2" style="width:17%;">97 calls</div></div>
+        <div class="bar-pct">17%</div>
+      </div>
+    </div>
+
+    <div class="finding-box" style="margin-top:20px;">
+      <h4>💡 95% of Calls Touch Billing + Ticketing — Every Time</h4>
+      <p>Invoicing &amp; billing config and ticketing &amp; service boards appear in virtually every single session. These aren't edge cases — <strong>they are the onboarding</strong>. The top 4 categories (billing, ticketing, integrations, migration) together represent the core of what every SA is walking every client through from scratch. These are the highest-value targets for pre-configuration automation.</p>
+    </div>
+  </div>
+
+  <!-- ── SECTION 05: TOP KEYWORDS ── -->
+  <div class="section">
+    <div class="section-label">Section 05</div>
+    <div class="section-title"><span class="emoji">🔑</span>Top Topics Across All Calls</div>
+    <div class="section-divider"></div>
+    <p style="color:var(--text-dim); font-size:14px; margin-bottom:20px;">The most frequently surfaced keywords and themes extracted from 566 call summaries. Size reflects frequency.</p>
+
+    <div class="card" style="margin-bottom:0;">
+      <div class="keyword-cloud">
+        <span class="kw lg">QuickBooks Integration <span class="kw-count">104</span></span>
+        <span class="kw lg">Inventory Management <span class="kw-count">87</span></span>
+        <span class="kw md">Ticketing System <span class="kw-count">60</span></span>
+        <span class="kw md">Project Management <span class="kw-count">56</span></span>
+        <span class="kw md">Product Catalog <span class="kw-count">55</span></span>
+        <span class="kw md">Payment Processing <span class="kw-count">54</span></span>
+        <span class="kw md">Data Import <span class="kw-count">51</span></span>
+        <span class="kw md">Quote Templates <span class="kw-count">45</span></span>
+        <span class="kw md">Purchase Orders <span class="kw-count">42</span></span>
+        <span class="kw sm">Ticketing <span class="kw-count">39</span></span>
+        <span class="kw sm">Onboarding <span class="kw-count">38</span></span>
+        <span class="kw sm">Customer Portal <span class="kw-count">34</span></span>
+        <span class="kw sm">Mobile App <span class="kw-count">34</span></span>
+        <span class="kw sm">Custom Fields <span class="kw-count">31</span></span>
+        <span class="kw sm">PSA System <span class="kw-count">31</span></span>
+        <span class="kw sm">Recurring Services <span class="kw-count">29</span></span>
+        <span class="kw sm">Billing Profiles <span class="kw-count">27</span></span>
+        <span class="kw sm">Tiger Paw <span class="kw-count">26</span></span>
+        <span class="kw">Data Migration <span class="kw-count">25</span></span>
+        <span class="kw">Parent-Child Accounts <span class="kw-count">21</span></span>
+        <span class="kw">Billing Integration <span class="kw-count">19</span></span>
+        <span class="kw">Recurring Billing <span class="kw-count">19</span></span>
+        <span class="kw">Time Tracking <span class="kw-count">18</span></span>
+        <span class="kw">Email Validation <span class="kw-count">16</span></span>
+        <span class="kw">Tigerpaw <span class="kw-count">16</span></span>
+        <span class="kw">Quoting System <span class="kw-count">16</span></span>
+        <span class="kw">Contract Management <span class="kw-count">17</span></span>
+        <span class="kw">Workflow Automation <span class="kw-count">14</span></span>
+        <span class="kw">Outlook Integration <span class="kw-count">14</span></span>
+        <span class="kw">Dispatch Board <span class="kw-count">14</span></span>
+        <span class="kw">QuickBooks Online <span class="kw-count">15</span></span>
+        <span class="kw">PSA Software <span class="kw-count">15</span></span>
+        <span class="kw">PandaDoc <span class="kw-count">11</span></span>
+        <span class="kw">Asset Management <span class="kw-count">13</span></span>
+        <span class="kw">Tax Setup <span class="kw-count">13</span></span>
+        <span class="kw">Google Calendar Sync <span class="kw-count">9</span></span>
+        <span class="kw">Job Costing <span class="kw-count">9</span></span>
+        <span class="kw">HubSpot Integration <span class="kw-count">8</span></span>
+        <span class="kw">Billing Configuration <span class="kw-count">10</span></span>
+        <span class="kw">Contracts <span class="kw-count">11</span></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SECTION 06: ACTION ITEMS ── -->
+  <div class="section">
+    <div class="section-label">Section 06</div>
+    <div class="section-title"><span class="emoji">📋</span>SA Action Items — What They're Following Up On</div>
+    <div class="section-divider"></div>
+    <p style="color:var(--text-dim); font-size:14px; margin-bottom:20px;">Representative post-call action items from each SA. These reveal what's <em>not</em> getting resolved on the call itself — and needs a follow-up cycle to close.</p>
+
+    <div class="ai-grid">
+      <div class="ai-card nicole">
+        <h3>Nicole Hills</h3>
+        <ul class="ai-list">
+          <li>Confirm billing/shipping address support in quotes; follow up with client</li>
+          <li>Coordinate with Jeremy Adams to enable PSA button in billing account</li>
+          <li>Investigate PandaDoc-PSA data merge ETA for client/product info in quotes</li>
+          <li>Confirm if customer portal single sign-on can integrate with billing portal</li>
+          <li>Continue managing token migration and outstanding issues before handoff</li>
+          <li>Send final ticket import file to avoid duplicates</li>
+          <li>Test technician group permissions re: calendar view without edit rights</li>
+          <li>Confirm product data accuracy before tagging data migration team</li>
+          <li>Follow up on Outlook integration ticket; assign team member</li>
+          <li>Provide contact info for Will and Lex to client team</li>
+          <li>Compile list of quoting/workflow issues for product feedback</li>
+          <li>Take over client success responsibilities post-onboarding</li>
+        </ul>
+      </div>
+      <div class="ai-card halle">
+        <h3>Halle Taylor</h3>
+        <ul class="ai-list">
+          <li>Send data import options and templates post-meeting</li>
+          <li>Set up initial user accounts and send setup instructions via email</li>
+          <li>Confirm procedures for disabling two-factor authentication if requested</li>
+          <li>Send password reset and assist with user role assignment for login access</li>
+          <li>Evaluate white-labeling options for Bill Center portal</li>
+          <li>Send example quote templates showing design and functionality options</li>
+          <li>Create and send test template for client to work on independently</li>
+          <li>Send data import templates to client post-call</li>
+          <li>Monitor login status and follow up if issues persist</li>
+          <li>Continue providing deliverables to prevent delays in project phases</li>
+          <li>Send meeting invite and confirm next session agenda</li>
+          <li>Send email invitations for system login with setup instructions</li>
+        </ul>
+      </div>
+      <div class="ai-card kegan">
+        <h3>Kegan Ehlers</h3>
+        <ul class="ai-list">
+          <li>Build and present live pricing quote during next sales demo</li>
+          <li>Guide onboarding team's ticket entry training; highlight chat/help center usage</li>
+          <li>Share permissions config for technician invoicing without full accounting access</li>
+          <li>Prepare mobile app setup training for next week</li>
+          <li>Assist with TRX payment processing integration and card reader setup</li>
+          <li>Provide list of required new GL accounts for accountant to create</li>
+          <li>Send progressive invoicing and revenue GL account list for setup</li>
+          <li>Support removal of outdated GL codes from system configuration</li>
+          <li>Collect 3 months of merchant statements for payment migration</li>
+          <li>Send backend import template for customer data migration</li>
+          <li>Assist client accessing merchant statements for Nassim submission</li>
+          <li>Prepare dispatch board and service order training materials</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="finding-box" style="margin-top:20px;">
+      <h4>🔄 The Follow-Up Loop Is Costly</h4>
+      <p>A large portion of SA action items are variations of the same tasks on repeat: sending login invites, sharing CSV templates, following up on GL code mapping, confirming payment processor details, setting up user accounts. These are not complex tasks — they're <strong>pre-config checklist items disguised as onboarding work</strong>. Automating even 50% of these follow-ups would reclaim significant SA time per client.</p>
+    </div>
+  </div>
+
+  <!-- ── SECTION 07: KEY INSIGHTS ── -->
+  <div class="section">
+    <div class="section-label">Section 07</div>
+    <div class="section-title"><span class="emoji">🧠</span>Key Insights</div>
+    <div class="section-divider"></div>
+    <p style="color:var(--text-dim); font-size:14px; margin-bottom:20px;">What 566 calls tell us about where the friction lives — and where automation has the highest leverage.</p>
+
+    <div class="insight-grid">
+      <div class="insight-card">
+        <div class="insight-icon">🔁</div>
+        <h3>Same 4 Questions. Every Call.</h3>
+        <p>Ticketing workflow, integrations, payment processor, and data migration come up in 84–90% of calls. Sales already knows the answers. This is a handoff gap, not a discovery gap.</p>
+      </div>
+      <div class="insight-card">
+        <div class="insight-icon">⏱️</div>
+        <h3>411 Hours of SA Time</h3>
+        <p>In 5 months, across 3 SAs, that's over 17 days of non-stop client calls. A significant portion is spent re-collecting info, not configuring. Time-to-value starts the moment this flips.</p>
+      </div>
+      <div class="insight-card">
+        <div class="insight-icon">📊</div>
+        <h3>Billing + Ticketing = 95% of Every Session</h3>
+        <p>These two configuration areas are touched in virtually every call. They are the onboarding. If billing and ticketing could be pre-scaffolded from sales data, sessions would start at Step 3, not Step 1.</p>
+      </div>
+      <div class="insight-card">
+        <div class="insight-icon">🐯</div>
+        <h3>TigerPaw Is Everywhere</h3>
+        <p>Tiger Paw / Tigerpaw appears in 42+ calls — a disproportionate share of the client base. A dedicated Tigerpaw-to-Rev.io migration playbook and pre-configuration template would eliminate the most common migration re-work cycle.</p>
+      </div>
+      <div class="insight-card">
+        <div class="insight-icon">📋</div>
+        <h3>Action Items Are Repetitive</h3>
+        <p>SA follow-up tasks cluster around the same 8–10 patterns: login setup, CSV templates, GL mapping, payment processor follow-up, user account creation. These should be automated pre-kickoff, not manually tracked post-call.</p>
+      </div>
+      <div class="insight-card">
+        <div class="insight-icon">🚀</div>
+        <h3>Highest Automation ROI</h3>
+        <p>Pre-configure: customer record, user accounts + roles, billing profile, and QuickBooks integration before kickoff. These four items appear in the top 6 configuration categories and can be seeded from sales call data alone.</p>
+      </div>
+    </div>
+
+    <div class="finding-box success" style="margin-top:20px;">
+      <h4>🎯 The Automation Target: 4 Questions × 566 Clients</h4>
+      <p>If the sales team captures just 4 data points at close — <strong>(1) prior PSA, (2) accounting software, (3) payment processor, (4) number of users + roles</strong> — then billing setup, user account creation, integration configuration, and migration scoping can begin before the SA ever schedules a call. That's the difference between Day 1 starting blank and Day 1 starting at 60% configured.</p>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <div class="footer-brand">⚡ Rev.io Intelligence Stack</div>
+  <div class="footer-meta">PSA Call Analysis · 566 calls · Nov 2025 – Mar 2026 · 3 Solution Advisors · Fireflies.ai · Alfred 🎩</div>
+</footer>
+
+</body>
+</html>

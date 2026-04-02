@@ -1,0 +1,2072 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PSA Onboarding: Transcript Intelligence · Rev.io</title>
+<script src="/vendor/apexcharts.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #21253a;
+    --border: #2e3147;
+    --text: #e8eaf6;
+    --muted: #7b7f9e;
+    --accent: #6c63ff;
+    --accent2: #00d4aa;
+    --warn: #ffa94d;
+    --danger: #ff6b6b;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  /* Layout */
+  .page-header {
+    background: linear-gradient(135deg, #1a1d27 0%, #12151f 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 28px 32px 24px;
+  }
+  .page-header h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.3px; }
+  .page-header h1 span { color: var(--accent); }
+  .page-header .meta { color: var(--muted); font-size: 13px; margin-top: 4px; }
+  .page-header .badge {
+    display: inline-block; background: var(--accent); color: #fff;
+    font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 4px;
+    margin-left: 10px; vertical-align: middle;
+  }
+
+  .container { max-width: 1300px; margin: 0 auto; padding: 24px 20px 60px; }
+
+  .section { margin-bottom: 40px; }
+  .section-title {
+    font-size: 16px; font-weight: 700; color: var(--accent);
+    border-bottom: 1px solid var(--border); padding-bottom: 10px;
+    margin-bottom: 18px; letter-spacing: 0.3px;
+  }
+  .section-title .sub { color: var(--muted); font-size: 12px; font-weight: 400; margin-left: 8px; }
+
+  /* KPI Cards */
+  .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 24px; }
+  .kpi-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 20px;
+  }
+  .kpi-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; }
+  .kpi-value { font-size: 32px; font-weight: 800; margin: 4px 0 2px; letter-spacing: -1px; }
+  .kpi-sub { font-size: 11px; color: var(--muted); }
+
+  /* Insight boxes */
+  .insights-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin-bottom: 24px; }
+  .insight-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 8px;
+    padding: 14px 16px;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  .insight-box.warn { border-left-color: var(--warn); }
+  .insight-box.danger { border-left-color: var(--danger); }
+  .insight-box.success { border-left-color: var(--accent2); }
+  .insight-box strong { display: block; font-size: 13px; margin-bottom: 4px; }
+
+  /* Grid layouts */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+  .four-col { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+
+  @media(max-width: 800px) {
+    .two-col, .three-col, .four-col { grid-template-columns: 1fr; }
+  }
+
+  /* Cards */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+  }
+  .card-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 12px; }
+  .muted { color: var(--muted); }
+
+  /* Phrase lists */
+  .phrase-row {
+    display: flex; align-items: center; gap: 8px;
+    padding: 5px 0; border-bottom: 1px solid var(--border);
+  }
+  .phrase-rank { font-size: 11px; font-weight: 700; min-width: 18px; text-align: right; }
+  .phrase-text { flex: 1; font-size: 12px; }
+  .phrase-bar-wrap { width: 80px; height: 6px; background: var(--surface2); border-radius: 3px; overflow: hidden; }
+  .phrase-bar { height: 100%; border-radius: 3px; transition: width 0.3s; }
+  .phrase-count { font-size: 11px; min-width: 28px; text-align: right; }
+
+  /* Quote cards */
+  .quote-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+  }
+  .quote-card.sa-quote { border-left: 3px solid var(--accent); }
+  .quote-card.client-quote { border-left: 3px solid var(--accent2); }
+  .quote-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; flex-wrap: wrap; }
+  .quote-badge {
+    font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px;
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .quote-badge.sa_proactive { background: #6c63ff22; color: var(--accent); }
+  .quote-badge.sa-proactive { background: #6c63ff22; color: var(--accent); }
+  .quote-badge.sa_reactive { background: #ffa94d22; color: var(--warn); }
+  .quote-badge.sa-reactive { background: #ffa94d22; color: var(--warn); }
+  .quote-badge.client_asks { background: #00d4aa22; color: var(--accent2); }
+  .quote-badge.client-asks { background: #00d4aa22; color: var(--accent2); }
+  .quote-badge.ambiguous { background: #7b7f9e22; color: var(--muted); }
+  .quote-speaker { font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+  .quote-text { font-size: 13px; font-style: italic; line-height: 1.5; }
+  .quote-context { font-size: 11px; margin-top: 6px; font-style: normal; }
+
+  .mini-quote {
+    background: var(--surface2);
+    border-radius: 6px;
+    padding: 8px 10px;
+    margin-bottom: 8px;
+    font-size: 12px;
+    font-style: italic;
+    line-height: 1.5;
+  }
+
+  /* Objection table */
+  .obj-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
+  .obj-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+  }
+  .obj-header { display: flex; align-items: baseline; gap: 10px; margin-bottom: 10px; }
+  .obj-title { font-size: 13px; font-weight: 600; }
+  .obj-count { font-size: 22px; font-weight: 800; }
+  .obj-sa-breakdown { font-size: 11px; color: var(--muted); margin-bottom: 8px; }
+
+  /* Feature gap list */
+  .feature-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 0; border-bottom: 1px solid var(--border);
+  }
+  .feature-rank { font-size: 12px; font-weight: 700; min-width: 24px; color: var(--muted); }
+  .feature-info { flex: 1; }
+  .feature-name { font-size: 13px; font-weight: 600; }
+  .feature-example { font-size: 11px; color: var(--muted); font-style: italic; margin-top: 2px; }
+  .feature-count { font-size: 18px; font-weight: 800; color: var(--warn); min-width: 40px; text-align: right; }
+  .feature-area-tag {
+    font-size: 10px; font-weight: 600; padding: 1px 6px; border-radius: 4px;
+    background: var(--surface2); color: var(--muted);
+    border: 1px solid var(--border);
+  }
+
+  /* Revii section */
+  .revii-breakdown { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
+  .revii-type-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+    text-align: center;
+  }
+  .revii-type-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+  .revii-type-count { font-size: 28px; font-weight: 800; margin: 4px 0; }
+  .revii-type-pct { font-size: 11px; color: var(--muted); }
+
+  /* Stall signals */
+  .stall-row {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 10px 0; border-bottom: 1px solid var(--border);
+  }
+  .stall-count {
+    font-size: 18px; font-weight: 800; color: var(--danger); min-width: 42px; text-align: center;
+    padding-top: 2px;
+  }
+  .stall-account { font-size: 13px; font-weight: 600; }
+  .stall-example { font-size: 11px; color: var(--muted); font-style: italic; margin-top: 2px; }
+
+  /* Coaching */
+  .coaching-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+  .coaching-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+  }
+  .coaching-name { font-size: 14px; font-weight: 700; margin-bottom: 12px; color: var(--accent); }
+  .coaching-stat {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 4px 0; border-bottom: 1px solid var(--border);
+    font-size: 12px;
+  }
+  .coaching-stat:last-of-type { border-bottom: none; }
+  .coaching-bar-label { font-size: 11px; color: var(--muted); margin-top: 10px; margin-bottom: 4px; }
+  .coaching-bar-wrap { display: flex; height: 8px; border-radius: 4px; overflow: hidden; }
+  .coaching-bar { height: 100%; transition: width 0.3s; }
+  .coaching-bar-legend { display: flex; gap: 12px; font-size: 10px; margin-top: 4px; }
+
+  /* Recommendations */
+  .rec-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+    margin-bottom: 12px;
+  }
+  .rec-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .rec-icon { font-size: 20px; }
+  .rec-title { font-size: 14px; font-weight: 700; flex: 1; }
+  .rec-urgency {
+    font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 4px;
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .rec-body { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+  /* Note box */
+  .note-box {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--warn);
+    border-radius: 6px;
+    padding: 10px 14px;
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+
+  /* Charts */
+  .chart-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+  }
+  .chart-title { font-size: 13px; font-weight: 600; margin-bottom: 12px; }
+
+  /* Competitor table */
+  .comp-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .comp-table th {
+    text-align: left; padding: 8px 10px;
+    background: var(--surface2); color: var(--muted);
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;
+    border-bottom: 1px solid var(--border);
+  }
+  .comp-table td { padding: 9px 10px; border-bottom: 1px solid var(--border); }
+  .comp-table tr:last-child td { border-bottom: none; }
+
+  /* Pill */
+  .pill {
+    display: inline-block; font-size: 10px; font-weight: 600;
+    padding: 1px 7px; border-radius: 10px; border: 1px solid;
+    text-transform: uppercase; letter-spacing: 0.4px;
+  }
+
+  /* Gradient header for sections */
+  .sa-header {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--surface2); border-radius: 8px;
+    padding: 10px 14px; margin-bottom: 14px;
+  }
+  .sa-avatar {
+    width: 34px; height: 34px; border-radius: 50%;
+    background: var(--accent); display: flex; align-items: center;
+    justify-content: center; font-weight: 800; font-size: 13px; color: #fff;
+  }
+  .sa-name { font-size: 14px; font-weight: 700; }
+  .sa-meta { font-size: 11px; color: var(--muted); }
+
+  footer {
+    text-align: center; color: var(--muted); font-size: 11px;
+    padding: 24px; border-top: 1px solid var(--border); margin-top: 40px;
+  }
+
+  @media (max-width: 640px) {
+    .topic-two-col { grid-template-columns: 1fr !important; }
+    .topic-gap-grid { grid-template-columns: 1fr !important; }
+  }
+
+  /* ── v3 Theme Cards ── */
+  .theme-grid { display: flex; flex-direction: column; gap: 20px; }
+  .theme-card { background: var(--surface); border-radius: 10px; padding: 20px 24px; }
+  .theme-card-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 10px; }
+  .theme-name { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+  .theme-desc { margin: 0; font-size: 12px; color: var(--muted); }
+  .theme-badges { flex-shrink: 0; }
+  .acct-badge { padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+  .sa-pills { display: flex; gap: 6px; flex-wrap: wrap; margin: 8px 0 12px; }
+  .sa-pill { background: #2e314740; border: 1px solid var(--border); border-radius: 12px; padding: 2px 9px; font-size: 11px; color: var(--muted); }
+  .synthesis-text { font-size: 13px; line-height: 1.65; color: #c5c8e0; margin: 0 0 14px; }
+  .quotes-block { display: flex; flex-direction: column; gap: 10px; }
+  .pull-quote { border-left: 3px solid var(--border); margin: 0; padding: 8px 14px; background: #0f111766; border-radius: 0 6px 6px 0; }
+  .pull-quote p { margin: 0 0 5px; font-style: italic; font-size: 13px; color: #e8eaf6cc; line-height: 1.5; }
+  .pull-quote cite { font-style: normal; font-size: 11px; color: var(--muted); }
+  .signal-summary { background: #1a1d2799; border: 1px solid var(--border); border-left: 4px solid var(--accent); border-radius: 8px; padding: 12px 18px; margin-bottom: 20px; display: flex; align-items: center; gap: 12px; font-size: 13px; color: var(--text); line-height: 1.6; }
+  .signal-icon { font-size: 20px; flex-shrink: 0; }
+  /* ── v3 Feature Cards ── */
+  .feat-grid { display: flex; flex-direction: column; gap: 20px; }
+  .feat-card { background: var(--surface); border-radius: 10px; padding: 20px 24px; border-left: 4px solid var(--accent); }
+  .feat-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .feat-name { margin: 0; font-size: 15px; font-weight: 700; color: var(--accent); }
+  .feat-badge { background: var(--accent)22; color: var(--accent); border: 1px solid var(--accent)66; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+  .demand-bar-wrap { height: 6px; background: #2e3147; border-radius: 3px; margin-bottom: 10px; }
+  .demand-bar { height: 6px; background: linear-gradient(90deg, var(--accent), #00d4aa); border-radius: 3px; transition: width 0.5s; }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="page-header">
+  <h1>PSA Onboarding: <span>Transcript Intelligence</span><span class="badge">DEEP DIVE</span></h1>
+  <div class="meta">
+    Nov 3, 2025 – Mar 6, 2026 &nbsp;·&nbsp; 530 transcripts analyzed &nbsp;·&nbsp;
+    402,627 total sentences &nbsp;·&nbsp;
+    Generated March 6, 2026
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- ── 1. EXECUTIVE SUMMARY ── -->
+  <div class="section">
+    <div class="section-title">Executive Summary</div>
+
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">Transcripts Analyzed</div>
+        <div class="kpi-value" style="color:var(--accent)">530</div>
+        <div class="kpi-sub">Nov 3, 2025 – Mar 6, 2026</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Total Sentences</div>
+        <div class="kpi-value" style="color:var(--accent2)">402,627</div>
+        <div class="kpi-sub">across all PSA onboarding calls</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Revii Mentions</div>
+        <div class="kpi-value" style="color:#00d4aa">208</div>
+        <div class="kpi-sub">44% proactive by SAs</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Top Friction Category</div>
+        <div class="kpi-value" style="color:var(--danger);font-size:20px;padding-top:4px">2253</div>
+        <div class="kpi-sub">feature gap signals</div>
+      </div>
+    </div>
+
+    <div class="insights-grid">
+      <div class="insight-box danger">
+        <strong>🚨 Revii adoption is sparse and reactive</strong>
+        Only 208 Revii mentions across 530 calls. SAs are proactively introducing Revii, which is a positive signal.
+      </div>
+      <div class="insight-box warn">
+        <strong>⚠️ Feature gap language is frequent</strong>
+        2253 client sentences contain gap signals ("we need", "does it support", competitor comparisons). Top area: <strong>other</strong> with 1912 mentions.
+      </div>
+      <div class="insight-box">
+        <strong>📊 Timeline friction is real</strong>
+        373 timeline-related objections detected. Clients are expressing "taking too long" and "when will" frustrations — a sign that milestone communication needs improvement.
+      </div>
+      <div class="insight-box success">
+        <strong>✅ Graduation language appearing</strong>
+        1091 graduation/go-live mentions across calls — indicates active pipeline of completions. Nicole's accounts show the most graduation-readiness language.
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 2. SA vs CLIENT TOPICS ── -->
+  <div class="section">
+    <div class="section-title">SA vs. Client: What's Being Discussed</div>
+    <div class="note-box">
+      Topic categories identified by keyword matching across all SA and client sentences per rep.
+      Percentages = share of that speaker's total sentences mentioning each category.
+      Gap = SA% − Client% (positive = SA covers more; negative = clients raise it more).
+    </div>
+
+    
+      <div style="margin-bottom:36px;border:1px solid #2e3147;border-radius:12px;overflow:hidden">
+        <!-- SA Header Card -->
+        <div style="background:#1a1d27;padding:18px 20px;border-bottom:1px solid #2e3147;display:flex;align-items:center;gap:14px">
+          <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#6c63ff,#00d4aa);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:#fff;flex-shrink:0">NH</div>
+          <div>
+            <div style="font-size:16px;font-weight:700;color:#e8eaf6">Nicole Hills</div>
+            <div style="font-size:12px;color:#7b7f9e;margin-top:2px">228 calls analyzed &nbsp;·&nbsp; 120,922 SA sentences &nbsp;·&nbsp; 82,660 client sentences</div>
+          </div>
+        </div>
+
+        <!-- Two-column topic bars -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;padding:0">
+          <div style="padding:20px;border-right:1px solid #2e3147">
+            <div style="font-size:13px;font-weight:600;color:#6c63ff;margin-bottom:14px">📣 Where Nicole Spends Time</div>
+            
+        <div style="margin-bottom:11px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+            <span style="font-size:12px;color:#e8eaf6">Ticketing & Service</span>
+            <span style="font-size:12px;color:#7b7f9e">3.92%</span>
+          </div>
+          <div style="background:#2e3147;border-radius:4px;height:8px;overflow:hidden">
+            
+          <div style="width:39.2%;height:100%;background:#6c63ff;border-radius:4px;transition:width 0.3s"></div></div>
+        </div>
+        <div style="margin-bottom:11px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+            <span style="font-size:12px;color:#e8eaf6">Billing & Recurring</span>
+            <span style="font-size:12px;color:#7b7f9e">3.87%</span>
+          </div>
+          <div style="background:#2e3147;border-radius:4px;height:8px;overflow:hidden">
+            
+          <div style="width:38.7%;height:100%;background:#6c63ff;border-radius:4px;transition:width 0.3s"></div></div>
+        </div>
+        <div style="margin-bottom:11px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+            <span style="font-size:12px;color:#e8eaf6">Inventory & Catalog</span>
+            <span style="font-size:12px;color:#7b7f9e">2.74%</span>
+          </div>
+          <div style="background:#2e3147;border-radius:4px;height:8px;overflow:hidden">
+            
+          <div style="width:27.4%;height:100%;background:#6c63ff;border-radius:4px;transition:width 0.3s"></div></div>
+        </div>
+        <div style="margin-bottom:11px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+            <span style="font-size:12px;color:#e8eaf6">Contracts & Agreements</span>
+            <span style="font-size:12px;color:#7b7f9e">1.69%</span>
+          </div>
+          <div style="background:#2e3147;border-radius:4px;height:8px;overflow:hidden">
+            
+          <div style="width:16.9%;height:100%;background:#6c63ff;border-radius:4px;transition:width 0.3s"></div></div>
+        </div>
+        <div style="margin-bottom:11px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+            <span style="font-size:12px;color:#e8eaf6">Integrations</span>
+            <span style="font-size:12px;color:#7b7f9e">1.41%</span>
+          </div>
+          <div style="background:#2e3147;border-radius:4px;height:8px;overflow:hidden">
+            
+          <div style="width:14.1%;height:100%;background:#6c63ff;border-radius:4px;transition:width 0.3s"></div></div>
+        </div>
+        <div style="margin-bottom:11px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+            <span style="font-size:12px;color:#e8eaf6">System Config</span>
+            <span style="font-size:12px;color:#7b7f9e">1.01%</span>
+          </div>
+          <div style="background:#2e3147;border-radius:4px;height:8px;overflow:hidden">
+            
+          <div style="width:10.1%;height:100%;background:#6c63ff;border-radius:4px;transition:width 0.3s"></div></div>
+        </div>
+          </div>
+          <div style="padding:20px">
+            <div style="font-size:13px;font-weight:600;color:#00d4aa;margin-bottom:14px">👤 What Clients Are Asking About</div>
+            
+        <div style="margin-bottom:11px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+            <span style="font-size:12px;color:#e8eaf6">Billing & Recurring</span>
+            <span style="font-size:12px;color:#7b7f9e">3.49%</span>
+          </div>
+          <div style="background:#2e3147;border-radius:4px;height:8px;overflow:hidden">
+            
+          <div style="width:34.9%;height:100%;background:#00d4aa;border-radius:4px;transition:width 0.3s"></div></div>
+        </div>
+        <div style="margin-bottom:11px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+            <span style="font-size:12px;color:#e8eaf6">Ticketing & Service</span>
+            <span style="font-size:12px;color:#7b7f9e">2.33%</span>
+          </div>
+          <div style="background:#2e3147;border-radius:4px;height:8px;overflow:hidden">
+            
+          <div style="width:23.3%;height:100%;background:#00d4aa;border-radius:4px;transition:width 0.3s"></div></div>
+        </div>
+        <div style="margin-bottom:11px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+            <span style="font-size:12px;color:#e8eaf6">Integrations</span>
+            <span style="font-size:12px;color:#7b7f9e">2%</span>
+          </div>
+          <div style="background:#2e3147;border-radius:4px;height:8px;overflow:hidden">
+            
+          <div style="width:20.0%;height:100%;background:#00d4aa;border-radius:4px;transition:width 0.3s"></div></div>
+        </div>
+        <div style="margin-bottom:11px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+            <span style="font-size:12px;color:#e8eaf6">Inventory & Catalog</span>
+            <span style="font-size:12px;color:#7b7f9e">1.8%</span>
+          </div>
+          <div style="background:#2e3147;border-radius:4px;height:8px;overflow:hidden">
+            
+          <div style="width:18.0%;height:100%;background:#00d4aa;border-radius:4px;transition:width 0.3s"></div></div>
+        </div>
+        <div style="margin-bottom:11px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+            <span style="font-size:12px;color:#e8eaf6">Contracts & Agreements</span>
+            <span style="font-size:12px;color:#7b7f9e">1.49%</span>
+          </div>
+          <div style="background:#2e3147;border-radius:4px;height:8px;overflow:hidden">
+            
+          <div style="width:14.9%;height:100%;background:#00d4aa;border-radius:4px;transition:width 0.3s"></div></div>
+        </div>
+        <div style="margin-bottom:11px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+            <span style="font-size:12px;color:#e8eaf6">Mobile</span>
+            <span style="font-size:12px;color:#7b7f9e">1.36%</span>
+          </div>
+          <div style="background:#2e3147;border-radius:4px;height:8px;overflow:hidden">
+            
+          <div style="width:13.6%;height:100%;background:#00d4aa;border-radius:4px;transition:width 0.3s"></div></div>
+        </div>
+          </div>
+        </div>
+
+        <!-- Gap Analysis -->
+        <div style="padding:16px 20px;border-top:1px solid #2e3147;background:#0f1117">
+          <div style="font-size:13px;font-weight:600;color:#7b7f9e;margin-bottom:12px;text-transform:uppercase;letter-spacing:.05em;font-size:11px">Gap Analysis</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div>
+              <div style="font-size:11px;color:#7b7f9e;margin-bottom:8px;text-transform:uppercase;letter-spacing:.04em">SA Over-Covers</div>
+              <div style="background:#6c63ff15;border:1px solid #6c63ff44;border-radius:8px;padding:12px 14px;margin-bottom:8px">
+      <span style="font-size:14px">✅</span>
+      <span style="font-size:13px;color:#e8eaf6;margin-left:6px"><strong>Nicole</strong> spends <strong>1.7×</strong> more time on <strong>Ticketing & Service</strong> than clients raise it (+1.59pp gap)</span>
+    </div><div style="background:#6c63ff15;border:1px solid #6c63ff44;border-radius:8px;padding:12px 14px;margin-bottom:8px">
+      <span style="font-size:14px">✅</span>
+      <span style="font-size:13px;color:#e8eaf6;margin-left:6px"><strong>Nicole</strong> spends <strong>1.5×</strong> more time on <strong>Inventory & Catalog</strong> than clients raise it (+0.94pp gap)</span>
+    </div><div style="background:#6c63ff15;border:1px solid #6c63ff44;border-radius:8px;padding:12px 14px;margin-bottom:8px">
+      <span style="font-size:14px">✅</span>
+      <span style="font-size:13px;color:#e8eaf6;margin-left:6px"><strong>Nicole</strong> spends <strong>1.8×</strong> more time on <strong>System Config</strong> than clients raise it (+0.44pp gap)</span>
+    </div>
+            </div>
+            <div>
+              <div style="font-size:11px;color:#7b7f9e;margin-bottom:8px;text-transform:uppercase;letter-spacing:.04em">Clients Ask More Than SA Covers</div>
+              <div style="background:#ff6b6b15;border:1px solid #ff6b6b44;border-radius:8px;padding:12px 14px;margin-bottom:8px">
+      <span style="font-size:14px">⚠️</span>
+      <span style="font-size:13px;color:#e8eaf6;margin-left:6px">Clients raise <strong>Integrations</strong> <strong>1.4×</strong> more than Nicole covers it (-0.59pp gap)</span>
+    </div><div style="background:#ff6b6b15;border:1px solid #ff6b6b44;border-radius:8px;padding:12px 14px;margin-bottom:8px">
+      <span style="font-size:14px">⚠️</span>
+      <span style="font-size:13px;color:#e8eaf6;margin-left:6px">Clients raise <strong>Mobile</strong> <strong>1.5×</strong> more than Nicole covers it (-0.43pp gap)</span>
+    </div><div style="background:#ff6b6b15;border:1px solid #ff6b6b44;border-radius:8px;padding:12px 14px;margin-bottom:8px">
+      <span style="font-size:14px">⚠️</span>
+      <span style="font-size:13px;color:#e8eaf6;margin-left:6px">Clients raise <strong>Scheduling & Dispatch</strong> <strong>1.3×</strong> more than Nicole covers it (-0.25pp gap)</span>
+    </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      <div style="margin-bottom:36px;border:1px solid #2e3147;border-radius:12px;overflow:hidden">
+        <!-- SA Header Card -->
+        <div style="background:#1a1d27;padding:18px 20px;border-bottom:1px solid #2e3147;display:flex;align-items:center;gap:14px">
+          <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#6c63ff,#00d4aa);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:#fff;flex-shrink:0">KE</div>
+          <div>
+            <div style="font-size:16px;font-weight:700;color:#e8eaf6">Kegan Ehlers</div>
+            <div style="font-size:12px;color:#7b7f9e;margin-top:2px">167 calls analyzed &nbsp;·&nbsp; 49,731 SA sentences &nbsp;·&nbsp; 48,058 client sentences</div>
+          </div>
+        </div>
+
+        <!-- Two-column topic bars -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;padding:0">
+          <div style="padding:20px;border-right:1px solid #2e3147">
+            <div style="font-size:13px;font-weight:600;color:#6c63ff;margin-bottom:14px">📣 Where Kegan Spends Time</div>
+            
+        <div style="margin-bottom:11px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+            <span style="font-size:12px;color:#e8eaf6">Inventory & Catalog</span>
+            <span style="font-size:12px;color:#7b7f9e">3.69%</span>
+          </div>
+          <div style="background:#2e3147;border-radius:4px;height:8px;overflow:hidden">
+            
+          <div style="width:36.9%;height:100%;background:#6c63ff;border-radius:4px;transition:width 0.3s"></div></div>
+        </div>
+        <div style="margin-bottom:11px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+            <span style="font-size:12px;color:#e8eaf6">Billing & Recurring</span>
+            <span style="font-size:12px;color:#7b7f9e">3.69%</span>
+          </div>
+          <div style="background:#2e3147;border-radius:4px;height:8px;overflow:hidden">
+            
+          <div style="width:36.9%;height:100%;background:#6c63ff;border-radius:4px;transition:width 0.3s"></div></div>
+        </div>
+        <div style="margin-bottom:11px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+            <span style="font-size:12px;color:#e8eaf6">Ticketing & Service</span>
+            <span style="font-size:12px;color:#7b7f9e">2.6%</span>
+          </div>
+          <div style="background:#2e3147;border-radius:4px;height:8px;overflow:hidden">
+            
+          <div style="width:26.0%;height:100%;background:#6c63ff;border-radius:4px;transition:width 0.3s"></div></div>
+        </div>
+        <div style="margin-bottom:11px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+            <span style="font-size:12px;color:#e8eaf6">Integrations</span>
+            <span style="font-size:12px;color:#7b7f9e">2.58%</span>
+          </div>
+          <div style="background:#2e3147;border-radius:4px;height:8px;overflow:hidden">
+            
+          <div style="width:25.8%;height:100%;background:#6c63ff;border-radius:4px;transition:width 0.3s"></div></div>
+        </div>
+        <div style="margin-bottom:11px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+            <span style="font-size:12px;color:#e8eaf6">Contracts & Agreements</span>
+            <span style="font-size:12px;color:#7b7f9e">1.76%</span>
+          </div>
+          <div style="background:#2e3147;border-radius:4px;height:8px;overflow:hidden">
+            
+          <div style="width:17.6%;height:100%;background:#6c63ff;border-radius:4px;transition:width 0.3s"></div></div>
+        </div>
+        <div style="margin-bottom:11px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+            <span style="font-size:12px;color:#e8eaf6">Mobile</span>
+            <span style="font-size:12px;color:#7b7f9e">1.35%</span>
+          </div>
+          <div style="background:#2e3147;border-radius:4px;height:8px;overflow:hidden">
+            
+          <div style="width:13.5%;height:100%;background:#6c63ff;border-radius:4px;transition:width 0.3s"></div></div>
+        </div>
+          </div>
+          <div style="padding:20px">
+            <div style="font-size:13px;font-weight:600;color:#00d4aa;margin-bottom:14px">👤 What Clients Are Asking About</div>
+            
+        <div style="margin-bottom:11px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+            <span style="font-size:12px;color:#e8eaf6">Billing & Recurring</span>
+            <span style="font-size:12px;color:#7b7f9e">2.92%</span>
+          </div>
+          <div style="background:#2e3147;border-radius:4px;height:8px;overflow:hidden">
+            
+          <div style="width:29.2%;height:100%;background:#00d4aa;border-radius:4px;transition:width 0.3s"></div></div>
+        </div>
+        <div style="margin-bottom:11px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+            <span style="font-size:12px;color:#e8eaf6">Integrations</span>
+            <span style="font-size:12px;color:#7b7f9e">2.72%</span>
+          </div>
+          <div style="background:#2e3147;border-radius:4px;height:8px;overflow:hidden">
+            
+          <div style="width:27.2%;height:100%;background:#00d4aa;border-radius:4px;transition:width 0.3s"></div></div>
+        </div>
+        <div style="margin-bottom:11px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+            <span style="font-size:12px;color:#e8eaf6">Inventory & Catalog</span>
+            <span style="font-size:12px;color:#7b7f9e">2.11%</span>
+          </div>
+          <div style="background:#2e3147;border-radius:4px;height:8px;overflow:hidden">
+            
+          <div style="width:21.1%;height:100%;background:#00d4aa;border-radius:4px;transition:width 0.3s"></div></div>
+        </div>
+        <div style="margin-bottom:11px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+            <span style="font-size:12px;color:#e8eaf6">Ticketing & Service</span>
+            <span style="font-size:12px;color:#7b7f9e">1.89%</span>
+          </div>
+          <div style="background:#2e3147;border-radius:4px;height:8px;overflow:hidden">
+            
+          <div style="width:18.9%;height:100%;background:#00d4aa;border-radius:4px;transition:width 0.3s"></div></div>
+        </div>
+        <div style="margin-bottom:11px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+            <span style="font-size:12px;color:#e8eaf6">Mobile</span>
+            <span style="font-size:12px;color:#7b7f9e">1.43%</span>
+          </div>
+          <div style="background:#2e3147;border-radius:4px;height:8px;overflow:hidden">
+            
+          <div style="width:14.3%;height:100%;background:#00d4aa;border-radius:4px;transition:width 0.3s"></div></div>
+        </div>
+        <div style="margin-bottom:11px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+            <span style="font-size:12px;color:#e8eaf6">Contracts & Agreements</span>
+            <span style="font-size:12px;color:#7b7f9e">1.27%</span>
+          </div>
+          <div style="background:#2e3147;border-radius:4px;height:8px;overflow:hidden">
+            
+          <div style="width:12.7%;height:100%;background:#00d4aa;border-radius:4px;transition:width 0.3s"></div></div>
+        </div>
+          </div>
+        </div>
+
+        <!-- Gap Analysis -->
+        <div style="padding:16px 20px;border-top:1px solid #2e3147;background:#0f1117">
+          <div style="font-size:13px;font-weight:600;color:#7b7f9e;margin-bottom:12px;text-transform:uppercase;letter-spacing:.05em;font-size:11px">Gap Analysis</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div>
+              <div style="font-size:11px;color:#7b7f9e;margin-bottom:8px;text-transform:uppercase;letter-spacing:.04em">SA Over-Covers</div>
+              <div style="background:#6c63ff15;border:1px solid #6c63ff44;border-radius:8px;padding:12px 14px;margin-bottom:8px">
+      <span style="font-size:14px">✅</span>
+      <span style="font-size:13px;color:#e8eaf6;margin-left:6px"><strong>Kegan</strong> spends <strong>1.7×</strong> more time on <strong>Inventory & Catalog</strong> than clients raise it (+1.58pp gap)</span>
+    </div><div style="background:#6c63ff15;border:1px solid #6c63ff44;border-radius:8px;padding:12px 14px;margin-bottom:8px">
+      <span style="font-size:14px">✅</span>
+      <span style="font-size:13px;color:#e8eaf6;margin-left:6px"><strong>Kegan</strong> spends <strong>1.3×</strong> more time on <strong>Billing & Recurring</strong> than clients raise it (+0.77pp gap)</span>
+    </div><div style="background:#6c63ff15;border:1px solid #6c63ff44;border-radius:8px;padding:12px 14px;margin-bottom:8px">
+      <span style="font-size:14px">✅</span>
+      <span style="font-size:13px;color:#e8eaf6;margin-left:6px"><strong>Kegan</strong> spends <strong>1.4×</strong> more time on <strong>Ticketing & Service</strong> than clients raise it (+0.71pp gap)</span>
+    </div>
+            </div>
+            <div>
+              <div style="font-size:11px;color:#7b7f9e;margin-bottom:8px;text-transform:uppercase;letter-spacing:.04em">Clients Ask More Than SA Covers</div>
+              <div style="background:#ff6b6b15;border:1px solid #ff6b6b44;border-radius:8px;padding:12px 14px;margin-bottom:8px">
+      <span style="font-size:14px">⚠️</span>
+      <span style="font-size:13px;color:#e8eaf6;margin-left:6px">Clients raise <strong>Reporting & Analytics</strong> <strong>2.0×</strong> more than Kegan covers it (-0.33pp gap)</span>
+    </div><div style="background:#ff6b6b15;border:1px solid #ff6b6b44;border-radius:8px;padding:12px 14px;margin-bottom:8px">
+      <span style="font-size:14px">⚠️</span>
+      <span style="font-size:13px;color:#e8eaf6;margin-left:6px">Clients raise <strong>Integrations</strong> <strong>1.1×</strong> more than Kegan covers it (-0.14pp gap)</span>
+    </div><div style="background:#ff6b6b15;border:1px solid #ff6b6b44;border-radius:8px;padding:12px 14px;margin-bottom:8px">
+      <span style="font-size:14px">⚠️</span>
+      <span style="font-size:13px;color:#e8eaf6;margin-left:6px">Clients raise <strong>Mobile</strong> <strong>1.1×</strong> more than Kegan covers it (-0.08pp gap)</span>
+    </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      <div style="margin-bottom:36px;border:1px solid #2e3147;border-radius:12px;overflow:hidden">
+        <!-- SA Header Card -->
+        <div style="background:#1a1d27;padding:18px 20px;border-bottom:1px solid #2e3147;display:flex;align-items:center;gap:14px">
+          <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#6c63ff,#00d4aa);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:#fff;flex-shrink:0">HT</div>
+          <div>
+            <div style="font-size:16px;font-weight:700;color:#e8eaf6">Halle Taylor</div>
+            <div style="font-size:12px;color:#7b7f9e;margin-top:2px">135 calls analyzed &nbsp;·&nbsp; 46,318 SA sentences &nbsp;·&nbsp; 50,996 client sentences</div>
+          </div>
+        </div>
+
+        <!-- Two-column topic bars -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;padding:0">
+          <div style="padding:20px;border-right:1px solid #2e3147">
+            <div style="font-size:13px;font-weight:600;color:#6c63ff;margin-bottom:14px">📣 Where Halle Spends Time</div>
+            
+        <div style="margin-bottom:11px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+            <span style="font-size:12px;color:#e8eaf6">Ticketing & Service</span>
+            <span style="font-size:12px;color:#7b7f9e">3.99%</span>
+          </div>
+          <div style="background:#2e3147;border-radius:4px;height:8px;overflow:hidden">
+            
+          <div style="width:39.9%;height:100%;background:#6c63ff;border-radius:4px;transition:width 0.3s"></div></div>
+        </div>
+        <div style="margin-bottom:11px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+            <span style="font-size:12px;color:#e8eaf6">Billing & Recurring</span>
+            <span style="font-size:12px;color:#7b7f9e">3.24%</span>
+          </div>
+          <div style="background:#2e3147;border-radius:4px;height:8px;overflow:hidden">
+            
+          <div style="width:32.4%;height:100%;background:#6c63ff;border-radius:4px;transition:width 0.3s"></div></div>
+        </div>
+        <div style="margin-bottom:11px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+            <span style="font-size:12px;color:#e8eaf6">Inventory & Catalog</span>
+            <span style="font-size:12px;color:#7b7f9e">2.57%</span>
+          </div>
+          <div style="background:#2e3147;border-radius:4px;height:8px;overflow:hidden">
+            
+          <div style="width:25.7%;height:100%;background:#6c63ff;border-radius:4px;transition:width 0.3s"></div></div>
+        </div>
+        <div style="margin-bottom:11px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+            <span style="font-size:12px;color:#e8eaf6">Contracts & Agreements</span>
+            <span style="font-size:12px;color:#7b7f9e">1.67%</span>
+          </div>
+          <div style="background:#2e3147;border-radius:4px;height:8px;overflow:hidden">
+            
+          <div style="width:16.7%;height:100%;background:#6c63ff;border-radius:4px;transition:width 0.3s"></div></div>
+        </div>
+        <div style="margin-bottom:11px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+            <span style="font-size:12px;color:#e8eaf6">Integrations</span>
+            <span style="font-size:12px;color:#7b7f9e">1.23%</span>
+          </div>
+          <div style="background:#2e3147;border-radius:4px;height:8px;overflow:hidden">
+            
+          <div style="width:12.3%;height:100%;background:#6c63ff;border-radius:4px;transition:width 0.3s"></div></div>
+        </div>
+        <div style="margin-bottom:11px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+            <span style="font-size:12px;color:#e8eaf6">System Config</span>
+            <span style="font-size:12px;color:#7b7f9e">0.99%</span>
+          </div>
+          <div style="background:#2e3147;border-radius:4px;height:8px;overflow:hidden">
+            
+          <div style="width:9.9%;height:100%;background:#6c63ff;border-radius:4px;transition:width 0.3s"></div></div>
+        </div>
+          </div>
+          <div style="padding:20px">
+            <div style="font-size:13px;font-weight:600;color:#00d4aa;margin-bottom:14px">👤 What Clients Are Asking About</div>
+            
+        <div style="margin-bottom:11px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+            <span style="font-size:12px;color:#e8eaf6">Billing & Recurring</span>
+            <span style="font-size:12px;color:#7b7f9e">3.13%</span>
+          </div>
+          <div style="background:#2e3147;border-radius:4px;height:8px;overflow:hidden">
+            
+          <div style="width:31.3%;height:100%;background:#00d4aa;border-radius:4px;transition:width 0.3s"></div></div>
+        </div>
+        <div style="margin-bottom:11px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+            <span style="font-size:12px;color:#e8eaf6">Inventory & Catalog</span>
+            <span style="font-size:12px;color:#7b7f9e">2.1%</span>
+          </div>
+          <div style="background:#2e3147;border-radius:4px;height:8px;overflow:hidden">
+            
+          <div style="width:21.0%;height:100%;background:#00d4aa;border-radius:4px;transition:width 0.3s"></div></div>
+        </div>
+        <div style="margin-bottom:11px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+            <span style="font-size:12px;color:#e8eaf6">Ticketing & Service</span>
+            <span style="font-size:12px;color:#7b7f9e">1.91%</span>
+          </div>
+          <div style="background:#2e3147;border-radius:4px;height:8px;overflow:hidden">
+            
+          <div style="width:19.1%;height:100%;background:#00d4aa;border-radius:4px;transition:width 0.3s"></div></div>
+        </div>
+        <div style="margin-bottom:11px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+            <span style="font-size:12px;color:#e8eaf6">Integrations</span>
+            <span style="font-size:12px;color:#7b7f9e">1.67%</span>
+          </div>
+          <div style="background:#2e3147;border-radius:4px;height:8px;overflow:hidden">
+            
+          <div style="width:16.7%;height:100%;background:#00d4aa;border-radius:4px;transition:width 0.3s"></div></div>
+        </div>
+        <div style="margin-bottom:11px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+            <span style="font-size:12px;color:#e8eaf6">Contracts & Agreements</span>
+            <span style="font-size:12px;color:#7b7f9e">1.48%</span>
+          </div>
+          <div style="background:#2e3147;border-radius:4px;height:8px;overflow:hidden">
+            
+          <div style="width:14.8%;height:100%;background:#00d4aa;border-radius:4px;transition:width 0.3s"></div></div>
+        </div>
+        <div style="margin-bottom:11px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+            <span style="font-size:12px;color:#e8eaf6">Mobile</span>
+            <span style="font-size:12px;color:#7b7f9e">1.25%</span>
+          </div>
+          <div style="background:#2e3147;border-radius:4px;height:8px;overflow:hidden">
+            
+          <div style="width:12.5%;height:100%;background:#00d4aa;border-radius:4px;transition:width 0.3s"></div></div>
+        </div>
+          </div>
+        </div>
+
+        <!-- Gap Analysis -->
+        <div style="padding:16px 20px;border-top:1px solid #2e3147;background:#0f1117">
+          <div style="font-size:13px;font-weight:600;color:#7b7f9e;margin-bottom:12px;text-transform:uppercase;letter-spacing:.05em;font-size:11px">Gap Analysis</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div>
+              <div style="font-size:11px;color:#7b7f9e;margin-bottom:8px;text-transform:uppercase;letter-spacing:.04em">SA Over-Covers</div>
+              <div style="background:#6c63ff15;border:1px solid #6c63ff44;border-radius:8px;padding:12px 14px;margin-bottom:8px">
+      <span style="font-size:14px">✅</span>
+      <span style="font-size:13px;color:#e8eaf6;margin-left:6px"><strong>Halle</strong> spends <strong>2.1×</strong> more time on <strong>Ticketing & Service</strong> than clients raise it (+2.08pp gap)</span>
+    </div><div style="background:#6c63ff15;border:1px solid #6c63ff44;border-radius:8px;padding:12px 14px;margin-bottom:8px">
+      <span style="font-size:14px">✅</span>
+      <span style="font-size:13px;color:#e8eaf6;margin-left:6px"><strong>Halle</strong> spends <strong>1.2×</strong> more time on <strong>Inventory & Catalog</strong> than clients raise it (+0.47pp gap)</span>
+    </div><div style="background:#6c63ff15;border:1px solid #6c63ff44;border-radius:8px;padding:12px 14px;margin-bottom:8px">
+      <span style="font-size:14px">✅</span>
+      <span style="font-size:13px;color:#e8eaf6;margin-left:6px"><strong>Halle</strong> spends <strong>1.9×</strong> more time on <strong>Training & Next Steps</strong> than clients raise it (+0.4pp gap)</span>
+    </div>
+            </div>
+            <div>
+              <div style="font-size:11px;color:#7b7f9e;margin-bottom:8px;text-transform:uppercase;letter-spacing:.04em">Clients Ask More Than SA Covers</div>
+              <div style="background:#ff6b6b15;border:1px solid #ff6b6b44;border-radius:8px;padding:12px 14px;margin-bottom:8px">
+      <span style="font-size:14px">⚠️</span>
+      <span style="font-size:13px;color:#e8eaf6;margin-left:6px">Clients raise <strong>Integrations</strong> <strong>1.4×</strong> more than Halle covers it (-0.44pp gap)</span>
+    </div><div style="background:#ff6b6b15;border:1px solid #ff6b6b44;border-radius:8px;padding:12px 14px;margin-bottom:8px">
+      <span style="font-size:14px">⚠️</span>
+      <span style="font-size:13px;color:#e8eaf6;margin-left:6px">Clients raise <strong>Mobile</strong> <strong>1.4×</strong> more than Halle covers it (-0.36pp gap)</span>
+    </div><div style="background:#ff6b6b15;border:1px solid #ff6b6b44;border-radius:8px;padding:12px 14px;margin-bottom:8px">
+      <span style="font-size:14px">⚠️</span>
+      <span style="font-size:13px;color:#e8eaf6;margin-left:6px">Clients raise <strong>Scheduling & Dispatch</strong> <strong>1.3×</strong> more than Halle covers it (-0.21pp gap)</span>
+    </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    <div class="insight-box" style="margin-top:8px">
+      <strong>Cross-SA Pattern:</strong> All three reps over-invest in Ticketing & Service relative to client questions. 
+      Integrations and Mobile are consistently under-covered — clients raise these more than SAs address them.
+    </div>
+  </div>
+
+  <!-- ── 3. OBJECTIONS & FRICTION ── -->
+
+  <div class="section">
+    <div class="section-title">Client Objections &amp; Friction Map</div>
+
+    <div class="signal-summary">
+      <span class="signal-icon">📡</span>
+      <div>
+        <strong>8 friction themes identified across 207 unique accounts.</strong>
+        Top friction point: <em>Usability &amp; Confusion</em> (145 accounts affected).
+        Most affected rep: <strong>Nicole Hills</strong>.
+      </div>
+    </div>
+    <div class="theme-grid">
+
+      <div class="theme-card" style="border-left:4px solid #ff6b6b">
+        <div class="theme-card-header">
+          <div>
+            <h3 class="theme-name" style="color:#ff6b6b">Usability &amp; Confusion</h3>
+            <p class="theme-desc">Clients struggling to navigate or understand how the product works</p>
+          </div>
+          <div class="theme-badges">
+            <span class="acct-badge" style="background:#ff6b6b22;color:#ff6b6b;border:1px solid #ff6b6b66">145 accounts</span>
+          </div>
+        </div>
+        <div class="sa-pills"><span class="sa-pill">Nicole 204</span> <span class="sa-pill">Halle 147</span> <span class="sa-pill">Kegan 111</span></div>
+        <p class="synthesis-text">145 accounts reported confusion navigating the platform or understanding how key workflows function. Clients from CSI Video Security Sound Theater, Midwest Specialists, Truline, Newport Network Solutions struggled with finding features or understanding the system's logic. This pattern points to a need for stronger in-product guidance or onboarding walkthroughs, particularly for Nicole Hills's clients.</p>
+        
+      </div>
+
+      <div class="theme-card" style="border-left:4px solid #ff6b6b">
+        <div class="theme-card-header">
+          <div>
+            <h3 class="theme-name" style="color:#ff6b6b">Billing Format &amp; Invoice Issues</h3>
+            <p class="theme-desc">Clients need invoice/bill formatting to match what they had in their prior system</p>
+          </div>
+          <div class="theme-badges">
+            <span class="acct-badge" style="background:#ff6b6b22;color:#ff6b6b;border:1px solid #ff6b6b66">97 accounts</span>
+          </div>
+        </div>
+        <div class="sa-pills"><span class="sa-pill">Nicole 110</span> <span class="sa-pill">Halle 66</span> <span class="sa-pill">Kegan 61</span></div>
+        <p class="synthesis-text">97 accounts expressed frustration with invoice and billing format differences from their prior system. Accounts like Midwest Specialists, Truline, Newport Network Solutions, Silent Watchman want their bills to match what their customers already expect. This recurring theme suggests invoice template flexibility is a key onboarding pain point, especially for Nicole Hills's book.</p>
+        
+      </div>
+
+      <div class="theme-card" style="border-left:4px solid #ff6b6b">
+        <div class="theme-card-header">
+          <div>
+            <h3 class="theme-name" style="color:#ff6b6b">Onboarding Pace &amp; Timeline</h3>
+            <p class="theme-desc">Client frustration with pace or timeline of their implementation</p>
+          </div>
+          <div class="theme-badges">
+            <span class="acct-badge" style="background:#ff6b6b22;color:#ff6b6b;border:1px solid #ff6b6b66">73 accounts</span>
+          </div>
+        </div>
+        <div class="sa-pills"><span class="sa-pill">Nicole 45</span> <span class="sa-pill">Kegan 39</span> <span class="sa-pill">Halle 31</span></div>
+        <p class="synthesis-text">73 accounts voiced frustration with how long their implementation is taking. Clients from Midwest Specialists, Truline, Silent Watchman, Nevada Security Web Meting expressed that timelines are running longer than expected. Nicole Hills's clients dominate this theme — worth reviewing whether task handoffs or scheduling bottlenecks are causing delays.</p>
+        
+      </div>
+
+      <div class="theme-card" style="border-left:4px solid #ff6b6b">
+        <div class="theme-card-header">
+          <div>
+            <h3 class="theme-name" style="color:#ff6b6b">Reporting &amp; Visibility Gaps</h3>
+            <p class="theme-desc">Clients lacking visibility into data they need for business decisions</p>
+          </div>
+          <div class="theme-badges">
+            <span class="acct-badge" style="background:#ff6b6b22;color:#ff6b6b;border:1px solid #ff6b6b66">71 accounts</span>
+          </div>
+        </div>
+        <div class="sa-pills"><span class="sa-pill">Nicole 100</span> <span class="sa-pill">Halle 35</span> <span class="sa-pill">Kegan 26</span></div>
+        <p class="synthesis-text">71 accounts indicated they lack the reporting or visibility they need to run their business in Rev.io. Clients from Truline, Newport Network Solutions, Silent Watchman, Joint Role Play mentioned specific data they can't surface or see. With Nicole Hills's book most impacted, there may be a gap between what standard reports provide and what MSPs need operationally.</p>
+        
+      </div>
+
+      <div class="theme-card" style="border-left:4px solid #ff6b6b">
+        <div class="theme-card-header">
+          <div>
+            <h3 class="theme-name" style="color:#ff6b6b">Integration Failures</h3>
+            <p class="theme-desc">Integrations with ConnectWise, QuickBooks, and other systems not working as expected</p>
+          </div>
+          <div class="theme-badges">
+            <span class="acct-badge" style="background:#ff6b6b22;color:#ff6b6b;border:1px solid #ff6b6b66">67 accounts</span>
+          </div>
+        </div>
+        <div class="sa-pills"><span class="sa-pill">Nicole 46</span> <span class="sa-pill">Halle 40</span> <span class="sa-pill">Kegan 37</span></div>
+        <p class="synthesis-text">67 accounts raised concerns about integrations not syncing or connecting properly. Affected accounts include Midwest Specialists, Sandhills home, Class5 Integration, Class5. Most mentions come from Nicole Hills's clients — a potential indicator that integration setup steps need more guided documentation.</p>
+        
+      </div>
+
+      <div class="theme-card" style="border-left:4px solid #ff6b6b">
+        <div class="theme-card-header">
+          <div>
+            <h3 class="theme-name" style="color:#ff6b6b">Migration &amp; Data Loss</h3>
+            <p class="theme-desc">Issues with data not carrying over correctly during migration from prior system</p>
+          </div>
+          <div class="theme-badges">
+            <span class="acct-badge" style="background:#ff6b6b22;color:#ff6b6b;border:1px solid #ff6b6b66">66 accounts</span>
+          </div>
+        </div>
+        <div class="sa-pills"><span class="sa-pill">Nicole 73</span> <span class="sa-pill">Kegan 28</span> <span class="sa-pill">Halle 23</span></div>
+        <p class="synthesis-text">66 accounts reported data not carrying over correctly from their prior systems. Affected accounts include Midwest Specialists, First Class Technology, Joint Role Play, Sydewire Technologies Payments Discussion. Nicole Hills's clients account for the most complaints, suggesting migration checklists may need strengthening for their client base.</p>
+        
+      </div>
+
+      <div class="theme-card" style="border-left:4px solid #ff6b6b">
+        <div class="theme-card-header">
+          <div>
+            <h3 class="theme-name" style="color:#ff6b6b">Prior System Comparison</h3>
+            <p class="theme-desc">Clients comparing Rev.io unfavorably to their prior PSA</p>
+          </div>
+          <div class="theme-badges">
+            <span class="acct-badge" style="background:#ff6b6b22;color:#ff6b6b;border:1px solid #ff6b6b66">52 accounts</span>
+          </div>
+        </div>
+        <div class="sa-pills"><span class="sa-pill">Halle 43</span> <span class="sa-pill">Kegan 42</span> <span class="sa-pill">Nicole 25</span></div>
+        <p class="synthesis-text">52 accounts explicitly compared Rev.io unfavorably to their prior PSA (ConnectWise, Autotask, or prior PSAs). Accounts including CSI Video Security Sound Theater, Midwest Specialists, Truline, Joint Role Play referenced specific capabilities or workflows they had before that are now absent or different. Halle Taylor is handling the most of these comparisons — a signal to proactively address expectation gaps early in discovery.</p>
+        
+      </div>
+
+      <div class="theme-card" style="border-left:4px solid #ff6b6b">
+        <div class="theme-card-header">
+          <div>
+            <h3 class="theme-name" style="color:#ff6b6b">Missing Critical Features</h3>
+            <p class="theme-desc">Features clients consider essential that are missing or incomplete</p>
+          </div>
+          <div class="theme-badges">
+            <span class="acct-badge" style="background:#ff6b6b22;color:#ff6b6b;border:1px solid #ff6b6b66">49 accounts</span>
+          </div>
+        </div>
+        <div class="sa-pills"><span class="sa-pill">Nicole 64</span> <span class="sa-pill">Kegan 24</span> <span class="sa-pill">Halle 15</span></div>
+        <p class="synthesis-text">49 accounts flagged specific capabilities as blocking or critical — features they cannot go live without. Accounts raising these blockers include Midwest Specialists, Truline, Joint Role Play, Class5 Integration. Nicole Hills is fielding the most of these, indicating these items may be surfacing late in the onboarding cycle.</p>
+        
+      </div>
+    </div>
+  </div>
+
+  
+  <!-- ── 4. FEATURE GAP INTELLIGENCE ── -->
+  <div class="section">
+    <div class="section-title">Feature Gap Intelligence <span class="sub">what clients say is missing</span></div>
+
+    <div class="signal-summary">
+      <span class="signal-icon">🔍</span>
+      <div>
+        <strong>12 feature areas requested across 115 unique accounts.</strong>
+        Top request: <em>Quoting &amp; Proposals</em> (40 accounts).
+        46% of requests relate to integrations or prior-system capabilities.
+      </div>
+    </div>
+    <div class="feat-grid">
+
+      <div class="feat-card">
+        <div class="feat-card-header">
+          <h3 class="feat-name">Quoting &amp; Proposals</h3>
+          <span class="feat-badge">40 accounts</span>
+        </div>
+        <div class="demand-bar-wrap">
+          
+        </div>
+        <div class="sa-pills"><span class="sa-pill">Nicole 35</span> <span class="sa-pill">Halle 21</span> <span class="sa-pill">Kegan 15</span></div>
+        <p class="synthesis-text">40 accounts asked about quoting, estimates, or proposal generation within Rev.io. Accounts including Truline, Sydewire Technologies Payments Discussion, HTI, Prestige want to manage their full sales-to-bill cycle in one platform. Nicole Hills's clients are the loudest here — a signal that quoting capability gaps are surfacing during onboarding.</p>
+        
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-card-header">
+          <h3 class="feat-name">QuickBooks Integration</h3>
+          <span class="feat-badge">30 accounts</span>
+        </div>
+        <div class="demand-bar-wrap">
+          
+        </div>
+        <div class="sa-pills"><span class="sa-pill">Nicole 18</span> <span class="sa-pill">Kegan 15</span> <span class="sa-pill">Halle 9</span></div>
+        <p class="synthesis-text">30 accounts specifically need QuickBooks or QBO integration to work reliably. Clients from GL Codes for integrations, Class5 Integration, Shinntek Solutions, Ravguard depend on this for accounting workflows. With 42 mentions total, this is a high-frequency blocker — any friction in the QBO sync directly impacts go-live readiness.</p>
+        
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-card-header">
+          <h3 class="feat-name">Import / Data Migration</h3>
+          <span class="feat-badge">28 accounts</span>
+        </div>
+        <div class="demand-bar-wrap">
+          
+        </div>
+        <div class="sa-pills"><span class="sa-pill">Nicole 17</span> <span class="sa-pill">Kegan 9</span> <span class="sa-pill">Halle 6</span></div>
+        <p class="synthesis-text">28 accounts need better import or data migration tooling. Clients from Midwest Specialists, Losh Network Services, Centra IP, Obera Client Check In are trying to bring in historical data, client records, or inventory from prior systems. This directly maps to the Migration &amp; Data Loss objection theme — import quality is a recurring pain.</p>
+        
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-card-header">
+          <h3 class="feat-name">Scheduling / Dispatch</h3>
+          <span class="feat-badge">27 accounts</span>
+        </div>
+        <div class="demand-bar-wrap">
+          
+        </div>
+        <div class="sa-pills"><span class="sa-pill">Nicole 24</span> <span class="sa-pill">Kegan 11</span> <span class="sa-pill">Halle 3</span></div>
+        <p class="synthesis-text">27 accounts want scheduling or dispatch features — calendaring, appointment booking, or technician availability. Clients including Acoma Lock Security, American Security Devices Web, Ataraxis Solutions Graduation, Savvy AI Transition to CS need this for field service coordination. This suggests the PSA's dispatch workflows may not fully support clients with larger field teams.</p>
+        
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-card-header">
+          <h3 class="feat-name">Contract Management</h3>
+          <span class="feat-badge">21 accounts</span>
+        </div>
+        <div class="demand-bar-wrap">
+          
+        </div>
+        <div class="sa-pills"><span class="sa-pill">Nicole 21</span> <span class="sa-pill">Kegan 9</span> <span class="sa-pill">Halle 3</span></div>
+        <p class="synthesis-text">21 accounts flagged contract and agreement management as a need. Clients from Stratus Recurring, CL Sams Web, Lantern Streaming, Obera Connect Sales want to track recurring contracts, terms, or renewal schedules in Rev.io. Nicole Hills's clients are asking most frequently — contract lifecycle gaps may be creating manual workarounds.</p>
+        
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-card-header">
+          <h3 class="feat-name">Reporting &amp; Dashboards</h3>
+          <span class="feat-badge">17 accounts</span>
+        </div>
+        <div class="demand-bar-wrap">
+          
+        </div>
+        <div class="sa-pills"><span class="sa-pill">Nicole 14</span> <span class="sa-pill">Kegan 5</span> <span class="sa-pill">Halle 5</span></div>
+        <p class="synthesis-text">17 accounts requested richer reporting, dashboards, or business visibility tools. Clients from Joint Role Play, Obera Connect HubSpot, Sandhills home, SSU Client Check In want to see their own operational data in ways the current reports don't support. Nicole Hills is handling the most of these — standard report coverage may need expanding.</p>
+        
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-card-header">
+          <h3 class="feat-name">Mobile / Field Tech</h3>
+          <span class="feat-badge">17 accounts</span>
+        </div>
+        <div class="demand-bar-wrap">
+          
+        </div>
+        <div class="sa-pills"><span class="sa-pill">Nicole 8</span> <span class="sa-pill">Kegan 7</span> <span class="sa-pill">Halle 5</span></div>
+        <p class="synthesis-text">17 accounts want mobile or field technician access. Clients from Truline, Silent Watchman, Acoma Lock Security, Obera Connect Guided need their techs to use Rev.io on the road. This is a repeated ask tied to day-to-day ops, with Nicole Hills's clients raising it most often.</p>
+        
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-card-header">
+          <h3 class="feat-name">Billing Customization</h3>
+          <span class="feat-badge">10 accounts</span>
+        </div>
+        <div class="demand-bar-wrap">
+          
+        </div>
+        <div class="sa-pills"><span class="sa-pill">Nicole 6</span> <span class="sa-pill">Kegan 3</span> <span class="sa-pill">Halle 1</span></div>
+        <p class="synthesis-text">10 accounts want more control over invoice formatting and billing templates. Clients including Obera Client Check In, Midwest Specialists, Project Management Mockup (2nd invite), Obera Connect Guided need their invoices to match what their customers already receive. This aligns with the Billing Format theme in objections — template flexibility is a recurring onboarding gap.</p>
+        
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-card-header">
+          <h3 class="feat-name">Customer Portal</h3>
+          <span class="feat-badge">7 accounts</span>
+        </div>
+        <div class="demand-bar-wrap">
+          
+        </div>
+        <div class="sa-pills"><span class="sa-pill">Nicole 6</span> <span class="sa-pill">Kegan 1</span> <span class="sa-pill">Halle 1</span></div>
+        <p class="synthesis-text">7 accounts want a customer-facing portal for self-service or invoice access. Clients from Remote Technology, (Client Business Certified Lock Access, Obera Connect Guided, Tolleson Payments Walk Through Including are looking to reduce inbound support by giving their customers visibility. Nicole Hills's clients are loudest here — portal availability may be a differentiator in their client conversations.</p>
+        
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-card-header">
+          <h3 class="feat-name">Custom Fields / Flexibility</h3>
+          <span class="feat-badge">5 accounts</span>
+        </div>
+        <div class="demand-bar-wrap">
+          
+        </div>
+        <div class="sa-pills"><span class="sa-pill">Kegan 5</span> <span class="sa-pill">Nicole 1</span> <span class="sa-pill">Halle 1</span></div>
+        <p class="synthesis-text">5 accounts want the ability to add custom fields or columns to records. Clients including Midwest Specialists, Trein Management Hubspot setup, Soundworks Security, Symbrant Weekly need flexibility to track business-specific data not in the default schema. This is a common ask in platform migrations — clients want to replicate the customization they had before.</p>
+        
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-card-header">
+          <h3 class="feat-name">SLA Management</h3>
+          <span class="feat-badge">3 accounts</span>
+        </div>
+        <div class="demand-bar-wrap">
+          
+        </div>
+        <div class="sa-pills"><span class="sa-pill">Nicole 3</span></div>
+        <p class="synthesis-text">3 accounts are asking for SLA tracking and enforcement — response and resolution time management tied to ticket workflows. Accounts like Ravguard, ACS Fire Security Guided, Legion Quotes Billing need this to deliver on their own client commitments. Roadmap status is unclear from transcript data, but it's a clear blocker for MSPs with formal service agreements.</p>
+        
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-card-header">
+          <h3 class="feat-name">Bulk Operations</h3>
+          <span class="feat-badge">3 accounts</span>
+        </div>
+        <div class="demand-bar-wrap">
+          
+        </div>
+        <div class="sa-pills"><span class="sa-pill">Kegan 2</span> <span class="sa-pill">Halle 1</span></div>
+        <p class="synthesis-text">3 accounts asked for bulk update, batch processing, or mass operation capabilities. Accounts like Stratus Recurring, CL Sams Web, The Launch Pad are spending manual time on tasks that could be done in bulk. Kegan Ehlers's clients surface this most — a sign that scale operations are a real need for mid-market clients.</p>
+        
+      </div>
+    </div>
+  </div>
+
+    <!-- ── 5. REVII AI ADOPTION ── -->
+  <div class="section">
+    <div class="section-title">Revii AI Adoption</div>
+
+    <div class="note-box">
+      🔍 Fireflies' transcription of the product name "Revii" may vary — analysis searched for all likely phonetic variants:
+      <strong>revii, revi, revy, revie, revee, "rev e", "rev-e", "rev ii", "rev 2"</strong>.
+      Note: "revay" was intentionally excluded — it refers to a separate AI assistant, not the Revii product.
+    </div>
+
+    
+    <div class="revii-breakdown">
+      <div class="revii-type-card" style="border-top:3px solid var(--accent)">
+        <div class="revii-type-label">SA Proactive</div>
+        <div class="revii-type-count" style="color:var(--accent)">141</div>
+        <div class="revii-type-pct">44% of mentions</div>
+      </div>
+      <div class="revii-type-card" style="border-top:3px solid var(--warn)">
+        <div class="revii-type-label">SA Reactive</div>
+        <div class="revii-type-count" style="color:var(--warn)">37</div>
+        <div class="revii-type-pct">12% of mentions</div>
+      </div>
+      <div class="revii-type-card" style="border-top:3px solid var(--accent2)">
+        <div class="revii-type-label">Client Asks</div>
+        <div class="revii-type-count" style="color:var(--accent2)">143</div>
+        <div class="revii-type-pct">45% of mentions</div>
+      </div>
+    </div>
+    
+
+    <div class="two-col" style="margin-bottom:20px">
+      <div class="chart-wrap">
+        <div class="chart-title">Revii Mentions by Month</div>
+        <div id="chart-revii-trend"></div>
+      </div>
+      <div class="chart-wrap">
+        <div class="chart-title">Revii Mentions by SA</div>
+        <div id="chart-revii-sa"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Top Revii Mention Examples</div>
+      
+    <div class="quote-card client-quote">
+      <div class="quote-meta">
+        <span class="quote-badge client-asks">CLIENT ASKS</span>
+        <span class="muted">Kegan Ehlers · Midwest Specialists - PSA Meeting · Mar 6, 2026</span>
+      </div>
+      <div class="quote-speaker">Jeremy Adams</div>
+      <div class="quote-text">"I know that I've copied accounts using Revi, the little AI bot before."</div>
+      <div class="quote-context muted">⬆ Yeah, without losing all their information. | And</div>
+    </div>
+  
+    <div class="quote-card client-quote">
+      <div class="quote-meta">
+        <span class="quote-badge client-asks">CLIENT ASKS</span>
+        <span class="muted">Kegan Ehlers · Midwest Specialists - PSA Meeting · Mar 6, 2026</span>
+      </div>
+      <div class="quote-speaker">Scott Morin</div>
+      <div class="quote-text">"I sent to Keegan a while back, but I could trying that because I was running into issues where I would tell Revi, hey, I want to add a calendar entry for service ticket 100036."</div>
+      <div class="quote-context muted">⬆ But I didn't like really dig in to see, like, what all it brought over. | I don't know if you saw an…</div>
+    </div>
+  
+    <div class="quote-card client-quote">
+      <div class="quote-meta">
+        <span class="quote-badge client-asks">CLIENT ASKS</span>
+        <span class="muted">Kegan Ehlers · Midwest Specialists - PSA Meeting · Mar 6, 2026</span>
+      </div>
+      <div class="quote-speaker">Scott Morin</div>
+      <div class="quote-text">"And it was because Revi was losing track of and does lose track of the client ID versus the service ticket id."</div>
+      <div class="quote-context muted">⬆ I sent to Keegan a while back, but I could trying that because I was running into issues where I wou…</div>
+    </div>
+  
+    <div class="quote-card client-quote">
+      <div class="quote-meta">
+        <span class="quote-badge client-asks">CLIENT ASKS</span>
+        <span class="muted">Kegan Ehlers · Midwest Specialists - PSA Meeting · Mar 6, 2026</span>
+      </div>
+      <div class="quote-speaker">Scott Morin</div>
+      <div class="quote-text">"But having everything start at the same number, I figure I've managed to break Revy a few times just because of that."</div>
+      <div class="quote-context muted">⬆ And invoicing, you know, will it be at a different rate. | So at some point, I figure we'll see less…</div>
+    </div>
+  
+    <div class="quote-card client-quote">
+      <div class="quote-meta">
+        <span class="quote-badge client-asks">CLIENT ASKS</span>
+        <span class="muted">Kegan Ehlers · Midwest Specialists - PSA Meeting · Mar 6, 2026</span>
+      </div>
+      <div class="quote-speaker">Scott Morin</div>
+      <div class="quote-text">"And when I asked Revy to do things by the customer name, we seem to always make good progress."</div>
+      <div class="quote-context muted">⬆ So at some point, I figure we'll see less overlap. | But having everything start at the same number,…</div>
+    </div>
+  
+    <div class="quote-card client-quote">
+      <div class="quote-meta">
+        <span class="quote-badge client-asks">CLIENT ASKS</span>
+        <span class="muted">Kegan Ehlers · Midwest Specialists - PSA Meeting · Mar 6, 2026</span>
+      </div>
+      <div class="quote-speaker">Jeremy Adams</div>
+      <div class="quote-text">"I know we're, we're trying or we've got a, like a separate team that's, that's one of their sole focuses is trying to get Revy to do as much as possible."</div>
+      <div class="quote-context muted">⬆ Yeah. | Okay, that's, that's good to know.</div>
+    </div>
+  
+    <div class="quote-card sa-quote">
+      <div class="quote-meta">
+        <span class="quote-badge sa-proactive">SA PROACTIVE</span>
+        <span class="muted">Halle Taylor · Newport Network Solutions- Call · Mar 5, 2026</span>
+      </div>
+      <div class="quote-speaker">Halle Taylor</div>
+      <div class="quote-text">"You'll have access to Revy, your little AI assistant, and customer enhancements."</div>
+      <div class="quote-context muted">⬆ I didn't either. | Gps, offline capabilities, push notifications, your whole product catalog.</div>
+    </div>
+  
+    <div class="quote-card sa-quote">
+      <div class="quote-meta">
+        <span class="quote-badge sa-proactive">SA PROACTIVE</span>
+        <span class="muted">Halle Taylor · Sandhills home- Configuration · Mar 5, 2026</span>
+      </div>
+      <div class="quote-speaker">Halle Taylor</div>
+      <div class="quote-text">"So, like, we have an analytics portion of Rev that's available now that could possibly produce a P and L. I'm wondering if Revy could do it, Mark, with like, an advanced query."</div>
+      <div class="quote-context muted">⬆ Yeah, that's true. | But now we have our reporting that's available now that wasn't available when y…</div>
+    </div>
+  
+    <div class="quote-card sa-quote">
+      <div class="quote-meta">
+        <span class="quote-badge sa-proactive">SA PROACTIVE</span>
+        <span class="muted">Nicole Hills · First Class Technology / Rev.io Onboarding Kick Of… · Mar 5, 2026</span>
+      </div>
+      <div class="quote-speaker">nicolehills</div>
+      <div class="quote-text">"And then there's a little AI chat and then our awesome friend Revy."</div>
+      <div class="quote-context muted">⬆ I'm sorry. | If you need to get help, it's the same thing.</div>
+    </div>
+  
+    <div class="quote-card sa-quote">
+      <div class="quote-meta">
+        <span class="quote-badge sa-proactive">SA PROACTIVE</span>
+        <span class="muted">Nicole Hills · First Class Technology / Rev.io Onboarding Kick Of… · Mar 5, 2026</span>
+      </div>
+      <div class="quote-speaker">nicolehills</div>
+      <div class="quote-text">"Definitely encourage you to come in here and start asking Revie questions."</div>
+      <div class="quote-context muted">⬆ This is something that Daniel, who's on this call, has been working tirelessly on. | And this is an …</div>
+    </div>
+  
+      
+    </div>
+
+    
+    <div class="insight-box warn" style="margin-top:16px">
+      <strong>Observation: SAs are proactively introducing Revii — a positive sign.</strong>
+      92 of 208 mentions are SA-initiated without a preceding client gap. Reinforce this behavior — it positions Revii as a differentiator.
+    </div>
+    
+  </div>
+
+  <!-- ── 6. COMPETITOR INTELLIGENCE ── -->
+  <div class="section">
+    <div class="section-title">Competitor Intelligence from Onboarding Calls</div>
+
+    <div class="two-col">
+      <div>
+        <table class="comp-table">
+          <thead>
+            <tr>
+              <th>Competitor</th>
+              <th>Mentions</th>
+              <th>Most in</th>
+              <th>Example</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+                  <td><strong>ConnectWise</strong></td>
+                  <td><strong style="color:var(--warn)">243</strong></td>
+                  <td class="muted">Halle Taylor</td>
+                  <td class="muted" style="font-style:italic;font-size:11px">"I know because I had it configured wrong and connectwise and…"</td>
+                </tr><tr>
+                  <td><strong>NinjaRMM</strong></td>
+                  <td><strong style="color:var(--warn)">0</strong></td>
+                  <td class="muted">—</td>
+                  <td class="muted" style="font-style:italic;font-size:11px">"The biggest difference with other PSAs ninja this connect wi…"</td>
+                </tr><tr>
+                  <td><strong>HaloPSA</strong></td>
+                  <td><strong style="color:var(--warn)">0</strong></td>
+                  <td class="muted">—</td>
+                  <td class="muted" style="font-style:italic;font-size:11px">"I have a one on one relationship with, with Nicole and whoev…"</td>
+                </tr><tr>
+                  <td><strong>Kaseya</strong></td>
+                  <td><strong style="color:var(--warn)">8</strong></td>
+                  <td class="muted">Kegan Ehlers</td>
+                  <td class="muted" style="font-style:italic;font-size:11px">"…using Kaseya for their RMM today."</td>
+                </tr><tr>
+                  <td><strong>Autotask</strong></td>
+                  <td><strong style="color:var(--warn)">6</strong></td>
+                  <td class="muted">Nicole Hills</td>
+                  <td class="muted" style="font-style:italic;font-size:11px">"going to leverage the APIs of Light, ConnectWise, AutoTask, …"</td>
+                </tr><tr>
+                  <td><strong>Datto</strong></td>
+                  <td><strong style="color:var(--warn)">0</strong></td>
+                  <td class="muted">—</td>
+                  <td class="muted" style="font-style:italic;font-size:11px">—</td>
+                </tr><tr>
+                  <td><strong>ServiceNow</strong></td>
+                  <td><strong style="color:var(--warn)">1</strong></td>
+                  <td class="muted">Nicole Hills</td>
+                  <td class="muted" style="font-style:italic;font-size:11px">"Anything with, like, ServiceNow, right?"</td>
+                </tr>
+            
+          </tbody>
+        </table>
+      </div>
+      <div class="chart-wrap">
+        <div style="background:#1a1d27;border:1px solid #2e3147;border-left:3px solid #00d4aa;border-radius:6px;padding:12px 14px;margin-bottom:16px;font-size:12px;color:#7b7f9e"><strong style="color:#00d4aa">Note: Tigerpaw (336 mentions)</strong> — Tigerpaw is a legacy system that clients are <em>migrating from</em>, not a competitor. These mentions reflect migration friction, not competitive displacement. See Migration &amp; Data Loss in the Objections section.</div><div class="chart-title">PSA Competitor Mentions</div>
+        <div id="chart-competitors"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 8. GRADUATION LANGUAGE ── -->
+  <div class="section">
+    <div class="section-title">Graduation Language Patterns</div>
+
+    <div class="two-col">
+      <div>
+        <div class="card-title" style="margin-bottom:12px">Graduation Mentions by SA</div>
+        
+          <div class="feature-row">
+            <div class="feature-rank">Nicole</div>
+            <div class="feature-info">
+              
+                <div style="font-size:11px;font-style:italic;color:var(--muted);margin-bottom:4px">"We are on board, but we're hopefully going live third quarter of this year by July."</div>
+              
+                <div style="font-size:11px;font-style:italic;color:var(--muted);margin-bottom:4px">"You know, we want to make sure that we're, it's a smooth transition plus we're trained properly and,…"</div>
+              
+            </div>
+            <div class="feature-count" style="color:var(--accent2)">571</div>
+          </div>
+        
+          <div class="feature-row">
+            <div class="feature-rank">Halle</div>
+            <div class="feature-info">
+              
+                <div style="font-size:11px;font-style:italic;color:var(--muted);margin-bottom:4px">"It may be Outlook, but either way, since it says reconfigure, I would start here and then once you'v…"</div>
+              
+                <div style="font-size:11px;font-style:italic;color:var(--muted);margin-bottom:4px">"Or when you're say the ticket's been completed and you click send a billing."</div>
+              
+            </div>
+            <div class="feature-count" style="color:var(--accent2)">197</div>
+          </div>
+        
+          <div class="feature-row">
+            <div class="feature-rank">Kegan</div>
+            <div class="feature-info">
+              
+                <div style="font-size:11px;font-style:italic;color:var(--muted);margin-bottom:4px">"I can't mark a person's anniversary, their, their birth date, any special, you know, their kids grad…"</div>
+              
+                <div style="font-size:11px;font-style:italic;color:var(--muted);margin-bottom:4px">"They really, I mean you saw some of that at the launch pad, if you did the launch pad."</div>
+              
+            </div>
+            <div class="feature-count" style="color:var(--accent2)">170</div>
+          </div>
+        
+      </div>
+
+      <div class="chart-wrap">
+        <div class="chart-title">Graduation Mentions by SA</div>
+        <div id="chart-graduation"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── ONBOARDING METHODOLOGY ── -->
+  <div class="section">
+    <div class="section-title">Onboarding Methodology <span class="sub">prescriptive vs. open-ended — three-stage signal analysis</span></div>
+
+    <style>
+      .meth-sa-block { margin-bottom: 36px; }
+      .meth-sa-name { font-size: 16px; font-weight: 700; color: #e8eaf6; margin-bottom: 14px; border-bottom: 1px solid #2e3147; padding-bottom: 8px; }
+      .meth-stage-row { display: flex; gap: 14px; flex-wrap: wrap; }
+      .meth-card { flex: 1; min-width: 220px; background: #1a1d27; border-radius: 8px; padding: 16px 18px; border-left: 4px solid #444; }
+      .meth-card.green { border-left-color: #00d4aa; }
+      .meth-card.yellow { border-left-color: #ffa94d; }
+      .meth-card.red { border-left-color: #ff6b6b; }
+      .meth-stage-label { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; color: #7b7f9e; text-transform: uppercase; margin-bottom: 10px; }
+      .meth-badge-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+      .meth-badge { width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 17px; font-weight: 800; flex-shrink: 0; }
+      .meth-badge.green { background: rgba(0,212,170,0.15); color: #00d4aa; border: 2px solid #00d4aa; }
+      .meth-badge.yellow { background: rgba(255,169,77,0.15); color: #ffa94d; border: 2px solid #ffa94d; }
+      .meth-badge.red { background: rgba(255,107,107,0.15); color: #ff6b6b; border: 2px solid #ff6b6b; }
+      .meth-counts { font-size: 12px; color: #b0b3c8; line-height: 1.7; }
+      .meth-counts .pos { color: #00d4aa; }
+      .meth-counts .neg { color: #ff6b6b; }
+      .meth-quote { background: #12141f; border-left: 3px solid #2e3147; border-radius: 4px; padding: 10px 14px; margin-top: 10px; font-size: 12px; font-style: italic; color: #c0c3d8; line-height: 1.5; }
+      .meth-quote .meth-attr { font-style: normal; color: #7b7f9e; font-size: 11px; margin-top: 4px; }
+      .meth-quote.accent { border-left-color: #00d4aa; }
+      .meth-quote.warn { border-left-color: #ff6b6b; }
+      .meth-insuff { font-size: 12px; color: #7b7f9e; font-style: italic; margin-top: 8px; }
+      @media (max-width: 700px) { .meth-stage-row { flex-direction: column; } }
+    </style>
+
+    <div style="background:#1a1d27;border:1px solid #2e3147;border-left:4px solid #6c63ff;border-radius:8px;padding:18px 22px;margin-bottom:28px;color:#b0b3c8;font-size:14px;line-height:1.7;">
+      <strong style="color:#e8eaf6;">Three-stage methodology framework:</strong> Ideal onboarding is <em>expert-led, not blank-slate</em>. We score SA behavior at three distinct stages because the same phrase signals differently depending on project position. A discovery question in call 1 signals the sales handoff failed. That same question in call 6 of 8 signals project drift. Scores are derived from real language patterns across 530 transcripts and 255 accounts — not editorial judgment.
+    </div>
+
+    <div style="display:flex;gap:12px;margin-bottom:28px;flex-wrap:wrap;">
+      <div style="background:#1a1d27;border:1px solid #2e3147;border-radius:6px;padding:10px 16px;font-size:12px;color:#b0b3c8;">
+        <span style="color:#6c63ff;font-weight:700;">EARLY</span> &nbsp;Calls 1–2 · Did the SA arrive with context, or start from zero?
+      </div>
+      <div style="background:#1a1d27;border:1px solid #2e3147;border-radius:6px;padding:10px 16px;font-size:12px;color:#b0b3c8;">
+        <span style="color:#00d4aa;font-weight:700;">MID</span> &nbsp;Middle calls · Is the SA recommending, or asking the client to decide?
+      </div>
+      <div style="background:#1a1d27;border:1px solid #2e3147;border-radius:6px;padding:10px 16px;font-size:12px;color:#b0b3c8;">
+        <span style="color:#ffa94d;font-weight:700;">LATE</span> &nbsp;Final 2 calls · Is there a graduation date, or is the project drifting?
+      </div>
+    </div>
+
+      <div class="meth-sa-block">
+        <div class="meth-sa-name">Nicole Hills</div>
+        <div class="meth-stage-row">
+
+          <!-- EARLY -->
+          <div class="meth-card red">
+            <div class="meth-stage-label">🔵 Early — Sales Handoff Quality</div>
+            <div class="meth-badge-row">
+              <div class="meth-badge red">21</div>
+              <div class="meth-counts">
+                <span class="pos">↑ 94 handoff references</span><br>
+                <span class="neg">↓ 4 blank-slate questions</span><br>
+                <span style="color:#7b7f9e;">146 early calls</span>
+              </div>
+            </div>
+            <div class="meth-quote accent">"If you already have one that is already set up and running."<div class="meth-attr">— Nicole</div></div>
+            <div class="meth-quote warn">"What were you using before you search Microsoft?"<div class="meth-attr">— Nicole</div></div>
+          </div>
+
+          <!-- MID -->
+          <div class="meth-card yellow">
+            <div class="meth-stage-label">🟢 Mid — Prescriptive Leadership</div>
+            <div class="meth-badge-row">
+              <div class="meth-badge yellow">48</div>
+              <div class="meth-counts">
+                <span class="pos">↑ 141 SA-led decisions</span><br>
+                <span class="neg">↓ 17 client-dictated</span><br>
+                <span style="color:#7b7f9e;">47 mid calls</span>
+              </div>
+            </div>
+            <div class="meth-quote accent">"So we're going to add it rma, and then you can choose a color."<div class="meth-attr">— Nicole</div></div>
+            <div class="meth-quote warn">"So what would you want the starting off to be to line up with what she has?"<div class="meth-attr">— Nicole</div></div>
+          </div>
+
+          <!-- LATE -->
+          <div class="meth-card yellow">
+            <div class="meth-stage-label">🟠 Late — Graduation Drive</div>
+            <div class="meth-badge-row">
+              <div class="meth-badge yellow">61</div>
+              <div class="meth-counts">
+                <span class="pos">↑ 125 drive signals</span><br>
+                <span class="neg">↓ 16 drift signals</span><br>
+                <span style="color:#7b7f9e;">35 late calls</span>
+              </div>
+            </div>
+            
+            <div class="meth-quote accent">"But when you're ready to send me your product list, our data engineering team will help get that uploaded into the system."<div class="meth-attr">— Nicole</div></div>
+            <div class="meth-quote warn">"That one she's still working on."<div class="meth-attr">— Nicole</div></div>
+          </div>
+
+        </div>
+      </div>
+      <div class="meth-sa-block">
+        <div class="meth-sa-name">Kegan Ehlers</div>
+        <div class="meth-stage-row">
+
+          <!-- EARLY -->
+          <div class="meth-card red">
+            <div class="meth-stage-label">🔵 Early — Sales Handoff Quality</div>
+            <div class="meth-badge-row">
+              <div class="meth-badge red">23</div>
+              <div class="meth-counts">
+                <span class="pos">↑ 59 handoff references</span><br>
+                <span class="neg">↓ 1 blank-slate questions</span><br>
+                <span style="color:#7b7f9e;">90 early calls</span>
+              </div>
+            </div>
+            <div class="meth-quote accent">"I kind of just from the notes I checked off inventory and project management."<div class="meth-attr">— Kegan</div></div>
+            <div class="meth-quote warn">"Because how many people really like you know, having to take off the time to take your car in and deal with all that."<div class="meth-attr">— Kegan</div></div>
+          </div>
+
+          <!-- MID -->
+          <div class="meth-card yellow">
+            <div class="meth-stage-label">🟢 Mid — Prescriptive Leadership</div>
+            <div class="meth-badge-row">
+              <div class="meth-badge yellow">40</div>
+              <div class="meth-counts">
+                <span class="pos">↑ 91 SA-led decisions</span><br>
+                <span class="neg">↓ 2 client-dictated</span><br>
+                <span style="color:#7b7f9e;">41 mid calls</span>
+              </div>
+            </div>
+            <div class="meth-quote accent">"Otherwise you can go create the quote with that template as well too."<div class="meth-attr">— Kegan</div></div>
+            <div class="meth-quote warn">"What do you want to do next week?"<div class="meth-attr">— Kegan</div></div>
+          </div>
+
+          <!-- LATE -->
+          <div class="meth-card red">
+            <div class="meth-stage-label">🟠 Late — Graduation Drive</div>
+            <div class="meth-badge-row">
+              <div class="meth-badge red">20</div>
+              <div class="meth-counts">
+                <span class="pos">↑ 21 drive signals</span><br>
+                <span class="neg">↓ 5 drift signals</span><br>
+                <span style="color:#7b7f9e;">36 late calls</span>
+              </div>
+            </div>
+            
+            <div class="meth-quote accent">"Okay, so one more time."<div class="meth-attr">— Kegan</div></div>
+            <div class="meth-quote warn">"So you would still have to come through and put in the primary and associated tech after the fact once it's dispatched within there."<div class="meth-attr">— Kegan</div></div>
+          </div>
+
+        </div>
+      </div>
+      <div class="meth-sa-block">
+        <div class="meth-sa-name">Halle Taylor</div>
+        <div class="meth-stage-row">
+
+          <!-- EARLY -->
+          <div class="meth-card red">
+            <div class="meth-stage-label">🔵 Early — Sales Handoff Quality</div>
+            <div class="meth-badge-row">
+              <div class="meth-badge red">14</div>
+              <div class="meth-counts">
+                <span class="pos">↑ 29 handoff references</span><br>
+                <span class="neg">↓ 1 blank-slate questions</span><br>
+                <span style="color:#7b7f9e;">81 early calls</span>
+              </div>
+            </div>
+            <div class="meth-quote accent">"Okay, so we already know how to use how to set up users from last week, but the biggest thing on this admin tab right now is going to be the actual system settings."<div class="meth-attr">— Halle</div></div>
+            <div class="meth-quote warn">"So I was shocked at how many people, they just buzz through everything."<div class="meth-attr">— Halle</div></div>
+          </div>
+
+          <!-- MID -->
+          <div class="meth-card yellow">
+            <div class="meth-stage-label">🟢 Mid — Prescriptive Leadership</div>
+            <div class="meth-badge-row">
+              <div class="meth-badge yellow">42</div>
+              <div class="meth-counts">
+                <span class="pos">↑ 68 SA-led decisions</span><br>
+                <span class="neg">↓ 6 client-dictated</span><br>
+                <span style="color:#7b7f9e;">34 mid calls</span>
+              </div>
+            </div>
+            <div class="meth-quote accent">"You have the option to archive a project."<div class="meth-attr">— Halle</div></div>
+            <div class="meth-quote warn">"What do you want to call that?"<div class="meth-attr">— Halle</div></div>
+          </div>
+
+          <!-- LATE -->
+          <div class="meth-card red">
+            <div class="meth-stage-label">🟠 Late — Graduation Drive</div>
+            <div class="meth-badge-row">
+              <div class="meth-badge red">32</div>
+              <div class="meth-counts">
+                <span class="pos">↑ 22 drive signals</span><br>
+                <span class="neg">↓ 6 drift signals</span><br>
+                <span style="color:#7b7f9e;">20 late calls</span>
+              </div>
+            </div>
+            
+            <div class="meth-quote accent">"like the one thing too, like your notes don't show here."<div class="meth-attr">— Halle</div></div>
+            <div class="meth-quote warn">"Like, if you still have to schedule it out, then not so much."<div class="meth-attr">— Halle</div></div>
+          </div>
+
+        </div>
+      </div>
+
+    <!-- At-Risk Accounts -->
+    <div style="margin-top:8px;">
+      <div style="font-size:15px;font-weight:700;color:#e8eaf6;margin-bottom:10px;">⚠️ At-Risk Accounts: Late-Stage Drift</div>
+      <div style="font-size:13px;color:#b0b3c8;margin-bottom:16px;">Accounts where late-stage calls show more drift than graduation drive. Ratio below 0.4 = more open-ended language than close-driving language in final calls.</div>
+      <div style="overflow-x:auto;">
+        <table style="width:100%;border-collapse:collapse;font-size:13px;">
+          <thead>
+            <tr style="background:#12141f;color:#7b7f9e;text-align:left;">
+              <th style="padding:10px 14px;border-bottom:1px solid #2e3147;">Account</th>
+              <th style="padding:10px 14px;border-bottom:1px solid #2e3147;">SA</th>
+              <th style="padding:10px 14px;border-bottom:1px solid #2e3147;">Calls</th>
+              <th style="padding:10px 14px;border-bottom:1px solid #2e3147;">Last Call</th>
+              <th style="padding:10px 14px;border-bottom:1px solid #2e3147;">Drive Ratio</th>
+              <th style="padding:10px 14px;border-bottom:1px solid #2e3147;"></th>
+            </tr>
+          </thead>
+          <tbody>
+              <tr style="background:#1a1d27;border-bottom:1px solid #2e3147;">
+                <td style="padding:10px 14px;color:#e8eaf6;font-weight:600;">Midwest Specialists</td>
+                <td style="padding:10px 14px;color:#b0b3c8;">Kegan Ehlers</td>
+                <td style="padding:10px 14px;color:#b0b3c8;">8</td>
+                <td style="padding:10px 14px;color:#b0b3c8;">Mar 6, 2026</td>
+                <td style="padding:10px 14px;color:#ff6b6b;font-weight:700;">0.00</td>
+                <td style="padding:10px 14px;">🔴</td>
+              </tr>
+              <tr style="background:#151822;border-bottom:1px solid #2e3147;">
+                <td style="padding:10px 14px;color:#e8eaf6;font-weight:600;">Truline</td>
+                <td style="padding:10px 14px;color:#b0b3c8;">Halle Taylor</td>
+                <td style="padding:10px 14px;color:#b0b3c8;">3</td>
+                <td style="padding:10px 14px;color:#b0b3c8;">Mar 6, 2026</td>
+                <td style="padding:10px 14px;color:#ff6b6b;font-weight:700;">0.00</td>
+                <td style="padding:10px 14px;">🔴</td>
+              </tr>
+              <tr style="background:#1a1d27;border-bottom:1px solid #2e3147;">
+                <td style="padding:10px 14px;color:#e8eaf6;font-weight:600;">Joint Role Play</td>
+                <td style="padding:10px 14px;color:#b0b3c8;">Halle Taylor</td>
+                <td style="padding:10px 14px;color:#b0b3c8;">4</td>
+                <td style="padding:10px 14px;color:#b0b3c8;">Mar 5, 2026</td>
+                <td style="padding:10px 14px;color:#ff6b6b;font-weight:700;">0.00</td>
+                <td style="padding:10px 14px;">🔴</td>
+              </tr>
+              <tr style="background:#151822;border-bottom:1px solid #2e3147;">
+                <td style="padding:10px 14px;color:#e8eaf6;font-weight:600;">Bank Tec South</td>
+                <td style="padding:10px 14px;color:#b0b3c8;">Kegan Ehlers</td>
+                <td style="padding:10px 14px;color:#b0b3c8;">3</td>
+                <td style="padding:10px 14px;color:#b0b3c8;">Mar 4, 2026</td>
+                <td style="padding:10px 14px;color:#ff6b6b;font-weight:700;">0.00</td>
+                <td style="padding:10px 14px;">🔴</td>
+              </tr>
+              <tr style="background:#1a1d27;border-bottom:1px solid #2e3147;">
+                <td style="padding:10px 14px;color:#e8eaf6;font-weight:600;">Command Corp Working</td>
+                <td style="padding:10px 14px;color:#b0b3c8;">Halle Taylor</td>
+                <td style="padding:10px 14px;color:#b0b3c8;">7</td>
+                <td style="padding:10px 14px;color:#b0b3c8;">Mar 4, 2026</td>
+                <td style="padding:10px 14px;color:#ff6b6b;font-weight:700;">0.00</td>
+                <td style="padding:10px 14px;">🔴</td>
+              </tr>
+              <tr style="background:#151822;border-bottom:1px solid #2e3147;">
+                <td style="padding:10px 14px;color:#e8eaf6;font-weight:600;">Semetra Working</td>
+                <td style="padding:10px 14px;color:#b0b3c8;">Halle Taylor</td>
+                <td style="padding:10px 14px;color:#b0b3c8;">6</td>
+                <td style="padding:10px 14px;color:#b0b3c8;">Mar 4, 2026</td>
+                <td style="padding:10px 14px;color:#ff6b6b;font-weight:700;">0.00</td>
+                <td style="padding:10px 14px;">🔴</td>
+              </tr>
+              <tr style="background:#1a1d27;border-bottom:1px solid #2e3147;">
+                <td style="padding:10px 14px;color:#e8eaf6;font-weight:600;">MiSwitch</td>
+                <td style="padding:10px 14px;color:#b0b3c8;">Nicole Hills</td>
+                <td style="padding:10px 14px;color:#b0b3c8;">3</td>
+                <td style="padding:10px 14px;color:#b0b3c8;">Feb 20, 2026</td>
+                <td style="padding:10px 14px;color:#ff6b6b;font-weight:700;">0.00</td>
+                <td style="padding:10px 14px;">🔴</td>
+              </tr>
+              <tr style="background:#151822;border-bottom:1px solid #2e3147;">
+                <td style="padding:10px 14px;color:#e8eaf6;font-weight:600;">Savvy Client</td>
+                <td style="padding:10px 14px;color:#b0b3c8;">Nicole Hills</td>
+                <td style="padding:10px 14px;color:#b0b3c8;">3</td>
+                <td style="padding:10px 14px;color:#b0b3c8;">Feb 19, 2026</td>
+                <td style="padding:10px 14px;color:#ff6b6b;font-weight:700;">0.00</td>
+                <td style="padding:10px 14px;">🔴</td>
+              </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Key Takeaways -->
+    <div style="background:#1a1d27;border:1px solid #2e3147;border-radius:8px;padding:20px 24px;margin-top:28px;">
+      <div style="font-size:15px;font-weight:700;color:#e8eaf6;margin-bottom:14px;">💡 Key Takeaways</div>
+      <ul style="color:#b0b3c8;font-size:14px;line-height:1.9;padding-left:20px;margin:0;">
+        <li style="margin-bottom:8px;"><strong style="color:#ffa94d;">Early-stage handoff scores are uniformly low</strong> across all three SAs (Nicole: 21/100, Kegan: 23/100, Halle: 14/100). Sales-to-SA context is rarely surfaced in opening calls — reps are frequently re-discovering information sales already captured. This is a <em>process gap</em>, not an individual rep issue.</li>
+        <li style="margin-bottom:8px;"><strong style="color:#ffa94d;">Mid-stage prescriptive ratios are moderate but room exists to improve</strong> — Nicole leads at 48/100 vs. Kegan (40/100) and Halle (42/100). All three SAs mix prescriptive leadership with open-ended config questions. Roughly half of mid-stage configuration decisions are client-dictated rather than SA-recommended — a signal that SAs could arrive with stronger opinions and pre-built recommendations.</li>
+        <li style="margin-bottom:8px;"><strong style="color:#ff6b6b;">Late-stage graduation drive diverges sharply by SA</strong>: Nicole scores 61/100 — the only yellow-range score — while Kegan (20/100) and Halle (32/100) fall in red. Kegan's late-stage score is the weakest across all three SAs. Final calls are not reliably anchored to graduation timelines, leaving projects open-ended.</li>
+        <li><strong style="color:#00d4aa;">Eight active accounts show zero graduation drive signal in late-stage calls</strong> — they're at highest risk for indefinite project extension. A structured graduation checklist with explicit date-anchoring language in final 1–2 calls would directly improve these ratios and reduce average time-to-live.</li>
+      </ul>
+    </div>
+
+  </div>
+  <!-- ── END ONBOARDING METHODOLOGY ── -->
+
+  <!-- ── 9. COACHING OPPORTUNITIES ── -->
+  <div class="section">
+    <div class="section-title">Coaching Opportunities <span class="sub">framed as growth signals, not criticism</span></div>
+
+    <div class="coaching-grid">
+      
+    <div class="coaching-card">
+      <div class="coaching-name">Nicole Hills</div>
+      <div class="coaching-stat">
+        <span>Calls analyzed</span><strong>228</strong>
+      </div>
+      <div class="coaching-stat">
+        <span>Question rate</span><strong style="color:#ffa94d">8.6%</strong>
+      </div>
+      <div class="coaching-stat">
+        <span>Avg words/turn</span><strong>9.3</strong>
+      </div>
+      <div class="coaching-stat">
+        <span>Discovery openers</span><strong>510</strong>
+      </div>
+      <div class="coaching-stat">
+        <span>Directive openers</span><strong>2988</strong>
+      </div>
+      <div class="coaching-stat">
+        <span>SA sentences</span><strong>125487</strong>
+      </div>
+      <div class="coaching-bar-label">Talk balance (discovery vs. directive)</div>
+      <div class="coaching-bar-wrap">
+        
+        
+      </div>
+      <div class="coaching-bar-legend">
+        <span style="color:#6c63ff">■ Discovery</span>
+        <span style="color:#ffa94d">■ Directive</span>
+      </div>
+    </div>
+  
+    <div class="coaching-card">
+      <div class="coaching-name">Kegan Ehlers</div>
+      <div class="coaching-stat">
+        <span>Calls analyzed</span><strong>167</strong>
+      </div>
+      <div class="coaching-stat">
+        <span>Question rate</span><strong style="color:#ff6b6b">4.3%</strong>
+      </div>
+      <div class="coaching-stat">
+        <span>Avg words/turn</span><strong>8.9</strong>
+      </div>
+      <div class="coaching-stat">
+        <span>Discovery openers</span><strong>109</strong>
+      </div>
+      <div class="coaching-stat">
+        <span>Directive openers</span><strong>1208</strong>
+      </div>
+      <div class="coaching-stat">
+        <span>SA sentences</span><strong>49731</strong>
+      </div>
+      <div class="coaching-bar-label">Talk balance (discovery vs. directive)</div>
+      <div class="coaching-bar-wrap">
+        
+        
+      </div>
+      <div class="coaching-bar-legend">
+        <span style="color:#6c63ff">■ Discovery</span>
+        <span style="color:#ffa94d">■ Directive</span>
+      </div>
+    </div>
+  
+    <div class="coaching-card">
+      <div class="coaching-name">Halle Taylor</div>
+      <div class="coaching-stat">
+        <span>Calls analyzed</span><strong>135</strong>
+      </div>
+      <div class="coaching-stat">
+        <span>Question rate</span><strong style="color:#ff6b6b">6.2%</strong>
+      </div>
+      <div class="coaching-stat">
+        <span>Avg words/turn</span><strong>8.3</strong>
+      </div>
+      <div class="coaching-stat">
+        <span>Discovery openers</span><strong>173</strong>
+      </div>
+      <div class="coaching-stat">
+        <span>Directive openers</span><strong>1522</strong>
+      </div>
+      <div class="coaching-stat">
+        <span>SA sentences</span><strong>48881</strong>
+      </div>
+      <div class="coaching-bar-label">Talk balance (discovery vs. directive)</div>
+      <div class="coaching-bar-wrap">
+        
+        
+      </div>
+      <div class="coaching-bar-legend">
+        <span style="color:#6c63ff">■ Discovery</span>
+        <span style="color:#ffa94d">■ Directive</span>
+      </div>
+    </div>
+  
+    
+  
+    </div>
+
+    <div class="insights-grid" style="margin-top:16px">
+      <div class="insight-box">
+        <strong>Question Rate</strong>
+        Higher question rates correlate with better discovery and client engagement. Target: &gt;15% of SA sentences contain a question.
+      </div>
+      <div class="insight-box">
+        <strong>Avg Words/Turn</strong>
+        Longer average turns = SA is dominating the conversation. Ideal onboarding is conversational — aim for shorter SA turns with more client talk time.
+      </div>
+      <div class="insight-box">
+        <strong>Discovery vs. Directive</strong>
+        Discovery openers ("Can you tell me…", "How does your team…") build rapport. Directive openers ("You should…", "Let's do…") are necessary but should be balanced.
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 10. RECOMMENDATIONS ── -->
+  <div class="section">
+    <div class="section-title">Recommendations</div>
+    
+    <div class="rec-card">
+      <div class="rec-header">
+        <span class="rec-icon">🤖</span>
+        <span class="rec-title">Make Revii a standard agenda item</span>
+        <span class="rec-urgency" style="background:#ff6b6b22;color:#ff6b6b;border:1px solid #ff6b6b44">high</span>
+      </div>
+      <div class="rec-body">With only 208 Revii mentions across 530 calls, adoption is inconsistent. SAs should demonstrate Revii in every onboarding call — not just when a client raises a gap. Create a "Revii moment" template for each call phase.</div>
+    </div>
+  
+    <div class="rec-card">
+      <div class="rec-header">
+        <span class="rec-icon">📋</span>
+        <span class="rec-title">Standardize feature gap capture</span>
+        <span class="rec-urgency" style="background:#ff6b6b22;color:#ff6b6b;border:1px solid #ff6b6b44">high</span>
+      </div>
+      <div class="rec-body">Client requests for other are recurring across calls. Build a structured gap-capture form SAs complete after each session and route to Product weekly — currently these insights are lost in call recordings.</div>
+    </div>
+  
+    <div class="rec-card">
+      <div class="rec-header">
+        <span class="rec-icon">🏁</span>
+        <span class="rec-title">Define a graduation checklist</span>
+        <span class="rec-urgency" style="background:#ffa94d22;color:#ffa94d;border:1px solid #ffa94d44">medium</span>
+      </div>
+      <div class="rec-body">Graduation language varies significantly across SAs. Standardize the graduation criteria with a clear checklist clients can see — this reduces ambiguity about when "onboarding is done" and cuts stall patterns.</div>
+    </div>
+  
+    <div class="rec-card">
+      <div class="rec-header">
+        <span class="rec-icon">⏱️</span>
+        <span class="rec-title">Address timeline friction proactively</span>
+        <span class="rec-urgency" style="background:#ffa94d22;color:#ffa94d;border:1px solid #ffa94d44">medium</span>
+      </div>
+      <div class="rec-body">"Taking too long" and similar timeline objections appear 373. Set explicit milestones in the kickoff call and send weekly progress emails so clients always know where they are.</div>
+    </div>
+  
+    <div class="rec-card">
+      <div class="rec-header">
+        <span class="rec-icon">🔍</span>
+        <span class="rec-title">Use competitor mentions as teaching moments</span>
+        <span class="rec-urgency" style="background:#ffa94d22;color:#ffa94d;border:1px solid #ffa94d44">medium</span>
+      </div>
+      <div class="rec-body">ConnectWise and Autotask are referenced frequently in onboarding calls. Train SAs to acknowledge prior-system workflows and bridge to PSA equivalents — don't just say "we do it differently."</div>
+    </div>
+  
+    <div class="rec-card">
+      <div class="rec-header">
+        <span class="rec-icon">💬</span>
+        <span class="rec-title">Improve SA question rate</span>
+        <span class="rec-urgency" style="background:#00d4aa22;color:#00d4aa;border:1px solid #00d4aa44">low</span>
+      </div>
+      <div class="rec-body">Discovery questioning (open-ended "Can you tell me…" patterns) builds rapport and surfaces hidden requirements. SAs with lower question rates should be coached to ask more before prescribing solutions.</div>
+    </div>
+  
+    <div class="rec-card">
+      <div class="rec-header">
+        <span class="rec-icon">🚨</span>
+        <span class="rec-title">Flag stall signals in real time</span>
+        <span class="rec-urgency" style="background:#ff6b6b22;color:#ff6b6b;border:1px solid #ff6b6b44">high</span>
+      </div>
+      <div class="rec-body">Accounts showing stall language ("waiting", "not ready", "check with my team") in call transcripts correlate with at-risk onboardings. Trigger an automated alert to the SA manager when 3+ stall signals appear in a 30-day window.</div>
+    </div>
+  
+    <div class="rec-card">
+      <div class="rec-header">
+        <span class="rec-icon">📈</span>
+        <span class="rec-title">Track Revii adoption as a success metric</span>
+        <span class="rec-urgency" style="background:#ffa94d22;color:#ffa94d;border:1px solid #ffa94d44">medium</span>
+      </div>
+      <div class="rec-body">Add "Revii demonstrated: Y/N" and "client reaction" to post-call notes in the CRM. This creates an adoption funnel you can optimize — right now there's no visibility into whether Revii is moving the needle for customers.</div>
+    </div>
+  
+  </div>
+
+</div><!-- /container -->
+
+<footer>
+  PSA Transcript Intelligence Report · Rev.io · Generated by Revay AI · March 6, 2026
+</footer>
+
+<script>
+// ── ApexCharts ─────────────────────────────────────────────────────────────
+const chartDefaults = {
+  chart: { background: 'transparent', toolbar: { show: false }, fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif' },
+  theme: { mode: 'dark' },
+  grid: { borderColor: '#2e3147' },
+  tooltip: { theme: 'dark' },
+};
+
+// Revii Trend
+const reviiMonths = ["Nov 2025","Dec 2025","Jan 2026","Feb 2026","Mar 2026"];
+const reviiData = [31,60,78,126,26];
+if (reviiMonths.length > 0) {
+  new ApexCharts(document.getElementById('chart-revii-trend'), {
+    ...chartDefaults,
+    chart: { ...chartDefaults.chart, type: 'area', height: 200 },
+    series: [{ name: 'Revii Mentions', data: reviiData }],
+    xaxis: { categories: reviiMonths, labels: { style: { colors: '#7b7f9e', fontSize: '11px' } } },
+    yaxis: { labels: { style: { colors: '#7b7f9e' } } },
+    colors: ['#6c63ff'],
+    fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.5, opacityTo: 0.05 } },
+    stroke: { curve: 'smooth', width: 2 },
+    dataLabels: { enabled: false },
+  }).render();
+} else {
+  document.getElementById('chart-revii-trend').innerHTML = '<div style="color:#7b7f9e;padding:20px;text-align:center;font-size:12px">No monthly data available</div>';
+}
+
+// Revii by SA
+const saNames = ["Nicole","Kegan","Halle"];
+const saRevii = [61,91,56];
+new ApexCharts(document.getElementById('chart-revii-sa'), {
+  ...chartDefaults,
+  chart: { ...chartDefaults.chart, type: 'bar', height: 200 },
+  series: [{ name: 'Mentions', data: saRevii }],
+  xaxis: { categories: saNames, labels: { style: { colors: '#7b7f9e', fontSize: '11px' } } },
+  yaxis: { labels: { style: { colors: '#7b7f9e' } } },
+  colors: ['#00d4aa'],
+  plotOptions: { bar: { borderRadius: 4 } },
+  dataLabels: { enabled: true, style: { colors: ['#e8eaf6'], fontSize: '11px' } },
+}).render();
+
+// Competitors
+const compLabels = ["ConnectWise","Kaseya","Autotask","ServiceNow"];
+const compCounts = [243,8,6,1];
+if (compLabels.length > 0) {
+  new ApexCharts(document.getElementById('chart-competitors'), {
+    ...chartDefaults,
+    chart: { ...chartDefaults.chart, type: 'bar', height: 260 },
+    series: [{ name: 'Mentions', data: compCounts }],
+    xaxis: { categories: compLabels, labels: { style: { colors: '#7b7f9e', fontSize: '11px' } } },
+    yaxis: { labels: { style: { colors: '#7b7f9e' } } },
+    colors: ['#ffa94d'],
+    plotOptions: { bar: { horizontal: true, borderRadius: 4 } },
+    dataLabels: { enabled: true, style: { colors: ['#e8eaf6'], fontSize: '11px' } },
+  }).render();
+} else {
+  document.getElementById('chart-competitors').innerHTML = '<div style="color:#7b7f9e;padding:20px;text-align:center;font-size:12px">No competitor mentions detected</div>';
+}
+
+// Feature Gaps
+const fgLabels = ["other","billing","integrations","ticketing","contracts","scheduling","reporting","automation","mobile","portal"];
+const fgCounts = [1912,105,79,54,26,25,20,17,10,5];
+if (fgLabels.length > 0) {
+}
+
+// Graduation by SA
+const gradLabels = ["Kegan Ehlers","Halle Taylor","Nicole Hills"];
+const gradCounts = [170,197,571];
+if (gradLabels.length > 0) {
+  new ApexCharts(document.getElementById('chart-graduation'), {
+    ...chartDefaults,
+    chart: { ...chartDefaults.chart, type: 'bar', height: 200 },
+    series: [{ name: 'Mentions', data: gradCounts }],
+    xaxis: { categories: gradLabels.map(n => n.split(' ')[0]), labels: { style: { colors: '#7b7f9e', fontSize: '11px' } } },
+    yaxis: { labels: { style: { colors: '#7b7f9e' } } },
+    colors: ['#00d4aa'],
+    plotOptions: { bar: { borderRadius: 4 } },
+    dataLabels: { enabled: true, style: { colors: ['#e8eaf6'] } },
+  }).render();
+} else {
+  document.getElementById('chart-graduation').innerHTML = '<div style="color:#7b7f9e;padding:20px;text-align:center;font-size:12px">No graduation data</div>';
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rev.io PSA — Future State Onboarding Process</title>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --surface2: #21253a;
+      --surface3: #262a3e;
+      --accent: #6c63ff;
+      --accent2: #00d4aa;
+      --warn: #ffa94d;
+      --danger: #ff6b6b;
+      --muted: #7b7f9e;
+      --text: #e8eaf6;
+      --text-dim: #b0b4cc;
+      --border: rgba(255,255,255,0.07);
+      --radius: 14px;
+      --radius-sm: 8px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      font-size: 15px;
+      line-height: 1.65;
+    }
+
+    /* HERO */
+    .hero {
+      background: linear-gradient(135deg, #0d1f1a 0%, #0f2233 50%, #0f1117 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 60px 24px 48px;
+      text-align: center;
+    }
+    .hero-eyebrow {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--accent2);
+      margin-bottom: 16px;
+    }
+    .hero h1 {
+      font-size: clamp(24px, 5vw, 40px);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.5px;
+      margin-bottom: 14px;
+    }
+    .hero h1 span { color: var(--accent2); }
+    .hero-sub {
+      font-size: clamp(14px, 2.5vw, 17px);
+      color: var(--text-dim);
+      max-width: 720px;
+      margin: 0 auto 28px;
+    }
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+    }
+    .hero-tag {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 5px 14px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .hero-tag.green {
+      background: rgba(0,212,170,0.08);
+      border-color: rgba(0,212,170,0.2);
+      color: var(--accent2);
+    }
+
+    /* LAYOUT */
+    .content {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 0 20px 80px;
+    }
+
+    /* SECTION */
+    .section { margin-top: 56px; }
+    .section-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+    .section-title {
+      font-size: clamp(18px, 3.5vw, 26px);
+      font-weight: 700;
+      margin-bottom: 4px;
+      line-height: 1.25;
+    }
+    .section-divider {
+      width: 40px;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      border-radius: 2px;
+      margin: 14px 0 24px;
+    }
+
+    /* PHASE BANNER */
+    .phase-banner {
+      border-radius: var(--radius);
+      padding: 18px 24px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .phase-banner.short-term {
+      background: rgba(108,99,255,0.08);
+      border: 1px solid rgba(108,99,255,0.25);
+    }
+    .phase-banner.near-term {
+      background: rgba(0,212,170,0.07);
+      border: 1px solid rgba(0,212,170,0.2);
+    }
+    .phase-icon { font-size: 28px; flex-shrink: 0; }
+    .phase-text-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 2px;
+    }
+    .phase-banner.short-term .phase-text-label { color: var(--accent); }
+    .phase-banner.near-term .phase-text-label  { color: var(--accent2); }
+    .phase-text-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .phase-text-sub {
+      font-size: 13px;
+      color: var(--text-dim);
+      margin-top: 2px;
+    }
+
+    /* STAT CARDS */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px 18px;
+      text-align: center;
+    }
+    .stat-card.green { border-color: rgba(0,212,170,0.2); }
+    .stat-num {
+      font-size: 38px;
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 4px;
+      color: var(--accent);
+    }
+    .stat-num.green  { color: var(--accent2); }
+    .stat-num.warn   { color: var(--warn); }
+    .stat-num.danger { color: var(--danger); }
+    .stat-label { font-size: 12px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+    .stat-sub   { font-size: 11px; color: rgba(123,127,158,0.6); margin-top: 3px; }
+
+    /* PIPELINE */
+    .pipeline {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0;
+      margin-bottom: 12px;
+      align-items: stretch;
+    }
+    .pipe-step {
+      flex: 1;
+      min-width: 100px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 16px 12px;
+      text-align: center;
+      position: relative;
+    }
+    .pipe-step:first-child { border-radius: var(--radius) 0 0 var(--radius); }
+    .pipe-step:last-child  { border-radius: 0 var(--radius) var(--radius) 0; }
+    .pipe-step::after {
+      content: '›';
+      position: absolute;
+      right: -10px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 20px;
+      color: var(--muted);
+      z-index: 2;
+    }
+    .pipe-step:last-child::after { display: none; }
+    .pipe-step.green { border-top: 3px solid var(--accent2); }
+    .pipe-step.accent { border-top: 3px solid var(--accent); }
+    .pipe-step.warn  { border-top: 3px solid var(--warn); }
+    .pipe-icon { font-size: 20px; margin-bottom: 5px; }
+    .pipe-label { font-size: 11px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+    .pipe-sub   { font-size: 10px; color: var(--muted); }
+    .pipe-time  { font-size: 10px; color: var(--accent2); font-weight: 700; margin-top: 4px; }
+
+    /* CARDS */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px 26px;
+      margin-bottom: 14px;
+    }
+    .card.green-border  { border-left: 3px solid var(--accent2); }
+    .card.accent-border { border-left: 3px solid var(--accent); }
+    .card.warn-border   { border-left: 3px solid var(--warn); }
+    .card-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    /* ITEM LIST */
+    .item-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .item-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-size: 14px;
+      color: var(--text-dim);
+    }
+    .dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--accent);
+      flex-shrink: 0;
+      margin-top: 7px;
+    }
+    .dot.green  { background: var(--accent2); }
+    .dot.warn   { background: var(--warn); }
+    .dot.danger { background: var(--danger); }
+
+    /* PARALLEL BLOCK */
+    .parallel-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin: 16px 0;
+    }
+    .parallel-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 18px 20px;
+    }
+    .parallel-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--accent2);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .parallel-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 10px;
+    }
+
+    /* DURATION TIERS */
+    .tier-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+      margin-top: 8px;
+    }
+    .tier-card {
+      border-radius: var(--radius);
+      padding: 24px 22px;
+      border: 1px solid var(--border);
+    }
+    .tier-card.simple  { background: rgba(0,212,170,0.06);  border-color: rgba(0,212,170,0.2); }
+    .tier-card.medium  { background: rgba(108,99,255,0.06); border-color: rgba(108,99,255,0.2); }
+    .tier-card.complex { background: rgba(255,169,77,0.06); border-color: rgba(255,169,77,0.2); }
+    .tier-icon { font-size: 28px; margin-bottom: 10px; }
+    .tier-name {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .tier-card.simple .tier-name  { color: var(--accent2); }
+    .tier-card.medium .tier-name  { color: var(--accent); }
+    .tier-card.complex .tier-name { color: var(--warn); }
+    .tier-duration {
+      font-size: 36px;
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 14px;
+    }
+    .tier-card.simple .tier-duration  { color: var(--accent2); }
+    .tier-card.medium .tier-duration  { color: var(--accent); }
+    .tier-card.complex .tier-duration { color: var(--warn); }
+    .tier-criteria {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .tier-criteria li {
+      font-size: 13px;
+      color: var(--text-dim);
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .tier-criteria li::before {
+      content: '✓';
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .tier-card.simple  .tier-criteria li::before { color: var(--accent2); }
+    .tier-card.medium  .tier-criteria li::before { color: var(--accent); }
+    .tier-card.complex .tier-criteria li::before { color: var(--warn); }
+    .tier-not {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+    .tier-not-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .tier-not li::before { content: '✗'; }
+    .tier-card.simple  .tier-not li::before { color: var(--danger); }
+    .tier-card.medium  .tier-not li::before { color: var(--danger); }
+    .tier-card.complex .tier-not li::before { color: var(--danger); }
+
+    /* COMPARE TABLE */
+    .compare-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--surface);
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .compare-table th {
+      background: var(--surface2);
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 12px 16px;
+      text-align: left;
+    }
+    .compare-table th.now   { color: var(--danger); }
+    .compare-table th.soon  { color: var(--accent); }
+    .compare-table th.later { color: var(--accent2); }
+    .compare-table td {
+      padding: 13px 16px;
+      border-top: 1px solid var(--border);
+      font-size: 13px;
+      color: var(--text-dim);
+      vertical-align: top;
+    }
+    .compare-table td:first-child { color: var(--text); font-weight: 600; font-size: 13px; }
+    .compare-table tr:hover td { background: rgba(108,99,255,0.03); }
+    .compare-table .now   { color: var(--danger); }
+    .compare-table .soon  { color: var(--accent); }
+    .compare-table .later { color: var(--accent2); }
+
+    /* BADGE */
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+    .badge-accent  { background: rgba(108,99,255,0.15); color: var(--accent); }
+    .badge-green   { background: rgba(0,212,170,0.12);  color: var(--accent2); }
+    .badge-warn    { background: rgba(255,169,77,0.15); color: var(--warn); }
+    .badge-danger  { background: rgba(255,107,107,0.15); color: var(--danger); }
+
+    /* INSIGHT */
+    .insight-box {
+      background: linear-gradient(135deg, rgba(0,212,170,0.07), rgba(108,99,255,0.05));
+      border: 1px solid rgba(0,212,170,0.2);
+      border-radius: var(--radius);
+      padding: 24px 28px;
+      margin-top: 20px;
+    }
+    .insight-box-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--accent2);
+      margin-bottom: 10px;
+    }
+    .insight-box p {
+      font-size: 14px;
+      color: var(--text-dim);
+      line-height: 1.7;
+    }
+    .insight-box p + p { margin-top: 8px; }
+    .insight-box strong { color: var(--text); }
+
+    /* CALL TIMELINE */
+    .call-timeline {
+      position: relative;
+      padding-left: 32px;
+    }
+    .call-timeline::before {
+      content: '';
+      position: absolute;
+      left: 10px;
+      top: 8px;
+      bottom: 8px;
+      width: 2px;
+      background: linear-gradient(to bottom, var(--accent), var(--accent2));
+    }
+    .call-item {
+      position: relative;
+      margin-bottom: 24px;
+    }
+    .call-item:last-child { margin-bottom: 0; }
+    .call-item::before {
+      content: '';
+      position: absolute;
+      left: -26px;
+      top: 8px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--accent);
+      border: 2px solid var(--bg);
+    }
+    .call-item.green::before  { background: var(--accent2); }
+    .call-item.accent::before { background: var(--accent); }
+    .call-item.warn::before   { background: var(--warn); }
+    .call-num {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+    .call-item.green .call-num  { color: var(--accent2); }
+    .call-item.warn .call-num   { color: var(--warn); }
+    .call-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+    .call-desc {
+      font-size: 13px;
+      color: var(--text-dim);
+      line-height: 1.6;
+    }
+    .call-deliverables {
+      margin-top: 10px;
+      background: var(--surface2);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+    }
+    .call-deliverables-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--accent2);
+      margin-bottom: 8px;
+    }
+    .call-deliverables ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .call-deliverables li {
+      font-size: 12px;
+      color: var(--text-dim);
+      display: flex;
+      gap: 8px;
+    }
+    .call-deliverables li::before { content: '→'; color: var(--accent2); font-weight: 700; }
+
+    /* FOOTER */
+    .footer {
+      text-align: center;
+      padding: 40px 20px;
+      border-top: 1px solid var(--border);
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    @media (max-width: 640px) {
+      .pipeline { flex-direction: column; }
+      .pipe-step { border-radius: 0; }
+      .pipe-step:first-child { border-radius: var(--radius) var(--radius) 0 0; }
+      .pipe-step:last-child  { border-radius: 0 0 var(--radius) var(--radius); }
+      .pipe-step::after { display: none; }
+      .parallel-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-eyebrow">🚀 Future State · Process Redesign · March 2026</div>
+  <h1>Rev.io PSA — <span>Future State</span> Onboarding</h1>
+  <p class="hero-sub">The redesigned onboarding process — from ~60 days to as little as 1 week. Two phases: short-term improvements deployable now, and near-term automation that eliminates the kickoff call entirely.</p>
+  <div class="hero-meta">
+    <span class="hero-tag green">✅ Simple: 1 Week</span>
+    <span class="hero-tag green">✅ Medium: 3 Weeks</span>
+    <span class="hero-tag green">✅ Complex: 6 Weeks</span>
+    <span class="hero-tag">⚡ KO within 5 Hours (Short-Term)</span>
+    <span class="hero-tag">🤖 KO Eliminated (Near-Term)</span>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- SECTION 01: HEADLINE CHANGES -->
+  <div class="section">
+    <div class="section-label">Section 01</div>
+    <div class="section-title">📊 What Changes — At a Glance</div>
+    <div class="section-divider"></div>
+
+    <div class="stat-grid">
+      <div class="stat-card green">
+        <div class="stat-num green">1 wk</div>
+        <div class="stat-label">Simple</div>
+        <div class="stat-sub">Was: ~60 days average</div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-num green">3 wks</div>
+        <div class="stat-label">Medium</div>
+        <div class="stat-sub">1 system import + tokens</div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-num green">6 wks</div>
+        <div class="stat-label">Complex</div>
+        <div class="stat-sub">Multi-system import + integrations</div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-num green">&lt;5 hrs</div>
+        <div class="stat-label">KO Timing</div>
+        <div class="stat-sub">Short-term (was: variable days)</div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-num green">0</div>
+        <div class="stat-label">KO Calls</div>
+        <div class="stat-sub">Near-term — eliminated entirely</div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-num green">50–60%</div>
+        <div class="stat-label">Pre-Configured</div>
+        <div class="stat-sub">Was: 10% default</div>
+      </div>
+    </div>
+
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th>Process Point</th>
+          <th class="now">Today</th>
+          <th class="soon">Short-Term</th>
+          <th class="later">Near-Term</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Kickoff timing</td>
+          <td class="now">Variable — days after close</td>
+          <td class="soon">Within 5 hours of close</td>
+          <td class="later">Email + self-booking — no KO call</td>
+        </tr>
+        <tr>
+          <td>Kickoff call format</td>
+          <td class="now">1 hour — SA re-collects from client</td>
+          <td class="soon">Scaled-down — deliverables out, schedule Jump Starts</td>
+          <td class="later">No KO call — automated email + video + self-schedule link</td>
+        </tr>
+        <tr>
+          <td>Instance creation</td>
+          <td class="now">Manual request, same-day SLA</td>
+          <td class="soon">Manual + scrape auto-populates</td>
+          <td class="later">Fully automated — engineering handles fallout only</td>
+        </tr>
+        <tr>
+          <td>Instance at kickoff</td>
+          <td class="now">10% default, not client-specific</td>
+          <td class="soon">50–60% pre-configured from scrape</td>
+          <td class="later">50–60% auto-configured before client contact</td>
+        </tr>
+        <tr>
+          <td>Client data collection</td>
+          <td class="now">Re-collected from scratch in sessions 1–3</td>
+          <td class="soon">Sales calls + SF scraped → Client Brief in Notion</td>
+          <td class="later">Auto-extracted on Closed-Won trigger</td>
+        </tr>
+        <tr>
+          <td>Session structure</td>
+          <td class="now">5–7 x 1-hour weekly calls, client-paced</td>
+          <td class="soon">2 x 3-hour Jump Start Sessions in days 1–4</td>
+          <td class="later">2 x 3-hour Jump Start Sessions (self-scheduled)</td>
+        </tr>
+        <tr>
+          <td>Config vs. Operational Readiness</td>
+          <td class="now">Calls 1–3 = config; readiness assessed at go-live only</td>
+          <td class="soon">Jump Starts = complete config + build toward operational readiness</td>
+          <td class="later">Jump Starts = primarily training; readiness assessed end of JS2</td>
+        </tr>
+        <tr>
+          <td>Operational readiness</td>
+          <td class="now">Not formally assessed until go-live</td>
+          <td class="soon">SA assesses at end of Jump Start 2 using Onboarding Tracker</td>
+          <td class="later">SA assesses at end of Jump Start 2 using Onboarding Tracker</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- SECTION 02: SHORT-TERM PROCESS -->
+  <div class="section">
+    <div class="section-label">Section 02</div>
+    <div class="section-title">⚡ Short-Term Process — Deployable Now</div>
+    <div class="section-divider"></div>
+
+    <div class="phase-banner short-term">
+      <div class="phase-icon">🏃</div>
+      <div>
+        <div class="phase-text-label">Phase 1 — Short-Term</div>
+        <div class="phase-text-title">Human-executed, intelligence-assisted</div>
+        <div class="phase-text-sub">Sales call scraping + Salesforce data → Client Brief in Notion → scaled-down KO → 2 Jump Start Sessions. Same automation pipeline logic, manual triggers.</div>
+      </div>
+    </div>
+
+    <!-- PIPELINE -->
+    <div class="pipeline">
+      <div class="pipe-step green">
+        <div class="pipe-icon">🤝</div>
+        <div class="pipe-label">Deal Closes</div>
+        <div class="pipe-sub">SF Closed-Won</div>
+        <div class="pipe-time">T=0</div>
+      </div>
+      <div class="pipe-step accent">
+        <div class="pipe-icon">🔄</div>
+        <div class="pipe-label">Parallel Actions</div>
+        <div class="pipe-sub">Instance + Scrape</div>
+        <div class="pipe-time">Immediate</div>
+      </div>
+      <div class="pipe-step accent">
+        <div class="pipe-icon">📞</div>
+        <div class="pipe-label">Scaled KO Call</div>
+        <div class="pipe-sub">Within 5 hours</div>
+        <div class="pipe-time">&lt;5 hrs</div>
+      </div>
+      <div class="pipe-step green">
+        <div class="pipe-icon">⚡</div>
+        <div class="pipe-label">Jump Start 1</div>
+        <div class="pipe-sub">3 hrs · Days 1–2</div>
+        <div class="pipe-time">Day 1–2</div>
+      </div>
+      <div class="pipe-step green">
+        <div class="pipe-icon">⚡</div>
+        <div class="pipe-label">Jump Start 2</div>
+        <div class="pipe-sub">3 hrs · Days 3–4</div>
+        <div class="pipe-time">Day 3–4</div>
+      </div>
+      <div class="pipe-step green">
+        <div class="pipe-icon">📋</div>
+        <div class="pipe-label">Readiness Check</div>
+        <div class="pipe-sub">Tracker + plan</div>
+        <div class="pipe-time">End of JS2</div>
+      </div>
+      <div class="pipe-step green">
+        <div class="pipe-icon">🚀</div>
+        <div class="pipe-label">Go-Live</div>
+        <div class="pipe-sub">Tier-based</div>
+        <div class="pipe-time">1–6 wks</div>
+      </div>
+    </div>
+
+    <p style="color:var(--muted); font-size:12px; margin-bottom:24px; text-align:center;">↑ KO call and parallel actions fire simultaneously the moment the deal closes</p>
+
+    <!-- STEP 1: CLOSE -->
+    <div class="card green-border">
+      <div class="card-title">✅ Step 1 — Deal Closes (Salesforce Closed-Won) · T=0</div>
+      <ul class="item-list">
+        <li><span class="dot green"></span>Salesforce Closed-Won triggers the onboarding pipeline</li>
+        <li><span class="dot green"></span>Two parallel workstreams fire immediately</li>
+      </ul>
+    </div>
+
+    <!-- STEP 2: PARALLEL -->
+    <div class="card accent-border">
+      <div class="card-title">🔄 Step 2 — Parallel: Instance Creation + Intelligence Scrape · Immediate</div>
+      <p style="color:var(--text-dim); font-size:13px; margin-bottom:16px;">These two workstreams run simultaneously — neither waits for the other, and neither waits for the kickoff call.</p>
+      <div class="parallel-grid">
+        <div class="parallel-card">
+          <div class="parallel-label">🖥️ Workstream A</div>
+          <div class="parallel-title">Instance Creation</div>
+          <ul class="item-list">
+            <li><span class="dot green"></span>Instance requested immediately on close — same-day SLA</li>
+            <li><span class="dot green"></span>Scrape output feeds directly into instance configuration</li>
+            <li><span class="dot green"></span>Customer record, contacts, users pre-loaded from SF + Outreach data</li>
+            <li><span class="dot green"></span>Integration flags, invoice settings, dispatch model applied where known</li>
+            <li><span class="dot green"></span>SA context note created in system with full client brief</li>
+            <li><span class="dot green"></span>Client arrives to an instance that already knows who they are</li>
+          </ul>
+        </div>
+        <div class="parallel-card">
+          <div class="parallel-label">🧠 Workstream B</div>
+          <div class="parallel-title">Sales Call + Salesforce Scrape</div>
+          <ul class="item-list">
+            <li><span class="dot green"></span>Outreach transcripts pulled by company name — all sales calls</li>
+            <li><span class="dot green"></span>Salesforce Account, Opportunity, Contact records extracted</li>
+            <li><span class="dot green"></span>Signals extracted: prior PSA, accounting SW, RMM, contacts, pain points, commitments, migration concerns, integration priorities</li>
+            <li><span class="dot green"></span>Client Brief auto-populated → loaded to Notion client page</li>
+            <li><span class="dot green"></span>Gaps flagged — follow-up questions identified for KO call</li>
+            <li><span class="dot green"></span>SA receives brief before the kickoff call fires</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 3: SCALED-DOWN KO -->
+    <div class="card accent-border">
+      <div class="card-title">📞 Step 3 — Scaled-Down Kickoff Call · Within 5 Hours of Close</div>
+      <p style="color:var(--text-dim); font-size:13px; margin-bottom:16px;">This is no longer a discovery call. The SA already has the Client Brief. The KO call has one job: give the client their deliverables and schedule the Jump Start Sessions.</p>
+      <ul class="item-list">
+        <li><span class="dot"></span><strong style="color:var(--text)">Not about collecting information</strong> — that came from the sales cycle scrape. SA confirms and fills any gaps the scrape couldn't answer.</li>
+        <li><span class="dot"></span>Client receives their <strong style="color:var(--text)">deliverables</strong> — data import CSV templates, pre-kickoff checklist, any pre-work needed before Jump Start 1</li>
+        <li><span class="dot"></span>Data import clock starts <strong style="color:var(--text)">now</strong> — client begins cleanup in parallel, not mid-engagement</li>
+        <li><span class="dot"></span><strong style="color:var(--text)">Jump Start Sessions scheduled</strong> — 2 sessions confirmed for the next 3–4 days</li>
+        <li><span class="dot"></span>Call is short — no re-running the sales discovery process</li>
+      </ul>
+      <div style="background: var(--surface2); border-radius: var(--radius-sm); padding: 14px 16px; margin-top:16px;">
+        <div style="font-size:11px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--accent2); margin-bottom:10px;">📤 Client Deliverables Issued at KO</div>
+        <ul class="item-list">
+          <li><span class="dot green"></span>Data import CSV templates (customers, contacts, products, ticket history)</li>
+          <li><span class="dot green"></span>Pre-work checklist for Jump Start 1 (GL codes, user list with emails, integration credentials)</li>
+          <li><span class="dot green"></span>Jump Start Session calendar invites — confirmed dates in next 3–4 days</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- STEP 4: JUMP START SESSIONS -->
+    <div class="card green-border">
+      <div class="card-title">⚡ Step 4 — Jump Start Session 1 · 3 Hours · Days 1–2</div>
+      <p style="color:var(--text-dim); font-size:13px; margin-bottom:16px;">Deep-dive working session. The Client Brief is on screen. SA and client work through it together — confirming what was auto-configured, completing what's still open, and pivoting to platform training as fast as possible.</p>
+
+      <div class="call-timeline">
+        <div class="call-item accent">
+          <div class="call-num">Hour 1</div>
+          <div class="call-title">Client Brief Review + Configuration Completion</div>
+          <div class="call-desc">Walk through the Notion Client Brief together. Confirm what was pre-configured from the scrape. Complete remaining configuration items — anything the scrape flagged as a gap. Users, roles, integrations, dispatch board, billing setup.</div>
+        </div>
+        <div class="call-item green">
+          <div class="call-num">Hour 2</div>
+          <div class="call-title">Core Platform Training — Ticketing + Workflows</div>
+          <div class="call-desc">Begin platform training with configuration mostly complete. Ticket creation, service board workflow, assignment and dispatch. Client hands on the platform in their configured environment — not a generic demo.</div>
+        </div>
+        <div class="call-item green">
+          <div class="call-num">Hour 3</div>
+          <div class="call-title">Billing + Reporting + Client Portal</div>
+          <div class="call-desc">Billing workflow, invoice generation, payment setup, customer portal configuration. SA confirms data import status — how far along is client with CSV cleanup?</div>
+          <div class="call-deliverables">
+            <div class="call-deliverables-label">Session Outputs</div>
+            <ul>
+              <li>Configuration items completed or assigned with owner + due date</li>
+              <li>Client comfort level assessed — what do they need more time on in JS2?</li>
+              <li>Data import status confirmed — ETA for clean CSV</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card green-border">
+      <div class="card-title">⚡ Step 5 — Jump Start Session 2 · 3 Hours · Days 3–4</div>
+      <p style="color:var(--text-dim); font-size:13px; margin-bottom:16px;">Complete the configuration and training. Session ends with a formal Operational Readiness assessment using the Onboarding Tracker — SA determines what's needed to get to go-live and plans accordingly.</p>
+
+      <div class="call-timeline">
+        <div class="call-item green">
+          <div class="call-num">Hour 1</div>
+          <div class="call-title">Complete Open Configuration + Advanced Features</div>
+          <div class="call-desc">Any items outstanding from JS1. Advanced configuration: SLA policies, automation rules, integrations that needed credentials. SMS setup, email connector if not already live.</div>
+        </div>
+        <div class="call-item green">
+          <div class="call-num">Hour 2</div>
+          <div class="call-title">Platform Deep-Dive Training — Client-Specific Workflows</div>
+          <div class="call-desc">Training tailored to their vertical and service model. For MSPs: RMM-to-ticket workflows, recurring managed service billing. For security integrators: install project management, dispatch board, inventory. For mixed shops: both tracks.</div>
+        </div>
+        <div class="call-item warn">
+          <div class="call-num">Hour 3</div>
+          <div class="call-title">Operational Readiness Assessment + Go-Live Plan</div>
+          <div class="call-desc">SA formally assesses health using the Onboarding Tracker and Checklist. Scores each milestone area: what's complete, what's in-flight, what's blocked. Plans accordingly — determines if client goes live, needs additional sessions, or has open items that can be resolved async.</div>
+          <div class="call-deliverables">
+            <div class="call-deliverables-label">Readiness Assessment Outputs</div>
+            <ul>
+              <li>Onboarding Tracker status: completed milestones vs. open items</li>
+              <li>Go-live date confirmed or revised based on complexity tier</li>
+              <li>Remaining open items assigned: owner, due date, follow-up cadence</li>
+              <li>Data import status — if not received, escalation path triggered</li>
+              <li>Client confidence score — SA judgment on readiness to operate independently</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 5: POST-JUMP START -->
+    <div class="card green-border">
+      <div class="card-title">🚀 Step 6 — Post-Jump Start: Go-Live or Structured Follow-Through</div>
+      <ul class="item-list">
+        <li><span class="dot green"></span>Simple clients (no data import/migration, no token migration, no integrations): <strong style="color:var(--accent2)">live within 1 week</strong> — Jump Starts complete the engagement</li>
+        <li><span class="dot"></span>Medium and complex clients: SA plans remaining sessions or async work based on Readiness Assessment from end of JS2</li>
+        <li><span class="dot"></span>Data import processed by data engineering once client delivers clean CSV — timeline depends on client data delivery</li>
+        <li><span class="dot warn"></span>If client has not delivered CSV by JS2: structured follow-up cadence begins (Day 0 call → Day 2 email → Day 4 escalate) — not open-ended</li>
+        <li><span class="dot green"></span>Status tracked in Onboarding Tracker: On Track / Off Track / On Hold (with hold date) / RTS</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- SECTION 03: NEAR-TERM PROCESS -->
+  <div class="section">
+    <div class="section-label">Section 03</div>
+    <div class="section-title">🤖 Near-Term Process — Kickoff Call Eliminated</div>
+    <div class="section-divider"></div>
+
+    <div class="phase-banner near-term">
+      <div class="phase-icon">🚀</div>
+      <div>
+        <div class="phase-text-label">Phase 2 — Near-Term</div>
+        <div class="phase-text-title">Fully automated trigger — no kickoff call, no manual intervention</div>
+        <div class="phase-text-sub">Salesforce Closed-Won fires the full pipeline. Client receives an email with a short video and a self-schedule link. Engineering handles fallout only. SA enters at Jump Start 1.</div>
+      </div>
+    </div>
+
+    <div class="pipeline">
+      <div class="pipe-step green">
+        <div class="pipe-icon">🤝</div>
+        <div class="pipe-label">Deal Closes</div>
+        <div class="pipe-sub">SF Closed-Won</div>
+        <div class="pipe-time">T=0</div>
+      </div>
+      <div class="pipe-step green">
+        <div class="pipe-icon">🤖</div>
+        <div class="pipe-label">Auto Pipeline</div>
+        <div class="pipe-sub">Scrape + config</div>
+        <div class="pipe-time">Automated</div>
+      </div>
+      <div class="pipe-step green">
+        <div class="pipe-icon">📧</div>
+        <div class="pipe-label">Client Email</div>
+        <div class="pipe-sub">Video + schedule link</div>
+        <div class="pipe-time">Automated</div>
+      </div>
+      <div class="pipe-step green">
+        <div class="pipe-icon">⚡</div>
+        <div class="pipe-label">Jump Start 1</div>
+        <div class="pipe-sub">3 hrs · Self-scheduled</div>
+        <div class="pipe-time">Days 1–2</div>
+      </div>
+      <div class="pipe-step green">
+        <div class="pipe-icon">⚡</div>
+        <div class="pipe-label">Jump Start 2</div>
+        <div class="pipe-sub">3 hrs · Self-scheduled</div>
+        <div class="pipe-time">Days 3–4</div>
+      </div>
+      <div class="pipe-step green">
+        <div class="pipe-icon">📋</div>
+        <div class="pipe-label">Readiness Check</div>
+        <div class="pipe-sub">Tracker + plan</div>
+        <div class="pipe-time">End of JS2</div>
+      </div>
+      <div class="pipe-step green">
+        <div class="pipe-icon">🚀</div>
+        <div class="pipe-label">Go-Live</div>
+        <div class="pipe-sub">Tier-based</div>
+        <div class="pipe-time">1–6 wks</div>
+      </div>
+    </div>
+
+    <div class="card green-border">
+      <div class="card-title">🤖 What the Automated Pipeline Does on Closed-Won</div>
+      <div class="parallel-grid">
+        <div class="parallel-card">
+          <div class="parallel-label">⚙️ Instance Auto-Configuration</div>
+          <div class="parallel-title">Engineering handles fallout only</div>
+          <ul class="item-list">
+            <li><span class="dot green"></span>Instance created automatically</li>
+            <li><span class="dot green"></span>Outreach + SF scrape runs immediately</li>
+            <li><span class="dot green"></span>Signals extracted and applied: customer record, contacts, users, integration flags, invoice settings, dispatch config</li>
+            <li><span class="dot green"></span>Client Brief loaded to Notion client page</li>
+            <li><span class="dot green"></span>Engineering reviews fallout items only — not running the full build</li>
+          </ul>
+        </div>
+        <div class="parallel-card">
+          <div class="parallel-label">📧 Client Communication</div>
+          <div class="parallel-title">Automated — no SA involvement</div>
+          <ul class="item-list">
+            <li><span class="dot green"></span>Welcome email sent automatically on Closed-Won</li>
+            <li><span class="dot green"></span>Includes short video walkthrough of the platform and what to expect</li>
+            <li><span class="dot green"></span>Link to self-schedule Jump Start Sessions (calendar tool)</li>
+            <li><span class="dot green"></span>Data import CSV templates attached — cleanup starts immediately</li>
+            <li><span class="dot green"></span>Pre-work checklist included — what to bring to Jump Start 1</li>
+            <li><span class="dot green"></span>Login credentials for their pre-configured instance</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="insight-box">
+      <div class="insight-box-title">🎯 What Changes for the SA in Near-Term</div>
+      <p>The SA enters the engagement at <strong>Jump Start 1</strong> — not at kickoff. They've already reviewed the Notion Client Brief before the session. The instance is pre-configured. The client has been walking around in their environment since they received credentials. Jump Start 1 opens with: <em>"Here's what we built for you. Here's what we still need to complete together. Let's go."</em></p>
+      <p>SA time is spent entirely on the work that requires a human — completing complex configuration items, training the client on their specific workflows, and making judgment calls on edge cases. Not re-collecting information. Not building from scratch.</p>
+    </div>
+  </div>
+
+  <!-- SECTION 04: DURATION TIERS -->
+  <div class="section">
+    <div class="section-label">Section 04</div>
+    <div class="section-title">⏱️ Go-Live Duration Tiers</div>
+    <div class="section-divider"></div>
+    <p style="color:var(--text-dim); margin-bottom:24px; font-size:14px;">Client complexity determines go-live timeline. These targets assume Jump Start Sessions are completed in days 1–4. Data import timelines are the primary variable for Medium and Complex tiers.</p>
+
+    <div class="tier-grid">
+
+      <div class="tier-card simple">
+        <div class="tier-icon">🟢</div>
+        <div class="tier-name">Simple</div>
+        <div class="tier-duration">1 Week</div>
+        <ul class="tier-criteria">
+          <li>No data import or migration required</li>
+          <li>No token migration</li>
+          <li>No third-party integrations</li>
+        </ul>
+        <div class="tier-not">
+          <div class="tier-not-label">Does not apply if:</div>
+          <ul class="tier-criteria tier-not">
+            <li>Any data import from a prior system</li>
+            <li>Token migration required</li>
+            <li>Integration connections needed</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="tier-card medium">
+        <div class="tier-icon">🔵</div>
+        <div class="tier-name">Medium</div>
+        <div class="tier-duration">3 Weeks</div>
+        <ul class="tier-criteria">
+          <li>Data import from 1 system or migration</li>
+          <li>Token migration</li>
+          <li>Calendar integration (Google or Outlook)</li>
+          <li>Teams or Slack integration</li>
+        </ul>
+        <div class="tier-not">
+          <div class="tier-not-label">Escalates to Complex if:</div>
+          <ul class="tier-criteria tier-not">
+            <li>More than 1 source system to import</li>
+            <li>All other integrations</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="tier-card complex">
+        <div class="tier-icon">🟡</div>
+        <div class="tier-name">Complex</div>
+        <div class="tier-duration">6 Weeks</div>
+        <ul class="tier-criteria">
+          <li>Data import from more than 1 system</li>
+          <li>Token migration required</li>
+          <li>Multiple integrations</li>
+          <li>Non-standard or custom integrations</li>
+          <li>Multi-location / parent-child structure</li>
+        </ul>
+        <div class="tier-not">
+          <div class="tier-not-label">Duration note:</div>
+          <ul class="tier-criteria tier-not">
+            <li>Upper bound driven by client data delivery speed</li>
+            <li>SA assesses at end of JS2 and plans remaining timeline</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="insight-box" style="margin-top:24px;">
+      <div class="insight-box-title">📌 The Data Import Variable</div>
+      <p>For Medium and Complex tiers, the primary duration driver is <strong>how fast the client delivers clean CSV data</strong>. In the short-term model, the data import clock starts at the kickoff call (day 0). In the near-term model, it starts when the Closed-Won email fires. Either way, it's weeks earlier than today — where the clock starts mid-engagement when the SA first mentions the format requirement.</p>
+      <p>Clients who deliver clean data fast will land at the low end of their tier. Clients who drag out cleanup extend their own go-live. The structured Hold/RTS cadence ensures this doesn't quietly compound into a 60-day engagement.</p>
+    </div>
+  </div>
+
+  <!-- SECTION 05: BEFORE VS AFTER -->
+  <div class="section">
+    <div class="section-label">Section 05</div>
+    <div class="section-title">🔄 Before vs. After — The Client Experience</div>
+    <div class="section-divider"></div>
+
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
+      <div class="card" style="border-top: 3px solid var(--danger);">
+        <div class="card-title" style="color:var(--danger);">😤 Today</div>
+        <ul class="item-list">
+          <li><span class="dot danger"></span>Closes deal — manual processes kick off.</li>
+          <li><span class="dot danger"></span>Gets a kickoff call — logs into a blank instance</li>
+          <li><span class="dot danger"></span>"What PSA are you on?" — answered this in sales</li>
+          <li><span class="dot danger"></span>"Who are your users?" — answered this in sales</li>
+          <li><span class="dot danger"></span>3 sessions spent on setup before any training</li>
+          <li><span class="dot danger"></span>Receives CSV format mid-engagement — starts cleanup late</li>
+          <li><span class="dot danger"></span>Weekly calls drift at client's pace — ~60 days later, go-live</li>
+        </ul>
+      </div>
+      <div class="card" style="border-top: 3px solid var(--accent2);">
+        <div class="card-title" style="color:var(--accent2);">🚀 Future State</div>
+        <ul class="item-list">
+          <li><span class="dot green"></span>Closes deal. Within hours, email arrives with video + login</li>
+          <li><span class="dot green"></span>Logs in — their company, team, and settings already there</li>
+          <li><span class="dot green"></span>SA opens JS1: "Here's what we built. Here's what's left."</li>
+          <li><span class="dot green"></span>Session 1 goes straight to platform training</li>
+          <li><span class="dot green"></span>Data import CSV sent at day 0 — cleanup runs in parallel</li>
+          <li><span class="dot green"></span>2 focused 3-hour sessions over 4 days</li>
+          <li><span class="dot green"></span>Simple clients live in 1 week. Client feels known from minute one.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</div>
+
+<div class="footer">
+  ⚡ Rev.io Intelligence Stack · Future State Onboarding Design · March 2026 · Short-Term + Near-Term Roadmap
+</div>
+
+</body>
+</html>

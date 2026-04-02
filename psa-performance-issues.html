@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rev.io PSA: Customer Performance & Access Issues</title>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --surface2: #21253a;
+      --accent: #6c63ff;
+      --accent2: #00d4aa;
+      --warn: #ffa94d;
+      --danger: #ff6b6b;
+      --muted: #7b7f9e;
+      --text: #e8eaf6;
+      --text-dim: #b0b4cc;
+      --border: rgba(255,255,255,0.07);
+      --radius: 14px;
+      --radius-sm: 8px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      font-size: 15px;
+      line-height: 1.65;
+    }
+
+    /* HERO */
+    .hero {
+      background: linear-gradient(135deg, #1a0a0a 0%, #2a1010 50%, #0f1117 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 60px 24px 48px;
+      text-align: center;
+    }
+    .hero-eyebrow { font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--danger); margin-bottom: 16px; }
+    .hero h1 { font-size: clamp(24px, 5vw, 42px); font-weight: 800; line-height: 1.15; letter-spacing: -0.5px; margin-bottom: 14px; }
+    .hero h1 span { color: var(--danger); }
+    .hero-sub { font-size: clamp(14px, 2.5vw, 18px); color: var(--text-dim); max-width: 620px; margin: 0 auto 28px; font-style: italic; }
+    .hero-meta { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+    .hero-tag { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 5px 14px; font-size: 12px; color: var(--muted); }
+
+    /* LAYOUT */
+    .content { max-width: 960px; margin: 0 auto; padding: 0 20px 80px; }
+
+    /* SECTIONS */
+    .section { margin-top: 56px; }
+    .section-label { font-size: 11px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: var(--danger); margin-bottom: 8px; }
+    .section-title { font-size: clamp(18px, 3.5vw, 26px); font-weight: 700; margin-bottom: 4px; line-height: 1.25; }
+    .section-title .emoji { margin-right: 8px; }
+    .section-divider { width: 40px; height: 3px; background: linear-gradient(90deg, var(--danger), var(--warn)); border-radius: 2px; margin: 14px 0 24px; }
+
+    /* STAT CARDS */
+    .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; margin-bottom: 24px; }
+    .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 22px 16px; text-align: center; }
+    .stat-card.red { border-top: 3px solid var(--danger); }
+    .stat-card.warn { border-top: 3px solid var(--warn); }
+    .stat-card.purple { border-top: 3px solid var(--accent); }
+    .stat-card.green { border-top: 3px solid var(--accent2); }
+    .stat-num { font-size: 36px; font-weight: 800; line-height: 1.1; margin-bottom: 4px; }
+    .stat-num.red { color: var(--danger); }
+    .stat-num.warn { color: var(--warn); }
+    .stat-num.purple { color: var(--accent); }
+    .stat-num.green { color: var(--accent2); }
+    .stat-label { font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    /* SUMMARY BAR CHART */
+    .bar-list { display: flex; flex-direction: column; gap: 10px; }
+    .bar-item { display: flex; align-items: center; gap: 12px; }
+    .bar-label { width: 210px; font-size: 13px; color: var(--text-dim); flex-shrink: 0; text-align: right; }
+    .bar-track { flex: 1; background: rgba(255,255,255,0.05); border-radius: 6px; height: 28px; overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 6px; display: flex; align-items: center; padding-left: 10px; font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.9); min-width: 40px; white-space: nowrap; }
+    .bar-count { width: 40px; font-size: 13px; font-weight: 700; flex-shrink: 0; text-align: right; }
+    .fill-red { background: linear-gradient(90deg, var(--danger), #ff9090); }
+    .fill-warn { background: linear-gradient(90deg, var(--warn), #ffd090); color: #1a1d27 !important; }
+    .fill-purple { background: linear-gradient(90deg, var(--accent), #9c96ff); }
+    .fill-teal { background: linear-gradient(90deg, var(--accent2), #60e8cc); color: #1a1d27 !important; }
+    .fill-blue { background: linear-gradient(90deg, #4f9cf9, #7ab8ff); }
+
+    /* FINDING BOX */
+    .finding-box { background: linear-gradient(135deg, rgba(255,107,107,0.08), rgba(255,169,77,0.06)); border: 1px solid rgba(255,107,107,0.25); border-radius: var(--radius); padding: 20px 24px; margin-top: 20px; }
+    .finding-box h4 { font-size: 15px; font-weight: 700; margin-bottom: 10px; color: var(--warn); }
+    .finding-box p { font-size: 14px; color: var(--text-dim); }
+    .finding-box p strong { color: var(--text); }
+    .finding-box.critical { background: linear-gradient(135deg, rgba(255,107,107,0.12), rgba(255,107,107,0.06)); border-color: rgba(255,107,107,0.4); }
+    .finding-box.critical h4 { color: var(--danger); }
+    .finding-box.success { background: linear-gradient(135deg, rgba(0,212,170,0.08), rgba(108,99,255,0.06)); border-color: rgba(0,212,170,0.25); }
+    .finding-box.success h4 { color: var(--accent2); }
+
+    /* CATEGORY SECTIONS */
+    .cat-header { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; flex-wrap: wrap; }
+    .cat-icon { font-size: 28px; }
+    .cat-title { font-size: 20px; font-weight: 800; color: var(--text); }
+    .cat-count-badge { background: rgba(255,107,107,0.15); color: var(--danger); border: 1px solid rgba(255,107,107,0.3); border-radius: 20px; padding: 4px 12px; font-size: 13px; font-weight: 700; }
+    .cat-count-badge.warn { background: rgba(255,169,77,0.15); color: var(--warn); border-color: rgba(255,169,77,0.3); }
+    .cat-count-badge.purple { background: rgba(108,99,255,0.15); color: var(--accent); border-color: rgba(108,99,255,0.3); }
+    .cat-count-badge.teal { background: rgba(0,212,170,0.15); color: var(--accent2); border-color: rgba(0,212,170,0.3); }
+
+    /* CALL CARDS */
+    .call-grid { display: flex; flex-direction: column; gap: 10px; }
+    .call-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px 18px; }
+    .call-card-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
+    .call-title { font-size: 13px; font-weight: 700; color: var(--text); }
+    .call-date { font-size: 11px; font-weight: 700; color: var(--muted); white-space: nowrap; flex-shrink: 0; font-family: monospace; background: var(--surface2); padding: 2px 7px; border-radius: 4px; }
+    .call-quote { font-size: 13px; color: var(--text-dim); font-style: italic; padding-left: 12px; border-left: 2px solid rgba(255,107,107,0.4); }
+    .call-quote.warn { border-left-color: rgba(255,169,77,0.4); }
+    .call-quote.purple { border-left-color: rgba(108,99,255,0.4); }
+    .call-quote.teal { border-left-color: rgba(0,212,170,0.4); }
+
+    /* MORE PILL */
+    .more-pill { text-align: center; margin-top: 10px; font-size: 12px; color: var(--muted); background: var(--surface2); border-radius: 20px; padding: 5px 14px; display: inline-block; }
+
+    /* BADGES */
+    .badge { display: inline-flex; align-items: center; border-radius: 20px; padding: 3px 10px; font-size: 11px; font-weight: 700; white-space: nowrap; }
+    .badge-red { background: rgba(255,107,107,0.15); color: var(--danger); border: 1px solid rgba(255,107,107,0.3); }
+    .badge-warn { background: rgba(255,169,77,0.15); color: var(--warn); border: 1px solid rgba(255,169,77,0.3); }
+    .badge-green { background: rgba(0,212,170,0.15); color: var(--accent2); border: 1px solid rgba(0,212,170,0.3); }
+
+    /* ROOT CAUSE */
+    .rc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; }
+    .rc-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; }
+    .rc-icon { font-size: 24px; margin-bottom: 10px; }
+    .rc-title { font-size: 14px; font-weight: 700; margin-bottom: 6px; color: var(--text); }
+    .rc-body { font-size: 13px; color: var(--text-dim); }
+
+    /* TIMELINE */
+    .timeline { display: flex; flex-direction: column; gap: 0; }
+    .tl-item { display: flex; gap: 16px; padding-bottom: 20px; position: relative; }
+    .tl-item::before { content: ""; position: absolute; left: 15px; top: 30px; bottom: 0; width: 1px; background: var(--border); }
+    .tl-item:last-child::before { display: none; }
+    .tl-dot { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0; }
+    .tl-dot.red { background: rgba(255,107,107,0.2); border: 1px solid rgba(255,107,107,0.4); }
+    .tl-dot.warn { background: rgba(255,169,77,0.2); border: 1px solid rgba(255,169,77,0.4); }
+    .tl-content { flex: 1; }
+    .tl-date { font-size: 11px; font-weight: 700; color: var(--muted); font-family: monospace; margin-bottom: 3px; }
+    .tl-title { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+    .tl-desc { font-size: 12px; color: var(--text-dim); font-style: italic; }
+
+    footer { background: var(--surface); border-top: 1px solid var(--border); padding: 28px 24px; text-align: center; }
+    .footer-brand { font-weight: 800; font-size: 14px; color: var(--danger); margin-bottom: 6px; }
+    .footer-meta { font-size: 12px; color: var(--muted); }
+
+    @media (max-width: 640px) {
+      .hero { padding: 40px 16px 32px; }
+      .bar-label { width: 140px; font-size: 12px; }
+      .cat-header { gap: 10px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-eyebrow">🚨 Rev.io PSA · Customer Experience Report</div>
+  <h1>Performance &amp; <span>Access Issues</span><br>Across Client Calls</h1>
+  <div class="hero-sub">Every mention of login failures, 403/500 errors, cache workarounds, slow loading, and missing views — extracted from 2,637 calls, Nov 2025 – Mar 2026</div>
+  <div class="hero-meta">
+    <span class="hero-tag">📞 2,637 calls searched</span>
+    <span class="hero-tag">🚨 448 calls flagged</span>
+    <span class="hero-tag">8 issue categories</span>
+    <span class="hero-tag">📅 Nov 2025 – Mar 2026</span>
+    <span class="hero-tag">🔊 Source: Fireflies.ai</span>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- SECTION 01: SUMMARY -->
+  <div class="section">
+    <div class="section-label">Section 01</div>
+    <div class="section-title"><span class="emoji">📊</span>Issue Summary</div>
+    <div class="section-divider"></div>
+
+    <div class="stat-grid">
+      <div class="stat-card red">
+        <div class="stat-num red">159</div>
+        <div class="stat-label">Password Reset Issues</div>
+      </div>
+      <div class="stat-card red">
+        <div class="stat-num red">108</div>
+        <div class="stat-label">Login / Sign-in Failures</div>
+      </div>
+      <div class="stat-card warn">
+        <div class="stat-num warn">72</div>
+        <div class="stat-label">Slow / Performance</div>
+      </div>
+      <div class="stat-card warn">
+        <div class="stat-num warn">55</div>
+        <div class="stat-label">Blank / Missing Views</div>
+      </div>
+      <div class="stat-card purple">
+        <div class="stat-num purple">22</div>
+        <div class="stat-label">Session / Logout Issues</div>
+      </div>
+      <div class="stat-card purple">
+        <div class="stat-num purple">13</div>
+        <div class="stat-label">Cache / Browser Fixes</div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-num green">12</div>
+        <div class="stat-label">403 Access Errors</div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-num green">7</div>
+        <div class="stat-label">500 Server Errors</div>
+      </div>
+    </div>
+
+    <div class="bar-list">
+      <div class="bar-item">
+        <div class="bar-label">Password Reset Issues</div>
+        <div class="bar-track"><div class="bar-fill fill-red" style="width:100%;">159 calls</div></div>
+        <div class="bar-count" style="color:var(--danger);">159</div>
+      </div>
+      <div class="bar-item">
+        <div class="bar-label">Login / Sign-in Failures</div>
+        <div class="bar-track"><div class="bar-fill fill-red" style="width:68%;">108 calls</div></div>
+        <div class="bar-count" style="color:var(--danger);">108</div>
+      </div>
+      <div class="bar-item">
+        <div class="bar-label">Slow / Performance</div>
+        <div class="bar-track"><div class="bar-fill fill-warn" style="width:45%;">72 calls</div></div>
+        <div class="bar-count" style="color:var(--warn);">72</div>
+      </div>
+      <div class="bar-item">
+        <div class="bar-label">Blank / Missing Views</div>
+        <div class="bar-track"><div class="bar-fill fill-warn" style="width:35%;">55 calls</div></div>
+        <div class="bar-count" style="color:var(--warn);">55</div>
+      </div>
+      <div class="bar-item">
+        <div class="bar-label">Session / Logout Issues</div>
+        <div class="bar-track"><div class="bar-fill fill-purple" style="width:14%;">22 calls</div></div>
+        <div class="bar-count" style="color:var(--accent);">22</div>
+      </div>
+      <div class="bar-item">
+        <div class="bar-label">Cache / Browser Fixes</div>
+        <div class="bar-track"><div class="bar-fill fill-purple" style="width:8%;">13 calls</div></div>
+        <div class="bar-count" style="color:var(--accent);">13</div>
+      </div>
+      <div class="bar-item">
+        <div class="bar-label">403 Access Errors</div>
+        <div class="bar-track"><div class="bar-fill fill-teal" style="width:8%;">12 calls</div></div>
+        <div class="bar-count" style="color:var(--accent2);">12</div>
+      </div>
+      <div class="bar-item">
+        <div class="bar-label">500 Server Errors</div>
+        <div class="bar-track"><div class="bar-fill fill-teal" style="width:4%;">7 calls</div></div>
+        <div class="bar-count" style="color:var(--accent2);">7</div>
+      </div>
+    </div>
+
+    <div class="finding-box critical" style="margin-top:24px;">
+      <h4>🚨 17% of All Calls Touched a Performance or Access Issue</h4>
+      <p>448 of 2,637 calls contained at least one mention of a login failure, access error, performance problem, or UI defect. <strong>Password resets alone appear in 159 calls</strong> — they are happening constantly across the client base. The 403 error spike in late February is directly tied to a Redis memory overload event confirmed in internal stand-ups. The <strong>Auth service rewrite (PHP → new stack, 50–60% complete as of March 13)</strong> is the root cause behind most login and performance complaints.</p>
+    </div>
+  </div>
+
+  <!-- SECTION 02: PASSWORD RESET -->
+  <div class="section">
+    <div class="section-label">Section 02</div>
+    <div class="section-title"><span class="emoji">🔑</span>Password Reset Issues</div>
+    <div class="section-divider"></div>
+
+    <div class="cat-header">
+      <span class="cat-icon">🔑</span>
+      <span class="cat-title">Password Reset Issues</span>
+      <span class="cat-count-badge">159 calls</span>
+    </div>
+    <p style="color:var(--text-dim); font-size:14px; margin-bottom:18px;">The single most common issue — password resets are broken or require admin intervention on nearly every client account. Front-end self-service reset is not working; users need SA or admin help every time.</p>
+
+    <div class="call-grid">
+      <div class="call-card">
+        <div class="call-card-header"><span class="call-title">PSA Web Daily Stand Up</span><span class="call-date">2026-03-13</span></div>
+        <div class="call-quote">"Password Reset Problems: Some users can't reset passwords; review of access control settings required for better user experience."</div>
+      </div>
+      <div class="call-card">
+        <div class="call-card-header"><span class="call-title">Novalera PSA Configuration Call</span><span class="call-date">2026-03-13</span></div>
+        <div class="call-quote">"User Password Resets: Users currently need admin help to reset passwords; escalation to allow front-end resets is in progress."</div>
+      </div>
+      <div class="call-card">
+        <div class="call-card-header"><span class="call-title">Rapid Broadband — Configuration 1</span><span class="call-date">2026-03-13</span></div>
+        <div class="call-quote">"Tom successfully logged into the PSA system after a password reset, facilitating immediate onboarding progress."</div>
+      </div>
+      <div class="call-card">
+        <div class="call-card-header"><span class="call-title">Integrity Sound PSA Configuration Call</span><span class="call-date">2026-03-12</span></div>
+        <div class="call-quote">"Send Joey password reset email for Google integration user account." <em style="color:var(--muted); font-size:11px;">[Action item]</em></div>
+      </div>
+      <div class="call-card">
+        <div class="call-card-header"><span class="call-title">Sydewire — Configuration 1</span><span class="call-date">2026-03-11</span></div>
+        <div class="call-quote">"Reset and resolve login password issue for system access." <em style="color:var(--muted); font-size:11px;">[Action item]</em></div>
+      </div>
+      <div class="call-card">
+        <div class="call-card-header"><span class="call-title">Total Temp — PSA Meeting</span><span class="call-date">2026-03-09</span></div>
+        <div class="call-quote">"Reset and send password email to Rose to remedy login issues."</div>
+      </div>
+      <div class="call-card">
+        <div class="call-card-header"><span class="call-title">Telechoice — Rev.io AM Meeting</span><span class="call-date">2026-03-06</span></div>
+        <div class="call-quote">"Convey detailed client login credentials and coordinate with Crystal for password resets and app issues during skeleton crew coverage."</div>
+      </div>
+      <div class="call-card">
+        <div class="call-card-header"><span class="call-title">CBR Global Telecom Supply</span><span class="call-date">2026-02-17</span></div>
+        <div class="call-quote">"Migration to Hosted paused due to access issues: Client faced login timeouts since November, aligning with their halt on Hosted sales."</div>
+      </div>
+    </div>
+    <div style="text-align:center; margin-top:12px;"><span class="more-pill">+ 151 additional calls with password reset mentions</span></div>
+  </div>
+
+  <!-- SECTION 03: LOGIN FAILURES -->
+  <div class="section">
+    <div class="section-label">Section 03</div>
+    <div class="section-title"><span class="emoji">🔒</span>Login / Sign-in Failures</div>
+    <div class="section-divider"></div>
+
+    <div class="cat-header">
+      <span class="cat-icon">🔒</span>
+      <span class="cat-title">Login / Sign-in Failures</span>
+      <span class="cat-count-badge">108 calls</span>
+    </div>
+    <p style="color:var(--text-dim); font-size:14px; margin-bottom:18px;">Clients and end users unable to log in at all — distinct from password issues. Root causes include linked billing/PSA account conflicts, role assignment gaps, and the ongoing Auth service instability.</p>
+
+    <div class="call-grid">
+      <div class="call-card">
+        <div class="call-card-header"><span class="call-title">Premise — Configuration</span><span class="call-date">2026-03-12</span></div>
+        <div class="call-quote">"Investigation is underway to resolve login issues."</div>
+      </div>
+      <div class="call-card">
+        <div class="call-card-header"><span class="call-title">Rev.io Web | Bridge Comm with Kegan</span><span class="call-date">2026-03-09</span></div>
+        <div class="call-quote">"Login Issues Addressed: Conflicts from linked billing and PSA logins resolved; admins must assign roles to new users for access."</div>
+      </div>
+      <div class="call-card">
+        <div class="call-card-header"><span class="call-title">Grow Team VP Meeting</span><span class="call-date">2026-03-09</span></div>
+        <div class="call-quote">"Push critical login and UI bugs to engineering and product teams for immediate resolution."</div>
+      </div>
+      <div class="call-card">
+        <div class="call-card-header"><span class="call-title">DTS Bill on Behalf Configuration Calls</span><span class="call-date">2026-03-05</span></div>
+        <div class="call-quote">"Continue managing tickets related to sandbox creation and login issues and coordinate with engineering for resolution."</div>
+      </div>
+      <div class="call-card">
+        <div class="call-card-header"><span class="call-title">Premise — Configuration</span><span class="call-date">2026-02-27</span></div>
+        <div class="call-quote">"Login Issues Resolved: Clearing browser cache fixed 403 errors for many; password resets issued for affected users."</div>
+      </div>
+      <div class="call-card">
+        <div class="call-card-header"><span class="call-title">Truline Configuration</span><span class="call-date">2026-02-27</span></div>
+        <div class="call-quote">"Follow up with backend team regarding Michael's unusual login issues and keep him updated."</div>
+      </div>
+      <div class="call-card">
+        <div class="call-card-header"><span class="call-title">Novalera PSA Configuration Call</span><span class="call-date">2026-03-06</span></div>
+        <div class="call-quote">"Work with admin to fix community forum login issues for Tony and Mary, so they can submit feature requests and engage with support."</div>
+      </div>
+      <div class="call-card">
+        <div class="call-card-header"><span class="call-title">Global Data Systems & Rev.io Project Call</span><span class="call-date">2026-02-26</span></div>
+        <div class="call-quote">"Training Access: Learning paths assigned, with login issues being resolved; tracking engagement weekly for full training adoption."</div>
+      </div>
+    </div>
+    <div style="text-align:center; margin-top:12px;"><span class="more-pill">+ 100 additional calls with login failure mentions</span></div>
+  </div>
+
+  <!-- SECTION 04: SLOW / PERFORMANCE -->
+  <div class="section">
+    <div class="section-label">Section 04</div>
+    <div class="section-title"><span class="emoji">🐢</span>Slow / Performance</div>
+    <div class="section-divider"></div>
+
+    <div class="cat-header">
+      <span class="cat-icon">🐢</span>
+      <span class="cat-title">Slow / Performance Issues</span>
+      <span class="cat-count-badge warn">72 calls</span>
+    </div>
+    <p style="color:var(--text-dim); font-size:14px; margin-bottom:18px;">System slowness affecting ticket loading, page navigation, and integrations. Directly tied to the Auth service PHP rewrite and intermittent infrastructure instability. Engineers joining client calls as of March 12 to expedite resolution.</p>
+
+    <div class="call-grid">
+      <div class="call-card">
+        <div class="call-card-header"><span class="call-title">Novalera PSA Configuration Call</span><span class="call-date">2026-03-13</span></div>
+        <div class="call-quote warn">"Auth Service Rewrite: Critical performance issues stem from the Auth service in PHP; rewrite is 50–60% complete, expected in early April."</div>
+      </div>
+      <div class="call-card">
+        <div class="call-card-header"><span class="call-title">Truline Configuration</span><span class="call-date">2026-03-13</span></div>
+        <div class="call-quote warn">"System Lag Issues: Users report persistent lag and integration errors; regular updates promised from product management."</div>
+      </div>
+      <div class="call-card">
+        <div class="call-card-header"><span class="call-title">PSA Web Daily Stand Up</span><span class="call-date">2026-03-12</span></div>
+        <div class="call-quote warn">"Client satisfaction at risk: Slow ticket loading and performance issues threaten trust, prompting a review of deployment timing and support coverage."</div>
+      </div>
+      <div class="call-card">
+        <div class="call-card-header"><span class="call-title">Review RTS, On Hold Etc.</span><span class="call-date">2026-03-12</span></div>
+        <div class="call-quote warn">"Client Performance Issues: Novalera faces system slowness and integration errors; engineers will join client calls for faster issue resolution."</div>
+      </div>
+      <div class="call-card">
+        <div class="call-card-header"><span class="call-title">Sandhills Home — Configuration</span><span class="call-date">2026-03-12</span></div>
+        <div class="call-quote warn">"Continue pursuing resolution of QuickBooks integration freezing issue with the backend team and monitor progress."</div>
+      </div>
+      <div class="call-card">
+        <div class="call-card-header"><span class="call-title">SLT Weekly Meeting</span><span class="call-date">2026-03-09</span></div>
+        <div class="call-quote warn">"Continue investigating and fixing PSA Web outage and performance issues; collaborate with Fran and integration teams to expedite solutions."</div>
+      </div>
+      <div class="call-card">
+        <div class="call-card-header"><span class="call-title">Newport Network Solutions — Working Session</span><span class="call-date">2026-01-13</span></div>
+        <div class="call-quote warn">"System Performance Issues: Session timeouts and slowness reported; need for support investigation to improve user experience and efficiency."</div>
+      </div>
+      <div class="call-card">
+        <div class="call-card-header"><span class="call-title">Altaworx — AM Recurring Meeting</span><span class="call-date">2026-03-03</span></div>
+        <div class="call-quote warn">"Performance improvements noted yet limitations remain: Faster loading after pagination changes; manual charge additions still cause delays for large accounts like Galaxy."</div>
+      </div>
+    </div>
+    <div style="text-align:center; margin-top:12px;"><span class="more-pill">+ 64 additional calls with performance mentions</span></div>
+  </div>
+
+  <!-- SECTION 05: BLANK / MISSING VIEWS -->
+  <div class="section">
+    <div class="section-label">Section 05</div>
+    <div class="section-title"><span class="emoji">🖥️</span>Blank / Missing Views</div>
+    <div class="section-divider"></div>
+
+    <div class="cat-header">
+      <span class="cat-icon">🖥️</span>
+      <span class="cat-title">Blank / Missing Views</span>
+      <span class="cat-count-badge warn">55 calls</span>
+    </div>
+    <p style="color:var(--text-dim); font-size:14px; margin-bottom:18px;">Pages not loading, products not showing in search, views disappearing, checklists not rendering consistently. Often reported alongside the cache/incognito workaround.</p>
+
+    <div class="call-grid">
+      <div class="call-card">
+        <div class="call-card-header"><span class="call-title">Newport Network Solutions — Working Session</span><span class="call-date">2026-03-03</span></div>
+        <div class="call-quote warn">"Determine why recurring services are not showing properly in product search and quotation screens, and ensure recurring billing functionality is correctly represented."</div>
+      </div>
+      <div class="call-card">
+        <div class="call-card-header"><span class="call-title">Red Gap / Rev.io Configuration Calls</span><span class="call-date">2026-03-04</span></div>
+        <div class="call-quote warn">"Share event log screenshots and callback examples from Friday tests related to blank logs and failed service updates."</div>
+      </div>
+      <div class="call-card">
+        <div class="call-card-header"><span class="call-title">Troy Security — Working Session</span><span class="call-date">2026-02-11</span></div>
+        <div class="call-quote warn">"Investigate and resolve admin checklist not showing consistently for Ryan and Rob."</div>
+      </div>
+      <div class="call-card">
+        <div class="call-card-header"><span class="call-title">Midwest Tech Check In</span><span class="call-date">2026-03-09</span></div>
+        <div class="call-quote warn">"Invoice Processing Gaps: Missing preview functionality and limitations in invoice rollback create financial strain and operational inefficiencies."</div>
+      </div>
+      <div class="call-card">
+        <div class="call-card-header"><span class="call-title">PSA Web Daily Stand Up</span><span class="call-date">2026-01-15</span></div>
+        <div class="call-quote warn">"Test heliotech product catalog issue to identify root cause of products not showing despite correct product types."</div>
+      </div>
+    </div>
+    <div style="text-align:center; margin-top:12px;"><span class="more-pill">+ 50 additional calls with blank/missing view mentions</span></div>
+  </div>
+
+  <!-- SECTION 06: 403 ERRORS -->
+  <div class="section">
+    <div class="section-label">Section 06</div>
+    <div class="section-title"><span class="emoji">⛔</span>403 / Access Denied Errors</div>
+    <div class="section-divider"></div>
+
+    <div class="cat-header">
+      <span class="cat-icon">⛔</span>
+      <span class="cat-title">403 / Access Denied Errors</span>
+      <span class="cat-count-badge teal">12 calls</span>
+    </div>
+    <p style="color:var(--text-dim); font-size:14px; margin-bottom:18px;">Confirmed 403 errors spiked in late February tied to a <strong style="color:var(--text);">Redis memory overload</strong> affecting authentication. Temporary workaround was clearing cache or using incognito mode. Engineering shipped a fix but monitoring remains active.</p>
+
+    <div class="call-grid">
+      <div class="call-card">
+        <div class="call-card-header"><span class="call-title">PSA Web Daily Stand Up</span><span class="call-date">2026-02-25</span></div>
+        <div class="call-quote teal">"System Error Investigation: A critical 403 error is linked to Redis memory overload, affecting authentication across services."</div>
+      </div>
+      <div class="call-card">
+        <div class="call-card-header"><span class="call-title">PSA Web Daily Stand Up</span><span class="call-date">2026-02-24</span></div>
+        <div class="call-quote teal">"403 Error Troubleshooting: Widespread 403 errors affecting users; temporary fixes suggest clearing browser cache or incognito mode."</div>
+      </div>
+      <div class="call-card">
+        <div class="call-card-header"><span class="call-title">Prestige Configuration</span><span class="call-date">2026-02-26</span></div>
+        <div class="call-quote teal">"User Access Issues Resolved: 403 errors fixed by clearing cache; private browsing mode helped users log in seamlessly."</div>
+      </div>
+      <div class="call-card">
+        <div class="call-card-header"><span class="call-title">Raven Tech — PSA Meeting</span><span class="call-date">2026-02-25</span></div>
+        <div class="call-quote teal">"Login Issues: Intermittent 403 errors caused sporadic login problems; ongoing monitoring is in place to stabilize access."</div>
+      </div>
+      <div class="call-card">
+        <div class="call-card-header"><span class="call-title">PSA Web Daily Stand Up</span><span class="call-date">2026-03-12</span></div>
+        <div class="call-quote teal">"Permission fixes underway: Team is resolving 403 access errors for sales roles; ongoing monitoring is in place for confirmation."</div>
+      </div>
+      <div class="call-card">
+        <div class="call-card-header"><span class="call-title">PSA Web Daily Stand Up</span><span class="call-date">2026-03-11</span></div>
+        <div class="call-quote teal">"403 Error Management: Fix to hide dismissal options for unauthorized users will enhance user experience and decrease confusion."</div>
+      </div>
+      <div class="call-card">
+        <div class="call-card-header"><span class="call-title">Premise — Configuration</span><span class="call-date">2026-02-27</span></div>
+        <div class="call-quote teal">"Login Issues Resolved: Clearing browser cache fixed 403 errors for many; password resets issued for affected users."</div>
+      </div>
+      <div class="call-card">
+        <div class="call-card-header"><span class="call-title">4Voice — PSA Training</span><span class="call-date">2026-02-12</span></div>
+        <div class="call-quote teal">"Check Harold's permission settings after reported 403 error to troubleshoot adding customers."</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 07: CACHE / BROWSER -->
+  <div class="section">
+    <div class="section-label">Section 07</div>
+    <div class="section-title"><span class="emoji">🧹</span>Cache / Browser Workarounds</div>
+    <div class="section-divider"></div>
+
+    <div class="cat-header">
+      <span class="cat-icon">🧹</span>
+      <span class="cat-title">Cache / Browser Workarounds</span>
+      <span class="cat-count-badge purple">13 calls</span>
+    </div>
+    <p style="color:var(--text-dim); font-size:14px; margin-bottom:18px;">Clients instructed to clear cache or use incognito/private browsing as a temporary fix. This is a red flag — it means SAs are patching a platform bug with a client workaround instead of a real fix.</p>
+
+    <div class="call-grid">
+      <div class="call-card">
+        <div class="call-card-header"><span class="call-title">PSA Web Daily Stand Up</span><span class="call-date">2026-02-24</span></div>
+        <div class="call-quote purple">"403 Error Troubleshooting: Widespread 403 errors affecting users; temporary fixes suggest clearing browser cache or incognito mode."</div>
+      </div>
+      <div class="call-card">
+        <div class="call-card-header"><span class="call-title">Prestige Configuration</span><span class="call-date">2026-02-26</span></div>
+        <div class="call-quote purple">"User Access Issues Resolved: 403 errors fixed by clearing cache; private browsing mode helped users log in seamlessly."</div>
+      </div>
+      <div class="call-card">
+        <div class="call-card-header"><span class="call-title">Ahelio</span><span class="call-date">2026-02-26</span></div>
+        <div class="call-quote purple">"Share updated cache clearing steps with team to address login issues temporarily."</div>
+      </div>
+      <div class="call-card">
+        <div class="call-card-header"><span class="call-title">Halle Troy Security</span><span class="call-date">2026-01-20</span></div>
+        <div class="call-quote purple">"Provide demonstration/tutorial on how to open browser incognito/private mode to aid login troubleshooting."</div>
+      </div>
+      <div class="call-card">
+        <div class="call-card-header"><span class="call-title">PSA Web — Global Data Technologies</span><span class="call-date">2026-01-20</span></div>
+        <div class="call-quote purple">"User Experience Troubleshooting: Active support for login issues; recommended using Chrome and clearing cache to improve performance."</div>
+      </div>
+      <div class="call-card">
+        <div class="call-card-header"><span class="call-title">Altaworx — AM Recurring Meeting</span><span class="call-date">2026-02-03</span></div>
+        <div class="call-quote purple">"Payment Glitch: Melanie's card info issue unresolved after clearing cache; Chris will escalate to engineering for a fix today."</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 08: 500 ERRORS -->
+  <div class="section">
+    <div class="section-label">Section 08</div>
+    <div class="section-title"><span class="emoji">💥</span>500 / Server Errors</div>
+    <div class="section-divider"></div>
+
+    <div class="cat-header">
+      <span class="cat-icon">💥</span>
+      <span class="cat-title">500 / Server Errors</span>
+      <span class="cat-count-badge teal">7 calls</span>
+    </div>
+    <p style="color:var(--text-dim); font-size:14px; margin-bottom:18px;">Confirmed server-level errors including a 10-hour API outage in November and QBO sync 500 errors in December. These are distinct from client-side issues and represent infrastructure or application failures.</p>
+
+    <div class="call-grid">
+      <div class="call-card">
+        <div class="call-card-header"><span class="call-title">Xmission API Outage</span><span class="call-date">2025-11-12</span></div>
+        <div class="call-quote teal">"API Outage: Failed nightly server restart caused 10-hour billing system down, impacting client services significantly."</div>
+      </div>
+      <div class="call-card">
+        <div class="call-card-header"><span class="call-title">PSA Web Daily Stand Up</span><span class="call-date">2025-12-03</span></div>
+        <div class="call-quote teal">"QuickBooks Integration Priority: Urgent focus on QuickBooks Online syncing; fixes for 500 errors expected in early December to enhance client graduation."</div>
+      </div>
+      <div class="call-card">
+        <div class="call-card-header"><span class="call-title">SA Script Reading Session</span><span class="call-date">2025-12-10</span></div>
+        <div class="call-quote teal">"Investigate and resolve 500 error issues on billing for test accounts; enable billing where necessary."</div>
+      </div>
+      <div class="call-card">
+        <div class="call-card-header"><span class="call-title">ON Leadership Call</span><span class="call-date">2026-01-07</span></div>
+        <div class="call-quote teal">"Investigate and escalate PSA system performance errors and coordinate with IT to address 500 errors."</div>
+      </div>
+      <div class="call-card">
+        <div class="call-card-header"><span class="call-title">Calltower ZD #330034</span><span class="call-date">2025-11-25</span></div>
+        <div class="call-quote teal">"Billing Delays: Recent server move caused slowdown in processing nearly 1,000 bills; fix implemented, further issues under review."</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 09: ROOT CAUSE & RECOMMENDATIONS -->
+  <div class="section">
+    <div class="section-label">Section 09</div>
+    <div class="section-title"><span class="emoji">🔬</span>Root Causes &amp; Recommendations</div>
+    <div class="section-divider"></div>
+
+    <div class="rc-grid">
+      <div class="rc-card">
+        <div class="rc-icon">⚙️</div>
+        <div class="rc-title">Auth Service PHP Rewrite (50–60% Done)</div>
+        <div class="rc-body">The primary driver of login failures, 403 errors, and performance issues. Confirmed in Novalera call (Mar 13). Expected completion early April — this is the most critical fix in flight.</div>
+      </div>
+      <div class="rc-card">
+        <div class="rc-icon">🧠</div>
+        <div class="rc-title">Redis Memory Overload (Feb 24–27 Spike)</div>
+        <div class="rc-body">Caused the most acute 403 error spike. Clearing cache / incognito was the temporary workaround given to clients. Engineering confirmed fix deployed — but monitoring still active as of Mar 12.</div>
+      </div>
+      <div class="rc-card">
+        <div class="rc-icon">🔗</div>
+        <div class="rc-title">Linked Billing + PSA Login Conflicts</div>
+        <div class="rc-body">Users with accounts in both Billing and PSA experience login conflicts. Admins must manually assign roles to new users. Structural fix needed — not just a workaround.</div>
+      </div>
+      <div class="rc-card">
+        <div class="rc-icon">🔑</div>
+        <div class="rc-title">Password Reset Not Self-Serviceable</div>
+        <div class="rc-body">159 calls confirm that clients cannot reset their own passwords without admin or SA intervention. This is the #1 volume driver. Front-end self-service reset needs to be unblocked.</div>
+      </div>
+      <div class="rc-card">
+        <div class="rc-icon">💾</div>
+        <div class="rc-title">Server Migration (Nov 2025)</div>
+        <div class="rc-body">The November server move caused a 10-hour outage (Xmission) and billing processing delays for ~1,000 bills (Calltower). Root cause of the early 500-error spike.</div>
+      </div>
+      <div class="rc-card">
+        <div class="rc-icon">🚀</div>
+        <div class="rc-title">Recommended: Client Comms Before April</div>
+        <div class="rc-body">Auth service rewrite completes early April. Proactive communication to affected clients (Novalera, Truline, Premise, Raven Tech, Newport) before and after release will reduce call volume and rebuild trust.</div>
+      </div>
+    </div>
+
+    <div class="finding-box success" style="margin-top:24px;">
+      <h4>🎯 If You Fix One Thing: Self-Service Password Reset</h4>
+      <p>Password reset issues appear in <strong>159 of 2,637 calls</strong> — more than any other single issue. Each one requires SA or admin time. Fixing the front-end reset flow would be the single highest-impact action for reducing support burden and client friction across the board.</p>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <div class="footer-brand">🚨 Rev.io PSA · Performance &amp; Access Issue Report</div>
+  <div class="footer-meta">2,637 calls searched · 448 flagged · Nov 2025 – Mar 2026 · Source: Fireflies.ai · Alfred 🎩</div>
+</footer>
+
+</body>
+</html>

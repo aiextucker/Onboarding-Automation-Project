@@ -1,0 +1,1595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rev.io PSA: Performance &amp; Access Issues — Full Analysis</title>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --surface2: #21253a;
+      --accent: #6c63ff;
+      --accent2: #00d4aa;
+      --warn: #ffa94d;
+      --danger: #ff6b6b;
+      --muted: #7b7f9e;
+      --text: #e8eaf6;
+      --text-dim: #b0b4cc;
+      --border: rgba(255,255,255,0.07);
+      --radius: 14px;
+      --radius-sm: 8px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      font-size: 15px;
+      line-height: 1.65;
+    }
+
+    /* HERO */
+    .hero {
+      background: linear-gradient(135deg, #1a0a0a 0%, #2a1010 50%, #0f1117 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 60px 24px 48px;
+      text-align: center;
+    }
+    .hero-eyebrow { font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--danger); margin-bottom: 16px; }
+    .hero h1 { font-size: clamp(24px, 5vw, 42px); font-weight: 800; line-height: 1.15; letter-spacing: -0.5px; margin-bottom: 14px; }
+    .hero h1 span { color: var(--danger); }
+    .hero-sub { font-size: clamp(14px, 2.5vw, 18px); color: var(--text-dim); max-width: 660px; margin: 0 auto 28px; font-style: italic; }
+    .hero-meta { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+    .hero-tag { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 5px 14px; font-size: 12px; color: var(--muted); }
+
+    /* LAYOUT */
+    .content { max-width: 980px; margin: 0 auto; padding: 0 20px 80px; }
+
+    /* SECTIONS */
+    .section { margin-top: 56px; }
+    .section-label { font-size: 11px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: var(--danger); margin-bottom: 8px; }
+    .section-title { font-size: clamp(18px, 3.5vw, 26px); font-weight: 700; margin-bottom: 4px; line-height: 1.25; }
+    .section-divider { width: 40px; height: 3px; background: linear-gradient(90deg, var(--danger), var(--warn)); border-radius: 2px; margin: 14px 0 24px; }
+
+    /* STAT CARDS */
+    .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; margin-bottom: 24px; }
+    .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 22px 16px; text-align: center; }
+    .stat-card.red { border-top: 3px solid var(--danger); }
+    .stat-card.warn { border-top: 3px solid var(--warn); }
+    .stat-card.purple { border-top: 3px solid var(--accent); }
+    .stat-card.teal { border-top: 3px solid var(--accent2); }
+    .stat-num { font-size: 36px; font-weight: 800; line-height: 1.1; margin-bottom: 4px; }
+    .stat-num.red { color: var(--danger); }
+    .stat-num.warn { color: var(--warn); }
+    .stat-num.purple { color: var(--accent); }
+    .stat-num.teal { color: var(--accent2); }
+    .stat-label { font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    /* BAR CHART */
+    .bar-list { display: flex; flex-direction: column; gap: 10px; }
+    .bar-item { display: flex; align-items: center; gap: 12px; }
+    .bar-label { width: 230px; font-size: 13px; color: var(--text-dim); flex-shrink: 0; text-align: right; }
+    .bar-track { flex: 1; background: rgba(255,255,255,0.05); border-radius: 6px; height: 28px; overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 6px; display: flex; align-items: center; padding-left: 10px; font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.9); min-width: 40px; white-space: nowrap; transition: width 0.6s ease; }
+    .bar-count { width: 40px; font-size: 13px; font-weight: 700; flex-shrink: 0; text-align: right; }
+    .fill-red { background: linear-gradient(90deg, var(--danger), #ff9090); }
+    .fill-warn { background: linear-gradient(90deg, var(--warn), #ffd090); color: #1a1d27 !important; }
+    .fill-purple { background: linear-gradient(90deg, var(--accent), #9c96ff); }
+    .fill-teal { background: linear-gradient(90deg, var(--accent2), #60e8cc); color: #1a1d27 !important; }
+    .fill-blue { background: linear-gradient(90deg, #4f9cf9, #7ab8ff); }
+
+    /* FINDING BOX */
+    .finding-box { background: linear-gradient(135deg, rgba(255,107,107,0.08), rgba(255,169,77,0.06)); border: 1px solid rgba(255,107,107,0.25); border-radius: var(--radius); padding: 20px 24px; margin-top: 16px; }
+    .finding-box h4 { font-size: 15px; font-weight: 700; margin-bottom: 10px; color: var(--warn); }
+    .finding-box p { font-size: 14px; color: var(--text-dim); }
+    .finding-box p strong { color: var(--text); }
+    .finding-box.critical { background: linear-gradient(135deg, rgba(255,107,107,0.12), rgba(255,107,107,0.06)); border-color: rgba(255,107,107,0.4); }
+    .finding-box.critical h4 { color: var(--danger); }
+    .finding-box.success { background: linear-gradient(135deg, rgba(0,212,170,0.08), rgba(108,99,255,0.06)); border-color: rgba(0,212,170,0.25); }
+    .finding-box.success h4 { color: var(--accent2); }
+
+    /* MONTHLY TABLE */
+    .month-table-wrap { overflow-x: auto; }
+    .month-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .month-table th { background: var(--surface2); color: var(--muted); font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border); white-space: nowrap; }
+    .month-table td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    .month-table tr:hover td { background: rgba(255,255,255,0.02); }
+    .month-table .cat-cell { font-size: 13px; white-space: nowrap; }
+    .month-table .num { text-align: center; font-family: monospace; color: var(--muted); }
+    .month-table .num.hot { color: var(--danger); font-weight: 700; }
+    .month-table .num.warm { color: var(--warn); font-weight: 600; }
+    .month-table .total-num { color: var(--text); font-weight: 800; font-size: 15px; }
+
+    /* CAT HEADER */
+    .cat-header { display: flex; align-items: center; gap: 14px; margin-bottom: 4px; flex-wrap: wrap; }
+    .cat-icon { font-size: 28px; }
+    .cat-title { font-size: 20px; font-weight: 800; color: var(--text); }
+    .cat-count-badge { background: rgba(255,107,107,0.15); color: var(--danger); border: 1px solid rgba(255,107,107,0.3); border-radius: 20px; padding: 4px 12px; font-size: 13px; font-weight: 700; }
+    .cat-count-badge.warn { background: rgba(255,169,77,0.15); color: var(--warn); border-color: rgba(255,169,77,0.3); }
+    .cat-count-badge.purple { background: rgba(108,99,255,0.15); color: var(--accent); border-color: rgba(108,99,255,0.3); }
+    .cat-count-badge.teal { background: rgba(0,212,170,0.15); color: var(--accent2); border-color: rgba(0,212,170,0.3); }
+
+    /* CALL CARDS */
+    .call-grid { display: flex; flex-direction: column; gap: 10px; }
+    .call-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px 18px; }
+    .call-card:hover { border-color: rgba(255,255,255,0.12); }
+    .call-card-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
+    .call-title { font-size: 13px; font-weight: 700; color: var(--text); }
+    .call-date { font-size: 11px; font-weight: 700; color: var(--muted); white-space: nowrap; flex-shrink: 0; font-family: monospace; background: var(--surface2); padding: 2px 7px; border-radius: 4px; }
+    .call-quote { font-size: 13px; color: var(--text-dim); font-style: italic; padding-left: 12px; border-left: 2px solid rgba(255,107,107,0.4); }
+    .call-quote.warn { border-left-color: rgba(255,169,77,0.4); }
+    .call-quote.purple { border-left-color: rgba(108,99,255,0.4); }
+    .call-quote.teal { border-left-color: rgba(0,212,170,0.4); }
+
+    /* BADGES */
+    .badge { display: inline-flex; align-items: center; border-radius: 20px; padding: 3px 10px; font-size: 11px; font-weight: 700; white-space: nowrap; }
+    .badge-red { background: rgba(255,107,107,0.15); color: var(--danger); border: 1px solid rgba(255,107,107,0.3); }
+    .badge-warn { background: rgba(255,169,77,0.15); color: var(--warn); border: 1px solid rgba(255,169,77,0.3); }
+    .badge-teal { background: rgba(0,212,170,0.15); color: var(--accent2); border: 1px solid rgba(0,212,170,0.3); }
+    .badge-purple { background: rgba(108,99,255,0.15); color: var(--accent); border: 1px solid rgba(108,99,255,0.3); }
+
+    /* MORE PILL */
+    .more-pill { background: var(--surface2); color: var(--muted); border-radius: 20px; padding: 4px 14px; font-size: 12px; }
+
+    /* NAV */
+    .nav-wrap { background: var(--surface); border-bottom: 1px solid var(--border); padding: 14px 24px; position: sticky; top: 0; z-index: 100; display: flex; flex-wrap: wrap; gap: 8px; }
+
+    /* FOOTER */
+    footer { text-align: center; padding: 40px 20px; color: var(--muted); font-size: 12px; border-top: 1px solid var(--border); }
+  </style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-eyebrow">⚠️ Customer Impact Report</div>
+  <h1>Rev.io PSA<br><span>Performance &amp; Access Issues</span></h1>
+  <div class="hero-sub">Customer-reported login failures, 403 errors, slow performance, blank views, and access issues extracted from onboarding &amp; configuration calls</div>
+  <div class="hero-meta">
+    <span class="hero-tag">📅 Sep 1, 2025 – Mar 15, 2026</span>
+    <span class="hero-tag">👤 Nicole Hills · Halle Taylor · Kegan Ehlers · Jeremy Adams</span>
+    <span class="hero-tag">📞 705 calls analyzed</span>
+    <span class="hero-tag">* Mar 2026 partial</span>
+  </div>
+</div>
+
+<div class="nav-wrap">
+  <a href="#login--sign-in-failure" style="text-decoration:none"><span class="badge badge-red" style="cursor:pointer;padding:5px 12px;font-size:12px">🔐 Login / Sign-in Failure (94)</span></a> <a href="#403--access-denied-error" style="text-decoration:none"><span class="badge badge-warn" style="cursor:pointer;padding:5px 12px;font-size:12px">🚫 403 / Access Denied Error (37)</span></a> <a href="#500--server-error" style="text-decoration:none"><span class="badge badge-red" style="cursor:pointer;padding:5px 12px;font-size:12px">💥 500 / Server Error (3)</span></a> <a href="#cache--browser-issues" style="text-decoration:none"><span class="badge badge-purple" style="cursor:pointer;padding:5px 12px;font-size:12px">🗑️ Cache / Browser Issues (9)</span></a> <a href="#slow--performance" style="text-decoration:none"><span class="badge badge-warn" style="cursor:pointer;padding:5px 12px;font-size:12px">🐢 Slow / Performance (84)</span></a> <a href="#blank--missing-views" style="text-decoration:none"><span class="badge badge-purple" style="cursor:pointer;padding:5px 12px;font-size:12px">👻 Blank / Missing Views (40)</span></a> <a href="#session--logout-issues" style="text-decoration:none"><span class="badge badge-teal" style="cursor:pointer;padding:5px 12px;font-size:12px">⏏️ Session / Logout Issues (7)</span></a> <a href="#password-reset-issues" style="text-decoration:none"><span class="badge badge-warn" style="cursor:pointer;padding:5px 12px;font-size:12px">🔑 Password Reset Issues (128)</span></a> 
+</div>
+
+<div class="content">
+
+  <div class="section">
+    <div class="section-label">At a Glance</div>
+    <div class="section-title">Summary</div>
+    <div class="section-divider"></div>
+    <div class="stat-grid">
+      <div class="stat-card red"><div class="stat-num red">402</div><div class="stat-label">Total Issue Mentions</div></div>
+      <div class="stat-card warn"><div class="stat-num warn">268</div><div class="stat-label">Affected Calls</div></div>
+      <div class="stat-card purple"><div class="stat-num purple">705</div><div class="stat-label">Calls Analyzed</div></div>
+      <div class="stat-card warn"><div class="stat-num warn">128</div><div class="stat-label">Password Resets (#1)</div></div>
+      <div class="stat-card teal"><div class="stat-num teal">7</div><div class="stat-label">Months Covered</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Volume by Category</div>
+    <div class="section-title">Issue Breakdown</div>
+    <div class="section-divider"></div>
+    <div class="bar-list">
+    <div class="bar-item">
+      <div class="bar-label">🔐 Login / Sign-in Failure</div>
+      <div class="bar-track">
+        <div class="bar-fill fill-red" style="width:73%">94</div>
+      </div>
+      <div class="bar-count">94</div>
+    </div>
+    <div class="bar-item">
+      <div class="bar-label">🚫 403 / Access Denied Error</div>
+      <div class="bar-track">
+        <div class="bar-fill fill-warn" style="width:29%">37</div>
+      </div>
+      <div class="bar-count">37</div>
+    </div>
+    <div class="bar-item">
+      <div class="bar-label">💥 500 / Server Error</div>
+      <div class="bar-track">
+        <div class="bar-fill fill-red" style="width:2%">3</div>
+      </div>
+      <div class="bar-count">3</div>
+    </div>
+    <div class="bar-item">
+      <div class="bar-label">🗑️ Cache / Browser Issues</div>
+      <div class="bar-track">
+        <div class="bar-fill fill-purple" style="width:7%">9</div>
+      </div>
+      <div class="bar-count">9</div>
+    </div>
+    <div class="bar-item">
+      <div class="bar-label">🐢 Slow / Performance</div>
+      <div class="bar-track">
+        <div class="bar-fill fill-warn" style="width:66%">84</div>
+      </div>
+      <div class="bar-count">84</div>
+    </div>
+    <div class="bar-item">
+      <div class="bar-label">👻 Blank / Missing Views</div>
+      <div class="bar-track">
+        <div class="bar-fill fill-purple" style="width:31%">40</div>
+      </div>
+      <div class="bar-count">40</div>
+    </div>
+    <div class="bar-item">
+      <div class="bar-label">⏏️ Session / Logout Issues</div>
+      <div class="bar-track">
+        <div class="bar-fill fill-teal" style="width:5%">7</div>
+      </div>
+      <div class="bar-count">7</div>
+    </div>
+    <div class="bar-item">
+      <div class="bar-label">🔑 Password Reset Issues</div>
+      <div class="bar-track">
+        <div class="bar-fill fill-warn" style="width:100%">128</div>
+      </div>
+      <div class="bar-count">128</div>
+    </div></div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Analysis</div>
+    <div class="section-title">Key Findings</div>
+    <div class="section-divider"></div>
+    
+  <div class="finding-box critical">
+    <h4>🔑 Password Resets are the #1 complaint</h4>
+    <p><strong>128 mentions</strong> across the period — often the downstream symptom of a login or 403 failure. Customers are frequently sent reset emails as a workaround rather than a fix.</p>
+  </div>
+  <div class="finding-box" style="margin-top:14px">
+    <h4>📈 Login failures + 403 errors worsened significantly Jan → Feb 2026</h4>
+    <p>Login failures jumped from <strong>22 (Jan)</strong> to <strong>26 (Feb)</strong>, and 403 errors hit their peak at <strong>12 in Feb</strong>. This aligns with escalating customer-facing complaints during that window.</p>
+  </div>
+  <div class="finding-box" style="margin-top:14px">
+    <h4>👻 Blank/Missing Views tripled from Q4 to Feb 2026</h4>
+    <p>Only <strong>2–4/month</strong> in Sep–Dec, then <strong>10 in Jan</strong> and <strong>14 in Feb</strong>. A sharp acceleration suggesting a regression introduced in late Q4/early Q1.</p>
+  </div>
+  <div class="finding-box success" style="margin-top:14px">
+    <h4>🗑️ Cache/incognito being used as a live workaround</h4>
+    <p>Customers are actively being told to clear cache or go incognito on calls. This appears consistently across multiple clients and hosts — it's a band-aid, not a fix.</p>
+  </div>
+  <div class="finding-box" style="margin-top:14px">
+    <h4>🐢 Performance issues are chronic, not spiky</h4>
+    <p><strong>84 mentions</strong> spread evenly across all 7 months. This is not an incident — it's a systemic baseline problem affecting every cohort of clients throughout onboarding.</p>
+  </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Trends</div>
+    <div class="section-title">Issues per Month by Category</div>
+    <div class="section-divider"></div>
+    <div class="month-table-wrap">
+      <table class="month-table">
+        <thead>
+          <tr>
+            <th>Category</th>
+            <th>Total</th>
+            <th>Sep 2025</th><th>Oct 2025</th><th>Nov 2025</th><th>Dec 2025</th><th>Jan 2026</th><th>Feb 2026</th><th>Mar 2026*</th>
+          </tr>
+        </thead>
+        <tbody><tr><td class="cat-cell">🔐 Login / Sign-in Failure</td><td class="num total-num">94</td><td class="num ">2</td><td class="num hot">14</td><td class="num hot">12</td><td class="num hot">11</td><td class="num hot">22</td><td class="num hot">26</td><td class="num warm">7</td></tr><tr><td class="cat-cell">🚫 403 / Access Denied Error</td><td class="num total-num">37</td><td class="num ">3</td><td class="num ">4</td><td class="num ">3</td><td class="num warm">7</td><td class="num warm">7</td><td class="num hot">12</td><td class="num ">1</td></tr><tr><td class="cat-cell">💥 500 / Server Error</td><td class="num total-num">3</td><td class="num ">—</td><td class="num ">1</td><td class="num ">—</td><td class="num ">—</td><td class="num ">—</td><td class="num ">2</td><td class="num ">—</td></tr><tr><td class="cat-cell">🗑️ Cache / Browser Issues</td><td class="num total-num">9</td><td class="num ">—</td><td class="num ">1</td><td class="num ">1</td><td class="num ">—</td><td class="num ">2</td><td class="num warm">5</td><td class="num ">—</td></tr><tr><td class="cat-cell">🐢 Slow / Performance</td><td class="num total-num">84</td><td class="num ">4</td><td class="num hot">13</td><td class="num hot">13</td><td class="num hot">11</td><td class="num hot">20</td><td class="num hot">13</td><td class="num hot">10</td></tr><tr><td class="cat-cell">👻 Blank / Missing Views</td><td class="num total-num">40</td><td class="num ">2</td><td class="num ">3</td><td class="num ">4</td><td class="num ">4</td><td class="num hot">10</td><td class="num hot">14</td><td class="num ">3</td></tr><tr><td class="cat-cell">⏏️ Session / Logout Issues</td><td class="num total-num">7</td><td class="num ">—</td><td class="num ">—</td><td class="num ">—</td><td class="num ">2</td><td class="num ">2</td><td class="num ">1</td><td class="num ">2</td></tr><tr><td class="cat-cell">🔑 Password Reset Issues</td><td class="num total-num">128</td><td class="num warm">6</td><td class="num hot">19</td><td class="num hot">17</td><td class="num hot">19</td><td class="num hot">31</td><td class="num hot">25</td><td class="num hot">11</td></tr></tbody>
+      </table>
+    </div>
+    <p style="font-size:12px;color:var(--muted);margin-top:10px">🔴 ≥10 &nbsp; 🟠 ≥5 &nbsp; — = zero mentions &nbsp; * Mar 2026 through Mar 12</p>
+  </div>
+
+  
+  <div class="section" id="cat-login--sign-in-failure">
+    <div class="section-label">Issue Category</div>
+    <div class="cat-header">
+      <span class="cat-icon">🔐</span>
+      <span class="cat-title">Login / Sign-in Failure</span>
+      <span class="cat-count-badge">94 mentions</span>
+    </div>
+    <div class="section-divider"></div>
+    <div style="margin-bottom:14px;display:flex;flex-wrap:wrap;gap:6px"><span class="badge badge-red" style="font-size:11px">Sep 2025: 2</span> <span class="badge badge-warn" style="font-size:11px">Oct 2025: 14</span> <span class="badge badge-warn" style="font-size:11px">Nov 2025: 12</span> <span class="badge badge-warn" style="font-size:11px">Dec 2025: 11</span> <span class="badge badge-warn" style="font-size:11px">Jan 2026: 22</span> <span class="badge badge-warn" style="font-size:11px">Feb 2026: 26</span> <span class="badge badge-warn" style="font-size:11px">Mar 2026*: 7</span> </div>
+    <div class="call-grid">
+      
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Secure Property Solutions-Web</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Nicole Hills</div>
+            </div>
+            <div class="call-date">2025-09-16</div>
+          </div>
+          <div class="call-quote">"rescheduling final Q&A to the following week. **Nicole Hills** Resolve Krysta's billing platform login issues by escalating to development team (07:25) Check if invoices can be voided from front-end system and report back by next meeting (57:28) Send documentation on workflows fo…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Tolleson Inc</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Nicole Hills</div>
+            </div>
+            <div class="call-date">2025-09-23</div>
+          </div>
+          <div class="call-quote">"*TRX payment system** configuration completion ensuring secure financial transaction capability 🔑 Login Stabilization: Critical login infrastructure issues were resolved, improving team access. ⚙️ Workflow Failures: Immediate intervention needed for the non-responsive workflows m…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Secure Property</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Nicole Hills</div>
+            </div>
+            <div class="call-date">2025-10-01</div>
+          </div>
+          <div class="call-quote">"d has been escalated for resolution with the support team aware and actively addressing it. - The login issue is isolated to the payment portal, not the client’s primary site access, reducing broader user impact. - Immediate client access has been restored by Nicole to prevent fu…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Soundworks & Security</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Nicole Hills</div>
+            </div>
+            <div class="call-date">2025-10-01</div>
+          </div>
+          <div class="call-quote">"tions. **Nicole Hills** Send password reset email to Gloria Hall after the call and assist with login issues (04:04) Provide documentation on setting up user roles, permissions, and system settings post-call (08:47) Follow up with payment representative Reed regarding the merchan…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Certified Lock and Access</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Kegan Ehlers</div>
+            </div>
+            <div class="call-date">2025-10-07</div>
+          </div>
+          <div class="call-quote">"- Login issues reported: multiple devices auto-login to Amber’s account instead of Stephen Miller’s, prompting investigation by data engineer Keegan Ehlers. - Confusion over admin password and login pro"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Shoreworx Communications &</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Kegan Ehlers</div>
+            </div>
+            <div class="call-date">2025-10-09</div>
+          </div>
+          <div class="call-quote">"nd workflows effectively. - **Keegan completed the user setup during the call, resolving initial login issues with a password reset and guiding Chuck through the system access** (09:34) - Chuck successfully logged in and began exploring the platform by 14:22, signaling readiness …"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Fastrack and</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Kegan Ehlers</div>
+            </div>
+            <div class="call-date">2025-10-09</div>
+          </div>
+          <div class="call-quote">"on the backend and send instructions for access (18:50) Provide Roy with system URL and support for login issues (20:30) Add Allie to the system per Roy’s email and ensure timely login to avoid expiration (23:29) Guide Roy on creating tickets for data import initiation and coordi…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Surveillance Technology USA</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Nicole Hills</div>
+            </div>
+            <div class="call-date">2025-10-10</div>
+          </div>
+          <div class="call-quote">"ongoing communication for troubleshooting system glitches, especially product save issues and user login problems, with screenshots provided for escalation (33:13). - Nicole will validate user setups and assist with permissions, especially for price adjustments, reserved for Luis…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">His</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Nicole Hills</div>
+            </div>
+            <div class="call-date">2025-10-16</div>
+          </div>
+          <div class="call-quote">") Reset and resend user invite emails/password resets to Regina Jones and Gary Luffman; assist with login issues (19:20) Investigate handling of duplicate tickets created via customer emails and report findings (57:30) Schedule and conduct future detailed tax workflow training in…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Integrity Sound</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Nicole Hills</div>
+            </div>
+            <div class="call-date">2025-10-17</div>
+          </div>
+          <div class="call-quote">"- Widespread outage on the Prismatic integration platform caused login failures and 404 errors, affecting multiple client instances and workflows. - Nicole and Joey confirmed simultaneous occurrence of issues, indicating it was not isolated and required immediate a"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Certified Lock and Access</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Kegan Ehlers</div>
+            </div>
+            <div class="call-date">2025-10-21</div>
+          </div>
+          <div class="call-quote">"rchive of the client’s database for safe testing and training purposes (56:01) Investigate the auto-login issue on the client’s device that skips user selection during login (57:35) Provide ongoing support and availability for any questions or assistance needed going forward (59:…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Rapid Broadband</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Halle Taylor</div>
+            </div>
+            <div class="call-date">2025-10-27</div>
+          </div>
+          <div class="call-quote">"one business day, augmenting user assistance through direct feedback to the product team. - Initial login issues experienced by Tom are under investigation, with resolution aimed before his vacation from November 6–17. - Platform hosted on Azure facing authentication glitches due…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Mr PC Office</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Nicole Hills</div>
+            </div>
+            <div class="call-date">2025-10-28</div>
+          </div>
+          <div class="call-quote">"ccordingly (12:10) Remove or deactivate test users and assist in re-adding Mark Richmond to resolve login issues (07:15) Share documentation and join the call with Mark and relevant personnel to assist QuickBooks and payments setup planned for the week of the 11th (05:05) Facilit…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Grad s</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Kegan Ehlers</div>
+            </div>
+            <div class="call-date">2025-10-28</div>
+          </div>
+          <div class="call-quote">"ug by Fran. - Lex monitors backend usage through the Wrench portal to assess user adoption despite login issues, counteracting potential engagement misperceptions. - Smaller MSP clients exhibit fragmented system use, requiring tailored support; many express tolerance for partial …"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Certified Lock and Access</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Kegan Ehlers</div>
+            </div>
+            <div class="call-date">2025-10-28</div>
+          </div>
+          <div class="call-quote">"- Resolved login issue for Xander Morrison by creating a new Azure user account, enabling immediate access and workflow continuation after fixing registry conflicts identified by Sean Kuta. - System restricts to"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Weekly - Merlin Communications</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Kegan Ehlers</div>
+            </div>
+            <div class="call-date">2025-10-30</div>
+          </div>
+          <div class="call-quote">"able custom units if possible (11:53) Reset Mark Dixon’s portal credentials and assist in resolving login issues (15:40) **Kegan Ehlers** Support Lex in following up with Alex Tucker regarding Acronis information and keep Mark Dixon's team updated (06:39) Monitor and communicate …"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">- Login Issue</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Kegan Ehlers</div>
+            </div>
+            <div class="call-date">2025-11-03</div>
+          </div>
+          <div class="call-quote">"- Ellen's login failure was resolved by identifying the incorrect URL redirecting her to a different client’s instance, allowing access to be restored. - Fran Timothy and Kegan Ehlers provided the correct URL,"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">MAPS - Internal Sync-up</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Kegan Ehlers</div>
+            </div>
+            <div class="call-date">2025-11-03</div>
+          </div>
+          <div class="call-quote">"nt information in kickoff materials. - Automated email communications for user setup caused initial login issues, which Keegan addresses by manually resetting passwords during the kickoff. - Jessica has been informed that contracts are currently monthly only; multi-rate contracts…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">SSU</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Nicole Hills</div>
+            </div>
+            <div class="call-date">2025-11-04</div>
+          </div>
+          <div class="call-quote">"r receiving completed form (09:05) Coordinate with technical team to resolve QuickBooks integration login and sync errors; notify Dane when resolved to retry (15:50) Send inventory management training videos and configuration guides to Dane (31:00) Schedule and provide further PS…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Surveillance Technology USA</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Nicole Hills</div>
+            </div>
+            <div class="call-date">2025-11-06</div>
+          </div>
+          <div class="call-quote">"operational risk management (01:00:09). ## **System Permissions and User Access Issues** Initial login and system access challenges were addressed to ensure smooth adoption by all team members, with Nicole actively supporting resolution (03:34). - Alan experienced repeated login …"</div>
+        </div>
+    </div>
+    <div style="text-align:center;margin-top:10px"><span class="more-pill">+ 74 more mentions not shown</span></div>
+  </div>
+  <div class="section" id="cat-403--access-denied-error">
+    <div class="section-label">Issue Category</div>
+    <div class="cat-header">
+      <span class="cat-icon">🚫</span>
+      <span class="cat-title">403 / Access Denied Error</span>
+      <span class="cat-count-badge warn">37 mentions</span>
+    </div>
+    <div class="section-divider"></div>
+    <div style="margin-bottom:14px;display:flex;flex-wrap:wrap;gap:6px"><span class="badge badge-red" style="font-size:11px">Sep 2025: 3</span> <span class="badge badge-red" style="font-size:11px">Oct 2025: 4</span> <span class="badge badge-red" style="font-size:11px">Nov 2025: 3</span> <span class="badge badge-warn" style="font-size:11px">Dec 2025: 7</span> <span class="badge badge-warn" style="font-size:11px">Jan 2026: 7</span> <span class="badge badge-warn" style="font-size:11px">Feb 2026: 12</span> <span class="badge badge-red" style="font-size:11px">Mar 2026*: 1</span> </div>
+    <div class="call-grid">
+      
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Weekly - Merlin Communications</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Kegan Ehlers</div>
+            </div>
+            <div class="call-date">2025-09-15</div>
+          </div>
+          <div class="call-quote warn">"d mobile app features in next week's meeting (25:04) ## **System Access Resolution** - **Critical permission issue resolved** during live troubleshooting session where **Ricky Ghuman** was unable to create new customers in the PSA system (02:48) - **Standard user limitations** pr…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Quotes & Contracts with Amanda Hill</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Nicole Hills</div>
+            </div>
+            <div class="call-date">2025-09-22</div>
+          </div>
+          <div class="call-quote warn">"ransfer from quotes to the PSA system; invoicing captures actual taxes. - Kevin identified PandaDoc permission errors affecting Nicole; backend ticket resolution required from development team. - Recurring agreements, classified as month-to-month contracts, discussed; annual cont…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Tolleson</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Nicole Hills</div>
+            </div>
+            <div class="call-date">2025-09-26</div>
+          </div>
+          <div class="call-quote warn">"richer functionality. ## **QuickBooks Integration Issues and Sync Troubleshooting** Persistent **403 permission errors** disrupt the QuickBooks sync, preventing full data transfer; team agreed to reset the integration and retest by entering test customers and products on both pla…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">PSA Meeting</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Kegan Ehlers</div>
+            </div>
+            <div class="call-date">2025-10-08</div>
+          </div>
+          <div class="call-quote warn">"r** and **John** full system access by assigning them the **global admin role** to resolve previous permission issues (00:12). - **Kegan Ehlers** identified that the access problem stemmed from missing user roles and promptly assigned the global admin role (00:12). - This role no…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Integrity Sound</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Nicole Hills</div>
+            </div>
+            <div class="call-date">2025-10-16</div>
+          </div>
+          <div class="call-quote warn">"manual password for troubleshooting API authentication (14:56) Escalate unresolved integration and permission issues to engineering team for further analysis (23:19) **Nicole Hills** Monitor user setup and billing permissions for Joey and related accounts to check for mismatches …"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Integrity Sound</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Nicole Hills</div>
+            </div>
+            <div class="call-date">2025-10-16</div>
+          </div>
+          <div class="call-quote warn">"ooks requires backend investigation; confirmed correct credentials but linked to potential REST API permission issues. - Nicole Hills and Joey Carder validated username and password integrity, emphasizing use of dot format over underscore as per backend insight from Andrew Birt. …"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Mr PC Office</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Nicole Hills</div>
+            </div>
+            <div class="call-date">2025-10-28</div>
+          </div>
+          <div class="call-quote warn">"d to automate invoices for November and December. - **Error Management:** Integration errors (401/403) are being escalated, affecting customer sync and calendar data visibility. - **Contract Digitization:** All contracts must be digitized by January 2026 to improve billing and op…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Integrity Sound</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Nicole Hills</div>
+            </div>
+            <div class="call-date">2025-11-19</div>
+          </div>
+          <div class="call-quote warn">"count for Google Calendar sync is feasible but requires careful setup to avoid additional costs and permission issues. - **Joey created a dedicated Google Calendar user in the system to test integration and Nicole verified the user exists on the backend but is not visible in Joey…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Newport Network - 30 min</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Halle Taylor</div>
+            </div>
+            <div class="call-date">2025-11-20</div>
+          </div>
+          <div class="call-quote warn">"bility. - The team plans to review and improve user role assignment during the next call to prevent unauthorized access to financials and other sensitive areas. ## **Customer Data Management and Parent-Child Account Structuring** The system’s handling of **parent-child customer r…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">30 Minute</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Kegan Ehlers</div>
+            </div>
+            <div class="call-date">2025-11-21</div>
+          </div>
+          <div class="call-quote warn">"ses but with role restrictions to limit their access only to tickets and related functions. - Unauthorized access attempts will trigger permission pop-ups, improving security and reducing errors. - This setup balances usability for field staff with data protection and compliance …"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Yeti Networks &</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Kegan Ehlers</div>
+            </div>
+            <div class="call-date">2025-12-02</div>
+          </div>
+          <div class="call-quote warn">"04:42) Own responsibility for improving Google Calendar sync reliability and address associated API permission issues (14:21) Work on delivering API documentation for customer integration efforts (15:42) Continue coordinating development of NinjaRMM and Cronus integrations includ…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Certified Lock and Access</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Kegan Ehlers</div>
+            </div>
+            <div class="call-date">2025-12-02</div>
+          </div>
+          <div class="call-quote warn">"ing. - Stephen plans to cross-reference with QuickBooks for accuracy post-import. - Access and permission issues specific to Stephen’s user account are causing import failures, while other users can archive successfully (00:14). - Kegan will escalate to technical support to inves…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Digital Market- Working Session</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Halle Taylor</div>
+            </div>
+            <div class="call-date">2025-12-04</div>
+          </div>
+          <div class="call-quote warn">"ties for the coming week and beyond (55:58). - Halle will investigate and resolve **password reset permission issues** and ensure all users can independently manage login credentials (54:40). - Training for **inventory management** will be scheduled next week to onboard users on …"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Digital Market- Working Session</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Halle Taylor</div>
+            </div>
+            <div class="call-date">2025-12-11</div>
+          </div>
+          <div class="call-quote warn">"g system with rental workflows. **Halle Taylor** Investigate and resolve password reset and login permission issues affecting users, including Carlos and Israel (05:31) Report user invitation and resend invite process challenges to development team for admin visibility enhancemen…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Tigerpaw Training</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Kegan Ehlers</div>
+            </div>
+            <div class="call-date">2025-12-16</div>
+          </div>
+          <div class="call-quote warn">"g that business owner Don had already handled it. - Proper license management mitigates risk of unauthorized system access and controls software costs. - Verification processes prevent miscommunication and ensure compliance with IT policies. - **Rose reported email sending errors…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">All Secured Security Services</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Nicole Hills</div>
+            </div>
+            <div class="call-date">2025-12-18</div>
+          </div>
+          <div class="call-quote warn">"- **System Access Issues:** Ongoing permission errors are blocking ticket creation; escalation to development team in progress for a quick fix. - **Flexible Ticketing Workflow:** New system supports customizable ticket creation for va"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Marcotek Weekly</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Kegan Ehlers</div>
+            </div>
+            <div class="call-date">2025-12-22</div>
+          </div>
+          <div class="call-quote warn">"out brackets, and the county-specific tax codes by next Monday (53:29) Create the GL income account 4030 (Price Credit) in Tiger Paw and have the accountant mirror it in QuickBooks (43:01) Coordinate access to QuickBooks credentials/admin information for integration testing (53:0…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Tolleson Client</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Nicole Hills</div>
+            </div>
+            <div class="call-date">2026-01-07</div>
+          </div>
+          <div class="call-quote warn">"ure fully launches (29:30). - Payroll staff reported missing visibility on timesheets due to **user permission issues**, which will be addressed by granting proper access as part of the Apollo 1 release (14:42). - Temporary use of a **third-party payroll platform** was accepted a…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Soundworks & Security Client</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Nicole Hills</div>
+            </div>
+            <div class="call-date">2026-01-08</div>
+          </div>
+          <div class="call-quote warn">"switch is necessary - Resolving this will stabilize calendar operations and prevent recurring permission errors during updates - **Ticket loading failures are linked to calendar action errors**, complicating the creation of calendar items and tickets within the system (02:52) - B…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">CL Sams - Web</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Kegan Ehlers</div>
+            </div>
+            <div class="call-date">2026-01-22</div>
+          </div>
+          <div class="call-quote warn">"tion and custom fields to enhance reporting and transparency. **Clay Lovelace** Monitor forbidden 403 errors for any pattern and report findings (02:05) Finalize and communicate which custom ticket statuses to retain and which to remove for system cleanup (38:21) Begin building c…"</div>
+        </div>
+    </div>
+    <div style="text-align:center;margin-top:10px"><span class="more-pill">+ 17 more mentions not shown</span></div>
+  </div>
+  <div class="section" id="cat-500--server-error">
+    <div class="section-label">Issue Category</div>
+    <div class="cat-header">
+      <span class="cat-icon">💥</span>
+      <span class="cat-title">500 / Server Error</span>
+      <span class="cat-count-badge">3 mentions</span>
+    </div>
+    <div class="section-divider"></div>
+    <div style="margin-bottom:14px;display:flex;flex-wrap:wrap;gap:6px"><span class="badge badge-red" style="font-size:11px">Oct 2025: 1</span> <span class="badge badge-red" style="font-size:11px">Feb 2026: 2</span> </div>
+    <div class="call-grid">
+      
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Integrity Sound</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Nicole Hills</div>
+            </div>
+            <div class="call-date">2025-10-28</div>
+          </div>
+          <div class="call-quote">"s so far, with software engineers actively investigating** (26:48) - Nicole and Joey observed server errors and logs indicating customer sync issues but confirmed the sync process is running. - Nicole promised to relay any critical errors that require reconfiguration or redoing t…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Xandrea- sprout billing Qs</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Halle Taylor</div>
+            </div>
+            <div class="call-date">2026-02-11</div>
+          </div>
+          <div class="call-quote">"onfirmed via live testing on a test account. - This manual approach reduces unintended credit application errors. - Xandrea prefers this control to avoid unplanned adjustments. - **Credits Affect Overdue Balances Before Posting** (19:27) - Even unposted credits reduce the overdue"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">- Novalera and</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Nicole Hills</div>
+            </div>
+            <div class="call-date">2026-02-20</div>
+          </div>
+          <div class="call-quote">"login credentials were shared with timely follow-ups to confirm receipt. - A known login error (500 error) emerged during setup, which Nicole escalated immediately to the VP of engineering for quick resolution. - **System foundation configuration** prioritized during the first co…"</div>
+        </div>
+    </div>
+    
+  </div>
+  <div class="section" id="cat-cache--browser-issues">
+    <div class="section-label">Issue Category</div>
+    <div class="cat-header">
+      <span class="cat-icon">🗑️</span>
+      <span class="cat-title">Cache / Browser Issues</span>
+      <span class="cat-count-badge purple">9 mentions</span>
+    </div>
+    <div class="section-divider"></div>
+    <div style="margin-bottom:14px;display:flex;flex-wrap:wrap;gap:6px"><span class="badge badge-red" style="font-size:11px">Oct 2025: 1</span> <span class="badge badge-red" style="font-size:11px">Nov 2025: 1</span> <span class="badge badge-red" style="font-size:11px">Jan 2026: 2</span> <span class="badge badge-warn" style="font-size:11px">Feb 2026: 5</span> </div>
+    <div class="call-grid">
+      
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Grad s</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Kegan Ehlers</div>
+            </div>
+            <div class="call-date">2025-10-28</div>
+          </div>
+          <div class="call-quote purple">"critical bug** impacting first-time user experience and causing repeated troubleshooting steps like clearing cache or switching browsers. - Josh and Ryan Downs are tasked with diagnosing the misalignment of authentication tables and ticket assignment issues during imports. - The …"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">- Login Issue</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Kegan Ehlers</div>
+            </div>
+            <div class="call-date">2025-11-03</div>
+          </div>
+          <div class="call-quote purple">"o refine internal workflows to prevent recurring login disruptions. - Multiple password resets and cache clearing attempts had been tried unsuccessfully before identifying the URL issue, indicating gaps in initial triage steps (03:03). - The team planned to re-examine **permissio…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Web - Global Data Technologies</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Kegan Ehlers</div>
+            </div>
+            <div class="call-date">2026-01-20</div>
+          </div>
+          <div class="call-quote purple">"**User Experience Troubleshooting:** Active support for login issues; recommended using Chrome and clearing cache to improve performance. - **Project Timeline:** Core data import expected complete shortly after February 2nd, aiming for seamless operational transition. - **Team Co…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Intek Technology Solutions Client</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Nicole Hills</div>
+            </div>
+            <div class="call-date">2026-01-27</div>
+          </div>
+          <div class="call-quote purple">"le investigated login problems and email link failures, ruling out browser cookie issues by testing incognito mode and multiple browsers (31:00). - Nicole plans to escalate the issue with internal teams using screen captures from the call to diagnose the problem further (33:05). …"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Raven Tech</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Kegan Ehlers</div>
+            </div>
+            <div class="call-date">2026-02-25</div>
+          </div>
+          <div class="call-quote purple">"ion and frustration. - The problem was resolved enough for Drew Aldinger to access the system via incognito mode, though occasional instability remains. - Kegan committed to monitoring the 403 errors and updating the team, aiming to restore full stable access soon. ## **Data Impo…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">XMission - Weekly Web</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Kegan Ehlers</div>
+            </div>
+            <div class="call-date">2026-02-25</div>
+          </div>
+          <div class="call-quote purple">"verify system behavior. - Michael noted 403 forbidden errors during use, with Kegan advising cache clearing as a temporary fix. - Resolving these issues will improve user experience and data integrity. ## **Dispatch and Scheduling Functionality** The team plans to evaluate and po…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Prestige</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Halle Taylor</div>
+            </div>
+            <div class="call-date">2026-02-26</div>
+          </div>
+          <div class="call-quote purple">"- **User Access Issues Resolved:** 403 errors fixed by clearing cache; private browsing mode helped users log in seamlessly. - **Customer Import Template Provided:** Template will expedite onboarding of **32 new clients by Monday**, reducing manual proc"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">All Secured Security Services</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Nicole Hills</div>
+            </div>
+            <div class="call-date">2026-02-26</div>
+          </div>
+          <div class="call-quote purple">"h adoption. (42:00) - Haley Weldon experienced access errors requiring password resets and browser cache clearing, supported by Nicole and Mark. - Nicole’s engineering team is actively working on resolving login problems with expected fixes by next week. - The next meeting will i…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Premise</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Halle Taylor</div>
+            </div>
+            <div class="call-date">2026-02-27</div>
+          </div>
+          <div class="call-quote purple">"- **Login Issues Resolved:** Clearing browser cache fixed 403 errors for many; password resets issued for affected users. - **Admin Role Adjustments:** Conflicting admin permissions removed, planning to unify admin roles for si"</div>
+        </div>
+    </div>
+    
+  </div>
+  <div class="section" id="cat-slow--performance">
+    <div class="section-label">Issue Category</div>
+    <div class="cat-header">
+      <span class="cat-icon">🐢</span>
+      <span class="cat-title">Slow / Performance</span>
+      <span class="cat-count-badge warn">84 mentions</span>
+    </div>
+    <div class="section-divider"></div>
+    <div style="margin-bottom:14px;display:flex;flex-wrap:wrap;gap:6px"><span class="badge badge-red" style="font-size:11px">Sep 2025: 4</span> <span class="badge badge-warn" style="font-size:11px">Oct 2025: 13</span> <span class="badge badge-warn" style="font-size:11px">Nov 2025: 13</span> <span class="badge badge-warn" style="font-size:11px">Dec 2025: 11</span> <span class="badge badge-warn" style="font-size:11px">Jan 2026: 20</span> <span class="badge badge-warn" style="font-size:11px">Feb 2026: 13</span> <span class="badge badge-warn" style="font-size:11px">Mar 2026*: 10</span> </div>
+    <div class="call-grid">
+      
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Centra IP Networks</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Nicole Hills</div>
+            </div>
+            <div class="call-date">2025-09-10</div>
+          </div>
+          <div class="call-quote warn">"tion. - Workflows can now be configured to automate notifications for various conditions, enhancing response times based on ticket severity and status changes. - Demonstrated real-time tracking of quote statuses through PandaDoc, providing transparency throughout the quote delive…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Centra IP Networks</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Nicole Hills</div>
+            </div>
+            <div class="call-date">2025-09-26</div>
+          </div>
+          <div class="call-quote warn">"- Customer tiers can dictate default ticket priorities, allowing premium clients to receive faster response times automatically. - The ability to upload images and terms directly to contracts provides a consolidated reference that supports legal and operational clarity. - These c…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Centra IP Networks</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Nicole Hills</div>
+            </div>
+            <div class="call-date">2025-09-30</div>
+          </div>
+          <div class="call-quote warn">"he support team now includes a larger group with new members, offering broader expertise and faster response times. - Ongoing onboarding tasks will be closed by the current team, while new issues will be handled by client success, ensuring continuity. - Planned webinars and train…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Tolleson Inc</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Nicole Hills</div>
+            </div>
+            <div class="call-date">2025-09-30</div>
+          </div>
+          <div class="call-quote warn">"ad balancing. - Emergency calls can be scheduled quickly from the calendar interface, improving response times. - Nicole confirmed that while the calendar view currently supports only single users, a group calendar and expanded views are targeted for release within **4 to 6 weeks…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Secure Property</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Nicole Hills</div>
+            </div>
+            <div class="call-date">2025-10-01</div>
+          </div>
+          <div class="call-quote warn">"ng QuickBooks Online integration; recent rev payment approval awaits testing. - Estimated support response times are 45-60 minutes, with a direct phone line for urgent issues to be shared post-meeting. - Client's engagement and understanding appreciated, highlighting enthusiasm f…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Yeti Networks &</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Kegan Ehlers</div>
+            </div>
+            <div class="call-date">2025-10-03</div>
+          </div>
+          <div class="call-quote warn">"integration with existing systems. **John** Log into the Rev.io system promptly to avoid password timeout (12:44) Attempt adding users after completing onboarding steps; report failures (14:39) **Kegan Ehlers** Add initial user (John) and ensure admin onboarding tracks are assign…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Trilogy Web</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Kegan Ehlers</div>
+            </div>
+            <div class="call-date">2025-10-07</div>
+          </div>
+          <div class="call-quote warn">"orm. ## **Connectivity and Remote Access Challenges** Poor internet connectivity caused delays in system access and slowed meeting progress (02:26). - **Becky’s hotspot connection** struggled, resulting in dropped calls and difficulty logging into the system for the integration s…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Shoreworx Communications &</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Kegan Ehlers</div>
+            </div>
+            <div class="call-date">2025-10-09</div>
+          </div>
+          <div class="call-quote warn">"ill help Chuck manage his dispersed teams more efficiently, reducing manual processes and improving response times. - Chuck’s leadership in local recovery communities adds urgency to maintaining operational stability during his wife’s recovery from surgery. ## **Training and Supp…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Integrity Sound</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Nicole Hills</div>
+            </div>
+            <div class="call-date">2025-10-16</div>
+          </div>
+          <div class="call-quote warn">"ly updates until resolution** (24:23) - She emphasized transparency about progress and expected response times. - This communication plan reduces uncertainty and maintains client trust during the downtime. - Nicole and Andrew will work closely through the next day to push resolut…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Fastrack - to Discuss</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Halle Taylor</div>
+            </div>
+            <div class="call-date">2025-10-17</div>
+          </div>
+          <div class="call-quote warn">"is multi-person alert system ensures **coverage even if Halle or Kegan are unavailable**, improving response times. - The team acknowledged potential long onboarding timelines (Allie anticipated delays until next year) and encouraged continuous communication to avoid stagnation. …"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Weekly - Merlin Communications</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Kegan Ehlers</div>
+            </div>
+            <div class="call-date">2025-10-20</div>
+          </div>
+          <div class="call-quote warn">"an Ehlers proposed automating workflows based on ticket status changes to enhance communication and response times for job progress. - **Macros for Service Orders**: Macros will facilitate faster job setup for recurring tasks, with templates ready to reduce manual entry and stand…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">- Digital Market POS</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Halle Taylor</div>
+            </div>
+            <div class="call-date">2025-10-21</div>
+          </div>
+          <div class="call-quote warn">"issions for enhanced security and clarity. - Support is structured to be responsive, with a typical response time of one business day, ensuring continuous assistance during and after onboarding. - QuickBooks Online identified as a priority integration to be addressed post-data im…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Rapid Broadband</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Halle Taylor</div>
+            </div>
+            <div class="call-date">2025-10-27</div>
+          </div>
+          <div class="call-quote warn">"count activation window for password resets. - Support channels include a help button, with typical response time within one business day, augmenting user assistance through direct feedback to the product team. - Initial login issues experienced by Tom are under investigation, wi…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">The Launch Pad</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Nicole Hills</div>
+            </div>
+            <div class="call-date">2025-10-28</div>
+          </div>
+          <div class="call-quote warn">"ngs and irreversibility (16:16) Complete bulk and individual product inventory and serial tracking flagging UI (16:13) Deliver inventory adjustment modals and matrix view with stock transfer, reservation, cost adjustment for serialized/non-serialized products (19:30) Integrate re…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Certified Lock and Access</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Kegan Ehlers</div>
+            </div>
+            <div class="call-date">2025-10-28</div>
+          </div>
+          <div class="call-quote warn">"boards** (34:13). - Priority settings enable SLA alignment (e.g., emergency, medium), supporting response time goals though not mandatory for all jobs. - Zones help geographically or operationally segment work, aiding scheduling and avoiding conflicts, as Stephen suggested using …"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Soundworks & Security</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Nicole Hills</div>
+            </div>
+            <div class="call-date">2025-10-29</div>
+          </div>
+          <div class="call-quote warn">"uctures will be put in place to track ticket progress and closure. - Expected outcome is faster response times and fewer missed or duplicated tickets. - **Carrie is preparing to add a new builder account with a child job entry as a test case**, with Nicole ready to provide hands-…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Aviation Communications</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Nicole Hills</div>
+            </div>
+            <div class="call-date">2025-10-31</div>
+          </div>
+          <div class="call-quote warn">"- This setup minimizes manual intervention, streamlines customer support workflows, and improves response times by automating ticket creation and communication (05:23). ## **Data Import Strategy and Cleanup** The focus is on importing clean, relevant customer and contact data int…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">- Login Issue</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Kegan Ehlers</div>
+            </div>
+            <div class="call-date">2025-11-03</div>
+          </div>
+          <div class="call-quote warn">"the necessity of refining internal workflows to prevent recurrence of login disruptions and improve response time. - Cross-team collaboration, particularly between engineering and support, proved crucial for achieving timely issue resolution and customer satisfaction. **Fran Timo…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Tolleson</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Nicole Hills</div>
+            </div>
+            <div class="call-date">2025-11-04</div>
+          </div>
+          <div class="call-quote warn">"ongoing services for clients. - **Unified Ticketing System:** Shared Zendesk system will enhance response times for billing and PSA software inquiries. - **Migration Success:** Clients adopting the new system ahead of schedule, improving time-to-value and ROI. - **Clear Communica…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Loricca and</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Halle Taylor</div>
+            </div>
+            <div class="call-date">2025-11-11</div>
+          </div>
+          <div class="call-quote warn">"ems by submitting issues with screenshots, videos, and available times for follow-up calls. - Response time is guaranteed within one business day but typically faster, ensuring timely assistance. - Product feedback and feature requests can be submitted directly to the product tea…"</div>
+        </div>
+    </div>
+    <div style="text-align:center;margin-top:10px"><span class="more-pill">+ 64 more mentions not shown</span></div>
+  </div>
+  <div class="section" id="cat-blank--missing-views">
+    <div class="section-label">Issue Category</div>
+    <div class="cat-header">
+      <span class="cat-icon">👻</span>
+      <span class="cat-title">Blank / Missing Views</span>
+      <span class="cat-count-badge purple">40 mentions</span>
+    </div>
+    <div class="section-divider"></div>
+    <div style="margin-bottom:14px;display:flex;flex-wrap:wrap;gap:6px"><span class="badge badge-red" style="font-size:11px">Sep 2025: 2</span> <span class="badge badge-red" style="font-size:11px">Oct 2025: 3</span> <span class="badge badge-red" style="font-size:11px">Nov 2025: 4</span> <span class="badge badge-red" style="font-size:11px">Dec 2025: 4</span> <span class="badge badge-warn" style="font-size:11px">Jan 2026: 10</span> <span class="badge badge-warn" style="font-size:11px">Feb 2026: 14</span> <span class="badge badge-red" style="font-size:11px">Mar 2026*: 3</span> </div>
+    <div class="call-grid">
+      
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Tolleson Inc</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Nicole Hills</div>
+            </div>
+            <div class="call-date">2025-09-23</div>
+          </div>
+          <div class="call-quote purple">"invoice processing (24:47) - **Curtis** (lead technician) scheduled for participation to identify missing data fields and workflow gaps from field operations perspective (05:18) - Live testing environment provided for safe practice operations without affecting production data int…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Alarmtech</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Nicole Hills</div>
+            </div>
+            <div class="call-date">2025-09-24</div>
+          </div>
+          <div class="call-quote purple">"nd swiftly returning corrected data; Nicole to assist with data cleanup. - Contract entry process reviewed; missing contracts identified with plans for streamlined entry including contract status and linking details. - Numeric-only contract IDs confirmed as standard; Nicole to ve…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Trilogy Web</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Kegan Ehlers</div>
+            </div>
+            <div class="call-date">2025-10-07</div>
+          </div>
+          <div class="call-quote purple">"nt, as confirmed by both parties. ## **Product List Management** The current **product list was reviewed and cleaned** to remove duplicates and missing prices, ensuring smooth system import (01:21). - Products lacking prices will be inputted as **$0 by default**, allowing flexibi…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Tigerpaw Training</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Kegan Ehlers</div>
+            </div>
+            <div class="call-date">2025-10-07</div>
+          </div>
+          <div class="call-quote purple">"g that deleting all codes would disrupt QuickBooks integration temporarily (46:07). - Rose will review reports on GL codes, including the **GL distribution code list** report, to assess current setup and identify missing or incorrect codes (48:12). - Kegan clarified that GL accou…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Ron Palyok and Kegan Ehlers</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Kegan Ehlers</div>
+            </div>
+            <div class="call-date">2025-10-14</div>
+          </div>
+          <div class="call-quote purple">"to avoid failures - Errors will specify which item IDs were not updated, helping to pinpoint missing data - This check maintains data integrity and prevents accidental creation of unknown inventory items ## **Physical Inventory Count Adjustments** The team discussed methods to up…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Virtual Guardians</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Nicole Hills</div>
+            </div>
+            <div class="call-date">2025-11-03</div>
+          </div>
+          <div class="call-quote purple">"reflecting a phased product rollout approach (54:01). - The platform’s current limitations, like missing data merge and shipping address features, are acknowledged but seen as manageable temporarily, reinforcing a pragmatic, incremental adoption strategy (34:46). ## **Technical a…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Digital Market- Working Session</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Halle Taylor</div>
+            </div>
+            <div class="call-date">2025-11-13</div>
+          </div>
+          <div class="call-quote purple">"ncluding information on ticketing and product setup (23:24) **Jeremy Adams** Conduct data import review once files received; provide feedback on missing addresses, duplicate account IDs, and data formatting (06:06) Assist with data template structuring, ensuring customer and cont…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Integrity Sound</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Nicole Hills</div>
+            </div>
+            <div class="call-date">2025-11-19</div>
+          </div>
+          <div class="call-quote purple">"ntegrity and sync issues are resolved. - **Operational Improvements Needed:** Urgency to integrate missing data to prevent billing disputes; clearer user roles will enhance system management. - **Next Steps Identified:** Nicole will deliver cleaned contact data today; ongoing mon…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Certified Lock and Access</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Kegan Ehlers</div>
+            </div>
+            <div class="call-date">2025-11-25</div>
+          </div>
+          <div class="call-quote purple">"data from RazorSync for more complete profiles. - **The team faced challenges with inconsistent or missing data, especially primary contact names, which led them to run customized reports in RazorSync to capture all necessary fields** (00:26). - Stephen customized reports to incl…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Newport Network Solutions</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Halle Taylor</div>
+            </div>
+            <div class="call-date">2025-12-04</div>
+          </div>
+          <div class="call-quote purple">"Outlook to display their names even when replying from a shared service address. - **Halle Taylor** noted that ticket notification emails originate from the service email but may not display the individual sender’s name, requiring further testing. - There is potential to embed us…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">E-Alarm Web</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Kegan Ehlers</div>
+            </div>
+            <div class="call-date">2025-12-10</div>
+          </div>
+          <div class="call-quote purple">"customer. - Discounts are applied by adjusting contract prices manually, though the system does not flag or display discounts explicitly on invoices. - Joe stressed the importance of showing discount amounts visibly to customers for future pricing corrections. ## **Product Catalo…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Pando Tech Solutions</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Nicole Hills</div>
+            </div>
+            <div class="call-date">2025-12-15</div>
+          </div>
+          <div class="call-quote purple">"23:55). - Nicole confirmed the **list prices have not yet been updated** to customer prices due to missing data. - She offered to coordinate with the backend team to update prices once Pando Tech provides the correct list prices. - This update is planned to be done in bulk to avo…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Digital Market- Working Session</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Halle Taylor</div>
+            </div>
+            <div class="call-date">2025-12-31</div>
+          </div>
+          <div class="call-quote purple">"rrent reporting software is broken and inaccessible**, causing users to receive errors like 404 and white screens when accessing report creation tools (02:42). - Halle Taylor confirmed the old reporting module is being pulled and will be replaced with an internal system. - The re…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Creative Vision Tech</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Nicole Hills</div>
+            </div>
+            <div class="call-date">2026-01-05</div>
+          </div>
+          <div class="call-quote purple">"aining sessions planned to enhance techs' system proficiency before starting daily jobs. **aj** Review system data for errors or missing information when feeling better, especially related to customer contacts (07:40) Gradually enter 3-5 current open jobs into Rev IO for soft lau…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Tolleson Client</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Nicole Hills</div>
+            </div>
+            <div class="call-date">2026-01-07</div>
+          </div>
+          <div class="call-quote purple">"rew Birt’s contact info to Brittany for direct error reporting and support communications (09:13) Review Tolleson product data imports focusing on missing serial/part numbers and coordinate with data engineering team for imports and search functionality improvements (15:40) Coord…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Cicada Systems - 2 Week</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Halle Taylor</div>
+            </div>
+            <div class="call-date">2026-01-12</div>
+          </div>
+          <div class="call-quote purple">"ompany name or separately for data import accuracy and inform Frankie of proper structure (39:17) Review the spreadsheet Frankie sends and prepare it for system upload; add dummy addresses if missing and consult data import team if needed (29:59) Check with Jeremy about the possi…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Newport Network Solutions- Working Session</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Halle Taylor</div>
+            </div>
+            <div class="call-date">2026-01-13</div>
+          </div>
+          <div class="call-quote purple">"rrently limited, affecting user convenience and adoption** (11:13) - Users must currently reset views each login due to missing persistence. - Future updates will add more filtering and saving options to improve repeated use efficiency. ## **Team Coordination and Next Steps** Cle…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">MiSwitch Training</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Nicole Hills</div>
+            </div>
+            <div class="call-date">2026-01-14</div>
+          </div>
+          <div class="call-quote purple">"or accurate imports. - The team discovered that tickets created without customer association may not display properly in PSA (23:56). - Nicole recommended creating a generic "My Switch" customer for unassigned tickets to enable reassignment and filtering. - Ticket-level attachmen…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Security Vision Client</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Nicole Hills</div>
+            </div>
+            <div class="call-date">2026-01-14</div>
+          </div>
+          <div class="call-quote purple">"the system, aiming to improve data accuracy and integration (02:10). - Stacy’s team is currently reviewing and updating the **manufacturer list**, marking obsolete and missing entries for removal or addition (24:54). - Nicole offered to consolidate multiple files into a single sp…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">MiSwitch Client</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Nicole Hills</div>
+            </div>
+            <div class="call-date">2026-01-23</div>
+          </div>
+          <div class="call-quote purple">"ospect versus open status filters. - Nicole confirmed filtering defaults exclude prospects from views, explaining some customers appear missing. - Mark highlighted the need to adjust filters to show prospects to avoid confusion. - Nicole will escalate syncing issues to engineerin…"</div>
+        </div>
+    </div>
+    <div style="text-align:center;margin-top:10px"><span class="more-pill">+ 20 more mentions not shown</span></div>
+  </div>
+  <div class="section" id="cat-session--logout-issues">
+    <div class="section-label">Issue Category</div>
+    <div class="cat-header">
+      <span class="cat-icon">⏏️</span>
+      <span class="cat-title">Session / Logout Issues</span>
+      <span class="cat-count-badge teal">7 mentions</span>
+    </div>
+    <div class="section-divider"></div>
+    <div style="margin-bottom:14px;display:flex;flex-wrap:wrap;gap:6px"><span class="badge badge-red" style="font-size:11px">Dec 2025: 2</span> <span class="badge badge-red" style="font-size:11px">Jan 2026: 2</span> <span class="badge badge-red" style="font-size:11px">Feb 2026: 1</span> <span class="badge badge-red" style="font-size:11px">Mar 2026*: 2</span> </div>
+    <div class="call-grid">
+      
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">XMission & - !</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Kegan Ehlers</div>
+            </div>
+            <div class="call-date">2025-12-17</div>
+          </div>
+          <div class="call-quote teal">"by logging out and back in or waiting for backend processing (25:24). - Mandy reported being kicked out when accessing invoice management, linked to duplicate accounts (30:05). - Keegan disabled duplicates and will coordinate backend cleanup to remove inactive or redundant users …"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Digital Market- Working Session</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Halle Taylor</div>
+            </div>
+            <div class="call-date">2025-12-17</div>
+          </div>
+          <div class="call-quote teal">"**Ismael Adames reported** that two non-admin users, Miriam Loarca and Luis Navarro, continue to be kicked out of the system when accessing specific tabs like "Inventory History Beta" (00:55) - Halle acknowledged similar issues had been occurring last week and promised to escalat…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Newport Network Solutions- Working Session</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Halle Taylor</div>
+            </div>
+            <div class="call-date">2026-01-13</div>
+          </div>
+          <div class="call-quote teal">"ablished to accommodate various procurement and logistical needs. - **System Performance Issues:** Session timeouts and slowness reported; need for support investigation to improve user experience and efficiency. **Halle Taylor** Test new release features related to merging unbil…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Obera Connect - Project Management</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Nicole Hills</div>
+            </div>
+            <div class="call-date">2026-01-28</div>
+          </div>
+          <div class="call-quote teal">"a full project view in the app is planned for later - Project-level tasks can be created and assigned, but currently must be added manually per project without automation features - Kemp explained a planned "duplicate project" feature expected in February to clone entire projects…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Pando Tech Payments Setup</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Nicole Hills</div>
+            </div>
+            <div class="call-date">2026-02-09</div>
+          </div>
+          <div class="call-quote teal">"of daily codes are being considered but not yet implemented. - The risk of email delays blocking login access was noted, especially if email servers experience outages, which could halt software use unexpectedly (15:00). - Nicole committed to **follow up on possible improvements*…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Web | Bridge Comm with Kegan</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Kegan Ehlers</div>
+            </div>
+            <div class="call-date">2026-03-09</div>
+          </div>
+          <div class="call-quote teal">"ng the 16th, focused on initial system functionality and data import (21:18) Investigate web portal session timeout duration and report findings (22:32) Facilitate connection with API specialists for Bridge Comm’s integration needs (20:15) ## **Platform Onboarding and User Setup*…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Command Corp- Working Session</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Halle Taylor</div>
+            </div>
+            <div class="call-date">2026-03-11</div>
+          </div>
+          <div class="call-quote teal">"gin persistence and session management** (26:04) - Halle Taylor and Guinea Pig were temporarily logged out unexpectedly - Username and password confusion contributed to access issues - Team agreed to revisit portal login procedures after resolving current bugs ## **Quote Creation…"</div>
+        </div>
+    </div>
+    
+  </div>
+  <div class="section" id="cat-password-reset-issues">
+    <div class="section-label">Issue Category</div>
+    <div class="cat-header">
+      <span class="cat-icon">🔑</span>
+      <span class="cat-title">Password Reset Issues</span>
+      <span class="cat-count-badge warn">128 mentions</span>
+    </div>
+    <div class="section-divider"></div>
+    <div style="margin-bottom:14px;display:flex;flex-wrap:wrap;gap:6px"><span class="badge badge-warn" style="font-size:11px">Sep 2025: 6</span> <span class="badge badge-warn" style="font-size:11px">Oct 2025: 19</span> <span class="badge badge-warn" style="font-size:11px">Nov 2025: 17</span> <span class="badge badge-warn" style="font-size:11px">Dec 2025: 19</span> <span class="badge badge-warn" style="font-size:11px">Jan 2026: 31</span> <span class="badge badge-warn" style="font-size:11px">Feb 2026: 25</span> <span class="badge badge-warn" style="font-size:11px">Mar 2026*: 11</span> </div>
+    <div class="call-grid">
+      
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Trilogy Web</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Kegan Ehlers</div>
+            </div>
+            <div class="call-date">2025-09-09</div>
+          </div>
+          <div class="call-quote warn">"22:58) Forward cleaned customer data to data engineer for backend import once received (04:09) Send password reset email for PSA portal access (26:32) 📊 Import Process & Data Cleanup: Becky will clean up the Excel sheet to better categorize customers, with Kegan resending the imp…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Galaxy Weekly</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Kegan Ehlers</div>
+            </div>
+            <div class="call-date">2025-09-16</div>
+          </div>
+          <div class="call-quote warn">"password generation** with mandatory reset requirement upon first login for enhanced security - **Password reset capabilities** maintained by administrators for ongoing customer support needs - **Embedded portal integration** possible for company website to reduce customer login …"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Secure Property Solutions-Web</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Nicole Hills</div>
+            </div>
+            <div class="call-date">2025-09-16</div>
+          </div>
+          <div class="call-quote warn">"aced login access issues to the billing platform after creating a new user account, necessitating a password reset. - Payment processing setup confirmed as operational with rates 0.24% lower than QuickBooks, and up to 0.55% + $0.30 less than Square and 0.15% + $0.30 less than Str…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Tolleson Inc</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Nicole Hills</div>
+            </div>
+            <div class="call-date">2025-09-23</div>
+          </div>
+          <div class="call-quote warn">"at after repeated email-based login attempts caused system lockouts (04:13) - **Steven's** remote password reset completed through **Brittany's** proxy email access while traveling, ensuring continuity of system onboarding (05:51) - Dual username entries discovered in backend sys…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Surveillance Technology USA</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Nicole Hills</div>
+            </div>
+            <div class="call-date">2025-09-29</div>
+          </div>
+          <div class="call-quote warn">"followed by user practice to enhance learning. - Overview of system settings highlighted dark mode, password resets, and language options, underscoring the importance of company info validation. - Foundational data, including customers, contacts, and products, is critical for ini…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Savvy Communications</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Halle Taylor</div>
+            </div>
+            <div class="call-date">2025-09-30</div>
+          </div>
+          <div class="call-quote warn">"ablished** for account activation with support escalation available if lockout occurs (15:21) - **Password reset protocols confirmed** through billing system integration requiring Solutions Analyst intervention for security (15:21) • **Role-based permission structure planning** i…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Soundworks & Security</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Nicole Hills</div>
+            </div>
+            <div class="call-date">2025-10-01</div>
+          </div>
+          <div class="call-quote warn">"roles configurations before the next onboarding call. - System settings were outlined, including password resets and email configurations, essential for proper workflow and communication. - Clear distinction made between commercial and residential customer accounts, highlighting …"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Weekly - Merlin Communications</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Kegan Ehlers</div>
+            </div>
+            <div class="call-date">2025-10-06</div>
+          </div>
+          <div class="call-quote warn">"yment method selection is actively being resolved to prevent transaction issues. - Portal users can reset passwords and view payment history, supporting self-service and reducing manual support overhead. - The portal supports white-labeling, allowing branding as **Merlin Security…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Galaxy Weekly</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Kegan Ehlers</div>
+            </div>
+            <div class="call-date">2025-10-07</div>
+          </div>
+          <div class="call-quote warn">"; Brian will send formal requirements to the team to complete the email connector setup. - Password changes on the email account used by the timer service may have caused sending failures; Kegan will coordinate with the engineer and verify the email and password status. - Since t…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">) Dialog Telecommunications, Inc.</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Kegan Ehlers</div>
+            </div>
+            <div class="call-date">2025-10-08</div>
+          </div>
+          <div class="call-quote warn">"er activation (14:24) - Access expires after 12 hours to ensure prompt onboarding, preventing password resets - Admins will manage user additions and permissions independently, accelerating adoption ## **Pricing, Licensing, and Billing Terms** Pricing and billing terms were struc…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Shoreworx Communications &</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Kegan Ehlers</div>
+            </div>
+            <div class="call-date">2025-10-09</div>
+          </div>
+          <div class="call-quote warn">"her coordinate on payment integration. - Chuck successfully regained system access after a manual password reset and was encouraged to explore the system and complete the training path. **Chuck Norris** Join the payment setup call with Reid on Monday at 2:00 PM ET (10:30) Follow …"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Fastrack and</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Kegan Ehlers</div>
+            </div>
+            <div class="call-date">2025-10-09</div>
+          </div>
+          <div class="call-quote warn">"ess initiated for intake forms and login info, addressing Night Security’s onboarding confusion and password reset communication gaps. - Recurring revenue focus confirmed as a customer priority, with a shift from monthly to quarterly billing expected in future iterations. - Alarm…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Surveillance Technology USA</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Nicole Hills</div>
+            </div>
+            <div class="call-date">2025-10-10</div>
+          </div>
+          <div class="call-quote warn">"s part of import preparation. - System issues included inability to save products and vendors, with password resets needed; Nicole assisted Luis with his reset during the call. - Nicole will coordinate with the data engineering team by Monday for data import preparation, involvin…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Galaxy Weekly</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Kegan Ehlers</div>
+            </div>
+            <div class="call-date">2025-10-14</div>
+          </div>
+          <div class="call-quote warn">"ce names are provided by Andrew (15:20) Liaise with technical support (Pete) to implement efficient password reset and email connector maintenance procedures (16:00) Support communication to keep weekly meetings flexible and aligned with project progress (14:40) **Shane** Coordin…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Knight Security Alarm and</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Halle Taylor</div>
+            </div>
+            <div class="call-date">2025-10-14</div>
+          </div>
+          <div class="call-quote warn">"s with Todd and Kara; provide guided sessions and facilitate contact with DE team as needed (08:44) Reset passwords or resolve access issues for Todd and Kara promptly if needed (20:54) Respond promptly to any emerging questions during onboarding (28:42) **Reid Doster** Email Tod…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Soundworks & Security</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Nicole Hills</div>
+            </div>
+            <div class="call-date">2025-10-15</div>
+          </div>
+          <div class="call-quote warn">"ord setup for new users, especially Lee Hall, requires a **PC or iPad for first-time access**, with password resets handled on the back end by Nicole’s team (24:57). - The user management setup is critical for **secure operations, role clarity, and efficient dispatching** once pr…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Integrity Sound</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Nicole Hills</div>
+            </div>
+            <div class="call-date">2025-10-16</div>
+          </div>
+          <div class="call-quote warn">"ith alternative emails including Tori’s to exclude email-related blocking. - The team ruled out password resets as Joey had not changed his password recently, focusing instead on email and permission settings. - This investigation was critical for understanding cross-system ident…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">His</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Nicole Hills</div>
+            </div>
+            <div class="call-date">2025-10-16</div>
+          </div>
+          <div class="call-quote warn">"ts per ticket capability; provide roadmap and timelines (16:00) Reset and resend user invite emails/password resets to Regina Jones and Gary Luffman; assist with login issues (19:20) Investigate handling of duplicate tickets created via customer emails and report findings (57:30)…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">Marotek Weekly</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Kegan Ehlers</div>
+            </div>
+            <div class="call-date">2025-10-20</div>
+          </div>
+          <div class="call-quote warn">"n tests (50:06). - Kegan emphasized testing the connection and will assist on the next meeting if password or connection issues persist, aiming for a stable system by next Wednesday (54:53). ## **Workflow and Template Setup for Dispatch** The team outlined the need to customize s…"</div>
+        </div>
+        <div class="call-card">
+          <div class="call-card-header">
+            <div>
+              <div class="call-title">- Digital Market POS</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Host: Halle Taylor</div>
+            </div>
+            <div class="call-date">2025-10-21</div>
+          </div>
+          <div class="call-quote warn">"n have restricted views such as ticket-only access, ensuring security and role clarity (34:49). - Password reset and role creation happen within the user management tab, supporting efficient user administration (35:58). - API keys management is available, allowing technical teams…"</div>
+        </div>
+    </div>
+    <div style="text-align:center;margin-top:10px"><span class="more-pill">+ 108 more mentions not shown</span></div>
+  </div>
+
+</div>
+
+<footer>
+  Generated March 15, 2026 &nbsp;·&nbsp; Alfred 🎩 &nbsp;·&nbsp; Data: Fireflies.ai &nbsp;·&nbsp; 705 calls · Sep 2025 – Mar 2026
+</footer>
+
+</body>
+</html>

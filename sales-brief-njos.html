@@ -1,0 +1,1467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rev.io PSA — Sales Brief · New Jersey Office Systems</title>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --surface2: #21253a;
+      --surface3: #262a3e;
+      --accent: #6c63ff;
+      --accent2: #00d4aa;
+      --warn: #ffa94d;
+      --danger: #ff6b6b;
+      --muted: #7b7f9e;
+      --text: #e8eaf6;
+      --text-dim: #b0b4cc;
+      --border: rgba(255,255,255,0.07);
+      --border-focus: rgba(108,99,255,0.5);
+      --radius: 14px;
+      --radius-sm: 8px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      font-size: 15px;
+      line-height: 1.65;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      background: linear-gradient(135deg, #12142a 0%, #1a1040 50%, #0f1117 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 48px 24px 36px;
+      text-align: center;
+    }
+    .hero-eyebrow {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--accent2);
+      margin-bottom: 12px;
+    }
+    .hero h1 {
+      font-size: clamp(22px, 4vw, 36px);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.5px;
+      margin-bottom: 10px;
+    }
+    .hero h1 span { color: var(--accent); }
+    .hero-sub {
+      font-size: 14px;
+      color: var(--text-dim);
+      max-width: 600px;
+      margin: 0 auto 20px;
+    }
+    .hero-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 10px 22px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      transition: opacity 0.15s;
+    }
+    .btn:hover { opacity: 0.85; }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-secondary { background: var(--surface2); color: var(--text-dim); border: 1px solid var(--border); }
+
+    /* ── LAYOUT ── */
+    .content {
+      max-width: 880px;
+      margin: 0 auto;
+      padding: 0 20px 80px;
+    }
+
+    /* ── SECTION ── */
+    .section { margin-top: 48px; }
+    .section-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+    .section-title {
+      font-size: clamp(16px, 3vw, 22px);
+      font-weight: 700;
+      margin-bottom: 4px;
+      line-height: 1.25;
+    }
+    .section-divider {
+      width: 40px;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      border-radius: 2px;
+      margin: 12px 0 20px;
+    }
+    .section-desc {
+      font-size: 13px;
+      color: var(--text-dim);
+      margin-bottom: 20px;
+    }
+
+    /* ── CARD ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px 26px;
+      margin-bottom: 14px;
+    }
+    .card.warn-border { border-left: 3px solid var(--warn); }
+    .card.accent-border { border-left: 3px solid var(--accent); }
+    .card.green-border { border-left: 3px solid var(--accent2); }
+
+    .card-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .card-title .badge {
+      margin-left: auto;
+    }
+
+    /* ── FORM ELEMENTS ── */
+    .field-grid {
+      display: grid;
+      gap: 14px;
+    }
+    .field-grid.col2 { grid-template-columns: 1fr 1fr; }
+    .field-grid.col3 { grid-template-columns: 1fr 1fr 1fr; }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .field label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .field label .req { color: var(--danger); margin-left: 2px; }
+    .field label .tag {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      padding: 1px 7px;
+      border-radius: 10px;
+      margin-left: 6px;
+      vertical-align: middle;
+    }
+    .tag-core { background: rgba(108,99,255,0.15); color: var(--accent); }
+    .tag-cond { background: rgba(255,169,77,0.15); color: var(--warn); }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="date"],
+    input[type="number"],
+    select,
+    textarea {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      font-size: 14px;
+      font-family: inherit;
+      padding: 10px 14px;
+      outline: none;
+      transition: border-color 0.15s;
+      width: 100%;
+    }
+    input[type="text"]:focus,
+    input[type="email"]:focus,
+    input[type="date"]:focus,
+    input[type="number"]:focus,
+    select:focus,
+    textarea:focus {
+      border-color: var(--border-focus);
+      background: var(--surface3);
+    }
+    textarea { resize: vertical; min-height: 80px; }
+    select option { background: #1a1d27; }
+
+    /* radio / checkbox groups */
+    .radio-group, .check-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 2px;
+    }
+    .radio-group label, .check-group label {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 7px 13px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-dim);
+      cursor: pointer;
+      text-transform: none;
+      letter-spacing: 0;
+      transition: border-color 0.15s, background 0.15s;
+      user-select: none;
+    }
+    .radio-group input[type="radio"],
+    .check-group input[type="checkbox"] {
+      width: auto;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+    .radio-group label:has(input:checked),
+    .check-group label:has(input:checked) {
+      border-color: var(--accent);
+      background: rgba(108,99,255,0.1);
+      color: var(--text);
+    }
+
+    /* ── ROLES TABLE ── */
+    .roles-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 4px;
+    }
+    .roles-table th {
+      background: var(--surface2);
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 10px 14px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    .roles-table td {
+      padding: 8px 6px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+    .roles-table td input, .roles-table td select {
+      padding: 8px 10px;
+      font-size: 13px;
+    }
+    .roles-table .del-btn {
+      background: none;
+      border: none;
+      color: var(--danger);
+      cursor: pointer;
+      font-size: 16px;
+      padding: 4px 8px;
+      opacity: 0.6;
+    }
+    .roles-table .del-btn:hover { opacity: 1; }
+    .add-row-btn {
+      margin-top: 10px;
+      background: var(--surface2);
+      border: 1px dashed rgba(108,99,255,0.3);
+      border-radius: 6px;
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 600;
+      padding: 8px 16px;
+      cursor: pointer;
+      width: 100%;
+      text-align: center;
+      transition: background 0.15s;
+    }
+    .add-row-btn:hover { background: rgba(108,99,255,0.08); }
+
+    /* ── ADDENDUM BLOCKS ── */
+    .addendum-block {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 16px 18px;
+      margin-bottom: 10px;
+      position: relative;
+    }
+    .addendum-block .remove-btn {
+      position: absolute;
+      top: 10px;
+      right: 12px;
+      background: none;
+      border: none;
+      color: var(--danger);
+      cursor: pointer;
+      font-size: 18px;
+      opacity: 0.5;
+    }
+    .addendum-block .remove-btn:hover { opacity: 1; }
+
+    /* ── BADGE ── */
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+    .badge-accent  { background: rgba(108,99,255,0.15); color: var(--accent); }
+    .badge-green   { background: rgba(0,212,170,0.12);  color: var(--accent2); }
+    .badge-warn    { background: rgba(255,169,77,0.15); color: var(--warn); }
+    .badge-danger  { background: rgba(255,107,107,0.15); color: var(--danger); }
+
+    /* ── DIVIDER ── */
+    .field-divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 18px 0;
+    }
+
+    /* ── HINT TEXT ── */
+    .hint {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 3px;
+    }
+
+    /* ── CONDITIONAL SECTION ── */
+    .cond-section {
+      background: rgba(255,169,77,0.04);
+      border: 1px solid rgba(255,169,77,0.2);
+      border-radius: var(--radius);
+      padding: 20px 22px;
+      margin-bottom: 14px;
+    }
+    .cond-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--warn);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* ── PRINT STYLES ── */
+    @media print {
+      body { background: #fff; color: #111; font-size: 12px; }
+      .hero { background: #f0f0f8; border-bottom: 2px solid #6c63ff; padding: 24px; }
+      .hero h1 { color: #1a1040; }
+      .hero h1 span { color: #6c63ff; }
+      .hero-sub { color: #555; }
+      .hero-actions { display: none; }
+      .card, .cond-section, .addendum-block {
+        background: #f9f9fc;
+        border: 1px solid #ddd;
+        break-inside: avoid;
+      }
+      input, select, textarea {
+        background: #fff;
+        border: 1px solid #ccc;
+        color: #111;
+      }
+      .section-label { color: #6c63ff; }
+      .section-title { color: #1a1040; }
+      .muted, .hint { color: #666; }
+      .badge-accent { background: #ede9ff; color: #6c63ff; }
+      .badge-warn { background: #fff3e0; color: #e67e00; }
+      .add-row-btn { display: none; }
+      .del-btn { display: none; }
+      .remove-btn { display: none; }
+    }
+
+    /* ── FOOTER ── */
+    .footer {
+      text-align: center;
+      padding: 32px 20px;
+      border-top: 1px solid var(--border);
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    @media (max-width: 600px) {
+      .field-grid.col2, .field-grid.col3 { grid-template-columns: 1fr; }
+    }
+  
+    input.pf, select.pf, textarea.pf { border-color: rgba(0,212,170,0.4) !important; background: rgba(0,212,170,0.04) !important; }
+    input.gap, select.gap, textarea.gap { border-color: rgba(255,107,107,0.45) !important; background: rgba(255,107,107,0.04) !important; }
+
+  </style>
+</head>
+<body>
+
+<!-- HERO -->
+<div style="background:linear-gradient(90deg,rgba(0,212,170,0.1),rgba(108,99,255,0.07));border-bottom:1px solid rgba(0,212,170,0.2);padding:12px 24px;display:flex;align-items:center;gap:14px;font-size:13px;color:#b0b4cc;"><span style="background:rgba(0,212,170,0.15);color:#00d4aa;border:1px solid rgba(0,212,170,0.3);border-radius:20px;padding:3px 12px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;white-space:nowrap;">&#9889; Auto-populated</span><span>Salesforce + Outreach data pulled for <strong style="color:#00d4aa">New Jersey Office Systems</strong> &middot; Closed-Won 2026-03-16 &middot; <strong style="color:#00d4aa">Green</strong> = pre-filled &middot; <strong style="color:#ff6b6b">Red</strong> = Sales gap</span></div>
+<div class="hero">
+  <div class="hero-eyebrow">⚡ Rev.io PSA — Sales to SA Handoff</div>
+  <h1><span>Sales Brief</span> — Pre-Onboarding</h1>
+  <p class="hero-sub">Complete at close. Hand off to the SA 48 hours before kickoff. Every field filled = one less question on Day 1.</p>
+  <div class="hero-actions">
+    <button class="btn btn-primary" onclick="window.print()">🖨️ Print / Save as PDF</button>
+    <button class="btn btn-secondary" onclick="clearForm()">↺ Clear Form</button>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- SECTION 01: DEAL HEADER -->
+  <div class="section">
+    <div class="section-label">Section 01</div>
+    <div class="section-title">🏢 Client &amp; Deal Information</div>
+    <div class="section-divider"></div>
+
+    <div class="card">
+      <div class="field-grid col2">
+        <div class="field">
+          <label>Company Name <span class="req">*</span></label>
+          <input type="text" class="pf" value="New Jersey Office Systems" />
+        </div>
+        <div class="field">
+          <label>Close Date <span class="req">*</span></label>
+          <input type="date" class="pf" value="2026-03-16" />
+        </div>
+        <div class="field">
+          <label>Monthly Recurring Revenue (MRR)</label>
+          <input type="text" class="pf" value="$560 / mo" />
+        </div>
+        <div class="field">
+          <label>Contract Term</label>
+          <select>
+            <option value="">— Select —</option>
+            <option>Month-to-Month</option>
+            <option>12 Months</option>
+            <option>24 Months</option>
+            <option>36 Months</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Sales Rep <span class="req">*</span></label>
+          <input type="text" class="pf" value="Jay Sapirman / Justin Lee" />
+        </div>
+        <div class="field">
+          <label>SA Assigned</label>
+          <select>
+            <option value="">— Assign SA —</option>
+            <option>Nicole Hills</option>
+            <option>Halle Taylor</option>
+            <option>Kegan Ehlers</option>
+            <option>Jeremy Adams</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Primary Client Contact <span class="req">*</span></label>
+          <input type="text" class="pf" value="Shawn Donelson - Owner / President" />
+        </div>
+        <div class="field">
+          <label>Primary Contact Email</label>
+          <input type="email" class="pf" value="sdonelson@njosllc.com" />
+        </div>
+      </div>
+
+      <hr class="field-divider" />
+
+      <div class="field-grid col2">
+        <div class="field">
+          <label>Existing Rev.io Billing Client?</label>
+          <div class="radio-group">
+            <label><input type="radio" name="billing_client" value="yes" /> Yes — existing billing</label>
+            <label><input type="radio" name="billing_client" value="no" checked /> No — net new</label>
+          </div>
+          <p class="hint">If No → complete Section 05 (Billing Profile)</p>
+        </div>
+        <div class="field">
+          <label>Business Vertical <span class="req">*</span></label>
+          <select>
+            <option value="">— Select vertical —</option>
+            <option selected>MSP (Managed Service Provider)</option>
+            <option>Security Integrator</option>
+            <option>AV / Low Voltage</option>
+            <option>Field Service</option>
+            <option>Telecom / VoIP</option>
+            <option>Multi-service</option>
+            <option>Other</option>
+          </select>
+        </div>
+      </div>
+
+      <hr class="field-divider" />
+
+      <div class="field">
+        <label>Brief — Key Context for SA</label>
+        <textarea class="pf">Migrating from E-Automate (ECI). Key pain points: E-Automate is cumbersome and bloated -- freezes frequently, too many steps for common workflows. Mobile app is broken for field techs (cannot open a new ticket without closing the current one). Cannot retain a bookkeeper willing to work in E-Automate; client reverting to QuickBooks. Billing/collections split across Virtue/Vibe + E-Automate -- past due balances not visible on invoices without manually sending statements.
+
+Payments: Currently using Authorize.net for credit cards. ACH is fully manual -- client sends customers a paper form, customer does the bank transfer directly. In active discussion with Justin Lee (Rev.io Payments) re: migrating -- merchant statements pending.
+
+Contacts: Shawn Donelson (Owner, decision-maker, often on the road), Vanessa Donelson (Office Manager, day-to-day operational contact), Sue O'Keefe (role unknown -- confirm at kickoff).
+
+Red flag: Shawn travels frequently -- Vanessa is the hands-on contact. Confirm who drives onboarding vs. who has approval authority.</textarea>
+      </div>
+    </div>
+
+    <!-- KICKOFF SCHEDULING -->
+    <div class="card" style="border-left: 3px solid var(--accent2);">
+      <div class="card-title">⚡ Kickoff Scheduling <span class="badge badge-green">Non-Negotiable</span></div>
+      <p class="hint" style="margin-bottom:16px;">Per CEO mandate: same-day or next-day kickoff required. Closes before noon → kickoff that afternoon. Closes after noon → kickoff next morning. Batter's box rotation — next SA in queue takes this deal.</p>
+      <div class="field-grid col2">
+        <div class="field">
+          <label>Kickoff Target Date <span class="req">*</span></label>
+          <input type="date" class="gap" placeholder="Not set in SF" />
+        </div>
+        <div class="field">
+          <label>Kickoff Target Time</label>
+          <input type="text" placeholder="e.g. 2:00 PM ET" />
+        </div>
+        <div class="field">
+          <label>Go-Live Complexity Tier</label>
+          <div class="radio-group">
+            <label><input type="radio" name="golive_tier" value="simple" checked /> <strong>Simple</strong> — ≤$700/mo, no data or payment migration → target 1 week</label>
+            <label><input type="radio" name="golive_tier" value="payments" /> <strong>With Payment Migration</strong> → target 3 weeks</label>
+            <label><input type="radio" name="golive_tier" value="billing" /> <strong>Billing Client / Complex</strong> → defined timeline required</label>
+          </div>
+        </div>
+        <div class="field">
+          <label>Go-Live Target Date</label>
+          <input type="date" />
+          <p class="hint">Based on complexity tier above. Simple clients: 1 week from kickoff.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 02: CORE 8 -->
+  <div class="section">
+    <div class="section-label">Section 02</div>
+    <div class="section-title">🎯 Core 8 — Required at Close</div>
+    <div class="section-divider"></div>
+    <p class="section-desc">These 8 data points unlock the majority of pre-configuration. Every answer here is work the SA doesn't have to do on Day 1.</p>
+
+    <!-- Q1: Prior PSA -->
+    <div class="card accent-border">
+      <div class="card-title">1️⃣ Prior PSA / Current System <span class="badge badge-accent">Data Import</span></div>
+      <div class="field-grid col2">
+        <div class="field">
+          <label>Current / Prior PSA <span class="req">*</span></label>
+          <select>
+            <option value="">— Select —</option>
+            <option>ConnectWise</option>
+            <option>Tigerpaw / TigerPaw</option>
+            <option>Halo PSA</option>
+            <option>HouseCall Pro</option>
+            <option>Zoho</option>
+            <option>Autotask</option>
+            <option>Jira</option>
+            <option>Alarm Biller</option>
+            <option>Spreadsheets only</option>
+            <option>None / starting fresh</option>
+            <option selected>Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>If Other — specify</label>
+          <input type="text" class="pf" value="E-Automate (ECI)" />
+        </div>
+        <div class="field">
+          <label>Migration Complexity</label>
+          <div class="radio-group">
+            <label><input type="radio" name="migration" value="clean" /> Clean data — ready to export</label>
+            <label><input type="radio" name="migration" value="messy" checked /> Needs cleanup first</label>
+            <label><input type="radio" name="migration" value="fresh" /> No migration needed</label>
+          </div>
+        </div>
+        <div class="field">
+          <label>Approx. Customer / Record Count</label>
+          <input type="text" placeholder="e.g. ~200 customers, 1,500 tickets" />
+        </div>
+      </div>
+      <div class="field" style="margin-top:14px;">
+        <label>Migration Notes</label>
+        <textarea placeholder="Any known data quality issues, special migration requirements, legacy data to exclude, etc." style="min-height:60px;"></textarea>
+      </div>
+    </div>
+
+    <!-- Q2: Accounting Software -->
+    <div class="card accent-border">
+      <div class="card-title">2️⃣ Accounting Software <span class="badge badge-accent">Integrations</span></div>
+      <div class="field-grid col2">
+        <div class="field">
+          <label>Accounting Software <span class="req">*</span></label>
+          <select>
+            <option value="">— Select —</option>
+            <option>QuickBooks Online</option>
+            <option selected>QuickBooks Desktop</option>
+            <option>NetSuite</option>
+            <option>Sage</option>
+            <option>Xero</option>
+            <option>FreshBooks</option>
+            <option>None</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>If Other — specify</label>
+          <input type="text" placeholder="Software name" />
+        </div>
+        <div class="field">
+          <label>Two-Way Sync Required?</label>
+          <div class="radio-group">
+            <label><input type="radio" name="qb_sync" value="yes" /> Yes</label>
+            <label><input type="radio" name="qb_sync" value="no" /> No — one-way only</label>
+            <label><input type="radio" name="qb_sync" value="unsure" checked /> TBD</label>
+          </div>
+        </div>
+        <div class="field">
+          <label>GL Codes Ready?</label>
+          <div class="radio-group">
+            <label><input type="radio" name="gl_codes" value="yes" /> Yes — chart of accounts ready</label>
+            <label><input type="radio" name="gl_codes" value="no" checked /> No — accountant needs to provide</label>
+          </div>
+        </div>
+      </div>
+      <p class="hint" style="margin-top:10px;">⚠️ QuickBooks Desktop = no direct integration today. Flag for SA — workaround path required.</p>
+    </div>
+
+    <!-- Q3: RMM Tool -->
+    <div class="card accent-border">
+      <div class="card-title">3️⃣ RMM Tool <span class="badge badge-accent">Integrations</span></div>
+      <div class="field-grid col2">
+        <div class="field">
+          <label>RMM Tool <span class="req">*</span></label>
+          <select>
+            <option value="">— Select —</option>
+            <option>NinjaOne / NinjaRMM</option>
+            <option>Datto RMM</option>
+            <option>ConnectWise Automate</option>
+            <option>Atera</option>
+            <option>Syncro</option>
+            <option>Kaseya VSA</option>
+            <option>N-able N-sight</option>
+            <option selected>None</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>If Other - specify</label>
+          <input type="text" placeholder="RMM name" />
+        </div>
+        <div class="field">
+          <label>Integration Priority</label>
+          <div class="radio-group">
+            <label><input type="radio" name="rmm_priority" value="day1" /> Day 1 priority</label>
+            <label><input type="radio" name="rmm_priority" value="later" /> Phase 2</label>
+            <label><input type="radio" name="rmm_priority" value="none" checked /> Not needed</label>
+          </div>
+        </div>
+        <div class="field">
+          <label>Other Integrations Needed</label>
+          <div class="check-group">
+            <label><input type="checkbox" /> PandaDoc</label>
+            <label><input type="checkbox" /> HubSpot</label>
+            <label><input type="checkbox" /> Outlook</label>
+            <label><input type="checkbox" /> Google Calendar</label>
+            <label><input type="checkbox" /> PAX8</label>
+            <label><input type="checkbox" /> Zoho CRM</label>
+            <label><input type="checkbox" /> Custom API</label>
+          </div>
+        </div>
+      </div>
+      <div class="field" style="margin-top:14px;">
+        <label>Integration Notes / Custom API Details</label>
+        <textarea placeholder="e.g. custom alarm monitoring system requires bidirectional API — spec TBD" style="min-height:55px;"></textarea>
+      </div>
+    </div>
+
+    <!-- Q4: Payment Processor -->
+    <div class="card accent-border">
+      <div class="card-title">4️⃣ Payment Processor <span class="badge badge-accent">Payments Config</span></div>
+      <div class="field-grid col2">
+        <div class="field">
+          <label>Current Payment Processor <span class="req">*</span></label>
+          <select>
+            <option value="">— Select —</option>
+            <option>Rev.io Payments (already live)</option>
+            <option>Stripe</option>
+            <option>Square</option>
+            <option>PayPal</option>
+            <option selected>Authorize.net</option>
+            <option>TRX / Payroc</option>
+            <option>Manual / check only</option>
+            <option>None yet</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Switching to Rev.io Payments?</label>
+          <div class="radio-group">
+            <label><input type="radio" name="payments_switch" value="yes" /> Yes — migrating</label>
+            <label><input type="radio" name="payments_switch" value="no" /> No — keeping current</label>
+            <label><input type="radio" name="payments_switch" value="new" /> Setting up new</label>
+            <label><input type="radio" name="payments_switch" value="tbd" checked /> TBD</label>
+          </div>
+        </div>
+        <div class="field">
+          <label>Merchant Statements Available?</label>
+          <div class="radio-group">
+            <label><input type="radio" name="merchant" value="yes" /> Yes — 3 months ready</label>
+            <label><input type="radio" name="merchant" value="no" checked /> No — needs to collect</label>
+            <label><input type="radio" name="merchant" value="na" /> N/A</label>
+          </div>
+        </div>
+        <div class="field">
+          <label>Payment Methods Accepted</label>
+          <div class="check-group">
+            <label><input type="checkbox" /> Credit Card</label>
+            <label><input type="checkbox" /> ACH / Bank Transfer</label>
+            <label><input type="checkbox" /> Check</label>
+            <label><input type="checkbox" /> Card Reader (in-field)</label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q5: Users & Roles -->
+    <div class="card accent-border">
+      <div class="card-title">5️⃣ Users &amp; Roles <span class="badge badge-accent">Admin / Users</span></div>
+      <p class="hint" style="margin-bottom:14px;">List every person who needs Rev.io access. Use their actual job title — the SA maps this to Rev.io role (Admin / Billing Admin / Manager / Dispatcher / Field Tech / Standard).</p>
+
+      <table class="roles-table" id="rolesTable">
+        <thead>
+          <tr>
+            <th>Full Name</th>
+            <th>Job Title</th>
+            <th>Email</th>
+            <th>Rev.io Role</th>
+            <th>Mobile App?</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="rolesBody">
+          <tr>
+            <td><input type="text" class="pf" value="Shawn Donelson" /></td>
+            <td><input type="text" class="pf" value="Owner / President" /></td>
+            <td><input type="email" class="pf" value="sdonelson@njosllc.com" /></td>
+            <td>
+              <select>
+                <option value="">— Role —</option>
+                <option>Admin</option>
+                <option>Billing Admin</option>
+                <option>Operations Manager</option>
+                <option>Dispatcher</option>
+                <option>Field Technician</option>
+                <option>Help Desk</option>
+                <option>Standard</option>
+                <option>TBD</option>
+              </select>
+            </td>
+            <td>
+              <div class="radio-group" style="flex-direction:column; gap:4px;">
+                <label><input type="radio" name="mob_0" value="yes" /> Yes</label>
+                <label><input type="radio" name="mob_0" value="no" checked /> No</label>
+              </div>
+            </td>
+            <td><button class="del-btn" onclick="removeRow(this)" title="Remove">✕</button></td>
+          </tr>
+          <tr>
+            <td><input type="text" class="pf" value="Vanessa Donelson" /></td>
+            <td><input type="text" class="pf" value="Office Manager" /></td>
+            <td><input type="email" class="pf" value="vanessa@njosllc.com" /></td>
+            <td><select><option>-- Role --</option><option>Admin</option><option>Billing Admin</option><option selected>Operations Manager</option><option>Dispatcher</option><option>Field Technician</option><option>Standard</option><option>TBD</option></select></td>
+            <td><div class="radio-group" style="flex-direction:column;gap:4px;"><label><input type="radio" name="mob_1" value="yes" /> Yes</label><label><input type="radio" name="mob_1" value="no" checked /> No</label></div></td>
+            <td><button class="del-btn" onclick="removeRow(this)">x</button></td>
+          </tr>
+          <tr>
+            <td><input type="text" class="pf" value="Sue O'Keefe" /></td>
+            <td><input type="text" class="gap" value="Unknown - confirm at kickoff" /></td>
+            <td><input type="email" class="pf" value="sokeefe@njosllc.com" /></td>
+            <td><select class="gap"><option selected>-- Role --</option><option>Admin</option><option>Billing Admin</option><option>Operations Manager</option><option>Dispatcher</option><option>Field Technician</option><option>Standard</option><option>TBD</option></select></td>
+            <td><div class="radio-group" style="flex-direction:column;gap:4px;"><label><input type="radio" name="mob_2" value="yes" /> Yes</label><label><input type="radio" name="mob_2" value="no" checked /> No</label></div></td>
+            <td><button class="del-btn" onclick="removeRow(this)">x</button></td>
+          </tr>
+        </tbody>
+      </table>
+      <button class="add-row-btn" onclick="addRoleRow()">+ Add User</button>
+    </div>
+
+    <!-- Q6: Dispatch Model -->
+    <div class="card accent-border">
+      <div class="card-title">6️⃣ Dispatch Model <span class="badge badge-accent">Processes</span></div>
+      <div class="field-grid col2">
+        <div class="field">
+          <label>Dispatch Method <span class="req">*</span></label>
+          <div class="check-group">
+            <label><input type="checkbox" /> By Department</label>
+            <label><input type="checkbox" /> By Geography / Zone</label>
+            <label><input type="checkbox" /> By Skill Set</label>
+            <label><input type="checkbox" /> By Individual Tech</label>
+            <label><input type="checkbox" /> No formal dispatch</label>
+          </div>
+        </div>
+        <div class="field">
+          <label>Service Type</label>
+          <div class="check-group">
+            <label><input type="checkbox" /> Field / On-site</label>
+            <label><input type="checkbox" /> Remote / Help Desk</label>
+            <label><input type="checkbox" /> Both</label>
+            <label><input type="checkbox" /> Install Projects</label>
+          </div>
+        </div>
+        <div class="field">
+          <label>Business Hours</label>
+          <input type="text" placeholder="e.g. Mon–Fri 8am–5pm ET" />
+        </div>
+        <div class="field">
+          <label>After-Hours / Weekend Support?</label>
+          <div class="radio-group">
+            <label><input type="radio" name="afterhours" value="yes" /> Yes</label>
+            <label><input type="radio" name="afterhours" value="no" checked /> No</label>
+            <label><input type="radio" name="afterhours" value="emergency" /> Emergency only</label>
+          </div>
+        </div>
+        <div class="field">
+          <label>Holiday Calendar</label>
+          <input type="text" placeholder="e.g. US Federal holidays" />
+        </div>
+        <div class="field">
+          <label>Holidays Affect SLA Timers?</label>
+          <div class="radio-group">
+            <label><input type="radio" name="sla_holidays" value="yes" /> Yes — pause SLA</label>
+            <label><input type="radio" name="sla_holidays" value="no" /> No — SLA runs 24/7</label>
+            <label><input type="radio" name="sla_holidays" value="tbd" /> TBD</label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q7: Invoice Sequence -->
+    <div class="card accent-border">
+      <div class="card-title">7️⃣ Invoice Number Sequence <span class="badge badge-accent">Company Info</span></div>
+      <div class="field-grid col2">
+        <div class="field">
+          <label>Needs Invoice Continuity? <span class="req">*</span></label>
+          <div class="radio-group">
+            <label><input type="radio" name="invoice_cont" value="yes" /> Yes — must continue from current numbers</label>
+            <label><input type="radio" name="invoice_cont" value="no" /> No — fresh start is fine</label>
+          </div>
+        </div>
+        <div class="field">
+          <label>Last Invoice Number (if continuing)</label>
+          <input type="text" class="gap" placeholder="Not captured - confirm with client" />
+        </div>
+        <div class="field">
+          <label>Invoice Prefix / Format</label>
+          <input type="text" placeholder="e.g. INV- or just numeric" />
+        </div>
+        <div class="field">
+          <label>Starting Number (if resetting)</label>
+          <input type="text" placeholder="e.g. 1001" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Q8: SureTax -->
+    <div class="card accent-border">
+      <div class="card-title">8️⃣ SureTax Tax Credentials <span class="badge badge-accent">Tax Config</span></div>
+      <div class="field-grid col2">
+        <div class="field">
+          <label>SureTax Account Status <span class="req">*</span></label>
+          <div class="radio-group">
+            <label><input type="radio" name="suretax" value="existing" /> Has existing SureTax account</label>
+            <label><input type="radio" name="suretax" value="new" /> Needs new account set up</label>
+            <label><input type="radio" name="suretax" value="exempt" /> Tax exempt — no SureTax needed</label>
+            <label><input type="radio" name="suretax" value="tbd" checked /> TBD</label>
+          </div>
+        </div>
+        <div class="field">
+          <label>SureTax Account / Client ID</label>
+          <input type="text" placeholder="If existing — collect credentials" />
+        </div>
+        <div class="field">
+          <label>Tax-Exempt Clients?</label>
+          <div class="radio-group">
+            <label><input type="radio" name="tax_exempt" value="yes" /> Yes</label>
+            <label><input type="radio" name="tax_exempt" value="no" /> No</label>
+          </div>
+        </div>
+        <div class="field">
+          <label>States / Jurisdictions</label>
+          <input type="text" placeholder="e.g. TX, CA, Ontario (Canada)" />
+        </div>
+      </div>
+      <div class="field" style="margin-top:14px;">
+        <label>Tax Notes</label>
+        <textarea placeholder="Exemption certificates, special jurisdictions, Canadian tax requirements, etc." style="min-height:55px;"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 03: ADDITIONAL CONFIG -->
+  <div class="section">
+    <div class="section-label">Section 03</div>
+    <div class="section-title">📋 Additional Configuration</div>
+    <div class="section-divider"></div>
+
+    <div class="card">
+      <div class="card-title">💬 SMS &amp; Communication</div>
+      <div class="field-grid col2">
+        <div class="field">
+          <label>Enable SMS for Clients?</label>
+          <div class="radio-group">
+            <label><input type="radio" name="sms" value="yes" /> Yes</label>
+            <label><input type="radio" name="sms" value="no" /> No</label>
+            <label><input type="radio" name="sms" value="later" /> Phase 2</label>
+          </div>
+        </div>
+        <div class="field">
+          <label>SMS Use Cases</label>
+          <div class="check-group">
+            <label><input type="checkbox" /> Ticket updates</label>
+            <label><input type="checkbox" /> Appointment reminders</label>
+            <label><input type="checkbox" /> Billing alerts</label>
+            <label><input type="checkbox" /> Other</label>
+          </div>
+        </div>
+        <div class="field">
+          <label>Business SMS Number</label>
+          <div class="radio-group">
+            <label><input type="radio" name="sms_num" value="existing" /> Has existing number</label>
+            <label><input type="radio" name="sms_num" value="new" /> Needs one provisioned</label>
+            <label><input type="radio" name="sms_num" value="na" /> N/A</label>
+          </div>
+        </div>
+        <div class="field">
+          <label>Customer-Facing Portal?</label>
+          <div class="radio-group">
+            <label><input type="radio" name="portal" value="yes" /> Yes</label>
+            <label><input type="radio" name="portal" value="no" /> No</label>
+            <label><input type="radio" name="portal" value="later" /> Phase 2</label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📦 Inventory &amp; Project Management</div>
+      <div class="field-grid col2">
+        <div class="field">
+          <label>Inventory Management?</label>
+          <div class="radio-group">
+            <label><input type="radio" name="inventory" value="yes" /> Yes — Day 1</label>
+            <label><input type="radio" name="inventory" value="later" /> Phase 2</label>
+            <label><input type="radio" name="inventory" value="no" /> No</label>
+          </div>
+        </div>
+        <div class="field">
+          <label>Inventory Details</label>
+          <div class="check-group">
+            <label><input type="checkbox" /> Serialized assets</label>
+            <label><input type="checkbox" /> Purchase Orders</label>
+            <label><input type="checkbox" /> Mobile / van inventory</label>
+            <label><input type="checkbox" /> Warehouse tracking</label>
+          </div>
+        </div>
+        <div class="field">
+          <label>Project Management?</label>
+          <div class="radio-group">
+            <label><input type="radio" name="projects" value="yes" /> Yes — Day 1</label>
+            <label><input type="radio" name="projects" value="later" /> Phase 2</label>
+            <label><input type="radio" name="projects" value="no" /> No</label>
+          </div>
+        </div>
+        <div class="field">
+          <label>Project Details</label>
+          <div class="check-group">
+            <label><input type="checkbox" /> Multi-phase installs</label>
+            <label><input type="checkbox" /> Milestone billing</label>
+            <label><input type="checkbox" /> Multiple concurrent projects</label>
+          </div>
+        </div>
+        <div class="field">
+          <label>Approx. Product Catalog Size</label>
+          <input type="text" placeholder="e.g. ~200 SKUs, hardware-heavy" />
+        </div>
+        <div class="field">
+          <label>Approx. Active Projects at a Time</label>
+          <input type="text" placeholder="e.g. 5–10 concurrent" />
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📄 Quoting &amp; Contracts</div>
+      <div class="field-grid col2">
+        <div class="field">
+          <label>Current Quoting Tool</label>
+          <select>
+            <option value="">— Select —</option>
+            <option>PandaDoc</option>
+            <option>QuoteWerks</option>
+            <option>Manual / Word / Excel</option>
+            <option>Already using Rev.io quoting</option>
+            <option>None</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Quote Template Collected?</label>
+          <div class="radio-group">
+            <label><input type="radio" name="quote_template" value="yes" /> Yes — attached / sent</label>
+            <label><input type="radio" name="quote_template" value="no" /> No — follow up needed</label>
+            <label><input type="radio" name="quote_template" value="na" /> N/A</label>
+          </div>
+        </div>
+        <div class="field">
+          <label>Billing Type</label>
+          <div class="check-group">
+            <label><input type="checkbox" /> Monthly recurring (RMR)</label>
+            <label><input type="checkbox" /> Quarterly</label>
+            <label><input type="checkbox" /> Time &amp; Materials</label>
+            <label><input type="checkbox" /> Project milestone</label>
+            <label><input type="checkbox" /> Annual</label>
+          </div>
+        </div>
+        <div class="field">
+          <label>Parent-Child Account Structure?</label>
+          <div class="radio-group">
+            <label><input type="radio" name="parent_child" value="yes" /> Yes — multi-location / franchise</label>
+            <label><input type="radio" name="parent_child" value="no" /> No</label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 04: CONTRACT DETAILS -->
+  <div class="section">
+    <div class="section-label">Section 04</div>
+    <div class="section-title">📝 Contract Details &amp; Addendums</div>
+    <div class="section-divider"></div>
+    <p class="section-desc">Capture what was agreed in the contract. Flag any addendums, special terms, or commitments made during the sales process that the SA needs to be aware of.</p>
+
+    <div class="card" style="border-left: 3px solid var(--accent2);">
+      <div class="card-title">🚀 Platform First — Revii AI &amp; Telemetry <span class="badge badge-green">Required Every Instance</span></div>
+      <p class="hint" style="margin-bottom:16px;">Per CEO mandate: Revii AI must be configured and enabled before kickoff — not optional, not post-launch. Integrations must be wired to enable telemetry from Day 1. Configuration must follow a schema that supports long-term scalability.</p>
+      <div class="field-grid col2">
+        <div class="field">
+          <label>Revii AI — Configure at Kickoff? <span class="req">*</span></label>
+          <div class="radio-group">
+            <label><input type="radio" name="revii_ai" value="yes" checked /> Yes — enabled Day 1 (required)</label>
+            <label><input type="radio" name="revii_ai" value="exception" /> Exception — documented reason required</label>
+          </div>
+        </div>
+        <div class="field">
+          <label>Exception Reason (if applicable)</label>
+          <input type="text" placeholder="Only if exception approved — document reason" />
+        </div>
+        <div class="field">
+          <label>Telemetry Integrations — Wire Day 1?</label>
+          <div class="radio-group">
+            <label><input type="radio" name="telemetry" value="yes" checked /> Yes — wired from Day 1</label>
+            <label><input type="radio" name="telemetry" value="later" /> Phase 2 (requires justification)</label>
+          </div>
+        </div>
+        <div class="field">
+          <label>Configuration Schema</label>
+          <div class="radio-group">
+            <label><input type="radio" name="config_schema" value="standard" checked /> Standard — follows scalability schema</label>
+            <label><input type="radio" name="config_schema" value="custom" /> Custom — document deviations below</label>
+          </div>
+        </div>
+      </div>
+      <div class="field" style="margin-top:14px;">
+        <label>Platform First Notes</label>
+        <textarea placeholder="Any exceptions, custom schema deviations, or telemetry notes" style="min-height:55px;"></textarea>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📋 Core Contract Terms</div>
+      <div class="field-grid col3">
+        <div class="field">
+          <label>Contract Start Date</label>
+          <input type="date" />
+        </div>
+        <div class="field">
+          <label>Contract End Date</label>
+          <input type="date" />
+        </div>
+        <div class="field">
+          <label>Auto-Renew?</label>
+          <div class="radio-group">
+            <label><input type="radio" name="autorenew" value="yes" /> Yes</label>
+            <label><input type="radio" name="autorenew" value="no" /> No</label>
+          </div>
+        </div>
+        <div class="field">
+          <label>Base MRR</label>
+          <input type="text" placeholder="e.g. $1,004/mo" />
+        </div>
+        <div class="field">
+          <label>Onboarding Fee</label>
+          <input type="text" placeholder="e.g. $500 one-time" />
+        </div>
+        <div class="field">
+          <label>Payment Terms</label>
+          <select>
+            <option value="">— Select —</option>
+            <option>Net 15</option>
+            <option>Net 30</option>
+            <option>Net 45</option>
+            <option>Due on Receipt</option>
+            <option>Other</option>
+          </select>
+        </div>
+      </div>
+
+      <hr class="field-divider" />
+
+      <div class="field-grid col2">
+        <div class="field">
+          <label>Modules / Features Included</label>
+          <div class="check-group">
+            <label><input type="checkbox" /> PSA Core</label>
+            <label><input type="checkbox" /> Billing Platform</label>
+            <label><input type="checkbox" /> Inventory Management</label>
+            <label><input type="checkbox" /> Project Management</label>
+            <label><input type="checkbox" /> Customer Portal</label>
+            <label><input type="checkbox" /> SMS</label>
+            <label><input type="checkbox" /> Rev.io Payments</label>
+            <label><input type="checkbox" /> SureTax</label>
+            <label><input type="checkbox" /> Mobile App</label>
+          </div>
+        </div>
+        <div class="field">
+          <label>Special Pricing / Discounts</label>
+          <textarea placeholder="Any discounts, promotional pricing, or custom rate agreements made during the sales process" style="min-height:90px;"></textarea>
+        </div>
+      </div>
+
+      <hr class="field-divider" />
+
+      <div class="field">
+        <label>Specific Commitments Made to Client</label>
+        <textarea placeholder="Any features promised, timelines committed, integrations guaranteed, custom work agreed to — the SA needs to know what was sold"></textarea>
+      </div>
+    </div>
+
+    <!-- ADDENDUMS -->
+    <div class="card">
+      <div class="card-title">📎 Addendums &amp; Special Terms</div>
+      <p class="hint" style="margin-bottom:16px;">Add each addendum or special term separately. Include what it covers and any SA action required.</p>
+
+      <div id="addendumsContainer">
+        <div class="addendum-block">
+          <button class="remove-btn" onclick="removeAddendum(this)" title="Remove">✕</button>
+          <div class="field-grid col2" style="margin-bottom:10px;">
+            <div class="field">
+              <label>Addendum / Term Title</label>
+              <input type="text" placeholder="e.g. Data Migration SLA Guarantee" />
+            </div>
+            <div class="field">
+              <label>Type</label>
+              <select>
+                <option value="">— Type —</option>
+                <option>Data Migration Terms</option>
+                <option>Custom Integration Agreement</option>
+                <option>SLA / Response Time Guarantee</option>
+                <option>Pricing Addendum</option>
+                <option>Feature Commitment</option>
+                <option>White Label / Branding Agreement</option>
+                <option>Confidentiality / NDA</option>
+                <option>Other</option>
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <label>Details &amp; SA Action Required</label>
+            <textarea placeholder="What was agreed and what the SA needs to do or be aware of"></textarea>
+          </div>
+        </div>
+      </div>
+      <button class="add-row-btn" onclick="addAddendum()">+ Add Addendum / Special Term</button>
+    </div>
+  </div>
+
+  <!-- SECTION 05: IF NOT BILLING CLIENT -->
+  <div class="section">
+    <div class="section-label">Section 05</div>
+    <div class="section-title">⚡ If NOT an Existing Billing Client</div>
+    <div class="section-divider"></div>
+    <p class="section-desc">Complete this section for <strong>net-new clients only</strong>. Existing Rev.io Billing clients already have this in the system.</p>
+
+    <div class="cond-section">
+      <div class="cond-label">⚠️ Net-New Clients Only</div>
+
+      <div class="card" style="margin-bottom:14px;">
+        <div class="card-title">📬 Bill Profile Questionnaire</div>
+        <div class="field-grid col2">
+          <div class="field">
+            <label>Questionnaire Sent?</label>
+            <div class="radio-group">
+              <label><input type="radio" name="bpq_sent" value="yes" /> Yes — sent to client</label>
+              <label><input type="radio" name="bpq_sent" value="no" /> No — needs to be sent</label>
+            </div>
+          </div>
+          <div class="field">
+            <label>Questionnaire Returned?</label>
+            <div class="radio-group">
+              <label><input type="radio" name="bpq_returned" value="yes" /> Yes — received</label>
+              <label><input type="radio" name="bpq_returned" value="no" /> No — follow up needed</label>
+            </div>
+          </div>
+          <div class="field">
+            <label>Late Fee Policy</label>
+            <input type="text" placeholder="e.g. 1.5% after Net 30" />
+          </div>
+          <div class="field">
+            <label>Credit Limit</label>
+            <input type="text" placeholder="e.g. $5,000" />
+          </div>
+        </div>
+        <div class="field" style="margin-top:14px;">
+          <label>Bill Profile Notes</label>
+          <textarea placeholder="Invoice format preferences, billing contact, special billing instructions from questionnaire" style="min-height:60px;"></textarea>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:14px;">
+        <div class="card-title">📅 Accounting Periods</div>
+        <div class="field-grid col3">
+          <div class="field">
+            <label>Accounting Period</label>
+            <select>
+              <option value="">— Select —</option>
+              <option>Monthly</option>
+              <option>Quarterly</option>
+              <option>Annual</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Fiscal Year Start</label>
+            <select>
+              <option value="">— Month —</option>
+              <option>January (calendar year)</option>
+              <option>February</option>
+              <option>March</option>
+              <option>April</option>
+              <option>July</option>
+              <option>October</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Books Close Schedule</label>
+            <input type="text" placeholder="e.g. last day of month" />
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📎 Quote Template</div>
+        <div class="field-grid col2">
+          <div class="field">
+            <label>Quote Template Collected?</label>
+            <div class="radio-group">
+              <label><input type="radio" name="quote_tpl" value="yes" /> Yes — received from client</label>
+              <label><input type="radio" name="quote_tpl" value="no" /> No — needs follow up</label>
+              <label><input type="radio" name="quote_tpl" value="na" /> N/A — not quoting yet</label>
+            </div>
+          </div>
+          <div class="field">
+            <label>Template Format</label>
+            <div class="radio-group">
+              <label><input type="radio" name="quote_format" value="pdf" /> PDF</label>
+              <label><input type="radio" name="quote_format" value="word" /> Word / Google Doc</label>
+              <label><input type="radio" name="quote_format" value="tool" /> Tool export</label>
+            </div>
+          </div>
+        </div>
+        <div class="field" style="margin-top:14px;">
+          <label>Quote Template Notes</label>
+          <textarea placeholder="Key fields required: line item structure, discount display, terms &amp; conditions, signature block, branding requirements" style="min-height:60px;"></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 06: OPEN ITEMS -->
+  <div class="section">
+    <div class="section-label">Section 06</div>
+    <div class="section-title">🚩 Open Items &amp; SA Flags</div>
+    <div class="section-divider"></div>
+    <p class="section-desc">Anything still outstanding, unresolved, or that the SA needs to follow up on before or during kickoff.</p>
+
+    <div class="card">
+      <div class="field">
+        <label>Pre-Kickoff Open Items</label>
+        <textarea placeholder="e.g. GL codes not yet provided — accountant to send by EOW&#10;Payment processor TBD — client to confirm&#10;SureTax credentials — needs new account setup" style="min-height:120px;"></textarea>
+      </div>
+      <hr class="field-divider" />
+      <div class="field">
+        <label>Questions / Items to Confirm on Day 1</label>
+        <textarea placeholder="Things that couldn't be resolved pre-kickoff — for the SA to address in session 1" style="min-height:90px;"></textarea>
+      </div>
+      <hr class="field-divider" />
+      <div class="field">
+        <label>Red Flags / Risk Notes</label>
+        <textarea placeholder="Any concerns from the sales process — client readiness, data quality, complex requirements, unrealistic expectations, etc." style="min-height:80px;"></textarea>
+      </div>
+    </div>
+
+    <div class="card" style="border-left: 3px solid var(--warn);">
+      <div class="card-title">📊 Onboarding Status Tracking <span class="badge badge-warn">SA Owned</span></div>
+      <p class="hint" style="margin-bottom:16px;">Status must have a timeline and an owner at all times. On Hold requires a hold date — no hold date = immediate RTS. All statuses reviewed weekly.</p>
+      <div class="field-grid col2">
+        <div class="field">
+          <label>Current Onboarding Status</label>
+          <div class="radio-group">
+            <label><input type="radio" name="ob_status" value="on_track" /> ✅ On Track</label>
+            <label><input type="radio" name="ob_status" value="off_track" /> ⚠️ Off Track — escalate to Fran within 24hrs</label>
+            <label><input type="radio" name="ob_status" value="on_hold" /> ⏸️ On Hold</label>
+            <label><input type="radio" name="ob_status" value="rts" /> 🔴 RTS — Sales engages within 24hrs</label>
+            <label><input type="radio" name="ob_status" value="cancel" /> ❌ Cancel</label>
+          </div>
+        </div>
+        <div class="field">
+          <label>Hold Date (required if On Hold)</label>
+          <input type="date" />
+          <p class="hint">No hold date = immediate RTS per policy</p>
+        </div>
+        <div class="field">
+          <label>Cancellation Reason (required if Cancel)</label>
+          <select>
+            <option value="">— Select reason —</option>
+            <option>Functionality — specify feature/product gap below</option>
+            <option>Client Initiated — Out of Business (OOB)</option>
+            <option>Client Initiated — Acquisition / Merger</option>
+            <option>Client Initiated — Budget Cuts</option>
+            <option>Client Initiated — Other business change</option>
+          </select>
+          <p class="hint">⚠️ "Other" and "Fail to Launch" are not valid reasons — specify exactly</p>
+        </div>
+        <div class="field">
+          <label>Cancellation Detail (required)</label>
+          <textarea placeholder="Exact feature gap, product limitation, or business reason — ambiguous cancellations escalate to Fran before logging" style="min-height:60px;"></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  ⚡ Rev.io Intelligence Stack · PSA Sales Brief · Complete at close · Hand off 48 hrs before kickoff
+</div>
+
+<script>
+  let roleCount = 1;
+  let addendumCount = 1;
+
+  function addRoleRow() {
+    const tbody = document.getElementById('rolesBody');
+    const i = roleCount++;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><input type="text" placeholder="Name" /></td>
+      <td><input type="text" placeholder="Job title" /></td>
+      <td><input type="email" placeholder="email@co.com" /></td>
+      <td>
+        <select>
+          <option value="">— Role —</option>
+          <option>Admin</option>
+          <option>Billing Admin</option>
+          <option>Operations Manager</option>
+          <option>Dispatcher</option>
+          <option>Field Technician</option>
+          <option>Help Desk</option>
+          <option>Standard</option>
+          <option>TBD</option>
+        </select>
+      </td>
+      <td>
+        <div class="radio-group" style="flex-direction:column; gap:4px;">
+          <label><input type="radio" name="mob_${i}" value="yes" /> Yes</label>
+          <label><input type="radio" name="mob_${i}" value="no" checked /> No</label>
+        </div>
+      </td>
+      <td><button class="del-btn" onclick="removeRow(this)" title="Remove">✕</button></td>
+    `;
+    tbody.appendChild(tr);
+  }
+
+  function removeRow(btn) {
+    const row = btn.closest('tr');
+    const tbody = document.getElementById('rolesBody');
+    if (tbody.rows.length > 1) row.remove();
+  }
+
+  function addAddendum() {
+    const container = document.getElementById('addendumsContainer');
+    const div = document.createElement('div');
+    div.className = 'addendum-block';
+    div.innerHTML = `
+      <button class="remove-btn" onclick="removeAddendum(this)" title="Remove">✕</button>
+      <div class="field-grid col2" style="margin-bottom:10px;">
+        <div class="field">
+          <label>Addendum / Term Title</label>
+          <input type="text" placeholder="e.g. Custom Integration Agreement" />
+        </div>
+        <div class="field">
+          <label>Type</label>
+          <select>
+            <option value="">— Type —</option>
+            <option>Data Migration Terms</option>
+            <option>Custom Integration Agreement</option>
+            <option>SLA / Response Time Guarantee</option>
+            <option>Pricing Addendum</option>
+            <option>Feature Commitment</option>
+            <option>White Label / Branding Agreement</option>
+            <option>Confidentiality / NDA</option>
+            <option>Other</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label>Details &amp; SA Action Required</label>
+        <textarea placeholder="What was agreed and what the SA needs to do or be aware of"></textarea>
+      </div>
+    `;
+    container.appendChild(div);
+  }
+
+  function removeAddendum(btn) {
+    btn.closest('.addendum-block').remove();
+  }
+
+  function clearForm() {
+    if (!confirm('Clear all form data? This cannot be undone.')) return;
+    document.querySelectorAll('input[type="text"], input[type="email"], input[type="date"], input[type="number"], textarea').forEach(el => el.value = '');
+    document.querySelectorAll('select').forEach(el => el.selectedIndex = 0);
+    document.querySelectorAll('input[type="radio"], input[type="checkbox"]').forEach(el => el.checked = false);
+  }
+</script>
+
+</body>
+</html>

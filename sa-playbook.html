@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rev.io PSA — SA Onboarding Playbook</title>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --surface2: #21253a;
+      --surface3: #262a3e;
+      --accent: #6c63ff;
+      --accent2: #00d4aa;
+      --warn: #ffa94d;
+      --danger: #ff6b6b;
+      --muted: #7b7f9e;
+      --text: #e8eaf6;
+      --text-dim: #b0b4cc;
+      --border: rgba(255,255,255,0.07);
+      --radius: 14px;
+      --radius-sm: 8px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      font-size: 15px;
+      line-height: 1.65;
+    }
+
+    /* HERO */
+    .hero {
+      background: linear-gradient(135deg, #12142a 0%, #0f1f35 50%, #0f1117 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 60px 24px 50px;
+      text-align: center;
+    }
+    .hero-eyebrow { font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--accent2); margin-bottom: 16px; }
+    .hero h1 { font-size: clamp(24px, 5vw, 40px); font-weight: 800; line-height: 1.15; letter-spacing: -0.5px; margin-bottom: 14px; }
+    .hero h1 span { color: var(--accent2); }
+    .hero-sub { font-size: clamp(14px, 2.5vw, 17px); color: var(--text-dim); max-width: 660px; margin: 0 auto 32px; }
+    .hero-tags { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+    .hero-tag { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 5px 14px; font-size: 12px; color: var(--muted); }
+    .hero-tag.green { background: rgba(0,212,170,0.08); border-color: rgba(0,212,170,0.2); color: var(--accent2); }
+    .hero-tag.red { background: rgba(255,107,107,0.08); border-color: rgba(255,107,107,0.2); color: var(--danger); }
+
+    /* LAYOUT */
+    .content { max-width: 900px; margin: 0 auto; padding: 0 20px 80px; }
+    .section { margin-top: 56px; }
+    .section-label { font-size: 11px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
+    .section-title { font-size: clamp(18px, 3.5vw, 26px); font-weight: 700; margin-bottom: 4px; }
+    .section-divider { width: 40px; height: 3px; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 2px; margin: 12px 0 24px; }
+    .section-desc { color: var(--text-dim); font-size: 14px; margin-bottom: 24px; line-height: 1.6; }
+
+    /* RULE CARD */
+    .rule-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px 26px;
+      margin-bottom: 14px;
+      position: relative;
+      overflow: hidden;
+    }
+    .rule-card::before { content: ''; position: absolute; top: 0; left: 0; bottom: 0; width: 3px; background: var(--rc-color, var(--accent)); border-radius: var(--radius) 0 0 var(--radius); }
+    .rule-card-title { font-size: 15px; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
+    .rule-card p { font-size: 14px; color: var(--text-dim); line-height: 1.65; margin-bottom: 8px; }
+    .rule-card p:last-child { margin-bottom: 0; }
+    .rule-card strong { color: var(--text); }
+
+    /* MANDATE BOX */
+    .mandate {
+      background: rgba(255,107,107,0.06);
+      border: 1px solid rgba(255,107,107,0.2);
+      border-radius: var(--radius-sm);
+      padding: 16px 20px;
+      margin-bottom: 14px;
+      font-size: 14px;
+      color: var(--text-dim);
+      line-height: 1.6;
+    }
+    .mandate strong { color: var(--danger); }
+    .mandate-title { font-size: 12px; font-weight: 700; color: var(--danger); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; }
+
+    /* GREEN BOX */
+    .green-box {
+      background: rgba(0,212,170,0.05);
+      border: 1px solid rgba(0,212,170,0.15);
+      border-radius: var(--radius-sm);
+      padding: 16px 20px;
+      margin-bottom: 14px;
+      font-size: 14px;
+      color: var(--text-dim);
+      line-height: 1.6;
+    }
+    .green-box strong { color: var(--accent2); }
+    .green-box-title { font-size: 12px; font-weight: 700; color: var(--accent2); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; }
+
+    /* WARN BOX */
+    .warn-box {
+      background: rgba(255,169,77,0.05);
+      border: 1px solid rgba(255,169,77,0.18);
+      border-radius: var(--radius-sm);
+      padding: 16px 20px;
+      margin-bottom: 14px;
+      font-size: 14px;
+      color: var(--text-dim);
+      line-height: 1.6;
+    }
+    .warn-box strong { color: var(--warn); }
+    .warn-box-title { font-size: 12px; font-weight: 700; color: var(--warn); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; }
+
+    /* STATUS CARDS */
+    .status-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin-bottom: 24px; }
+    .status-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 16px 18px;
+      border-top: 3px solid var(--sc-color, var(--accent));
+    }
+    .status-name { font-size: 14px; font-weight: 700; margin-bottom: 6px; color: var(--sc-color, var(--text)); }
+    .status-owner { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-bottom: 8px; }
+    .status-desc { font-size: 12px; color: var(--text-dim); line-height: 1.5; }
+
+    /* CADENCE TIMELINE */
+    .timeline { position: relative; padding-left: 28px; margin: 16px 0; }
+    .timeline::before { content: ''; position: absolute; left: 8px; top: 4px; bottom: 4px; width: 2px; background: var(--border); }
+    .tl-item { position: relative; margin-bottom: 18px; }
+    .tl-item:last-child { margin-bottom: 0; }
+    .tl-dot { position: absolute; left: -24px; top: 4px; width: 12px; height: 12px; border-radius: 50%; background: var(--tl-color, var(--accent)); border: 2px solid var(--bg); }
+    .tl-day { font-size: 12px; font-weight: 700; color: var(--tl-color, var(--accent)); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px; }
+    .tl-action { font-size: 14px; color: var(--text); font-weight: 500; }
+    .tl-note { font-size: 12px; color: var(--text-dim); margin-top: 2px; }
+
+    /* BATTERS BOX */
+    .batter-wrap { display: flex; align-items: center; gap: 0; margin: 20px 0; overflow: hidden; border-radius: var(--radius-sm); border: 1px solid var(--border); }
+    .batter-slot { flex: 1; padding: 14px 16px; text-align: center; background: var(--surface); font-size: 13px; }
+    .batter-slot.active { background: rgba(0,212,170,0.08); border-left: 2px solid var(--accent2); border-right: 2px solid var(--accent2); }
+    .batter-slot .bs-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; margin-bottom: 4px; }
+    .batter-slot .bs-name { font-weight: 700; font-size: 14px; }
+    .batter-slot .bs-name.highlight { color: var(--accent2); }
+    .batter-arrow { background: var(--surface2); padding: 14px 10px; color: var(--muted); font-size: 16px; }
+
+    /* TIER CARDS */
+    .tier-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
+    .tier-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 18px 20px; border-top: 3px solid var(--tc-color, var(--accent)); }
+    .tier-name { font-size: 13px; font-weight: 700; color: var(--tc-color, var(--text)); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+    .tier-target { font-size: 26px; font-weight: 800; color: var(--tc-color, var(--accent2)); line-height: 1.1; margin-bottom: 8px; }
+    .tier-criteria { font-size: 12px; color: var(--text-dim); line-height: 1.5; }
+
+    /* CANCEL REASONS */
+    .cancel-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .cancel-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; }
+    .cancel-card-title { font-size: 13px; font-weight: 700; margin-bottom: 6px; color: var(--text); }
+    .cancel-card-req { font-size: 12px; color: var(--text-dim); line-height: 1.5; }
+    .cancel-card-req strong { color: var(--warn); }
+
+    /* TARGET STRIP */
+    .target-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
+    .target-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; text-align: center; }
+    .target-val { font-size: 28px; font-weight: 800; line-height: 1.1; margin-bottom: 4px; }
+    .target-lbl { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+
+    /* STRIKETHROUGH */
+    .strike { text-decoration: line-through; opacity: 0.5; }
+
+    .footer { text-align: center; padding: 32px 24px; font-size: 12px; color: var(--muted); border-top: 1px solid var(--border); }
+
+    @media (max-width: 640px) {
+      .tier-grid, .target-strip, .cancel-grid { grid-template-columns: 1fr; }
+      .status-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-eyebrow">Rev.io PSA · Solution Architects</div>
+  <h1>SA Onboarding <span>Playbook</span></h1>
+  <p class="hero-sub">The rules, timelines, status definitions, cancellation criteria, and escalation cadences that govern every PSA onboarding engagement. This is how we operate — not a guideline.</p>
+  <div class="hero-tags">
+    <span class="hero-tag green">✅ Effective immediately</span>
+    <span class="hero-tag red">❌ Capacity scoring retired</span>
+    <span class="hero-tag red">❌ "Other" / "Fail to Launch" eliminated</span>
+    <span class="hero-tag">📋 Owned by Onboarding + Sales jointly</span>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- SECTION 1: KICKOFF -->
+  <div class="section">
+    <div class="section-label">Rule 01</div>
+    <div class="section-title">⚡ Kickoff Timeline</div>
+    <div class="section-divider"></div>
+
+    <div class="mandate">
+      <strong>Kickoff must be scheduled same day or next day. Always.</strong> This is not a target — it is the rule. There is no version of this process where a deal closes and kickoff happens days later.
+    </div>
+
+    <div class="rule-card" style="--rc-color: var(--accent2);">
+      <div class="rule-card-title">🌅 Deal closes before lunch → kickoff that afternoon</div>
+      <p>The SA rotation assigns the deal immediately. Kickoff is confirmed and on the calendar before end of business.</p>
+    </div>
+
+    <div class="rule-card" style="--rc-color: var(--accent2);">
+      <div class="rule-card-title">🌇 Deal closes after lunch → kickoff next morning</div>
+      <p>Same-day is preferred. If not operationally possible, next morning is the hard ceiling. Not next afternoon. Not later in the week.</p>
+    </div>
+
+    <div class="rule-card" style="--rc-color: var(--warn);">
+      <div class="rule-card-title">📋 Exceptions — rare, documented, and shared</div>
+      <p>Exceptions must be <strong>rare</strong>. When one occurs, it requires a documented reason and <strong>shared accountability</strong> between Sales and Onboarding — not assigned to one team. No undocumented delays.</p>
+    </div>
+
+  </div>
+
+  <!-- SECTION 2: STATUS DEFINITIONS -->
+  <div class="section">
+    <div class="section-label">Rule 02</div>
+    <div class="section-title">🚦 Status Definitions</div>
+    <div class="section-divider"></div>
+    <p class="section-desc">Every status requires a <strong>timeline</strong> and an <strong>owner</strong>. A status without either is not a status — it's a drift risk.</p>
+
+    <div class="status-grid">
+      <div class="status-card" style="--sc-color: var(--accent2);">
+        <div class="status-name">✅ On Track</div>
+        <div class="status-owner">Owner: SA · Reviewed weekly</div>
+        <div class="status-desc">Client engaged, milestones on schedule. SA owns and reviews weekly. No escalation needed.</div>
+      </div>
+      <div class="status-card" style="--sc-color: var(--warn);">
+        <div class="status-name">⚠️ Off Track</div>
+        <div class="status-owner">Owner: SA → escalate in 24hrs</div>
+        <div class="status-desc">Client engaged but behind on a defined milestone. SA escalates to manager within 24 hours of identifying the issue.</div>
+      </div>
+      <div class="status-card" style="--sc-color: var(--accent);">
+        <div class="status-name">⏸ On Hold</div>
+        <div class="status-owner">Owner: SA + Sales jointly</div>
+        <div class="status-desc">Client requested pause. Hold date is mandatory at time of status set. No hold date = move to RTS immediately.</div>
+      </div>
+      <div class="status-card" style="--sc-color: var(--danger);">
+        <div class="status-name">🔄 RTS</div>
+        <div class="status-owner">Owner: Sales · 24hr response SLA</div>
+        <div class="status-desc">Return to Sale. Sales must engage within 24 hours. Clear re-engagement timeline required within 5 business days or account is formally canceled.</div>
+      </div>
+      <div class="status-card" style="--sc-color: #555; grid-column: span 1;">
+        <div class="status-name" style="color:var(--text-dim);">🚫 Canceled</div>
+        <div class="status-owner">Requires documented subcategory</div>
+        <div class="status-desc">No cancellation without a specific documented reason. See Section 03 for valid categories.</div>
+      </div>
+    </div>
+
+    <!-- ON HOLD DETAIL -->
+    <div class="rule-card" style="--rc-color: var(--accent); margin-top: 8px;">
+      <div class="rule-card-title">⏸ On Hold — What SA Does While Waiting</div>
+      <p>Being on hold is not passive. The SA drives active outreach on a defined cadence until the client re-engages or the account moves to RTS.</p>
+      <div class="timeline" style="margin-top: 14px;">
+        <div class="tl-item">
+          <div class="tl-dot" style="--tl-color: var(--accent2);"></div>
+          <div class="tl-day" style="color: var(--accent2);">Day 0 — Hold set</div>
+          <div class="tl-action">SA phone call. Hold date documented. Sales copied.</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot" style="--tl-color: var(--accent2);"></div>
+          <div class="tl-day" style="color: var(--accent2);">Days 2–3 — No response</div>
+          <div class="tl-action">SA follow-up — phone first, then email.</div>
+          <div class="tl-note">Repeat every 2–3 days.</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot" style="--tl-color: var(--warn);"></div>
+          <div class="tl-day" style="color: var(--warn);">3 no-responses — Escalate</div>
+          <div class="tl-action">SA escalates to manager. Manager sends direct outreach noting account is at risk.</div>
+          <div class="tl-note">Sales is copied throughout.</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot" style="--tl-color: var(--danger);"></div>
+          <div class="tl-day" style="color: var(--danger);">Still no response — RTS</div>
+          <div class="tl-action">Account moves to RTS. Sales engagement required within 24 hours.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RTS DETAIL -->
+    <div class="rule-card" style="--rc-color: var(--danger);">
+      <div class="rule-card-title">🔄 RTS — What Happens Next</div>
+      <p><strong>Sales must engage within 24 hours</strong> of RTS assignment. If a clear re-engagement timeline is not established within <strong>5 business days</strong>, the account is formally canceled and logged with a documented reason.</p>
+      <p style="margin-top: 10px;">This is a shared accountability model. RTS is not Onboarding handing off a problem to Sales. Both teams own the outcome.</p>
+    </div>
+  </div>
+
+  <!-- SECTION 3: AUTOMATED CADENCE -->
+  <div class="section">
+    <div class="section-label">Rule 03</div>
+    <div class="section-title">🤖 Automated Hold &amp; RTS Cadence — Coming Soon</div>
+    <div class="section-divider"></div>
+    <p class="section-desc">This cadence is <strong>system-driven, not manual</strong>. The SA does not manage a to-do list to remember when to follow up. The system fires on schedule. Sales and Onboarding share accountability at every step.</p>
+
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-dot" style="--tl-color: var(--accent2);"></div>
+        <div class="tl-day" style="color: var(--accent2);">Day 0</div>
+        <div class="tl-action">SA phone call to client.</div>
+        <div class="tl-note">Hold status set with mandatory hold date. Sales copied.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot" style="--tl-color: var(--accent2);"></div>
+        <div class="tl-day" style="color: var(--accent2);">Day 2 — No response</div>
+        <div class="tl-action">System triggers: SA follow-up email sent automatically.</div>
+        <div class="tl-note">SA notified. Sales remains copied.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot" style="--tl-color: var(--warn);"></div>
+        <div class="tl-day" style="color: var(--warn);">Day 4 — Still no response</div>
+        <div class="tl-action">System triggers: escalation email from manager noting cancellation risk.</div>
+        <div class="tl-note">SA and Sales both notified. Manager email fires automatically — no manual send required.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot" style="--tl-color: var(--danger);"></div>
+        <div class="tl-day" style="color: var(--danger);">Day 6 — Still no response</div>
+        <div class="tl-action">Account moves to RTS. Sales formally notified and assigned.</div>
+        <div class="tl-note">Sales must engage within 24 hours of assignment.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot" style="--tl-color: var(--danger);"></div>
+        <div class="tl-day" style="color: var(--danger);">Day 10 in RTS — No re-engagement</div>
+        <div class="tl-action">Account formally canceled. Cancellation reason logged (see Section 04).</div>
+        <div class="tl-note">No exceptions without documented escalation to manager before Day 10.</div>
+      </div>
+    </div>
+
+    <div class="warn-box" style="margin-top: 20px;">
+      <div class="warn-box-title">⚠ Shared Accountability — Not One Team's Problem</div>
+      Sales and Onboarding <strong>jointly own</strong> every On Hold and RTS account. An account going quiet is not Onboarding's problem to solve alone or Sales' problem to solve alone. If either team drops the ball at their step, the other escalates immediately.
+    </div>
+  </div>
+
+  <!-- SECTION 4: GO-LIVE TIERS -->
+  <div class="section">
+    <div class="section-label">Rule 04</div>
+    <div class="section-title">🚀 Go-Live Duration Targets</div>
+    <div class="section-divider"></div>
+    <p class="section-desc">Complexity drives timeline. Simple clients do not sit in multi-week queues. These are the benchmarks the process is designed around — with the expectation that all three shrink materially over the next 12 months.</p>
+
+    <div class="tier-grid">
+      <div class="tier-card" style="--tc-color: var(--accent2);">
+        <div class="tier-name">🟢 Simple</div>
+        <div class="tier-target">1 Week</div>
+        <div class="tier-criteria">
+          ≤$700/mo<br>
+          No data import or migration<br>
+          No payment migration<br>
+          No token migration<br>
+          No third-party integrations
+        </div>
+      </div>
+      <div class="tier-card" style="--tc-color: #4a9eff;">
+        <div class="tier-name">🔵 With Payment Migration</div>
+        <div class="tier-target">3 Weeks</div>
+        <div class="tier-criteria">
+          Payment processor migration<br>
+          Token migration<br>
+          Single system import<br>
+          Calendar integration
+        </div>
+      </div>
+      <div class="tier-card" style="--tc-color: var(--warn);">
+        <div class="tier-name">🟡 Billing Client / Complex</div>
+        <div class="tier-target">Defined Timeline</div>
+        <div class="tier-criteria">
+          Documented and tracked from Day 0<br>
+          Multi-system import<br>
+          Multiple integrations<br>
+          Non-standard config<br>
+          Multi-location / parent-child
+        </div>
+      </div>
+    </div>
+
+    <div class="mandate">
+      <div class="mandate-title">⚠ The Rule on Complex Timelines</div>
+      "Defined and reasonable" is not flexible. A billing client without a documented go-live plan and milestone dates is <strong>Off Track by default</strong>. The SA owns setting this timeline at JS2 and tracking it in the Onboarding Tracker from that point forward.
+    </div>
+  </div>
+
+  <!-- SECTION 5: CANCELLATION REASONS -->
+  <div class="section">
+    <div class="section-label">Rule 05</div>
+    <div class="section-title">🚫 Cancellation Reasons</div>
+    <div class="section-divider"></div>
+
+    <div class="mandate">
+      <div class="mandate-title">⚠ Eliminated Immediately</div>
+      <strong>"Other"</strong> and <strong>"Fail to Launch"</strong> are both eliminated as cancellation categories. If a client cancels, it by definition failed to launch — logging that tells us nothing. Every cancellation must have a specific, documented reason that helps us understand <em>why</em>.
+    </div>
+
+    <div class="cancel-grid">
+      <div class="cancel-card">
+        <div class="cancel-card-title">⚙️ Functionality</div>
+        <div class="cancel-card-req">Must specify the <strong>exact product or feature gap</strong>. "Functionality" alone is not sufficient. Name the specific feature that was missing or didn't work as expected.</div>
+      </div>
+      <div class="cancel-card">
+        <div class="cancel-card-title">🏢 Client Initiated / Business Change</div>
+        <div class="cancel-card-req">Must document the <strong>specific reason</strong> — going out of business, acquisition, budget cut, internal restructure, key contact departure, etc.</div>
+      </div>
+      <div class="cancel-card" style="grid-column: span 2;">
+        <div class="cancel-card-title">❓ Doesn't Clearly Fit Either Category</div>
+        <div class="cancel-card-req">Do not guess. Do not force it into a category. <strong>Escalate to manager before logging.</strong> Every ambiguous cancellation is a data point worth understanding, not a box to check.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 6: CANCELLATION TARGETS -->
+  <div class="section">
+    <div class="section-label">Rule 06</div>
+    <div class="section-title">📉 Cancellation Rate Targets &amp; Pipeline Health</div>
+    <div class="section-divider"></div>
+    <p class="section-desc">Every workflow decision, cadence timing, escalation trigger, and RTS threshold in this playbook is calibrated to close the gap between where we are and where we need to be. These are not aspirational — they are the targets the process is built to hit.</p>
+
+    <div class="target-strip">
+      <div class="target-card">
+        <div class="target-val" style="color: var(--danger);">~25%</div>
+        <div class="target-lbl">Current Cancel Rate</div>
+      </div>
+      <div class="target-card">
+        <div class="target-val" style="color: var(--warn);">≤15%</div>
+        <div class="target-lbl">Year 1 Target</div>
+      </div>
+      <div class="target-card">
+        <div class="target-val" style="color: var(--accent2);">≤10%</div>
+        <div class="target-lbl">Long-Term Target</div>
+      </div>
+    </div>
+
+    <div class="rule-card" style="--rc-color: var(--accent);">
+      <div class="rule-card-title">📊 On Hold &amp; RTS Pipeline Standards</div>
+      <p>Total On Hold and total RTS counts must be actively managed to a <strong>high bar</strong>. The overwhelming majority of clients at any given time should be On Track. On Hold and RTS are not a normal operating state — they are exceptions that require active work to resolve.</p>
+      <p style="margin-top: 10px;">If On Hold or RTS counts are growing, that is a process failure — not a client failure. The cadence in Rule 03 exists precisely to prevent quiet compounding. Any account that sits in On Hold or RTS beyond the defined timeline without documented escalation is a violation of this playbook.</p>
+    </div>
+
+    <div class="green-box" style="margin-top: 8px;">
+      <div class="green-box-title">💡 The Underlying Logic</div>
+      The cancellation rate is a lagging indicator. The <strong>leading indicators</strong> are: kickoff timing, brief completeness at close, pre-config rate at JS1, data import delivery before JS2, and Onboarding Tracker status at end of JS2. Get those right, and the cancel rate follows. Every rule in this playbook is designed to move at least one of those leading indicators.
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  ⚡ Rev.io PSA · SA Onboarding Playbook · Effective March 2026
+</div>
+
+</body>
+</html>
