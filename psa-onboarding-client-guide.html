@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rev.io PSA — Client Onboarding Guide</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;900&family=Nunito:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    /* ─── Reset & Base ─── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --blue:      #1D3756;
+      --blue-dark: #1B3B61;
+      --blue-deep: #194477;
+      --green:     #6EBE4F;
+      --teal:      #2399B5;
+      --grad-b:    #1667CC;
+      --grad-g:    #3DC570;
+      --light:     #F8F8F8;
+      --platinum:  #E6E7E8;
+      --grey:      #5C5C5C;
+      --white:     #ffffff;
+    }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      font-size: 9.5pt;
+      color: #222;
+      background: #ccc;
+      margin: 0;
+      padding: 20px 0;
+    }
+
+    /* ─── Page Shell ─── */
+    .page {
+      width: 8.5in;
+      min-height: 11in;
+      background: var(--white);
+      margin: 0 auto 24px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+    }
+
+    /* ─── Header ─── */
+    .header {
+      background: linear-gradient(135deg, var(--blue-dark) 0%, var(--blue-deep) 100%);
+      padding: 32px 48px 28px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Geometric triangle accents */
+    .header::before {
+      content: '';
+      position: absolute;
+      right: -60px; top: -60px;
+      width: 220px; height: 220px;
+      border: 2px solid rgba(110,190,79,0.25);
+      transform: rotate(20deg);
+      clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+    }
+    .header::after {
+      content: '';
+      position: absolute;
+      right: 60px; top: 30px;
+      width: 130px; height: 130px;
+      border: 1.5px solid rgba(35,153,181,0.2);
+      transform: rotate(-10deg);
+      clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+    }
+
+    .header-logo {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 900;
+      font-size: 15pt;
+      color: var(--white);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .header-logo .dot {
+      color: var(--green);
+    }
+
+    .header-accent {
+      font-family: 'Nunito', sans-serif;
+      font-weight: 600;
+      font-size: 8pt;
+      color: var(--green);
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      margin-bottom: 6px;
+    }
+
+    .header h1 {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 900;
+      font-size: 22pt;
+      color: var(--white);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      line-height: 1.1;
+    }
+
+    /* Gradient rule under header */
+    .grad-rule {
+      height: 3px;
+      background: linear-gradient(90deg, var(--grad-b), var(--grad-g));
+    }
+
+    /* ─── Body Content ─── */
+    .content {
+      padding: 28px 48px 24px;
+      flex: 1;
+    }
+
+    /* ─── Section ─── */
+    .section {
+      margin-bottom: 20px;
+    }
+
+    .section-label {
+      font-family: 'Nunito', sans-serif;
+      font-weight: 600;
+      font-size: 7.5pt;
+      color: var(--green);
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      margin-bottom: 3px;
+    }
+
+    .section-title {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 900;
+      font-size: 11pt;
+      color: var(--blue);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 10px;
+      padding-bottom: 5px;
+      border-bottom: 1.5px solid var(--platinum);
+    }
+
+    p {
+      line-height: 1.55;
+      color: var(--grey);
+      margin-bottom: 8px;
+    }
+
+    /* ─── Phase Grid ─── */
+    .phases {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    .phase-card {
+      background: var(--light);
+      border-top: 3px solid var(--teal);
+      border-radius: 4px;
+      padding: 10px 10px 12px;
+    }
+
+    .phase-num {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 900;
+      font-size: 18pt;
+      color: var(--platinum);
+      line-height: 1;
+      margin-bottom: 2px;
+    }
+
+    .phase-name {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 900;
+      font-size: 7.5pt;
+      color: var(--blue);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      line-height: 1.3;
+      margin-bottom: 5px;
+    }
+
+    .phase-desc {
+      font-size: 8pt;
+      color: var(--grey);
+      line-height: 1.5;
+    }
+
+    /* ─── Sessions Grid ─── */
+    .sessions {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    .session-card {
+      border-left: 3px solid var(--green);
+      padding: 8px 10px;
+      background: var(--light);
+      border-radius: 0 4px 4px 0;
+    }
+
+    .session-name {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 900;
+      font-size: 8pt;
+      color: var(--blue);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 4px;
+    }
+
+    .session-desc {
+      font-size: 8pt;
+      color: var(--grey);
+      line-height: 1.5;
+    }
+
+    /* ─── Two-column layout ─── */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    /* ─── SLA Timeline Bar ─── */
+    .sla-bar {
+      display: flex;
+      align-items: stretch;
+      gap: 0;
+      margin: 6px 0 4px;
+    }
+
+    .sla-item {
+      flex: 1;
+      background: linear-gradient(135deg, var(--blue-dark), var(--blue-deep));
+      color: var(--white);
+      padding: 8px 10px;
+      font-size: 7.5pt;
+      line-height: 1.4;
+      position: relative;
+    }
+
+    .sla-item:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      right: -8px; top: 50%;
+      transform: translateY(-50%);
+      width: 0; height: 0;
+      border-top: 16px solid transparent;
+      border-bottom: 16px solid transparent;
+      border-left: 8px solid var(--blue-dark);
+      z-index: 2;
+    }
+
+    .sla-item:not(:first-child) {
+      padding-left: 16px;
+    }
+
+    .sla-label {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 900;
+      font-size: 7pt;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--green);
+      margin-bottom: 2px;
+    }
+
+    /* ─── Checklist ─── */
+    .checklist {
+      list-style: none;
+      margin-top: 4px;
+    }
+
+    .checklist li {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 5px 0;
+      border-bottom: 1px solid var(--platinum);
+      font-size: 8.5pt;
+      color: var(--grey);
+      line-height: 1.45;
+    }
+
+    .checklist li:last-child {
+      border-bottom: none;
+    }
+
+    .check-icon {
+      width: 16px; height: 16px;
+      min-width: 16px;
+      border: 1.5px solid var(--teal);
+      border-radius: 3px;
+      margin-top: 1px;
+    }
+
+    /* ─── Materials list ─── */
+    .materials {
+      list-style: none;
+      margin-top: 4px;
+    }
+
+    .materials li {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 4px 0;
+      font-size: 8.5pt;
+      color: var(--grey);
+      line-height: 1.45;
+      border-bottom: 1px solid var(--platinum);
+    }
+
+    .materials li:last-child { border-bottom: none; }
+
+    .mat-dot {
+      width: 7px; height: 7px;
+      min-width: 7px;
+      background: linear-gradient(135deg, var(--grad-b), var(--grad-g));
+      border-radius: 50%;
+      margin-top: 4px;
+    }
+
+    .mat-label {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 900;
+      font-size: 7.5pt;
+      color: var(--blue);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    /* ─── Note / callout ─── */
+    .callout {
+      background: linear-gradient(90deg, rgba(29,55,86,0.06), rgba(29,55,86,0.02));
+      border-left: 3px solid var(--teal);
+      border-radius: 0 4px 4px 0;
+      padding: 10px 14px;
+      margin-top: 8px;
+      font-size: 8pt;
+      color: var(--grey);
+      line-height: 1.55;
+    }
+
+    .callout strong {
+      color: var(--blue);
+      font-weight: 700;
+    }
+
+    /* ─── Footer ─── */
+    .footer {
+      background: var(--blue);
+      padding: 10px 48px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .footer-brand {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 900;
+      font-size: 9pt;
+      color: var(--white);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .footer-brand span { color: var(--green); }
+
+    .footer-text {
+      font-size: 7.5pt;
+      color: rgba(255,255,255,0.55);
+    }
+
+    /* ─── Page 2 header (compact) ─── */
+    .page2-header {
+      background: linear-gradient(90deg, var(--blue-dark), var(--blue-deep));
+      padding: 14px 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .page2-title {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 900;
+      font-size: 10pt;
+      color: var(--white);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .page2-logo {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 900;
+      font-size: 10pt;
+      color: var(--white);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .page2-logo span { color: var(--green); }
+
+    /* ─── Commitment box ─── */
+    .commitment-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    .commitment-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 8px 10px;
+      background: var(--light);
+      border-radius: 4px;
+    }
+
+    .commitment-icon {
+      width: 22px; height: 22px;
+      min-width: 22px;
+      background: linear-gradient(135deg, var(--grad-b), var(--grad-g));
+      border-radius: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+    }
+
+    .commitment-text {
+      font-size: 8.5pt;
+      color: var(--grey);
+      line-height: 1.45;
+    }
+
+    .commitment-text strong {
+      color: var(--blue);
+      display: block;
+      font-size: 8pt;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 900;
+      margin-bottom: 2px;
+    }
+
+    /* ─── Print ─── */
+    @media print {
+      body { background: none; padding: 0; }
+      .page {
+        width: 100%;
+        min-height: auto;
+        margin: 0;
+        box-shadow: none;
+        page-break-after: always;
+      }
+      .page:last-child { page-break-after: auto; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════ PAGE 1 ══ -->
+<div class="page">
+
+  <div class="header">
+    <div class="header-logo">REV<span class="dot">.</span>IO</div>
+    <div class="header-accent">PSA Platform</div>
+    <h1>Your Onboarding<br>Guide</h1>
+  </div>
+  <div class="grad-rule"></div>
+
+  <div class="content">
+
+    <!-- Overview -->
+    <div class="section">
+      <div class="section-label">Overview</div>
+      <div class="section-title">What Onboarding Is Designed To Do</div>
+      <p>
+        Welcome to Rev.io PSA. Our onboarding program is designed to get you live and generating value from
+        the platform as quickly as possible. Over the course of <strong>three weeks</strong>, your dedicated onboarding
+        team will work alongside you through structured configuration and training sessions to ensure your
+        system is set up to meet your business needs.
+      </p>
+      <p>
+        Our primary objective is to configure Rev.io PSA based on <strong>what the platform delivers today</strong> — not to
+        build new features or make custom modifications. The faster you can provide the right materials and
+        attend your scheduled sessions, the faster you'll be live.
+      </p>
+    </div>
+
+    <!-- Phases -->
+    <div class="section">
+      <div class="section-label">Process</div>
+      <div class="section-title">Onboarding Phases</div>
+      <div class="phases">
+        <div class="phase-card">
+          <div class="phase-num">01</div>
+          <div class="phase-name">Kickoff &amp;<br>Planning</div>
+          <div class="phase-desc">Confirm deliverables, set expectations, and begin pre-configuration work on your behalf.</div>
+        </div>
+        <div class="phase-card">
+          <div class="phase-num">02</div>
+          <div class="phase-name">Data Collection &amp; Setup</div>
+          <div class="phase-desc">Provide required data access and materials so configuration can begin without delay.</div>
+        </div>
+        <div class="phase-card">
+          <div class="phase-num">03</div>
+          <div class="phase-name">Configuration &amp; Validation</div>
+          <div class="phase-desc">Your system is built, reviewed, and approved together through working sessions.</div>
+        </div>
+        <div class="phase-card">
+          <div class="phase-num">04</div>
+          <div class="phase-name">Training &amp;<br>Go-Live</div>
+          <div class="phase-desc">Train on all relevant modules — web, mobile, and Rev.ii — then graduate to live status.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sessions -->
+    <div class="section">
+      <div class="section-label">How We Work Together</div>
+      <div class="section-title">Session Structure</div>
+      <div class="sessions">
+        <div class="session-card">
+          <div class="session-name">Kickoff Call</div>
+          <div class="session-desc">Scheduled within the same week your sale closes — typically within 12 hours. Used to confirm deliverables and align on the onboarding plan before work begins.</div>
+        </div>
+        <div class="session-card">
+          <div class="session-name">Jumpstart Sessions</div>
+          <div class="session-desc">Two-hour working sessions where the majority of your configuration is completed. Held on a structured schedule across your three-week onboarding window.</div>
+        </div>
+        <div class="session-card">
+          <div class="session-name">Optional Touchpoints</div>
+          <div class="session-desc">After Jumpstart Sessions conclude, optional Q&amp;A or support calls are available as needed to address any remaining questions before go-live.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Timeline -->
+    <div class="section">
+      <div class="section-label">Timeline</div>
+      <div class="section-title">What To Expect &amp; When</div>
+      <div class="sla-bar">
+        <div class="sla-item">
+          <div class="sla-label">Sale Closes</div>
+          Kickoff scheduled within <strong>12 hours</strong>
+        </div>
+        <div class="sla-item">
+          <div class="sla-label">Kickoff Call</div>
+          First Jumpstart within <strong>2 business days</strong>
+        </div>
+        <div class="sla-item">
+          <div class="sla-label">Jumpstart Sessions</div>
+          Ongoing across <strong>3-week window</strong>
+        </div>
+        <div class="sla-item">
+          <div class="sla-label">Go-Live</div>
+          Graduate to <strong>Client Success</strong> team
+        </div>
+      </div>
+      <div class="callout">
+        <strong>Timeline is driven by your readiness.</strong> The three-week window is designed to keep onboarding
+        moving efficiently. Delays in providing data, attending sessions, or responding to requests will directly
+        impact your go-live date.
+      </div>
+    </div>
+
+  </div>
+
+  <div class="footer">
+    <div class="footer-brand">REV<span>.</span>IO PSA</div>
+    <div class="footer-text">Confidential — Client Onboarding Document &nbsp;|&nbsp; Page 1 of 2</div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════ PAGE 2 ══ -->
+<div class="page">
+
+  <div class="page2-header">
+    <div class="page2-title">PSA Onboarding Guide — Continued</div>
+    <div class="page2-logo">REV<span>.</span>IO</div>
+  </div>
+  <div class="grad-rule"></div>
+
+  <div class="content">
+
+    <!-- Required Materials -->
+    <div class="section">
+      <div class="section-label">Before Onboarding Begins</div>
+      <div class="section-title">Required Materials</div>
+      <p>The following must be provided before configuration work can begin. Incomplete or inaccessible data is one of the most common causes of onboarding delays.</p>
+
+      <ul class="materials">
+        <li>
+          <div class="mat-dot"></div>
+          <div>
+            <span class="mat-label">Data Access</span><br>
+            API credentials or API keys from your current system are strongly preferred. If API access is unavailable, database access is the next best option. If neither is possible, exports are required.
+          </div>
+        </li>
+        <li>
+          <div class="mat-dot"></div>
+          <div>
+            <span class="mat-label">Required Exports (if API / DB unavailable)</span><br>
+            Customer records &nbsp;·&nbsp; Products &nbsp;·&nbsp; Recurring services &nbsp;·&nbsp; Tax data &nbsp;·&nbsp; Inventory
+          </div>
+        </li>
+        <li>
+          <div class="mat-dot"></div>
+          <div>
+            <span class="mat-label">Payments Application</span><br>
+            A completed merchant payments application along with three months of merchant processing statements. Required for payments underwriting approval. We recommend submitting this early.
+          </div>
+        </li>
+      </ul>
+
+      <div class="callout">
+        <strong>Important:</strong> Not all data from your current system will be directly importable into Rev.io PSA.
+        Fields that don't have a matching location in Rev.io may not carry over. Your onboarding team will work with you to find the best path for your data — but accuracy and completeness of what you provide is essential.
+      </div>
+    </div>
+
+    <!-- Things You Need To Do -->
+    <div class="section">
+      <div class="section-label">Your Responsibilities</div>
+      <div class="section-title">What You'll Need to Do</div>
+      <p>Onboarding is a partnership. Your active participation is required throughout. The checklist below outlines what's expected from your team.</p>
+
+      <ul class="checklist">
+        <li>
+          <div class="check-icon"></div>
+          <div><strong style="color:#1D3756;">Provide a clear path to your data</strong> — API credentials, database access, or system exports delivered before onboarding begins.</div>
+        </li>
+        <li>
+          <div class="check-icon"></div>
+          <div><strong style="color:#1D3756;">Attend all scheduled Jumpstart Sessions</strong> — These are your primary configuration and training touchpoints. Missed sessions delay your go-live.</div>
+        </li>
+        <li>
+          <div class="check-icon"></div>
+          <div><strong style="color:#1D3756;">Review and approve configurations</strong> — You'll be asked to validate setup decisions during working sessions. Timely approvals keep progress moving.</div>
+        </li>
+        <li>
+          <div class="check-icon"></div>
+          <div><strong style="color:#1D3756;">Respond promptly to requests</strong> — Your onboarding team will send follow-up items between sessions. A same-business-day response helps keep your timeline on track.</div>
+        </li>
+        <li>
+          <div class="check-icon"></div>
+          <div><strong style="color:#1D3756;">Complete training on all modules</strong> — Including the web UI, mobile app, and Rev.ii. Sign-off on training is required before go-live.</div>
+        </li>
+        <li>
+          <div class="check-icon"></div>
+          <div><strong style="color:#1D3756;">Participate in final validation</strong> — A full system QA review is completed with your team before graduation to ensure everything is configured correctly and working as expected.</div>
+        </li>
+      </ul>
+    </div>
+
+    <!-- What You Can Expect From Us -->
+    <div class="section">
+      <div class="section-label">Our Commitment</div>
+      <div class="section-title">What You Can Expect From Us</div>
+      <div class="commitment-grid">
+        <div class="commitment-item">
+          <div class="commitment-icon">⚡</div>
+          <div class="commitment-text">
+            <strong>Fast Start</strong>
+            Kickoff scheduled within 12 hours of your sale closing. First Jumpstart within two business days.
+          </div>
+        </div>
+        <div class="commitment-item">
+          <div class="commitment-icon">🎯</div>
+          <div class="commitment-text">
+            <strong>Structured Process</strong>
+            A defined three-week program with clear milestones — no ambiguity about where you are or what's next.
+          </div>
+        </div>
+        <div class="commitment-item">
+          <div class="commitment-icon">🤝</div>
+          <div class="commitment-text">
+            <strong>Hands-On Configuration</strong>
+            We work through your setup together in live sessions — not just documentation and instructions.
+          </div>
+        </div>
+        <div class="commitment-item">
+          <div class="commitment-icon">🚀</div>
+          <div class="commitment-text">
+            <strong>Smooth Handoff</strong>
+            At graduation, you're introduced to your dedicated Client Success and Account Management team.
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="footer">
+    <div class="footer-brand">REV<span>.</span>IO PSA</div>
+    <div class="footer-text">Confidential — Client Onboarding Document &nbsp;|&nbsp; Page 2 of 2</div>
+  </div>
+</div>
+
+</body>
+</html>
