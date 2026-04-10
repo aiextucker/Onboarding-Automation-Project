@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rev.io — Things You'll Need to Know & Do</title>
+<style>
+:root {
+  --navy: #0A1F44;
+  --navy-deep: #061535;
+  --blue: #1B4DB1;
+  --accent: #00B5B8;
+  --accent-dark: #008A8C;
+  --orange: #E07B39;
+  --green: #00A86B;
+  --bg: #F5F7FA;
+  --light: #E8F1FB;
+  --white: #FFFFFF;
+  --text: #1A1A1A;
+  --muted: #5A6478;
+  --border: #D5DCE5;
+  --shadow-sm: 0 1px 3px rgba(10, 31, 68, 0.06), 0 1px 2px rgba(10, 31, 68, 0.04);
+  --shadow-md: 0 4px 12px rgba(10, 31, 68, 0.08), 0 2px 4px rgba(10, 31, 68, 0.04);
+  --shadow-lg: 0 12px 32px rgba(10, 31, 68, 0.10), 0 4px 8px rgba(10, 31, 68, 0.04);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  font-size: 15px;
+}
+
+.page {
+  max-width: 900px;
+  margin: 32px auto;
+  background: var(--white);
+  box-shadow: var(--shadow-lg);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* ============ HEADER ============ */
+.page-header {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-deep) 100%);
+  color: var(--white);
+  padding: 36px 48px 32px;
+  position: relative;
+  overflow: hidden;
+}
+
+.page-header::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  right: -10%;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(0, 181, 184, 0.15) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.brand-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  position: relative;
+}
+
+.brand-logo {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: var(--white);
+}
+
+.brand-logo .dot {
+  color: var(--accent);
+}
+
+.doc-tag {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--accent);
+  padding: 6px 12px;
+  border: 1px solid rgba(0, 181, 184, 0.4);
+  border-radius: 4px;
+}
+
+.page-header h1 {
+  font-size: 38px;
+  font-weight: 800;
+  letter-spacing: -1px;
+  line-height: 1.1;
+  margin-bottom: 12px;
+  position: relative;
+}
+
+.page-header .subtitle {
+  font-size: 17px;
+  color: rgba(255, 255, 255, 0.75);
+  font-weight: 400;
+  position: relative;
+}
+
+/* ============ CONTENT ============ */
+.content {
+  padding: 40px 48px 48px;
+}
+
+.intro-text {
+  font-size: 15px;
+  color: var(--muted);
+  line-height: 1.7;
+  margin-bottom: 36px;
+  padding-bottom: 28px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* ============ SECTION ============ */
+.section {
+  margin-bottom: 40px;
+}
+
+.section-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 6px;
+}
+
+.section-title {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--navy);
+  margin-bottom: 18px;
+  letter-spacing: -0.4px;
+}
+
+.section-intro {
+  font-size: 14px;
+  color: var(--muted);
+  margin-bottom: 20px;
+  line-height: 1.65;
+}
+
+/* ============ PHASE I CARDS ============ */
+.req-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.req-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--accent);
+  border-radius: 8px;
+  padding: 18px 20px;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.req-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.req-card-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--navy);
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--light);
+}
+
+.req-card ul {
+  list-style: none;
+  padding: 0;
+}
+
+.req-card li {
+  font-size: 13px;
+  color: var(--text);
+  padding: 4px 0 4px 16px;
+  position: relative;
+  line-height: 1.55;
+}
+
+.req-card li::before {
+  content: "▸";
+  position: absolute;
+  left: 0;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+/* ============ DM PRIORITY TABLE ============ */
+.priority-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.priority-row {
+  display: grid;
+  grid-template-columns: 70px 1fr;
+  gap: 16px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.priority-row:hover {
+  transform: translateX(4px);
+  box-shadow: var(--shadow-md);
+}
+
+.priority-num {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  font-weight: 900;
+  color: var(--white);
+  font-family: 'Inter', sans-serif;
+  letter-spacing: -1px;
+}
+
+.priority-row.p1 .priority-num { background: var(--accent); }
+.priority-row.p2 .priority-num { background: var(--blue); }
+.priority-row.p3 .priority-num { background: var(--navy); }
+.priority-row.p4 .priority-num { background: var(--muted); }
+
+.priority-content {
+  padding: 14px 20px 14px 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.priority-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 4px;
+}
+
+.priority-name .badge {
+  display: inline-block;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 3px;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+
+.priority-row.p1 .badge { background: rgba(0, 181, 184, 0.15); color: var(--accent-dark); }
+.priority-row.p4 .badge { background: rgba(90, 100, 120, 0.15); color: var(--muted); }
+
+.priority-desc {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+/* ============ DM PACKAGES TABLE ============ */
+.packages-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: var(--white);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+  font-size: 13px;
+}
+
+.packages-table th,
+.packages-table td {
+  padding: 12px 14px;
+  text-align: center;
+  border-bottom: 1px solid var(--border);
+}
+
+.packages-table th {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--white);
+}
+
+.packages-table th.label-col { background: var(--white); }
+.packages-table th.no-mig { background: var(--orange); }
+.packages-table th.lite { background: var(--accent); }
+.packages-table th.full { background: var(--navy); }
+
+.packages-table td.row-label {
+  text-align: left;
+  font-weight: 600;
+  color: var(--navy);
+  background: var(--light);
+}
+
+.packages-table tr:last-child td { border-bottom: none; }
+.packages-table tr:nth-child(even) td:not(.row-label) { background: #FAFBFC; }
+
+.check { color: var(--green); font-weight: 700; font-size: 16px; }
+.dash { color: var(--orange); font-weight: 700; font-size: 16px; }
+
+/* ============ ACTIVATION CALLOUT ============ */
+.activation-card {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--blue) 100%);
+  color: var(--white);
+  border-radius: 10px;
+  padding: 24px 28px;
+  margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.activation-card::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 4px;
+  background: var(--accent);
+}
+
+.activation-card p {
+  font-size: 14px;
+  line-height: 1.65;
+  margin-bottom: 10px;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.activation-card .key-line {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--white);
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(0, 181, 184, 0.3);
+}
+
+.activation-card .key-line::before {
+  content: "→ ";
+  color: var(--accent);
+}
+
+/* ============ PHASE II ============ */
+.phase2-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+
+.phase2-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 18px 20px;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+  border-top: 4px solid var(--accent);
+}
+
+.phase2-card.phase2-psa {
+  border-top-color: var(--blue);
+  background: linear-gradient(180deg, rgba(27, 77, 177, 0.04) 0%, var(--white) 60%);
+}
+
+.phase2-card.phase2-psa h4 {
+  color: var(--blue);
+}
+
+.phase2-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.phase2-card h4 {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--navy);
+  margin-bottom: 12px;
+}
+
+.phase2-card ul {
+  list-style: none;
+  padding: 0;
+}
+
+.phase2-card li {
+  font-size: 13px;
+  color: var(--muted);
+  padding: 3px 0 3px 14px;
+  position: relative;
+  line-height: 1.5;
+}
+
+.phase2-card li::before {
+  content: "•";
+  position: absolute;
+  left: 2px;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+/* ============ PROJECT EXPECTATIONS ============ */
+.expectations-card {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--blue) 100%);
+  color: var(--white);
+  border-radius: 10px;
+  padding: 26px 30px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+}
+
+.expectations-card::before {
+  content: "";
+  position: absolute;
+  top: -40%;
+  right: -10%;
+  width: 320px;
+  height: 320px;
+  background: radial-gradient(circle, rgba(0, 181, 184, 0.18) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.expectations-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 24px;
+  position: relative;
+}
+
+.exp-block h4 {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 10px;
+}
+
+.exp-block p {
+  font-size: 14px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 8px;
+}
+
+.exp-cadence {
+  display: flex;
+  gap: 10px;
+  margin: 12px 0 14px;
+}
+
+.exp-cadence .pill {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.10);
+  border: 1px solid rgba(0, 181, 184, 0.4);
+  border-radius: 6px;
+  padding: 12px 14px;
+  text-align: center;
+}
+
+.exp-cadence .pill .duration {
+  display: block;
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--white);
+  letter-spacing: -0.5px;
+  line-height: 1;
+}
+
+.exp-cadence .pill .label {
+  display: block;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-top: 6px;
+}
+
+.exp-callout {
+  background: rgba(0, 181, 184, 0.15);
+  border-left: 3px solid var(--accent);
+  padding: 10px 14px;
+  border-radius: 4px;
+  font-size: 13px;
+  color: var(--white);
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+/* ============ PHASE I SUBHEADER ============ */
+.phase-due-banner {
+  background: var(--light);
+  border-left: 4px solid var(--accent);
+  border-radius: 6px;
+  padding: 12px 18px;
+  margin-bottom: 16px;
+  font-size: 13px;
+  color: var(--navy);
+  font-weight: 600;
+}
+
+.phase-due-banner strong {
+  color: var(--accent-dark);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 11px;
+  margin-right: 8px;
+}
+
+/* ============ CHECKLIST ============ */
+.section.page-break-before {
+  page-break-before: always;
+  break-before: page;
+}
+
+.checklist-card {
+  background: linear-gradient(180deg, var(--light) 0%, var(--white) 100%);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 24px 28px;
+  box-shadow: var(--shadow-sm);
+}
+
+.checklist-intro {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 16px;
+  line-height: 1.6;
+}
+
+.checklist {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px 20px;
+}
+
+.checklist li {
+  font-size: 13px;
+  color: var(--text);
+  padding: 8px 0 8px 28px;
+  position: relative;
+  line-height: 1.5;
+  border-bottom: 1px dashed var(--border);
+}
+
+.checklist li:last-child,
+.checklist li:nth-last-child(2) {
+  border-bottom: none;
+}
+
+.checklist li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 10px;
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid var(--accent);
+  border-radius: 3px;
+  background: var(--white);
+}
+
+.checklist li strong {
+  color: var(--navy);
+  font-weight: 700;
+}
+
+.support-contact-block {
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 2px solid var(--accent);
+  background: var(--white);
+  border-radius: 6px;
+  padding: 16px 18px;
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--blue);
+}
+
+.support-contact-block h4 {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--blue);
+  margin-bottom: 8px;
+}
+
+.support-contact-block p {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.55;
+  margin-bottom: 8px;
+}
+
+.support-contact-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 10px;
+}
+
+.support-contact-fields .sf {
+  display: flex;
+  flex-direction: column;
+}
+
+.support-contact-fields label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--navy);
+  margin-bottom: 4px;
+}
+
+.support-contact-fields .sf-line {
+  border-bottom: 1.5px solid var(--navy);
+  height: 22px;
+}
+
+/* ============ SIGNATURE ============ */
+.signature-block {
+  margin-top: 36px;
+  padding-top: 28px;
+  border-top: 2px solid var(--light);
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 32px;
+}
+
+.sig-field label {
+  display: block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--navy);
+  margin-bottom: 8px;
+}
+
+.sig-line {
+  border-bottom: 1.5px solid var(--navy);
+  height: 32px;
+}
+
+/* ============ FOOTER ============ */
+.page-footer {
+  background: var(--navy-deep);
+  color: rgba(255, 255, 255, 0.7);
+  padding: 22px 48px;
+  text-align: center;
+  font-size: 12px;
+  border-top: 3px solid var(--accent);
+}
+
+.page-footer .brand-mark {
+  color: var(--white);
+  font-weight: 700;
+  margin-bottom: 6px;
+  font-size: 14px;
+}
+
+.page-footer .brand-mark .dot { color: var(--accent); }
+
+.page-footer p {
+  margin: 2px 0;
+}
+
+/* ============ PRINT ============ */
+@media print {
+  body { background: white; font-size: 11px; }
+  .page {
+    margin: 0;
+    box-shadow: none;
+    border-radius: 0;
+    max-width: 100%;
+  }
+  .page-header { padding: 24px 32px; }
+  .content { padding: 24px 32px; }
+  .section { margin-bottom: 22px; page-break-inside: avoid; }
+  .req-card, .priority-row, .phase2-card, .packages-table, .activation-card, .checklist-card, .expectations-card {
+    page-break-inside: avoid;
+    box-shadow: none;
+  }
+  .page-header h1 { font-size: 28px; }
+  .section-title { font-size: 18px; }
+}
+
+@media (max-width: 720px) {
+  .page { margin: 0; border-radius: 0; }
+  .page-header, .content, .page-footer { padding-left: 24px; padding-right: 24px; }
+  .req-grid, .phase2-grid, .checklist, .support-contact-fields, .expectations-grid { grid-template-columns: 1fr; }
+  .signature-block { grid-template-columns: 1fr; gap: 20px; }
+  .page-header h1 { font-size: 28px; }
+}
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- HEADER -->
+  <header class="page-header">
+    <div class="brand-row">
+      <div class="brand-logo">rev<span class="dot">.</span>io</div>
+      <div class="doc-tag">Onboarding Guide</div>
+    </div>
+    <h1>Things You'll Need to Know &amp; Do</h1>
+    <div class="subtitle">Your roadmap for a smooth Rev.io onboarding</div>
+  </header>
+
+  <!-- CONTENT -->
+  <main class="content">
+
+    <p class="intro-text">
+      Thank you for your business. As we begin onboarding, please understand that Rev.io may not operate exactly like your previous systems — to maximize the platform's value, be open to learning new processes. Your first step is a detailed kick-off call where your project manager will provide an onboarding packet. The list below will help you prepare for a smooth transition.
+    </p>
+
+    <!-- PROJECT EXPECTATIONS -->
+    <section class="section">
+      <div class="section-label">Project Expectations</div>
+      <h2 class="section-title">How We'll Work Together</h2>
+
+      <div class="expectations-card">
+        <div class="expectations-grid">
+
+          <div class="exp-block">
+            <h4>Phase I Deliverables</h4>
+            <p>All Phase I items listed below are due within the <strong>first 30 days</strong> of the project. Timely delivery is essential — late or incomplete materials directly impact your go-live date.</p>
+          </div>
+
+          <div class="exp-block">
+            <h4>Weekly Project Cadence</h4>
+            <p>The project team will meet with your team for <strong>1.5 hours each week</strong>, broken into:</p>
+            <div class="exp-cadence">
+              <div class="pill">
+                <span class="duration">30 min</span>
+                <span class="label">Check-In Call</span>
+              </div>
+              <div class="pill">
+                <span class="duration">60 min</span>
+                <span class="label">Working Session</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="exp-callout" style="margin-top: 18px; position: relative;">
+          ⚡ Attendance and engagement are required for a successful project. Decision makers should attend these calls so blockers can be resolved in real time.
+        </div>
+      </div>
+    </section>
+
+    <!-- PHASE I -->
+    <section class="section">
+      <div class="section-label">Phase I</div>
+      <h2 class="section-title">Items to Prepare</h2>
+
+      <div class="phase-due-banner">
+        <strong>Due Date</strong> All items in this section are due within the first 30 days of the project.
+      </div>
+
+      <div class="req-grid">
+
+        <div class="req-card">
+          <div class="req-card-title">Product Catalog</div>
+          <ul>
+            <li>Product catalog (in Rev.io format) with all billable / non-billable products &amp; features</li>
+            <li>Catalog must include proper tax mapping based on your selected tax provider</li>
+            <li>Rev.io does not consult on tax laws or perform filings — consult a third-party compliance expert</li>
+          </ul>
+        </div>
+
+        <div class="req-card">
+          <div class="req-card-title">CDR Formats / Rating</div>
+          <ul>
+            <li>API credentials and documentation from each of your carriers — <em>or</em> a responsive point of contact at the carrier we can work with directly</li>
+            <li>Live feed for each CDR/carrier and completed CDR workbook required</li>
+            <li>Rate decks (including international)</li>
+          </ul>
+        </div>
+
+        <div class="req-card">
+          <div class="req-card-title">Merchant Statements</div>
+          <ul>
+            <li>Three (3) most recent merchant statements for all payment methods (AMEX, Visa, Discover, MC, ACH) for Rev.io Payments Quote</li>
+            <li>API login ID and transaction key required to establish merchant profile</li>
+            <li>Existing saved credit card / ACH payment account info and customer mappings required for token migration</li>
+          </ul>
+        </div>
+
+        <div class="req-card">
+          <div class="req-card-title">General Info &amp; Business Rules</div>
+          <ul>
+            <li>Company logo in .JPG or .PNG (183 × 110 recommended)</li>
+            <li>Documentation of billing rules: cycle dates, late/termination fees, delivery methods, collections process, etc.</li>
+            <li>End-customer support contact info (email &amp; phone) for Rev.io to reference and route inquiries to</li>
+          </ul>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- DATA MIGRATION PREFERENCES -->
+    <section class="section">
+      <div class="section-label">Data Migration</div>
+      <h2 class="section-title">Preferred Data Sources</h2>
+      <p class="section-intro">
+        Rev.io has a strong preference for how we receive data from your current system. Listed from most to least preferred — please provide the highest-priority option available, as your choice directly affects migration timeline, accuracy, and effort.
+      </p>
+
+      <div class="priority-list">
+
+        <div class="priority-row p1">
+          <div class="priority-num">1</div>
+          <div class="priority-content">
+            <div class="priority-name">API Access <span class="badge">Most Preferred</span></div>
+            <div class="priority-desc">Cleanest, most complete, and most current data. Lets our team pull exactly what's needed on demand and validate against live records — minimizes back-and-forth.</div>
+          </div>
+        </div>
+
+        <div class="priority-row p2">
+          <div class="priority-num">2</div>
+          <div class="priority-content">
+            <div class="priority-name">Database Backup</div>
+            <div class="priority-desc">Gives our Data Engineers full visibility into your data structure, relationships, and history. Best option when API access is unavailable.</div>
+          </div>
+        </div>
+
+        <div class="priority-row p3">
+          <div class="priority-num">3</div>
+          <div class="priority-content">
+            <div class="priority-name">Database Reports</div>
+            <div class="priority-desc">Standard reports exported from your current system. Works well when API/backup access is restricted; may require additional reports to capture all fields.</div>
+          </div>
+        </div>
+
+        <div class="priority-row p4">
+          <div class="priority-num">4</div>
+          <div class="priority-content">
+            <div class="priority-name">DM Template (Client Completed) <span class="badge">Last Resort</span></div>
+            <div class="priority-desc">Final option — your team manually populates the Rev.io Data Migration Template. Highest effort and risk of data gaps; used only when no system-level access is available.</div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ACTIVATION -->
+    <section class="section">
+      <div class="section-label">Activation</div>
+      <h2 class="section-title">Going Live</h2>
+      <div class="activation-card">
+        <p>The Activation date is when Rev.io notifies you that implementation (setup, configuration, training, conversion) has been completed per your signed Project Charter and Licensed Products are available for use.</p>
+        <p class="key-line">Upon Activation, Rev.io Licensing Fees commence and you may begin sending emails and bills out of the system.</p>
+      </div>
+    </section>
+
+    <!-- PHASE II -->
+    <section class="section">
+      <div class="section-label">Phase II</div>
+      <h2 class="section-title">Training &amp; Optimization</h2>
+      <p class="section-intro">
+        Following activation, Phase II trains your team and optimizes the system over the first two months of use.
+      </p>
+
+      <div class="phase2-grid">
+        <div class="phase2-card">
+          <h4>Training &amp; Modules</h4>
+          <ul>
+            <li>Included: Collections, Inventory, Workflow Processes, Request Templates</li>
+            <li>Optional (if applicable): SYNC, Integrations, Analytics, Provisioning (Odin)</li>
+            <li>Agents/Commissions covered in Phase I</li>
+          </ul>
+        </div>
+        <div class="phase2-card phase2-psa">
+          <h4>Rev.io PSA</h4>
+          <ul>
+            <li>Rev.io PSA brings helpdesk, project management, billing, and reporting into one AI-native platform</li>
+            <li>Phase II introduces PSA capabilities relevant to your workflow: service desk, time tracking, scheduling &amp; dispatch, and the mobile app</li>
+            <li>Unified back-office for MSPs, security integrators, and field service businesses</li>
+          </ul>
+        </div>
+        <div class="phase2-card">
+          <h4>Support Resources</h4>
+          <ul>
+            <li>Review roles and responsibilities of Rev.io team members</li>
+            <li>How and when to contact Client Success</li>
+            <li>Access to product documentation and training materials</li>
+          </ul>
+        </div>
+        <div class="phase2-card">
+          <h4>Train the Trainer</h4>
+          <ul>
+            <li>You "drive" configuration of additional settings to build confidence</li>
+            <li>Rev.io University, product documentation, and training videos available throughout</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- SIGNATURE -->
+    <div class="signature-block">
+      <div class="sig-field">
+        <label>Signature</label>
+        <div class="sig-line"></div>
+      </div>
+      <div class="sig-field">
+        <label>Date</label>
+        <div class="sig-line"></div>
+      </div>
+    </div>
+
+    <!-- DELIVERABLES CHECKLIST -->
+    <section class="section page-break-before">
+      <div class="section-label">Deliverables</div>
+      <h2 class="section-title">Onboarding Checklist</h2>
+      <p class="section-intro">
+        A consolidated list of everything you'll need to provide during onboarding. Use this as a quick reference to track your progress.
+      </p>
+
+      <div class="checklist-card">
+        <p class="checklist-intro">
+          Check each item as it's delivered to your project team.
+        </p>
+        <ul class="checklist">
+          <li><strong>Product catalog</strong> in Rev.io format (billable &amp; non-billable items)</li>
+          <li><strong>Tax mappings</strong> to a supported tax database</li>
+          <li><strong>Carrier API credentials &amp; documentation</strong> — or a responsive carrier point of contact</li>
+          <li><strong>Completed CDR workbook</strong> for each carrier</li>
+          <li><strong>Live CDR feed</strong> for each carrier</li>
+          <li><strong>Rate decks</strong> (domestic and international)</li>
+          <li><strong>3 most recent merchant statements</strong> (AMEX, Visa, Discover, MC, ACH)</li>
+          <li><strong>Merchant API login ID &amp; transaction key</strong></li>
+          <li><strong>Saved payment account info</strong> (cards, ACH, customer mappings)</li>
+          <li><strong>Company logo</strong> in .JPG or .PNG (183 × 110)</li>
+          <li><strong>Billing rules documentation</strong> (cycles, fees, delivery, collections)</li>
+          <li><strong>Migration data source</strong> (API access, DB backup, reports, or DM template)</li>
+          <li><strong>User list</strong> for system access provisioning</li>
+          <li><strong>Sample quote template</strong></li>
+          <li><strong>Sample invoice</strong></li>
+          <li><strong>End-customer support contact info</strong> (email &amp; phone) for Rev.io to reference</li>
+        </ul>
+
+        <div class="support-contact-block">
+          <h4>End-Customer Support Contact</h4>
+          <p>Provide the support email address and phone number Rev.io should reference and route end-customer inquiries to during and after onboarding.</p>
+          <div class="support-contact-fields">
+            <div class="sf">
+              <label>Support Email</label>
+              <div class="sf-line"></div>
+            </div>
+            <div class="sf">
+              <label>Support Phone</label>
+              <div class="sf-line"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="page-footer">
+    <div class="brand-mark">rev<span class="dot">.</span>io</div>
+    <p>3565 Piedmont Road NE Bldg 4, Suite 700, Atlanta, GA 30305</p>
+    <p>www.rev.io  &nbsp;|&nbsp;  info@rev.io  &nbsp;|&nbsp;  866.470.5502</p>
+    <p style="margin-top: 6px; font-size: 11px; opacity: 0.
