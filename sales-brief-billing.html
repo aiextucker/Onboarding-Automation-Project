@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rev.io Billing — Sales Brief</title>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --surface2: #21253a;
+      --surface3: #262a3e;
+      --accent: #00d4aa;
+      --accent2: #2399B5;
+      --warn: #ffa94d;
+      --danger: #ff6b6b;
+      --muted: #7b7f9e;
+      --text: #e8eaf6;
+      --text-dim: #b0b4cc;
+      --border: rgba(255,255,255,0.07);
+      --border-focus: rgba(0,212,170,0.5);
+      --radius: 14px;
+      --radius-sm: 8px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; font-size: 15px; line-height: 1.65; }
+
+    /* HERO */
+    .hero { background: linear-gradient(135deg, #0a1a14 0%, #0d2a1e 50%, #0f1117 100%); border-bottom: 1px solid var(--border); padding: 48px 24px 36px; text-align: center; }
+    .hero-eyebrow { font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
+    .hero h1 { font-size: clamp(22px, 4vw, 36px); font-weight: 800; line-height: 1.15; letter-spacing: -0.5px; margin-bottom: 10px; }
+    .hero h1 span { color: var(--accent); }
+    .hero-sub { font-size: 14px; color: var(--text-dim); max-width: 600px; margin: 0 auto 20px; }
+    .hero-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+    .btn { display: inline-flex; align-items: center; gap: 7px; padding: 10px 22px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; border: none; transition: opacity 0.15s; }
+    .btn:hover { opacity: 0.85; }
+    .btn-primary { background: var(--accent); color: #0f1117; }
+    .btn-secondary { background: var(--surface2); color: var(--text-dim); border: 1px solid var(--border); }
+
+    /* LAYOUT */
+    .container { max-width: 920px; margin: 0 auto; padding: 32px 16px 64px; }
+    .section { margin-bottom: 40px; }
+    .section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+    .section-num { width: 32px; height: 32px; border-radius: 50%; background: var(--accent); color: #0f1117; font-weight: 800; font-size: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .section-title { font-size: 18px; font-weight: 700; }
+    .section-desc { font-size: 13px; color: var(--text-dim); margin-top: 2px; }
+
+    /* CARDS */
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 22px; margin-bottom: 14px; }
+    .card.accent-border { border-left: 3px solid var(--accent); }
+    .card.warn-border { border-left: 3px solid var(--warn); }
+    .card-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+    /* FIELDS */
+    .field-grid { display: grid; gap: 14px; }
+    .field-grid.col2 { grid-template-columns: 1fr 1fr; }
+    .field-grid.col3 { grid-template-columns: 1fr 1fr 1fr; }
+    @media (max-width: 640px) { .field-grid.col2, .field-grid.col3 { grid-template-columns: 1fr; } }
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .field label { font-size: 12px; font-weight: 600; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.6px; }
+    .field .req { color: var(--accent); }
+    input[type=text], input[type=email], input[type=number], input[type=date], select, textarea {
+      background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm);
+      color: var(--text); font-size: 14px; padding: 9px 12px; width: 100%;
+      outline: none; transition: border-color 0.15s;
+    }
+    input:focus, select:focus, textarea:focus { border-color: var(--border-focus); }
+    textarea { min-height: 70px; resize: vertical; }
+    .radio-group, .check-group { display: flex; flex-wrap: wrap; gap: 8px 16px; margin-top: 4px; }
+    .radio-group label, .check-group label { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-dim); cursor: pointer; font-weight: 400; text-transform: none; letter-spacing: 0; }
+    .hint { font-size: 12px; color: var(--muted); }
+    .badge { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 4px; letter-spacing: 0.5px; text-transform: uppercase; }
+    .badge-accent { background: rgba(0,212,170,0.15); color: var(--accent); }
+    .badge-warn { background: rgba(255,169,77,0.15); color: var(--warn); }
+    .badge-info { background: rgba(35,153,181,0.15); color: var(--accent2); }
+
+    /* TABLES */
+    .roles-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .roles-table th { background: var(--surface3); color: var(--text-dim); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; padding: 10px 8px; border-bottom: 1px solid var(--border); text-align: left; }
+    .roles-table td { padding: 8px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    .roles-table input, .roles-table select { padding: 6px 8px; font-size: 13px; }
+    .add-row-btn { margin-top: 10px; background: var(--surface2); border: 1px dashed rgba(0,212,170,0.3); color: var(--accent); border-radius: var(--radius-sm); padding: 8px 16px; font-size: 13px; font-weight: 600; cursor: pointer; }
+    .del-btn { background: rgba(255,107,107,0.1); border: none; color: var(--danger); border-radius: 4px; padding: 4px 8px; cursor: pointer; font-size: 12px; }
+
+    /* ADDENDUM */
+    .addendum-row { background: var(--surface2); border-radius: var(--radius-sm); padding: 14px; margin-bottom: 10px; border: 1px solid var(--border); }
+    .addendum-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+    .addendum-num { font-size: 12px; font-weight: 700; color: var(--accent); }
+
+    /* OPEN ITEMS */
+    .flag-row { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: start; margin-bottom: 8px; }
+    .flag-row select { max-width: 140px; }
+  </style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-eyebrow">Sales → Onboarding Handoff</div>
+  <h1>Rev.io <span>Billing</span> — Sales Brief</h1>
+  <div class="hero-sub">Complete before kickoff. Every blank is a gap the SA has to fill on Day 1.</div>
+  <div class="hero-actions">
+    <button class="btn btn-primary" onclick="window.print()">🖨 Print / Save PDF</button>
+    <button class="btn btn-secondary" onclick="clearForm()">↺ Clear Form</button>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- SECTION 1: CLIENT & DEAL INFO -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">1</div>
+      <div>
+        <div class="section-title">Client &amp; Deal Info</div>
+        <div class="section-desc">Basic deal details — pulled from Salesforce at close</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="field-grid col2">
+        <div class="field">
+          <label>Company Name <span class="req">*</span></label>
+          <input type="text" placeholder="Acme Telecom" />
+        </div>
+        <div class="field">
+          <label>Close Date <span class="req">*</span></label>
+          <input type="date" />
+        </div>
+        <div class="field">
+          <label>Monthly Recurring Revenue (MRR) <span class="req">*</span></label>
+          <input type="text" placeholder="$0,000" />
+        </div>
+        <div class="field">
+          <label>Contract Term <span class="req">*</span></label>
+          <select>
+            <option value="">— Select —</option>
+            <option>Month-to-Month</option>
+            <option>12 Months</option>
+            <option>24 Months</option>
+            <option>36 Months</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Contract Segment <span class="req">*</span></label>
+          <select>
+            <option value="">— Select —</option>
+            <option>Startup</option>
+            <option>Commercial</option>
+            <option>Mid-Size</option>
+            <option>Strategic</option>
+            <option>Enterprise</option>
+            <option>AM</option>
+            <option>Migration</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>SA Assigned <span class="req">*</span></label>
+          <input type="text" placeholder="SA name" />
+        </div>
+        <div class="field">
+          <label>Sales Rep <span class="req">*</span></label>
+          <input type="text" placeholder="Sales rep name" />
+        </div>
+        <div class="field">
+          <label>Primary Contact Email</label>
+          <input type="email" placeholder="contact@client.com" />
+        </div>
+        <div class="field">
+          <label>Kickoff Target Date</label>
+          <input type="date" />
+        </div>
+        <div class="field">
+          <label>Go-Live Target Date</label>
+          <input type="date" />
+        </div>
+      </div>
+      <div class="field" style="margin-top:14px;">
+        <label>Brief — Key Context for SA</label>
+        <textarea placeholder="Anything the SA needs to know before the kickoff call. Migration complexity, client expectations, commitments made, red flags..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- SECTION 2: CORE REQUIREMENTS -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">2</div>
+      <div>
+        <div class="section-title">Core Requirements</div>
+        <div class="section-desc">Must-have data before configuration can begin</div>
+      </div>
+    </div>
+
+    <!-- Q1: Current Billing System -->
+    <div class="card accent-border">
+      <div class="card-title">1️⃣ Current Billing System <span class="badge badge-accent">Legacy Migration</span></div>
+      <div class="field-grid col2">
+        <div class="field">
+          <label>Current Billing Platform <span class="req">*</span></label>
+          <select>
+            <option value="">— Select —</option>
+            <option>Tigerpaw</option>
+            <option>ConnectWise Manage</option>
+            <option>Datto Autotask</option>
+            <option>Amdocs</option>
+            <option>CSG Systems</option>
+            <option>Zuora</option>
+            <option>Aria Systems</option>
+            <option>In-house / Custom</option>
+            <option>Spreadsheets only</option>
+            <option>None / Net New</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>If Other — specify</label>
+          <input type="text" placeholder="Platform name" />
+        </div>
+        <div class="field">
+          <label>Number of Customers / Accounts <span class="req">*</span></label>
+          <input type="number" placeholder="e.g. 250" />
+        </div>
+        <div class="field">
+          <label>Data Export Available?</label>
+          <div class="radio-group">
+            <label><input type="radio" name="data_export" value="api" /> API Access</label>
+            <label><input type="radio" name="data_export" value="db" /> DB Backup</label>
+            <label><input type="radio" name="data_export" value="reports" /> Reports/Exports</label>
+            <label><input type="radio" name="data_export" value="manual" /> Manual Entry Only</label>
+          </div>
+        </div>
+      </div>
+      <div class="field" style="margin-top:14px;">
+        <label>Migration Notes</label>
+        <textarea placeholder="Data quality issues, special migration requirements, known gaps..."></textarea>
+      </div>
+    </div>
+
+    <!-- Q2: Data Importers -->
+    <div class="card accent-border">
+      <div class="card-title">2️⃣ Data Importers / CDR Feeds <span class="badge badge-accent">Usage Billing</span></div>
+      <p class="hint" style="margin-bottom:14px;">List every carrier or system feeding usage data into Rev.io. Each one needs its own importer configured.</p>
+      <div class="field-grid col2">
+        <div class="field">
+          <label>Number of Importers <span class="req">*</span></label>
+          <input type="number" placeholder="e.g. 3" />
+        </div>
+        <div class="field">
+          <label>Expected Monthly CDR Volume</label>
+          <input type="text" placeholder="e.g. ~50k records/mo" />
+        </div>
+        <div class="field">
+          <label>International Rating Required?</label>
+          <div class="radio-group">
+            <label><input type="radio" name="intl_rating" value="yes" /> Yes</label>
+            <label><input type="radio" name="intl_rating" value="no" /> No</label>
+            <label><input type="radio" name="intl_rating" value="tbd" /> TBD</label>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:14px;">
+        <label style="font-size:12px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.6px;display:block;margin-bottom:8px;">Importer Details</label>
+        <table class="roles-table" id="importerTable">
+          <thead>
+            <tr>
+              <th>Provider / Carrier Name</th>
+              <th>Data Type</th>
+              <th>Feed Method</th>
+              <th>Rate Deck Available?</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="importerBody">
+            <tr>
+              <td><input type="text" placeholder="e.g. Lumen, Bandwidth" /></td>
+              <td>
+                <select>
+                  <option value="">— Type —</option>
+                  <option>Voice / CDR</option>
+                  <option>SMS/MMS</option>
+                  <option>Data / Broadband</option>
+                  <option>Toll-Free</option>
+                  <option>International</option>
+                  <option>Other</option>
+                </select>
+              </td>
+              <td>
+                <select>
+                  <option value="">— Method —</option>
+                  <option>API Pull</option>
+                  <option>SFTP Upload</option>
+                  <option>Email Delivery</option>
+                  <option>Manual Upload</option>
+                </select>
+              </td>
+              <td>
+                <div class="radio-group" style="flex-direction:column;gap:4px;">
+                  <label><input type="radio" name="rate_0" value="yes" /> Yes</label>
+                  <label><input type="radio" name="rate_0" value="no" /> No</label>
+                </div>
+              </td>
+              <td><button class="del-btn" onclick="this.closest('tr').remove()">✕</button></td>
+            </tr>
+          </tbody>
+        </table>
+        <button class="add-row-btn" onclick="addImporterRow()">+ Add Importer</button>
+      </div>
+    </div>
+
+    <!-- Q3: Payment Processor -->
+    <div class="card accent-border">
+      <div class="card-title">3️⃣ Payment Processor <span class="badge badge-accent">Payments Config</span></div>
+      <div class="field-grid col2">
+        <div class="field">
+          <label>Current Payment Processor <span class="req">*</span></label>
+          <select>
+            <option value="">— Select —</option>
+            <option>Rev.io Payments / TRX (already live)</option>
+            <option>Stripe</option>
+            <option>Square</option>
+            <option>PayPal</option>
+            <option>Authorize.net</option>
+            <option>Paya</option>
+            <option>Heartland</option>
+            <option>Manual / check only</option>
+            <option>None yet</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Switching to Rev.io Payments?</label>
+          <div class="radio-group">
+            <label><input type="radio" name="payments_switch" value="yes" /> Yes — migrating</label>
+            <label><input type="radio" name="payments_switch" value="no" /> No — keeping current</label>
+            <label><input type="radio" name="payments_switch" value="new" /> Setting up new</label>
+            <label><input type="radio" name="payments_switch" value="tbd" /> TBD</label>
+          </div>
+        </div>
+        <div class="field">
+          <label>3 Merchant Statements Available?</label>
+          <div class="radio-group">
+            <label><input type="radio" name="merchant" value="yes" /> Yes — ready</label>
+            <label><input type="radio" name="merchant" value="no" /> No — needs to collect</label>
+            <label><input type="radio" name="merchant" value="na" /> N/A</label>
+          </div>
+        </div>
+        <div class="field">
+          <label>Payment Methods Accepted</label>
+          <div class="check-group">
+            <label><input type="checkbox" /> Credit Card (Visa/MC/Discover)</label>
+            <label><input type="checkbox" /> AMEX</label>
+            <label><input type="checkbox" /> ACH / Bank Transfer</label>
+            <label><input type="checkbox" /> Check</label>
+          </div>
+        </div>
+        <div class="field">
+          <label>Token Migration Required?</label>
+          <div class="radio-group">
+            <label><input type="radio" name="token_mig" value="yes" /> Yes — saved cards/ACH to migrate</label>
+            <label><input type="radio" name="token_mig" value="no" /> No</label>
+            <label><input type="radio" name="token_mig" value="tbd" /> TBD</label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q4: Tax System -->
+    <div class="card accent-border">
+      <div class="card-title">4️⃣ Tax System <span class="badge badge-accent">Tax &amp; Compliance</span></div>
+      <div class="field-grid col2">
+        <div class="field">
+          <label>Tax Database / Provider <span class="req">*</span></label>
+          <select>
+            <option value="">— Select —</option>
+            <option>SureTax</option>
+            <option>Avalara</option>
+            <option>TaxJar</option>
+            <option>Vertex</option>
+            <option>Manual / None</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>If Other — specify</label>
+          <input type="text" placeholder="Tax provider name" />
+        </div>
+        <div class="field">
+          <label>Compliance Partner</label>
+          <input type="text" placeholder="e.g. Compliance Coach, TaxConnex" />
+        </div>
+        <div class="field">
+          <label>Existing Account / Client ID?</label>
+          <div class="radio-group">
+            <label><input type="radio" name="tax_acct" value="yes" /> Yes — has existing account</label>
+            <label><input type="radio" name="tax_acct" value="no" /> No — needs new account</label>
+          </div>
+        </div>
+        <div class="field">
+          <label>Tax-Exempt Clients?</label>
+          <div class="radio-group">
+            <label><input type="radio" name="tax_exempt" value="yes" /> Yes</label>
+            <label><input type="radio" name="tax_exempt" value="no" /> No</label>
+          </div>
+        </div>
+        <div class="field">
+          <label>Primary States / Jurisdictions</label>
+          <input type="text" placeholder="e.g. TX, CA, NY, FL" />
+        </div>
+      </div>
+      <div class="field" style="margin-top:14px;">
+        <label>Tax Notes</label>
+        <textarea placeholder="Special tax situations, exemption details, jurisdictional edge cases..."></textarea>
+      </div>
+    </div>
+
+    <!-- Q5: Users -->
+    <div class="card accent-border">
+      <div class="card-title">5️⃣ Users &amp; Access <span class="badge badge-accent">Admin</span></div>
+      <p class="hint" style="margin-bottom:14px;">List every person who needs Rev.io Billing access with their role.</p>
+      <table class="roles-table" id="rolesTable">
+        <thead>
+          <tr><th>Full Name</th><th>Job Title</th><th>Email</th><th>Role</th><th></th></tr>
+        </thead>
+        <tbody id="rolesBody">
+          <tr>
+            <td><input type="text" placeholder="Name" /></td>
+            <td><input type="text" placeholder="e.g. Billing Manager" /></td>
+            <td><input type="email" placeholder="email@co.com" /></td>
+            <td>
+              <select>
+                <option value="">— Role —</option>
+                <option>Admin</option>
+                <option>Billing Admin</option>
+                <option>Finance / AR</option>
+                <option>Read-Only</option>
+                <option>TBD</option>
+              </select>
+            </td>
+            <td><button class="del-btn" onclick="this.closest('tr').remove()">✕</button></td>
+          </tr>
+        </tbody>
+      </table>
+      <button class="add-row-btn" onclick="addRoleRow()">+ Add User</button>
+    </div>
+
+    <!-- Q6: Product Catalog -->
+    <div class="card accent-border">
+      <div class="card-title">6️⃣ Product Catalog <span class="badge badge-accent">Config Must-Have</span></div>
+      <div class="field-grid col2">
+        <div class="field">
+          <label>Approx. Catalog Size <span class="req">*</span></label>
+          <input type="number" placeholder="# of products/services" />
+        </div>
+        <div class="field">
+          <label>Catalog Export Available?</label>
+          <div class="radio-group">
+            <label><input type="radio" name="catalog_export" value="yes" /> Yes — ready to send</label>
+            <label><input type="radio" name="catalog_export" value="partial" /> Partial</label>
+            <label><input type="radio" name="catalog_export" value="no" /> No — must rebuild</label>
+          </div>
+        </div>
+        <div class="field">
+          <label>Rate Decks Available?</label>
+          <div class="radio-group">
+            <label><input type="radio" name="rate_decks" value="yes" /> Yes</label>
+            <label><input type="radio" name="rate_decks" value="partial" /> Partial</label>
+            <label><input type="radio" name="rate_decks" value="no" /> No</label>
+          </div>
+        </div>
+        <div class="field">
+          <label>Service Types (check all that apply)</label>
+          <div class="check-group">
+            <label><input type="checkbox" /> Voice / POTS</label>
+            <label><input type="checkbox" /> Broadband / Internet</label>
+            <label><input type="checkbox" /> Hosted VoIP</label>
+            <label><input type="checkbox" /> SIP Trunking</label>
+            <label><input type="checkbox" /> Toll-Free</label>
+            <label><input type="checkbox" /> SMS/MMS</label>
+            <label><input type="checkbox" /> Cloud / Hosted Services</label>
+            <label><input type="checkbox" /> Security / Alarm</label>
+            <label><input type="checkbox" /> Other</label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q7: Billing Configuration -->
+    <div class="card accent-border">
+      <div class="card-title">7️⃣ Billing Configuration <span class="badge badge-accent">Billing Rules</span></div>
+      <div class="field-grid col2">
+        <div class="field">
+          <label>Billing Cadence <span class="req">*</span></label>
+          <div class="radio-group">
+            <label><input type="radio" name="billing_cadence" value="cycle" /> Cycle (all bills on same date)</label>
+            <label><input type="radio" name="billing_cadence" value="anniversary" /> Anniversary (bills on signup date)</label>
+            <label><input type="radio" name="billing_cadence" value="mixed" /> Mixed</label>
+          </div>
+        </div>
+        <div class="field">
+          <label>Billing Frequency</label>
+          <div class="check-group">
+            <label><input type="checkbox" /> Monthly</label>
+            <label><input type="checkbox" /> Quarterly</label>
+            <label><input type="checkbox" /> Annual</label>
+          </div>
+        </div>
+        <div class="field">
+          <label>Cycle Date(s)</label>
+          <input type="text" placeholder="e.g. 1st of month, or multiple dates" />
+        </div>
+        <div class="field">
+          <label>Net Terms</label>
+          <select>
+            <option value="">— Select —</option>
+            <option>Net 15</option>
+            <option>Net 30</option>
+            <option>Net 45</option>
+            <option>Due on Receipt</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Late Fee Policy</label>
+          <input type="text" placeholder="e.g. 1.5% after 30 days" />
+        </div>
+        <div class="field">
+          <label>Parent-Child Account Structure?</label>
+          <div class="radio-group">
+            <label><input type="radio" name="parent_child" value="yes" /> Yes</label>
+            <label><input type="radio" name="parent_child" value="no" /> No</label>
+          </div>
+        </div>
+        <div class="field">
+          <label>Logo Available? (.JPG/.PNG)</label>
+          <div class="radio-group">
+            <label><input type="radio" name="logo" value="yes" /> Yes — ready to send</label>
+            <label><input type="radio" name="logo" value="no" /> No — needs to provide</label>
+          </div>
+        </div>
+        <div class="field">
+          <label>Customer Support Email</label>
+          <input type="email" placeholder="support@client.com" />
+        </div>
+        <div class="field">
+          <label>Customer Support Phone</label>
+          <input type="text" placeholder="(xxx) xxx-xxxx" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Q8: Special Notes / Gotchas -->
+    <div class="card warn-border">
+      <div class="card-title">8️⃣ Special Notes &amp; Gotchas <span class="badge badge-warn">SA Flags</span></div>
+      <p class="hint" style="margin-bottom:12px;">Anything specific from discovery calls, the signed contract, or Kaia transcript analysis that the SA needs to know.</p>
+      <div class="field">
+        <label>Notes</label>
+        <textarea style="min-height:100px;" placeholder="e.g. Client has 14 different names for the same product type — data governance concern. Complex CDR format from legacy system. Client expects tight go-live date..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- SECTION 3: ADD-ONS & INTEGRATIONS -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">3</div>
+      <div>
+        <div class="section-title">Add-Ons &amp; Integrations</div>
+        <div class="section-desc">Connected systems and optional modules</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Accounting Software</div>
+      <div class="field-grid col2">
+        <div class="field">
+          <label>Accounting Platform</label>
+          <select>
+            <option value="">— Select —</option>
+            <option>QuickBooks Online</option>
+            <option>QuickBooks Desktop</option>
+            <option>NetSuite</option>
+            <option>Sage</option>
+            <option>Xero</option>
+            <option>None</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Two-Way Sync Required?</label>
+          <div class="radio-group">
+            <label><input type="radio" name="qb_sync" value="yes" /> Yes</label>
+            <label><input type="radio" name="qb_sync" value="no" /> No — one-way only</label>
+            <label><input type="radio" name="qb_sync" value="tbd" /> TBD</label>
+          </div>
+        </div>
+        <div class="field">
+          <label>GL Codes Ready?</label>
+          <div class="radio-group">
+            <label><input type="radio" name="gl_codes" value="yes" /> Yes — chart of accounts ready</label>
+            <label><input type="radio" name="gl_codes" value="no" /> No — accountant needs to provide</label>
+          </div>
+        </div>
+      </div>
+      <p class="hint" style="margin-top:10px;">⚠️ QuickBooks Desktop = no direct integration. Flag for SA — workaround path required.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Other Add-Ons</div>
+      <div class="field-grid col2">
+        <div class="field">
+          <label>Add-Ons Purchased (check all)</label>
+          <div class="check-group">
+            <label><input type="checkbox" /> Cyber Protect</label>
+            <label><input type="checkbox" /> ECP</label>
+            <label><input type="checkbox" /> DocuSign</label>
+            <label><input type="checkbox" /> Agents / Commissions</label>
+            <label><input type="checkbox" /> Rev.io PSA</label>
+            <label><input type="checkbox" /> QuickBooks Sync</label>
+            <label><input type="checkbox" /> ConnectWise Sync</label>
+            <label><input type="checkbox" /> Netsuite Integration</label>
+            <label><input type="checkbox" /> Metaswitch Sync</label>
+            <label><input type="checkbox" /> Odin Integration</label>
+            <label><input type="checkbox" /> Analytics</label>
+          </div>
+        </div>
+        <div class="field">
+          <label>Other Integrations Needed</label>
+          <textarea placeholder="Describe any custom integrations or API requirements" style="min-height:80px;"></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- SECTION 4: CONTRACT DETAILS -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">4</div>
+      <div>
+        <div class="section-title">Contract Details</div>
+        <div class="section-desc">Pulled from signed contract — verify accuracy</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="field-grid col2">
+        <div class="field">
+          <label>Contract Start Date</label>
+          <input type="date" />
+        </div>
+        <div class="field">
+          <label>Contract End Date</label>
+          <input type="date" />
+        </div>
+        <div class="field">
+          <label>Auto-Renew?</label>
+          <div class="radio-group">
+            <label><input type="radio" name="autorenew" value="yes" /> Yes</label>
+            <label><input type="radio" name="autorenew" value="no" /> No</label>
+          </div>
+        </div>
+        <div class="field">
+          <label>Platform Fee</label>
+          <input type="text" placeholder="$0,000 / mo" />
+        </div>
+        <div class="field">
+          <label>Platform Fee Start Date</label>
+          <input type="date" />
+        </div>
+        <div class="field">
+          <label>Onboarding Fee</label>
+          <input type="text" placeholder="$0,000 one-time" />
+        </div>
+        <div class="field">
+          <label>Payment Terms</label>
+          <select>
+            <option value="">— Select —</option>
+            <option>Net 30</option>
+            <option>Net 15</option>
+            <option>Due on Receipt</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Modules / Features Included</label>
+          <input type="text" placeholder="e.g. Billing Core, Payments, Analytics" />
+        </div>
+      </div>
+      <div class="field" style="margin-top:14px;">
+        <label>Special Pricing / Discounts</label>
+        <textarea placeholder="Any non-standard pricing, grandfathered rates, volume discounts..." style="min-height:55px;"></textarea>
+      </div>
+      <div class="field" style="margin-top:14px;">
+        <label>Specific Commitments Made to Client</label>
+        <textarea placeholder="e.g. Promised Day 1 Payments go-live, custom importer by week 3..." style="min-height:55px;"></textarea>
+      </div>
+    </div>
+
+    <!-- Addendums -->
+    <div class="card">
+      <div class="card-title">Addendums <span class="badge badge-info">Dynamic</span></div>
+      <div id="addendumContainer">
+        <div class="addendum-row">
+          <div class="addendum-header">
+            <span class="addendum-num">ADDENDUM #1</span>
+            <button class="del-btn" onclick="this.closest('.addendum-row').remove()">Remove</button>
+          </div>
+          <div class="field-grid col2">
+            <div class="field"><label>Addendum / Term Title</label><input type="text" placeholder="e.g. Data Migration Package" /></div>
+            <div class="field">
+              <label>Type</label>
+              <select>
+                <option>Scope Addition</option>
+                <option>Pricing Adjustment</option>
+                <option>SLA / Performance</option>
+                <option>Custom Development</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <div class="field" style="grid-column:1/-1;">
+              <label>Details &amp; SA Action Required</label>
+              <textarea placeholder="What's in this addendum and what the SA needs to do about it..." style="min-height:55px;"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button class="add-row-btn" onclick="addAddendum()">+ Add Addendum</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- SECTION 5: PRE-CONFIG MUST-HAVES -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">5</div>
+      <div>
+        <div class="section-title">Pre-Configuration Checklist</div>
+        <div class="section-desc">You cannot create a bill without these — must be collected before first session</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <p class="hint" style="margin-bottom:14px;">Check each item as it's received or confirmed ready.</p>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px 24px;">
+        <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-dim);">
+          <input type="checkbox" /> <span><strong style="color:var(--text);">Bill Profiles</strong> — billing rules, cycles, terms</span>
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-dim);">
+          <input type="checkbox" /> <span><strong style="color:var(--text);">Service Types</strong> — all service categories configured</span>
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-dim);">
+          <input type="checkbox" /> <span><strong style="color:var(--text);">Product Catalog</strong> — export received and formatted</span>
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-dim);">
+          <input type="checkbox" /> <span><strong style="color:var(--text);">Usage Plans</strong> — rate decks and CDR mapping complete</span>
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-dim);">
+          <input type="checkbox" /> <span><strong style="color:var(--text);">Tax Setup</strong> — provider connected, jurisdictions configured</span>
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-dim);">
+          <input type="checkbox" /> <span><strong style="color:var(--text);">Customer Data</strong> — migration file received and validated</span>
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-dim);">
+          <input type="checkbox" /> <span><strong style="color:var(--text);">Payment Processor</strong> — merchant account live or migrated</span>
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-dim);">
+          <input type="checkbox" /> <span><strong style="color:var(--text);">Importer(s)</strong> — CDR feeds configured and tested</span>
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-dim);">
+          <input type="checkbox" /> <span><strong style="color:var(--text);">Logo</strong> — .JPG or .PNG received</span>
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-dim);">
+          <input type="checkbox" /> <span><strong style="color:var(--text);">Support Contact Info</strong> — email and phone confirmed</span>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- SECTION 6: OPEN ITEMS & SA FLAGS -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">6</div>
+      <div>
+        <div class="section-title">Open Items &amp; SA Flags</div>
+        <div class="section-desc">Gaps, risks, and Day 1 questions</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="field">
+        <label>Pre-Kickoff Open Items</label>
+        <textarea style="min-height:80px;" placeholder="What still needs to be resolved or collected before kickoff?"></textarea>
+      </div>
+    </div>
+    <div class="card">
+      <div class="field">
+        <label>Questions / Items to Confirm on Day 1</label>
+        <textarea style="min-height:80px;" placeholder="What does the SA need to ask or confirm at the kickoff call?"></textarea>
+      </div>
+    </div>
+    <div class="card warn-border">
+      <div class="field">
+        <label>⚑ Red Flags / Risk Notes</label>
+        <textarea style="min-height:80px;" placeholder="Client bandwidth issues, data quality problems, unrealistic expectations, complex CDR format, compliance concerns..."></textarea>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<script>
+function addRoleRow() {
+  const tbody = document.getElementById('rolesBody');
+  const idx = tbody.querySelectorAll('tr').length;
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td><input type="text" placeholder="Name" /></td>
+    <td><input type="text" placeholder="e.g. Billing Manager" /></td>
+    <td><input type="email" placeholder="email@co.com" /></td>
+    <td><select>
+      <option value="">— Role —</option>
+      <option>Admin</option><option>Billing Admin</option>
+      <option>Finance / AR</option><option>Read-Only</option><option>TBD</option>
+    </select></td>
+    <td><button class="del-btn" onclick="this.closest('tr').remove()">✕</button></td>`;
+  tbody.appendChild(tr);
+}
+
+function addImporterRow() {
+  const tbody = document.getElementById('importerBody');
+  const idx = tbody.querySelectorAll('tr').length;
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td><input type="text" placeholder="e.g. Lumen, Bandwidth" /></td>
+    <td><select>
+      <option value="">— Type —</option>
+      <option>Voice / CDR</option><option>SMS/MMS</option>
+      <option>Data / Broadband</option><option>Toll-Free</option>
+      <option>International</option><option>Other</option>
+    </select></td>
+    <td><select>
+      <option value="">— Method —</option>
+      <option>API Pull</option><option>SFTP Upload</option>
+      <option>Email Delivery</option><option>Manual Upload</option>
+    </select></td>
+    <td><div class="radio-group" style="flex-direction:column;gap:4px;">
+      <label><input type="radio" name="rate_${idx}" value="yes" /> Yes</label>
+      <label><input type="radio" name="rate_${idx}" value="no" /> No</label>
+    </div></td>
+    <td><button class="del-btn" onclick="this.closest('tr').remove()">✕</button></td>`;
+  tbody.appendChild(tr);
+}
+
+let addendumCount = 1;
+function addAddendum() {
+  addendumCount++;
+  const container = document.getElementById('addendumContainer');
+  const div = document.createElement('div');
+  div.className = 'addendum-row';
+  div.innerHTML = `
+    <div class="addendum-header">
+      <span class="addendum-num">ADDENDUM #${addendumCount}</span>
+      <button class="del-btn" onclick="this.closest('.addendum-row').remove()">Remove</button>
+    </div>
+    <div class="field-grid col2">
+      <div class="field"><label>Addendum / Term Title</label><input type="text" placeholder="Title" /></div>
+      <div class="field"><label>Type</label><select>
+        <option>Scope Addition</option><option>Pricing Adjustment</option>
+        <option>SLA / Performance</option><option>Custom Development</option><option>Other</option>
+      </select></div>
+      <div class="field" style="grid-column:1/-1;">
+        <label>Details &amp; SA Action Required</label>
+        <textarea placeholder="Details..." style="min-height:55px;"></textarea>
+      </div>
+    </div>`;
+  container.appendChild(div);
+}
+
+function clearForm() {
+  if (!confirm('Clear all form data?')) return;
+  document.querySelectorAll('input[type=text], input[type=email], input[type=number], textarea').forEach(el => el.value = '');
+  document.querySelectorAll('select').forEach(el => el.selectedIndex = 0);
+  document.querySelectorAll('input[type=radio], input[type=checkbox]').forEach(el => el.checked = false);
+  document.querySelectorAll('input[type=date]').forEach(el => el.value = '');
+}
+</script>
+
+</body>
+</html>
