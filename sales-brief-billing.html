@@ -132,17 +132,7 @@
           <label>Monthly Recurring Revenue (MRR) <span class="req">*</span></label>
           <input type="text" placeholder="$0,000" />
         </div>
-        <div class="field">
-          <label>Contract Term <span class="req">*</span></label>
-          <select>
-            <option value="">— Select —</option>
-            <option>Month-to-Month</option>
-            <option>12 Months</option>
-            <option>24 Months</option>
-            <option>36 Months</option>
-            <option>Other</option>
-          </select>
-        </div>
+
         <div class="field">
           <label>Contract Segment <span class="req">*</span></label>
           <select>
@@ -156,13 +146,22 @@
             <option>Migration</option>
           </select>
         </div>
-        <div class="field">
-          <label>SA Assigned <span class="req">*</span></label>
-          <input type="text" placeholder="SA name" />
-        </div>
+
         <div class="field">
           <label>Sales Rep <span class="req">*</span></label>
           <input type="text" placeholder="Sales rep name" />
+        </div>
+        <div class="field">
+          <label>CSA Rep</label>
+          <input type="text" placeholder="CSA rep name" />
+        </div>
+        <div class="field">
+          <label>Primary Contact Name <span class="req">*</span></label>
+          <input type="text" placeholder="Contact full name" />
+        </div>
+        <div class="field">
+          <label>Primary Contact Title</label>
+          <input type="text" placeholder="e.g. VP of Finance" />
         </div>
         <div class="field">
           <label>Primary Contact Email</label>
@@ -176,9 +175,20 @@
           <label>Go-Live Target Date</label>
           <input type="date" />
         </div>
+        <div class="field">
+          <label>Go-Live Hard Deadline?</label>
+          <div class="radio-group">
+            <label><input type="radio" name="hard_deadline" value="yes" /> Yes</label>
+            <label><input type="radio" name="hard_deadline" value="no" /> No — target only</label>
+          </div>
+        </div>
+        <div class="field">
+          <label>If Yes — Reason for Hard Deadline</label>
+          <input type="text" placeholder="e.g. Contract activation clause, board mandate, fiscal year..." />
+        </div>
       </div>
       <div class="field" style="margin-top:14px;">
-        <label>Brief — Key Context for SA</label>
+        <label>Key Context for Project Team</label>
         <textarea placeholder="Anything the SA needs to know before the kickoff call. Migration complexity, client expectations, commitments made, red flags..."></textarea>
       </div>
     </div>
@@ -202,24 +212,11 @@
       <div class="field-grid col2">
         <div class="field">
           <label>Current Billing Platform <span class="req">*</span></label>
-          <select>
-            <option value="">— Select —</option>
-            <option>Tigerpaw</option>
-            <option>ConnectWise Manage</option>
-            <option>Datto Autotask</option>
-            <option>Amdocs</option>
-            <option>CSG Systems</option>
-            <option>Zuora</option>
-            <option>Aria Systems</option>
-            <option>In-house / Custom</option>
-            <option>Spreadsheets only</option>
-            <option>None / Net New</option>
-            <option>Other</option>
-          </select>
+          <input type="text" placeholder="e.g. Tigerpaw, ConnectWise, Amdocs, custom..." />
         </div>
         <div class="field">
-          <label>If Other — specify</label>
-          <input type="text" placeholder="Platform name" />
+          <label>Other Systems Being Replaced?</label>
+          <input type="text" placeholder="Any additional platforms Rev.io is replacing" />
         </div>
         <div class="field">
           <label>Number of Customers / Accounts <span class="req">*</span></label>
@@ -228,11 +225,15 @@
         <div class="field">
           <label>Data Export Available?</label>
           <div class="radio-group">
-            <label><input type="radio" name="data_export" value="api" /> API Access</label>
-            <label><input type="radio" name="data_export" value="db" /> DB Backup</label>
-            <label><input type="radio" name="data_export" value="reports" /> Reports/Exports</label>
-            <label><input type="radio" name="data_export" value="manual" /> Manual Entry Only</label>
+            <label><input type="radio" name="data_export" value="api" onclick="toggleApiKey(true)" /> API Access</label>
+            <label><input type="radio" name="data_export" value="db" onclick="toggleApiKey(false)" /> DB Backup</label>
+            <label><input type="radio" name="data_export" value="reports" onclick="toggleApiKey(false)" /> Reports/Exports</label>
+            <label><input type="radio" name="data_export" value="manual" onclick="toggleApiKey(false)" /> Manual Entry Only</label>
           </div>
+        </div>
+        <div class="field" id="apiKeyField" style="display:none;">
+          <label>API Key / Credentials</label>
+          <input type="text" placeholder="API key or access details" />
         </div>
       </div>
       <div class="field" style="margin-top:14px;">
@@ -259,7 +260,7 @@
           <div class="radio-group">
             <label><input type="radio" name="intl_rating" value="yes" /> Yes</label>
             <label><input type="radio" name="intl_rating" value="no" /> No</label>
-            <label><input type="radio" name="intl_rating" value="tbd" /> TBD</label>
+            
           </div>
         </div>
       </div>
@@ -271,7 +272,7 @@
               <th>Provider / Carrier Name</th>
               <th>Data Type</th>
               <th>Feed Method</th>
-              <th>Rate Deck Available?</th>
+              <th>Currently Billing?</th>
               <th></th>
             </tr>
           </thead>
@@ -294,14 +295,13 @@
                   <option value="">— Method —</option>
                   <option>API Pull</option>
                   <option>SFTP Upload</option>
-                  <option>Email Delivery</option>
                   <option>Manual Upload</option>
                 </select>
               </td>
               <td>
                 <div class="radio-group" style="flex-direction:column;gap:4px;">
-                  <label><input type="radio" name="rate_0" value="yes" /> Yes</label>
-                  <label><input type="radio" name="rate_0" value="no" /> No</label>
+                  <label><input type="radio" name="billing_0" value="yes" /> Yes</label>
+                  <label><input type="radio" name="billing_0" value="no" /> No</label>
                 </div>
               </td>
               <td><button class="del-btn" onclick="this.closest('tr').remove()">✕</button></td>
@@ -366,6 +366,10 @@
             <label><input type="radio" name="token_mig" value="tbd" /> TBD</label>
           </div>
         </div>
+        <div class="field">
+          <label>Rev.io Payments Rep</label>
+          <input type="text" placeholder="Payments rep name" />
+        </div>
       </div>
     </div>
 
@@ -379,19 +383,9 @@
             <option value="">— Select —</option>
             <option>SureTax</option>
             <option>Avalara</option>
-            <option>TaxJar</option>
-            <option>Vertex</option>
-            <option>Manual / None</option>
-            <option>Other</option>
+            <option>CSI</option>
+            <option>Saratax</option>
           </select>
-        </div>
-        <div class="field">
-          <label>If Other — specify</label>
-          <input type="text" placeholder="Tax provider name" />
-        </div>
-        <div class="field">
-          <label>Compliance Partner</label>
-          <input type="text" placeholder="e.g. Compliance Coach, TaxConnex" />
         </div>
         <div class="field">
           <label>Existing Account / Client ID?</label>
@@ -408,8 +402,20 @@
           </div>
         </div>
         <div class="field">
-          <label>Primary States / Jurisdictions</label>
-          <input type="text" placeholder="e.g. TX, CA, NY, FL" />
+          <label>Traffic Study Completed?</label>
+          <div class="radio-group">
+            <label><input type="radio" name="traffic_study" value="yes" /> Yes</label>
+            <label><input type="radio" name="traffic_study" value="no" /> No</label>
+            <label><input type="radio" name="traffic_study" value="na" /> N/A</label>
+          </div>
+        </div>
+        <div class="field">
+          <label>Compliance Partner Name</label>
+          <input type="text" placeholder="e.g. Compliance Coach, TaxConnex" />
+        </div>
+        <div class="field">
+          <label>Compliance Partner Contact Email</label>
+          <input type="email" placeholder="contact@taxpartner.com" />
         </div>
       </div>
       <div class="field" style="margin-top:14px;">
@@ -536,11 +542,9 @@
           </div>
         </div>
         <div class="field">
-          <label>Logo Available? (.JPG/.PNG)</label>
-          <div class="radio-group">
-            <label><input type="radio" name="logo" value="yes" /> Yes — ready to send</label>
-            <label><input type="radio" name="logo" value="no" /> No — needs to provide</label>
-          </div>
+          <label>Company Logo Upload (.JPG / .PNG)</label>
+          <input type="file" accept=".jpg,.jpeg,.png" style="background:var(--surface2);border:1px dashed rgba(0,212,170,0.3);border-radius:var(--radius-sm);padding:10px;color:var(--text-dim);font-size:13px;" />
+          <p class="hint">Recommended: 183 × 110px or larger, transparent background preferred</p>
         </div>
         <div class="field">
           <label>Customer Support Email</label>
@@ -555,7 +559,7 @@
 
     <!-- Q8: Special Notes / Gotchas -->
     <div class="card warn-border">
-      <div class="card-title">8️⃣ Special Notes &amp; Gotchas <span class="badge badge-warn">SA Flags</span></div>
+      <div class="card-title">8️⃣ Special Notes &amp; Gotchas <span class="badge badge-warn">Project Flags</span></div>
       <p class="hint" style="margin-bottom:12px;">Anything specific from discovery calls, the signed contract, or Kaia transcript analysis that the SA needs to know.</p>
       <div class="field">
         <label>Notes</label>
@@ -577,42 +581,7 @@
     </div>
 
     <div class="card">
-      <div class="card-title">Accounting Software</div>
-      <div class="field-grid col2">
-        <div class="field">
-          <label>Accounting Platform</label>
-          <select>
-            <option value="">— Select —</option>
-            <option>QuickBooks Online</option>
-            <option>QuickBooks Desktop</option>
-            <option>NetSuite</option>
-            <option>Sage</option>
-            <option>Xero</option>
-            <option>None</option>
-            <option>Other</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>Two-Way Sync Required?</label>
-          <div class="radio-group">
-            <label><input type="radio" name="qb_sync" value="yes" /> Yes</label>
-            <label><input type="radio" name="qb_sync" value="no" /> No — one-way only</label>
-            <label><input type="radio" name="qb_sync" value="tbd" /> TBD</label>
-          </div>
-        </div>
-        <div class="field">
-          <label>GL Codes Ready?</label>
-          <div class="radio-group">
-            <label><input type="radio" name="gl_codes" value="yes" /> Yes — chart of accounts ready</label>
-            <label><input type="radio" name="gl_codes" value="no" /> No — accountant needs to provide</label>
-          </div>
-        </div>
-      </div>
-      <p class="hint" style="margin-top:10px;">⚠️ QuickBooks Desktop = no direct integration. Flag for SA — workaround path required.</p>
-    </div>
-
-    <div class="card">
-      <div class="card-title">Other Add-Ons</div>
+      <div class="card-title">Add-Ons &amp; Integrations</div>
       <div class="field-grid col2">
         <div class="field">
           <label>Add-Ons Purchased (check all)</label>
@@ -622,7 +591,7 @@
             <label><input type="checkbox" /> DocuSign</label>
             <label><input type="checkbox" /> Agents / Commissions</label>
             <label><input type="checkbox" /> Rev.io PSA</label>
-            <label><input type="checkbox" /> QuickBooks Sync</label>
+            <label><input type="checkbox" /> QuickBooks Online Integration</label>
             <label><input type="checkbox" /> ConnectWise Sync</label>
             <label><input type="checkbox" /> Netsuite Integration</label>
             <label><input type="checkbox" /> Metaswitch Sync</label>
@@ -632,8 +601,26 @@
         </div>
         <div class="field">
           <label>Other Integrations Needed</label>
-          <textarea placeholder="Describe any custom integrations or API requirements" style="min-height:80px;"></textarea>
+          <textarea placeholder="Describe any non-standard integrations or API requirements" style="min-height:60px;"></textarea>
         </div>
+        <div class="field">
+          <label>GL Codes Ready? (if QB integration)</label>
+          <div class="radio-group">
+            <label><input type="radio" name="gl_codes" value="yes" /> Yes — chart of accounts ready</label>
+            <label><input type="radio" name="gl_codes" value="no" /> No — accountant needs to provide</label>
+            <label><input type="radio" name="gl_codes" value="na" /> N/A</label>
+          </div>
+        </div>
+      </div>
+      <p class="hint" style="margin-top:10px;">⚠️ QuickBooks Desktop = no direct integration. Flag for project team — workaround path required.</p>
+    </div>
+
+    <div class="card warn-border">
+      <div class="card-title">Custom Development Agreed Upon <span class="badge badge-warn">Scope Commitment</span></div>
+      <p class="hint" style="margin-bottom:12px;">Document any custom development scope agreed to during sales. This goes straight to engineering.</p>
+      <div class="field">
+        <label>Agreed Upon Custom Dev Scope</label>
+        <textarea style="min-height:80px;" placeholder="e.g. Custom CDR parser for legacy Amdocs format — agreed 4/1/26 by AE. Custom billing report for parent-child rollup..."></textarea>
       </div>
     </div>
   </div>
@@ -668,11 +655,11 @@
           </div>
         </div>
         <div class="field">
-          <label>Platform Fee</label>
+          <label>Early Implemented License Fee</label>
           <input type="text" placeholder="$0,000 / mo" />
         </div>
         <div class="field">
-          <label>Platform Fee Start Date</label>
+          <label>Early Implemented License Fee Start Date</label>
           <input type="date" />
         </div>
         <div class="field">
@@ -736,9 +723,8 @@
     </div>
   </div>
 
-  <!-- ═══════════════════════════════════════════════════ -->
-  <!-- SECTION 5: PRE-CONFIG MUST-HAVES -->
-  <!-- ═══════════════════════════════════════════════════ -->
+
+    <!-- ═══════════════════════════════════════════════════ -->
   <div class="section">
     <div class="section-header">
       <div class="section-num">5</div>
@@ -790,9 +776,9 @@
   <!-- ═══════════════════════════════════════════════════ -->
   <div class="section">
     <div class="section-header">
-      <div class="section-num">6</div>
+      <div class="section-num">5</div>
       <div>
-        <div class="section-title">Open Items &amp; SA Flags</div>
+        <div class="section-title">Open Items &amp; Project Flags</div>
         <div class="section-desc">Gaps, risks, and Day 1 questions</div>
       </div>
     </div>
@@ -855,8 +841,8 @@ function addImporterRow() {
       <option>Email Delivery</option><option>Manual Upload</option>
     </select></td>
     <td><div class="radio-group" style="flex-direction:column;gap:4px;">
-      <label><input type="radio" name="rate_${idx}" value="yes" /> Yes</label>
-      <label><input type="radio" name="rate_${idx}" value="no" /> No</label>
+      <label><input type="radio" name="billing_${idx}" value="yes" /> Yes</label>
+      <label><input type="radio" name="billing_${idx}" value="no" /> No</label>
     </div></td>
     <td><button class="del-btn" onclick="this.closest('tr').remove()">✕</button></td>`;
   tbody.appendChild(tr);
@@ -885,6 +871,10 @@ function addAddendum() {
       </div>
     </div>`;
   container.appendChild(div);
+}
+
+function toggleApiKey(show) {
+  document.getElementById('apiKeyField').style.display = show ? 'block' : 'none';
 }
 
 function clearForm() {
