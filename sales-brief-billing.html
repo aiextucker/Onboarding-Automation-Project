@@ -156,12 +156,8 @@
           <input type="text" placeholder="CSA rep name" />
         </div>
         <div class="field">
-          <label>Primary Contact Name <span class="req">*</span></label>
-          <input type="text" placeholder="Contact full name" />
-        </div>
-        <div class="field">
-          <label>Primary Contact Title</label>
-          <input type="text" placeholder="e.g. VP of Finance" />
+          <label>Primary Contact Name &amp; Title <span class="req">*</span></label>
+          <input type="text" placeholder="e.g. Jane Smith — VP of Finance" />
         </div>
         <div class="field">
           <label>Primary Contact Email</label>
@@ -384,7 +380,7 @@
             <option>SureTax</option>
             <option>Avalara</option>
             <option>CSI</option>
-            <option>Saratax</option>
+            <option>Ceretax</option>
           </select>
         </div>
         <div class="field">
@@ -544,7 +540,6 @@
         <div class="field">
           <label>Company Logo Upload (.JPG / .PNG)</label>
           <input type="file" accept=".jpg,.jpeg,.png" style="background:var(--surface2);border:1px dashed rgba(0,212,170,0.3);border-radius:var(--radius-sm);padding:10px;color:var(--text-dim);font-size:13px;" />
-          <p class="hint">Recommended: 183 × 110px or larger, transparent background preferred</p>
         </div>
         <div class="field">
           <label>Customer Support Email</label>
@@ -724,55 +719,8 @@
   </div>
 
 
-    <!-- ═══════════════════════════════════════════════════ -->
-  <div class="section">
-    <div class="section-header">
-      <div class="section-num">5</div>
-      <div>
-        <div class="section-title">Pre-Configuration Checklist</div>
-        <div class="section-desc">You cannot create a bill without these — must be collected before first session</div>
-      </div>
-    </div>
-
-    <div class="card">
-      <p class="hint" style="margin-bottom:14px;">Check each item as it's received or confirmed ready.</p>
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px 24px;">
-        <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-dim);">
-          <input type="checkbox" /> <span><strong style="color:var(--text);">Bill Profiles</strong> — billing rules, cycles, terms</span>
-        </label>
-        <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-dim);">
-          <input type="checkbox" /> <span><strong style="color:var(--text);">Service Types</strong> — all service categories configured</span>
-        </label>
-        <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-dim);">
-          <input type="checkbox" /> <span><strong style="color:var(--text);">Product Catalog</strong> — export received and formatted</span>
-        </label>
-        <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-dim);">
-          <input type="checkbox" /> <span><strong style="color:var(--text);">Usage Plans</strong> — rate decks and CDR mapping complete</span>
-        </label>
-        <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-dim);">
-          <input type="checkbox" /> <span><strong style="color:var(--text);">Tax Setup</strong> — provider connected, jurisdictions configured</span>
-        </label>
-        <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-dim);">
-          <input type="checkbox" /> <span><strong style="color:var(--text);">Customer Data</strong> — migration file received and validated</span>
-        </label>
-        <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-dim);">
-          <input type="checkbox" /> <span><strong style="color:var(--text);">Payment Processor</strong> — merchant account live or migrated</span>
-        </label>
-        <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-dim);">
-          <input type="checkbox" /> <span><strong style="color:var(--text);">Importer(s)</strong> — CDR feeds configured and tested</span>
-        </label>
-        <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-dim);">
-          <input type="checkbox" /> <span><strong style="color:var(--text);">Logo</strong> — .JPG or .PNG received</span>
-        </label>
-        <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-dim);">
-          <input type="checkbox" /> <span><strong style="color:var(--text);">Support Contact Info</strong> — email and phone confirmed</span>
-        </label>
-      </div>
-    </div>
-  </div>
-
   <!-- ═══════════════════════════════════════════════════ -->
-  <!-- SECTION 6: OPEN ITEMS & SA FLAGS -->
+  <!-- SECTION 5: OPEN ITEMS & PROJECT FLAGS -->
   <!-- ═══════════════════════════════════════════════════ -->
   <div class="section">
     <div class="section-header">
@@ -792,7 +740,7 @@
     <div class="card">
       <div class="field">
         <label>Questions / Items to Confirm on Day 1</label>
-        <textarea style="min-height:80px;" placeholder="What does the SA need to ask or confirm at the kickoff call?"></textarea>
+        <textarea style="min-height:80px;" placeholder="What does the project team need to ask or confirm at the kickoff call?"></textarea>
       </div>
     </div>
     <div class="card warn-border">
