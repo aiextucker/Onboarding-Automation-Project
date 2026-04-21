@@ -756,23 +756,119 @@ body {
 }
 
 /* ============ PRINT ============ */
+@page {
+  size: letter portrait;
+  margin: 0.45in 0.5in;
+}
+
 @media print {
-  body { background: white; font-size: 11px; }
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+
+  body { background: white; font-size: 10px; }
+
   .page {
     margin: 0;
-    box-shadow: none;
+    box-shadow: none !important;
     border-radius: 0;
     max-width: 100%;
+    width: 100%;
   }
-  .page-header { padding: 24px 32px; }
-  .content { padding: 24px 32px; }
-  .section { margin-bottom: 22px; page-break-inside: avoid; }
-  .req-card, .priority-row, .phase2-card, .activation-card, .checklist-card, .expectations-card {
-    page-break-inside: avoid;
-    box-shadow: none;
+
+  /* ---- Header ---- */
+  .page-header { padding: 16px 26px 14px; }
+  .page-header::before { display: none; }
+  .brand-row { margin-bottom: 12px; }
+  .brand-logo-img { height: 26px; }
+  .doc-tag { font-size: 9px; padding: 4px 8px; }
+  .page-header h1 { font-size: 20px; margin-bottom: 5px; }
+  .page-header .subtitle { font-size: 11px; }
+
+  /* ---- Content ---- */
+  .content { padding: 16px 26px 18px; }
+
+  .intro-text {
+    font-size: 11px;
+    margin-bottom: 14px;
+    padding-bottom: 12px;
+    line-height: 1.5;
   }
-  .page-header h1 { font-size: 26px; }
-  .section-title { font-size: 17px; }
+
+  /* ---- Sections ---- */
+  .section { margin-bottom: 12px; }
+  .section-label { font-size: 9px; margin-bottom: 2px; }
+  .section-title { font-size: 14px; margin-bottom: 8px; }
+  .section-intro { font-size: 11px; margin-bottom: 10px; line-height: 1.5; }
+
+  /* ---- Project Expectations ---- */
+  .expectations-card { padding: 14px 18px; box-shadow: none !important; }
+  .expectations-card::before { display: none; }
+  .expectations-grid { gap: 14px; }
+  .exp-block h4 { font-size: 9px; margin-bottom: 5px; }
+  .exp-block p { font-size: 11px; margin-bottom: 4px; line-height: 1.45; }
+  .exp-cadence { gap: 6px; margin: 6px 0 8px; }
+  .exp-cadence .pill { padding: 7px 9px; }
+  .exp-cadence .pill .duration { font-size: 16px; }
+  .exp-cadence .pill .label { font-size: 8px; margin-top: 3px; }
+  .exp-callout { font-size: 11px; padding: 7px 10px; margin-top: 10px !important; }
+
+  /* ---- Phase I ---- */
+  .phase-due-banner { padding: 7px 12px; margin-bottom: 8px; font-size: 11px; }
+  .req-grid { gap: 8px; }
+  .req-card { padding: 10px 12px; border-left-width: 3px; box-shadow: none !important; break-inside: avoid; page-break-inside: avoid; }
+  .req-card-title { font-size: 9px; margin-bottom: 7px; padding-bottom: 6px; }
+  .req-card li { font-size: 11px; padding: 2px 0 2px 13px; line-height: 1.45; }
+
+  /* ---- Data Migration ---- */
+  .priority-list { gap: 6px; }
+  .priority-row { box-shadow: none !important; break-inside: avoid; page-break-inside: avoid; }
+  .priority-num { font-size: 20px; }
+  .priority-content { padding: 9px 14px 9px 0; }
+  .priority-name { font-size: 12px; margin-bottom: 2px; }
+  .priority-name .badge { font-size: 8px; padding: 1px 5px; }
+  .priority-desc { font-size: 11px; line-height: 1.45; }
+
+  /* ---- Activation ---- */
+  .activation-card { padding: 14px 18px; margin-bottom: 0; box-shadow: none !important; }
+  .activation-card p { font-size: 11px; margin-bottom: 5px; line-height: 1.5; }
+  .activation-card .key-line { font-size: 12px; margin-top: 7px; padding-top: 7px; }
+
+  /* ---- Phase II ---- */
+  .phase2-grid { gap: 8px; }
+  .phase2-card { padding: 10px 12px; border-top-width: 3px; box-shadow: none !important; break-inside: avoid; page-break-inside: avoid; }
+  .phase2-card h4 { font-size: 9px; margin-bottom: 7px; }
+  .phase2-card li { font-size: 11px; padding: 2px 0 2px 12px; line-height: 1.45; }
+
+  /* ---- Signature ---- */
+  .signature-block { margin-top: 16px; padding-top: 12px; }
+  .sig-field label { font-size: 9px; margin-bottom: 6px; }
+  .sig-line { height: 26px; }
+
+  /* ---- Page 2: Checklist ---- */
+  .section.page-break-before {
+    break-before: page !important;
+    page-break-before: always !important;
+    margin-top: 0;
+  }
+  .checklist-card { padding: 14px 18px; box-shadow: none !important; }
+  .checklist-intro { font-size: 11px; margin-bottom: 10px; line-height: 1.5; }
+  .checklist { gap: 4px 16px; }
+  .checklist li { font-size: 11px; padding: 5px 0 5px 22px; line-height: 1.45; }
+  .checklist li::before { width: 14px; height: 14px; top: 7px; }
+  .support-contact-block { margin-top: 12px; padding: 10px 12px; }
+  .support-contact-block h4 { font-size: 9px; margin-bottom: 5px; }
+  .support-contact-block p { font-size: 11px; margin-bottom: 5px; }
+  .support-contact-fields { gap: 10px; margin-top: 7px; }
+  .support-contact-fields label { font-size: 9px; }
+  .sf-line { height: 18px; }
+
+  /* ---- Footer ---- */
+  .page-footer { padding: 12px 26px; }
+  .footer-glyph { height: 20px; }
+  .brand-mark { font-size: 12px; margin-bottom: 3px; }
+  .page-footer p { font-size: 11px; margin: 1px 0; }
+
+  /* Remove hover transforms */
+  .req-card:hover, .priority-row:hover, .phase2-card:hover { transform: none !important; }
 }
 
 @media (max-width: 720px) {
