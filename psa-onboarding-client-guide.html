@@ -42,6 +42,8 @@
     .band-option:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
     .band-option-title { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 7.5pt; color: var(--blue); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 3px; }
     .band-option-detail { font-size: 7.5pt; color: var(--grey); line-height: 1.5; }
+    .band-sub { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 6.5pt; color: var(--blue); text-transform: uppercase; letter-spacing: 0.07em; margin-top: 5px; margin-bottom: 1px; display: block; }
+    .band-note { font-size: 6.5pt; color: var(--grey); border-top: 1px solid var(--platinum); padding-top: 6px; margin-top: 8px; font-style: italic; }
     .band-option-detail span { color: var(--teal); font-weight: 700; }
 
     /* Selection box */
@@ -103,22 +105,10 @@
     .page2-header { background: linear-gradient(90deg, var(--blue-dark), var(--blue-deep)); padding: 14px 48px; display: flex; align-items: center; justify-content: space-between; }
     .page2-title { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 10pt; color: var(--white); text-transform: uppercase; letter-spacing: 0.06em; }
 
-    @page { size: letter; margin: 0; }
-
     @media print {
-      * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-      html, body { background: none; padding: 0; margin: 0; width: 8.5in; }
-      .page {
-        width: 8.5in;
-        height: 11in;
-        min-height: 0 !important;
-        overflow: hidden;
-        margin: 0;
-        box-shadow: none !important;
-        page-break-after: always;
-        break-after: page;
-      }
-      .page:last-child { page-break-after: auto; break-after: auto; }
+      body { background: none; padding: 0; }
+      .page { width: 100%; min-height: auto; margin: 0; box-shadow: none; page-break-after: always; }
+      .page:last-child { page-break-after: auto; }
     }
   </style>
 </head>
@@ -174,7 +164,7 @@
     <div class="section">
       <div class="section-label">Timeline</div>
       <div class="section-title">Onboarding Window &amp; Session Options</div>
-      <p>Your onboarding timeline is based on your team size. Select a session format below — your onboarding team will schedule all sessions before kickoff.</p>
+      <p>Your onboarding timeline is based on your team size. <strong>Core go-live sessions</strong> cover the configuration and training needed to get your system live. <strong>Additional training sessions</strong> are included in your package for deeper learning, reinforcement, and Q&amp;A — available as your team needs them. Select a session format below — your onboarding team will schedule all sessions before kickoff.</p>
 
       <div class="band-grid">
 
@@ -186,21 +176,24 @@
           </div>
           <div class="band-body">
             <div class="band-option">
-              <div class="band-option-title">Jumpstart Sessions</div>
+              <div class="band-option-title">Jump Start</div>
               <div class="band-option-detail">
-                <span>3 sessions</span> × 2 hrs = 6 hrs configuration &amp; training<br>
-                + <span>1</span> optional review/Q&amp;A session<br>
-                Multiple sessions per week required
+                <span class="band-sub">Core Go-Live Sessions</span>
+                <span>3 sessions</span> × 2 hrs = 6 hrs — configuration &amp; go-live training<br>
+                <span class="band-sub">Additional Training Included</span>
+                <span>1</span> session for reinforcement &amp; Q&amp;A
               </div>
             </div>
             <div class="band-option">
-              <div class="band-option-title">Quick Start Sessions</div>
+              <div class="band-option-title">Quick Start</div>
               <div class="band-option-detail">
-                <span>4 sessions</span> × 1.5 hrs = 6 hrs configuration &amp; training<br>
-                + <span>1</span> optional review/Q&amp;A session<br>
-                Multiple sessions per week required
+                <span class="band-sub">Core Go-Live Sessions</span>
+                <span>4 sessions</span> × 1.5 hrs = 6 hrs — configuration &amp; go-live training<br>
+                <span class="band-sub">Additional Training Included</span>
+                <span>1</span> session for reinforcement &amp; Q&amp;A
               </div>
             </div>
+            <div class="band-note">Multiple sessions per week required</div>
           </div>
         </div>
 
@@ -212,21 +205,24 @@
           </div>
           <div class="band-body">
             <div class="band-option">
-              <div class="band-option-title">Jumpstart Sessions</div>
+              <div class="band-option-title">Jump Start</div>
               <div class="band-option-detail">
-                <span>3 sessions</span> × 2 hrs = 6 hrs configuration &amp; training<br>
-                + <span>2</span> optional review/Q&amp;A sessions<br>
-                Multiple sessions per week required
+                <span class="band-sub">Core Go-Live Sessions</span>
+                <span>3 sessions</span> × 2 hrs = 6 hrs — configuration &amp; go-live training<br>
+                <span class="band-sub">Additional Training Included</span>
+                <span>2</span> sessions for reinforcement &amp; Q&amp;A
               </div>
             </div>
             <div class="band-option">
-              <div class="band-option-title">Quick Start Sessions</div>
+              <div class="band-option-title">Quick Start</div>
               <div class="band-option-detail">
-                <span>4 sessions</span> × 1.5 hrs = 6 hrs configuration &amp; training<br>
-                + <span>2</span> optional review/Q&amp;A sessions<br>
-                Multiple sessions per week required
+                <span class="band-sub">Core Go-Live Sessions</span>
+                <span>4 sessions</span> × 1.5 hrs = 6 hrs — configuration &amp; go-live training<br>
+                <span class="band-sub">Additional Training Included</span>
+                <span>2</span> sessions for reinforcement &amp; Q&amp;A
               </div>
             </div>
+            <div class="band-note">Multiple sessions per week required</div>
           </div>
         </div>
 
@@ -238,21 +234,24 @@
           </div>
           <div class="band-body">
             <div class="band-option">
-              <div class="band-option-title">Jumpstart Sessions</div>
+              <div class="band-option-title">Jump Start</div>
               <div class="band-option-detail">
-                <span>3 sessions</span> × 2 hrs = 6 hrs configuration &amp; training<br>
-                + <span>4</span> optional review/Q&amp;A sessions<br>
-                Multiple sessions per week required
+                <span class="band-sub">Core Go-Live Sessions</span>
+                <span>3 sessions</span> × 2 hrs = 6 hrs — configuration &amp; go-live training<br>
+                <span class="band-sub">Additional Training Included</span>
+                <span>4</span> sessions for reinforcement &amp; Q&amp;A
               </div>
             </div>
             <div class="band-option">
-              <div class="band-option-title">Quick Start Sessions</div>
+              <div class="band-option-title">Quick Start</div>
               <div class="band-option-detail">
-                <span>4 sessions</span> × 1.5 hrs = 6 hrs configuration &amp; training<br>
-                + <span>4</span> optional review/Q&amp;A sessions<br>
-                Multiple sessions per week required
+                <span class="band-sub">Core Go-Live Sessions</span>
+                <span>4 sessions</span> × 1.5 hrs = 6 hrs — configuration &amp; go-live training<br>
+                <span class="band-sub">Additional Training Included</span>
+                <span>4</span> sessions for reinforcement &amp; Q&amp;A
               </div>
             </div>
+            <div class="band-note">Multiple sessions per week required</div>
           </div>
         </div>
 
@@ -264,20 +263,20 @@
         <div class="selection-row">
           <span class="checkbox"></span>
           <span class="selection-label">Under 10 users</span>
-          <span class="checkbox" style="margin-left:16px"></span> <span style="margin-right:16px">Jumpstart (3 × 2hr + 1 optional)</span>
-          <span class="checkbox"></span> <span>Quick Start (4 × 1.5hr + 1 optional)</span>
+          <span class="checkbox" style="margin-left:16px"></span> <span style="margin-right:16px">Jump Start (3 core + 1 training)</span>
+          <span class="checkbox"></span> <span>Quick Start (4 core + 1 training)</span>
         </div>
         <div class="selection-row">
           <span class="checkbox"></span>
           <span class="selection-label">10–25 users</span>
-          <span class="checkbox" style="margin-left:16px"></span> <span style="margin-right:16px">Jumpstart (3 × 2hr + 2 optional)</span>
-          <span class="checkbox"></span> <span>Quick Start (4 × 1.5hr + 2 optional)</span>
+          <span class="checkbox" style="margin-left:16px"></span> <span style="margin-right:16px">Jump Start (3 core + 2 training)</span>
+          <span class="checkbox"></span> <span>Quick Start (4 core + 2 training)</span>
         </div>
         <div class="selection-row">
           <span class="checkbox"></span>
           <span class="selection-label">25+ users</span>
-          <span class="checkbox" style="margin-left:16px"></span> <span style="margin-right:16px">Jumpstart (3 × 2hr + 4 optional)</span>
-          <span class="checkbox"></span> <span>Quick Start (4 × 1.5hr + 4 optional)</span>
+          <span class="checkbox" style="margin-left:16px"></span> <span style="margin-right:16px">Jump Start (3 core + 4 training)</span>
+          <span class="checkbox"></span> <span>Quick Start (4 core + 4 training)</span>
         </div>
         <div class="sig-line">
           <div class="sig-field">
@@ -352,6 +351,36 @@
       </div>
     </div>
 
+    <!-- Data Migration -->
+    <div class="section">
+      <div class="section-label">Migration Support</div>
+      <div class="section-title">Data Migration — What We Support</div>
+      <p>Rev.io PSA supports data migration from a range of PSA and billing platforms. What's importable varies by source system and continues to expand as the platform grows — your onboarding team will provide the current platform-specific migration guide at kickoff. Dedicated guides are maintained for major platforms including ConnectWise Manage, Kaseya BMS, Halo PSA, Tigerpaw, Autotask, and Syncro.</p>
+      <ul class="materials">
+        <li>
+          <div class="mat-dot"></div>
+          <div>
+            <span class="mat-label">Typically Importable</span><br>
+            Client records &nbsp;·&nbsp; Contacts &nbsp;·&nbsp; Products &amp; services &nbsp;·&nbsp; Recurring agreements &nbsp;·&nbsp; Tax data &nbsp;·&nbsp; Inventory
+          </div>
+        </li>
+        <li>
+          <div class="mat-dot"></div>
+          <div>
+            <span class="mat-label">May Require Manual Setup</span><br>
+            Custom field mappings &nbsp;·&nbsp; Historical ticket data &nbsp;·&nbsp; Workflow automations &nbsp;·&nbsp; Report configurations
+          </div>
+        </li>
+        <li>
+          <div class="mat-dot"></div>
+          <div>
+            <span class="mat-label">Platform-Specific Guides Available</span><br>
+            ConnectWise Manage &nbsp;·&nbsp; Kaseya BMS / Vorex &nbsp;·&nbsp; Halo PSA &nbsp;·&nbsp; Tigerpaw &nbsp;·&nbsp; Autotask &nbsp;·&nbsp; Syncro &nbsp;·&nbsp; Others via structured export. Ask your SA for your platform's guide.
+          </div>
+        </li>
+      </ul>
+    </div>
+
     <!-- What You'll Need to Do -->
     <div class="section">
       <div class="section-label">Your Responsibilities</div>
@@ -383,6 +412,49 @@
           <div><strong style="color:#1D3756;">Participate in final validation</strong> — A full system QA review is completed with your team before graduation to ensure everything is configured correctly and working as expected.</div>
         </li>
       </ul>
+    </div>
+
+    <!-- Graduation Criteria -->
+    <div class="section">
+      <div class="section-label">Completion Standards</div>
+      <div class="section-title">What "Graduated" Means</div>
+      <p>Clients graduate from onboarding when all of the following are confirmed complete. This is the consistent finish line — for your team and for Sales when setting expectations at close.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px;">
+        <div>
+          <div style="font-family:'Montserrat',sans-serif;font-weight:900;font-size:7pt;color:var(--blue);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:3px;">System Configuration</div>
+          <ul class="checklist" style="margin-top:0;">
+            <li><div class="check-icon"></div><div>Company info, billing cycles &amp; tax setup configured</div></li>
+            <li><div class="check-icon"></div><div>Invoice templates reviewed and approved</div></li>
+            <li><div class="check-icon"></div><div>GL / chart of accounts mapped</div></li>
+            <li><div class="check-icon"></div><div>Dispatch groups &amp; business hours set</div></li>
+          </ul>
+        </div>
+        <div>
+          <div style="font-family:'Montserrat',sans-serif;font-weight:900;font-size:7pt;color:var(--blue);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:3px;">Users &amp; Integrations</div>
+          <ul class="checklist" style="margin-top:0;">
+            <li><div class="check-icon"></div><div>All users created with correct roles &amp; permissions</div></li>
+            <li><div class="check-icon"></div><div>Accounting software integration connected</div></li>
+            <li><div class="check-icon"></div><div>RMM integration configured</div></li>
+            <li><div class="check-icon"></div><div>Payment processor activated and tested</div></li>
+          </ul>
+        </div>
+        <div>
+          <div style="font-family:'Montserrat',sans-serif;font-weight:900;font-size:7pt;color:var(--blue);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:3px;">Data &amp; Training</div>
+          <ul class="checklist" style="margin-top:0;">
+            <li><div class="check-icon"></div><div>Client records migrated and validated</div></li>
+            <li><div class="check-icon"></div><div>Products &amp; recurring agreements configured</div></li>
+            <li><div class="check-icon"></div><div>Web, mobile &amp; Rev.ii training completed</div></li>
+          </ul>
+        </div>
+        <div>
+          <div style="font-family:'Montserrat',sans-serif;font-weight:900;font-size:7pt;color:var(--blue);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:3px;">Sign-Off &amp; Handoff</div>
+          <ul class="checklist" style="margin-top:0;">
+            <li><div class="check-icon"></div><div>Test billing cycle completed successfully</div></li>
+            <li><div class="check-icon"></div><div>Final QA review passed with client approval</div></li>
+            <li><div class="check-icon"></div><div>Introduced to Client Success &amp; Account Management</div></li>
+          </ul>
+        </div>
+      </div>
     </div>
 
     <!-- What You Can Expect From Us -->
