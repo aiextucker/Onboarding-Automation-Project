@@ -1188,6 +1188,42 @@
 
       <div class="card" style="margin-bottom:14px;">
         <div class="card-title">📬 Bill Profile Questionnaire</div>
+
+        <!-- Billing Cycle Config -->
+        <div class="field-grid col2" style="margin-bottom:14px;">
+          <div class="field">
+            <label>Billing Cycle Type <span class="req">*</span> <span class="tag tag-core">Pre-Config</span></label>
+            <div class="radio-group">
+              <label><input type="radio" name="cycle_type" value="cycle" /> Cycle-Based (1st / 15th)</label>
+              <label><input type="radio" name="cycle_type" value="anniversary" /> Anniversary Date</label>
+            </div>
+          </div>
+          <div class="field" id="field-cycle-dates">
+            <label>Billing Cycle Date(s) <span class="tag tag-core">Pre-Config</span></label>
+            <div class="check-group">
+              <label><input type="checkbox" name="cycle_date" value="1" /> 1st of month</label>
+              <label><input type="checkbox" name="cycle_date" value="15" /> 15th of month</label>
+              <label><input type="checkbox" name="cycle_date" value="both" /> Both (split billing)</label>
+            </div>
+            <input type="text" placeholder="Other — specify date(s)" style="margin-top:8px;" />
+          </div>
+          <div class="field">
+            <label>Bill in Arrears? <span class="req">*</span> <span class="tag tag-core">Pre-Config</span></label>
+            <div class="radio-group">
+              <label><input type="radio" name="bill_arrears" value="yes" /> Yes — bill after service period</label>
+              <label><input type="radio" name="bill_arrears" value="no" /> No — bill in advance</label>
+            </div>
+          </div>
+          <div class="field">
+            <label>Multiple Billing Profiles? <span class="tag tag-core">Pre-Config</span></label>
+            <div class="radio-group">
+              <label><input type="radio" name="multi_profile" value="yes" /> Yes — different terms per customer segment</label>
+              <label><input type="radio" name="multi_profile" value="no" /> No — single profile</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Status + Policy -->
         <div class="field-grid col2">
           <div class="field">
             <label>Questionnaire Sent?</label>
