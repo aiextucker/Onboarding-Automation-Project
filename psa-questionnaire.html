@@ -1221,16 +1221,16 @@
         <div class="branch-section" id="branch-cycleDate">
           <div class="branch-label">↳ Which billing cycle date(s)?</div>
           <div class="checkbox-group inline">
-            <label class="checkbox-option" onclick="toggleCheckbox(this)">
+            <label class="checkbox-option" onclick="toggleCheckbox(this, event)">
               <input type="checkbox" name="cycleDates" value="1st"> 1st of month
             </label>
-            <label class="checkbox-option" onclick="toggleCheckbox(this)">
+            <label class="checkbox-option" onclick="toggleCheckbox(this, event)">
               <input type="checkbox" name="cycleDates" value="15th"> 15th of month
             </label>
-            <label class="checkbox-option" onclick="toggleCheckbox(this)">
+            <label class="checkbox-option" onclick="toggleCheckbox(this, event)">
               <input type="checkbox" name="cycleDates" value="both"> Both
             </label>
-            <label class="checkbox-option" onclick="toggleCheckbox(this)">
+            <label class="checkbox-option" onclick="toggleCheckbox(this, event)">
               <input type="checkbox" name="cycleDates" value="other"> Other
             </label>
           </div>
@@ -1642,11 +1642,18 @@ function validateAndNext(fromStep, toStep) {
    Radio / Checkbox helpers
 ══════════════════════════════════════════════════════════════ */
 function selectRadio(label, name, value) {
+  // Guard: if already selected, skip (prevents double-fire from label→input propagation)
+  if (label.classList.contains('selected')) return;
+
   // Update DOM selected state
   document.querySelectorAll(`input[name="${name}"]`).forEach(inp => {
     inp.closest('.radio-option').classList.remove('selected');
   });
   label.classList.add('selected');
+
+  // Check the underlying radio input
+  const radio = label.querySelector('input[type="radio"]');
+  if (radio) radio.checked = true;
 
   // Update state
   state[name] = value;
@@ -1655,7 +1662,8 @@ function selectRadio(label, name, value) {
   handleBranch(name, value);
 }
 
-function toggleCheckbox(label) {
+function toggleCheckbox(label, e) {
+  if (e) e.preventDefault(); // stop browser from double-toggling the checkbox
   label.classList.toggle('selected');
   const inp = label.querySelector('input[type="checkbox"]');
   inp.checked = !inp.checked;
