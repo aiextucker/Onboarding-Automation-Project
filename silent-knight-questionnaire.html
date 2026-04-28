@@ -1,0 +1,2296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PSA Onboarding — Silent Knight Security — Rev.io</title>
+<style>
+  /* ─── Reset & Base ─────────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:        #0f1117;
+    --surface:   #181c27;
+    --surface2:  #1e2436;
+    --border:    #2a3050;
+    --border-hi: #3d4870;
+    --accent:    #6c63ff;
+    --accent-dk: #5549e0;
+    --accent-lt: #8b84ff;
+    --teal:      #00d4aa;
+    --teal-dk:   #00b090;
+    --text:      #e8e8f0;
+    --text-dim:  #8a90b0;
+    --text-mute: #525870;
+    --error:     #ff5a6e;
+    --warning:   #f0a500;
+    --success:   #00d4aa;
+    --radius:    10px;
+    --radius-sm: 6px;
+    --shadow:    0 4px 24px rgba(0,0,0,0.45);
+    --shadow-sm: 0 2px 10px rgba(0,0,0,0.3);
+    --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+
+  html { font-size: 16px; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    min-height: 100vh;
+    padding: 0;
+    line-height: 1.6;
+  }
+
+  /* ─── Layout ───────────────────────────────────────────────── */
+  .app-header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    height: 58px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+    font-size: 1.05rem;
+    letter-spacing: 0.02em;
+  }
+
+  .logo-mark {
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--teal) 100%);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 0.85rem;
+    color: #fff;
+    letter-spacing: 0;
+  }
+
+  .header-badge {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 3px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .page-wrap {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 40px 20px 80px;
+  }
+
+  /* ─── Progress Bar ──────────────────────────────────────────── */
+  .progress-wrap {
+    margin-bottom: 36px;
+  }
+
+  .progress-steps {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    position: relative;
+  }
+
+  .step-node {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    position: relative;
+    cursor: default;
+  }
+
+  .step-node:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 17px;
+    left: 50%;
+    width: 100%;
+    height: 2px;
+    background: var(--border);
+    z-index: 0;
+    transition: background 0.4s;
+  }
+
+  .step-node.done:not(:last-child)::after {
+    background: var(--accent);
+  }
+
+  .step-dot {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    background: var(--surface);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text-mute);
+    z-index: 1;
+    transition: all 0.3s;
+    position: relative;
+  }
+
+  .step-node.done .step-dot {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+
+  .step-node.active .step-dot {
+    border-color: var(--accent);
+    color: var(--accent);
+    box-shadow: 0 0 0 4px rgba(108,99,255,0.18);
+  }
+
+  .step-label {
+    margin-top: 8px;
+    font-size: 0.68rem;
+    color: var(--text-mute);
+    text-align: center;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+  }
+
+  .step-node.active .step-label {
+    color: var(--accent-lt);
+  }
+
+  .step-node.done .step-label {
+    color: var(--text-dim);
+  }
+
+  /* check icon */
+  .step-node.done .step-dot::after {
+    content: '✓';
+    font-size: 0.9rem;
+    font-weight: 700;
+  }
+
+  .step-node.done .step-dot span { display: none; }
+
+  /* ─── Cards & Sections ──────────────────────────────────────── */
+  .step-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 36px 40px;
+    box-shadow: var(--shadow);
+    animation: fadeIn 0.25s ease both;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .step-title {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+    letter-spacing: -0.01em;
+  }
+
+  .step-subtitle {
+    font-size: 0.88rem;
+    color: var(--text-dim);
+    margin-bottom: 32px;
+  }
+
+  /* ─── Form Elements ─────────────────────────────────────────── */
+  .form-group {
+    margin-bottom: 22px;
+  }
+
+  .form-label {
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-dim);
+    margin-bottom: 8px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .form-label .req {
+    color: var(--error);
+    margin-left: 3px;
+  }
+
+  .form-input {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+    font-size: 0.95rem;
+    font-family: var(--font);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .form-input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(108,99,255,0.15);
+  }
+
+  .form-input:read-only {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+
+  .form-input.error {
+    border-color: var(--error);
+    box-shadow: 0 0 0 3px rgba(255,90,110,0.15);
+  }
+
+  .error-msg {
+    font-size: 0.78rem;
+    color: var(--error);
+    margin-top: 5px;
+    display: none;
+  }
+
+  .error-msg.show { display: block; }
+
+  textarea.form-input {
+    resize: vertical;
+    min-height: 90px;
+  }
+
+  /* ─── Read-Only Fields (Step 1) ─────────────────────────────── */
+  .website-row {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+  }
+  .website-row .form-input { flex: 1; }
+  .btn-find-logo {
+    flex-shrink: 0;
+    padding: 9px 14px;
+    background: rgba(0,212,170,0.1);
+    border: 1px solid rgba(0,212,170,0.3);
+    color: var(--teal);
+    border-radius: 8px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+    white-space: nowrap;
+    margin-top: 1px;
+  }
+  .btn-find-logo:hover { background: rgba(0,212,170,0.2); }
+  .btn-find-logo:disabled { opacity: 0.45; cursor: not-allowed; }
+  .logo-scrape-results {
+    display: none;
+    margin-top: 10px;
+    padding: 12px;
+    background: rgba(0,212,170,0.05);
+    border: 1px solid rgba(0,212,170,0.2);
+    border-radius: 8px;
+  }
+  .logo-scrape-results.show { display: block; }
+  .logo-scrape-label { font-size: 0.75rem; color: var(--text-dim); margin-bottom: 8px; }
+  .logo-scrape-grid { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .logo-option {
+    width: 76px; height: 76px;
+    border-radius: 8px;
+    border: 2px solid rgba(255,255,255,0.1);
+    background: #fff;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    padding: 6px;
+  }
+  .logo-option:hover { border-color: var(--accent); }
+  .logo-option.selected { border-color: var(--teal); box-shadow: 0 0 0 3px rgba(0,212,170,0.2); }
+  .logo-option img { max-width: 100%; max-height: 100%; object-fit: contain; }
+  .logo-scrape-msg { font-size: 0.8rem; color: var(--text-mute); }
+
+  .sf-field {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+  }
+
+  .sf-field .lock-icon {
+    color: var(--teal);
+    font-size: 0.85rem;
+    flex-shrink: 0;
+    opacity: 0.7;
+  }
+
+  .sf-field .sf-value {
+    font-size: 0.95rem;
+    color: var(--text);
+    flex: 1;
+  }
+
+  .sf-badge {
+    font-size: 0.66rem;
+    background: rgba(0,212,170,0.12);
+    color: var(--teal);
+    border: 1px solid rgba(0,212,170,0.25);
+    padding: 2px 8px;
+    border-radius: 20px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .sf-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  @media (max-width: 540px) {
+    .sf-grid { grid-template-columns: 1fr; }
+  }
+
+  .sf-grid .form-group { margin-bottom: 0; }
+
+  .sf-notice {
+    margin-top: 20px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    background: rgba(108,99,255,0.07);
+    border: 1px solid rgba(108,99,255,0.2);
+    border-radius: var(--radius-sm);
+    padding: 12px 16px;
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+
+  .sf-notice .info-icon { color: var(--accent-lt); font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+
+  /* ─── Radio / Checkbox Groups ───────────────────────────────── */
+  .radio-group, .checkbox-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .radio-group.inline, .checkbox-group.inline {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .radio-option, .checkbox-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 11px 16px;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    user-select: none;
+    font-size: 0.93rem;
+  }
+
+  .radio-option:hover, .checkbox-option:hover {
+    border-color: var(--border-hi);
+    background: rgba(108,99,255,0.05);
+  }
+
+  .radio-option.selected, .checkbox-option.selected {
+    border-color: var(--accent);
+    background: rgba(108,99,255,0.1);
+    color: var(--text);
+  }
+
+  .radio-option input[type="radio"],
+  .checkbox-option input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--border-hi);
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+
+  .checkbox-option input[type="checkbox"] {
+    border-radius: 4px;
+  }
+
+  .radio-option.selected input[type="radio"],
+  .checkbox-option.selected input[type="checkbox"] {
+    border-color: var(--accent);
+    background: var(--accent);
+  }
+
+  .radio-option input[type="radio"]::after {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #fff;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .radio-option.selected input[type="radio"]::after { opacity: 1; }
+
+  .checkbox-option input[type="checkbox"]::after {
+    content: '✓';
+    font-size: 0.7rem;
+    color: #fff;
+    font-weight: 800;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .checkbox-option.selected input[type="checkbox"]::after { opacity: 1; }
+
+  /* ─── Branching Inline Sections ─────────────────────────────── */
+  .branch-section {
+    margin-top: 12px;
+    padding: 16px 18px;
+    background: rgba(108,99,255,0.05);
+    border: 1px solid rgba(108,99,255,0.18);
+    border-radius: var(--radius-sm);
+    display: none;
+    animation: fadeIn 0.2s ease;
+  }
+
+  .branch-section.show { display: block; }
+
+  .branch-label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--accent-lt);
+    margin-bottom: 10px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  /* ─── Number Input ──────────────────────────────────────────── */
+  .input-with-unit {
+    display: flex;
+    align-items: center;
+    gap: 0;
+  }
+
+  .input-with-unit .form-input {
+    border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+    flex: 1;
+  }
+
+  .input-unit {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: none;
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    padding: 10px 14px;
+    font-size: 0.88rem;
+    color: var(--text-dim);
+    white-space: nowrap;
+  }
+
+  /* ─── Logo Upload Zone ──────────────────────────────────────── */
+  .upload-zone {
+    border: 2px dashed var(--border-hi);
+    border-radius: var(--radius);
+    padding: 32px 24px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    background: var(--surface2);
+  }
+
+  .upload-zone:hover, .upload-zone.dragover {
+    border-color: var(--accent);
+    background: rgba(108,99,255,0.07);
+  }
+
+  .upload-zone.has-file {
+    border-style: solid;
+    border-color: var(--teal);
+    background: rgba(0,212,170,0.05);
+  }
+
+  .upload-zone.error {
+    border-color: var(--error);
+  }
+
+  .upload-zone input[type="file"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+  }
+
+  .upload-icon { font-size: 2rem; margin-bottom: 8px; opacity: 0.7; }
+  .upload-text { font-size: 0.9rem; color: var(--text-dim); }
+  .upload-text strong { color: var(--accent-lt); }
+  .upload-hint { font-size: 0.75rem; color: var(--text-mute); margin-top: 4px; }
+
+  .upload-preview {
+    display: none;
+    align-items: center;
+    gap: 14px;
+    justify-content: center;
+    flex-direction: column;
+  }
+
+  .upload-preview img {
+    max-height: 80px;
+    max-width: 200px;
+    object-fit: contain;
+    border-radius: 6px;
+    background: rgba(255,255,255,0.05);
+    padding: 8px;
+  }
+
+  .upload-preview-name {
+    font-size: 0.82rem;
+    color: var(--teal);
+    font-weight: 600;
+  }
+
+  .upload-preview-change {
+    font-size: 0.75rem;
+    color: var(--text-mute);
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+  /* ─── Callout Boxes ─────────────────────────────────────────── */
+  .callout {
+    display: flex;
+    gap: 12px;
+    padding: 14px 18px;
+    border-radius: var(--radius-sm);
+    font-size: 0.85rem;
+    line-height: 1.55;
+    margin-top: 12px;
+    animation: fadeIn 0.2s ease;
+  }
+
+  .callout-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
+
+  .callout.info {
+    background: rgba(108,99,255,0.08);
+    border: 1px solid rgba(108,99,255,0.22);
+    color: var(--text-dim);
+  }
+
+  .callout.info .callout-icon { color: var(--accent-lt); }
+
+  .callout.teal {
+    background: rgba(0,212,170,0.07);
+    border: 1px solid rgba(0,212,170,0.22);
+    color: var(--text-dim);
+  }
+
+  .callout.teal .callout-icon { color: var(--teal); }
+
+  .callout ul {
+    margin: 6px 0 0 16px;
+    color: var(--text-dim);
+  }
+
+  .callout li { margin-bottom: 3px; }
+
+  /* ─── Divider ───────────────────────────────────────────────── */
+  .form-divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 28px 0;
+  }
+
+  .section-title {
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-mute);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ─── User Table ────────────────────────────────────────────── */
+  .user-table-wrap {
+    overflow-x: auto;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+  }
+
+  .user-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+  }
+
+  .user-table th {
+    background: var(--surface2);
+    color: var(--text-mute);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .user-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+  }
+
+  .user-table tr:last-child td { border-bottom: none; }
+
+  .user-table tr { background: var(--surface); transition: background 0.15s; }
+  .user-table tr:hover { background: var(--surface2); }
+
+  .user-table input[type="text"],
+  .user-table input[type="email"],
+  .user-table select {
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--text);
+    font-size: 0.88rem;
+    font-family: var(--font);
+    padding: 5px 8px;
+    border-radius: 4px;
+    width: 100%;
+    outline: none;
+    transition: border-color 0.2s, background 0.2s;
+  }
+
+  .user-table input:focus, .user-table select:focus {
+    border-color: var(--accent);
+    background: var(--surface2);
+  }
+
+  .user-table select option { background: var(--surface2); color: var(--text); }
+
+  .sales-badge {
+    font-size: 0.62rem;
+    background: rgba(0,212,170,0.12);
+    color: var(--teal);
+    border: 1px solid rgba(0,212,170,0.25);
+    padding: 2px 7px;
+    border-radius: 20px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .remove-btn {
+    background: none;
+    border: none;
+    color: var(--text-mute);
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 4px 6px;
+    border-radius: 4px;
+    transition: color 0.2s, background 0.2s;
+    line-height: 1;
+  }
+
+  .remove-btn:hover { color: var(--error); background: rgba(255,90,110,0.1); }
+
+  .add-user-btn {
+    margin-top: 14px;
+    background: none;
+    border: 1px dashed var(--border-hi);
+    color: var(--accent-lt);
+    padding: 10px 18px;
+    border-radius: var(--radius-sm);
+    font-size: 0.88rem;
+    font-family: var(--font);
+    cursor: pointer;
+    width: 100%;
+    transition: all 0.2s;
+    font-weight: 600;
+  }
+
+  .add-user-btn:hover {
+    border-color: var(--accent);
+    background: rgba(108,99,255,0.07);
+  }
+
+  .permission-note {
+    margin-top: 16px;
+    font-size: 0.8rem;
+    color: var(--text-mute);
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+  }
+
+  .permission-note .icon { color: var(--text-mute); flex-shrink: 0; }
+
+  /* ─── Config Preview Cards ──────────────────────────────────── */
+  .preview-section {
+    margin-bottom: 20px;
+  }
+
+  .preview-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  .preview-card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 20px;
+    background: rgba(108,99,255,0.06);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .preview-card-header .card-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, rgba(108,99,255,0.3), rgba(0,212,170,0.2));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+  }
+
+  .preview-card-title {
+    font-weight: 700;
+    font-size: 0.92rem;
+    color: var(--text);
+  }
+
+  .preview-card-body {
+    padding: 18px 20px;
+  }
+
+  .preview-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 7px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    font-size: 0.87rem;
+    gap: 12px;
+  }
+
+  .preview-row:last-child { border-bottom: none; }
+
+  .preview-key {
+    color: var(--text-dim);
+    font-weight: 500;
+    flex-shrink: 0;
+    min-width: 160px;
+  }
+
+  .preview-val {
+    color: var(--text);
+    text-align: right;
+    font-weight: 600;
+  }
+
+  .preview-val.enabled { color: var(--teal); }
+  .preview-val.disabled { color: var(--text-mute); }
+  .preview-val.accent { color: var(--accent-lt); }
+
+  .preview-user-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .preview-user-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.87rem;
+  }
+
+  .preview-user-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent-dk), var(--teal-dk));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #fff;
+    flex-shrink: 0;
+  }
+
+  .preview-user-name { color: var(--text); font-weight: 600; flex: 1; }
+  .preview-user-email { color: var(--text-dim); font-size: 0.8rem; }
+
+  .preview-user-role {
+    font-size: 0.7rem;
+    padding: 2px 9px;
+    border-radius: 20px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+  }
+
+  .role-admin {
+    background: rgba(108,99,255,0.18);
+    color: var(--accent-lt);
+    border: 1px solid rgba(108,99,255,0.3);
+  }
+
+  .role-standard {
+    background: rgba(0,212,170,0.12);
+    color: var(--teal);
+    border: 1px solid rgba(0,212,170,0.25);
+  }
+
+  /* ─── Navigation ─────────────────────────────────────────────── */
+  .step-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 32px;
+    gap: 12px;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 11px 24px;
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+    font-family: var(--font);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+    outline: none;
+    letter-spacing: 0.01em;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+  }
+
+  .btn-primary:hover {
+    background: var(--accent-dk);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(108,99,255,0.4);
+  }
+
+  .btn-primary:active { transform: none; }
+
+  .btn-ghost {
+    background: none;
+    color: var(--text-dim);
+    border: 1px solid var(--border);
+  }
+
+  .btn-ghost:hover {
+    border-color: var(--border-hi);
+    color: var(--text);
+    background: var(--surface2);
+  }
+
+  .btn-outline-accent {
+    background: none;
+    color: var(--accent-lt);
+    border: 1px solid var(--accent);
+  }
+
+  .btn-outline-accent:hover {
+    background: rgba(108,99,255,0.1);
+  }
+
+  .btn-teal {
+    background: var(--teal);
+    color: #0f1117;
+    font-weight: 700;
+  }
+
+  .btn-teal:hover {
+    background: var(--teal-dk);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(0,212,170,0.35);
+  }
+
+  .btn-lg {
+    padding: 14px 32px;
+    font-size: 0.97rem;
+  }
+
+  .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none !important;
+  }
+
+  .nav-spacer { flex: 1; }
+
+  /* ─── SA Review step buttons ─────────────────────────────────── */
+  .review-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 28px;
+    flex-wrap: wrap;
+  }
+
+  .review-actions .btn-teal { flex: 1; min-width: 180px; justify-content: center; }
+  .review-actions .btn-outline-accent { flex-shrink: 0; min-width: 160px; justify-content: center; }
+
+  /* ─── Confirmation / Success ─────────────────────────────────── */
+  .confirm-wrap {
+    text-align: center;
+    padding: 20px 10px 10px;
+  }
+
+  .checkmark-anim {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 4px solid var(--teal);
+    margin: 0 auto 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: popIn 0.5s cubic-bezier(0.17,0.67,0.34,1.3) both;
+    position: relative;
+  }
+
+  @keyframes popIn {
+    from { transform: scale(0); opacity: 0; }
+    to   { transform: scale(1); opacity: 1; }
+  }
+
+  .checkmark-anim::after {
+    content: '✓';
+    font-size: 2.2rem;
+    color: var(--teal);
+    font-weight: 700;
+    animation: fadeIn 0.3s 0.3s ease both;
+  }
+
+  .confirm-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 10px;
+  }
+
+  .confirm-sub {
+    font-size: 0.92rem;
+    color: var(--text-dim);
+    max-width: 440px;
+    margin: 0 auto 24px;
+    line-height: 1.6;
+  }
+
+  .ref-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 22px;
+    font-family: "Courier New", monospace;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--accent-lt);
+    letter-spacing: 0.08em;
+    margin-bottom: 24px;
+  }
+
+  .confirm-detail {
+    font-size: 0.82rem;
+    color: var(--text-mute);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  /* ─── Step visibility ────────────────────────────────────────── */
+  .wizard-step { display: none; }
+  .wizard-step.active { display: block; }
+
+  /* ─── Responsive ─────────────────────────────────────────────── */
+  @media (max-width: 600px) {
+    .page-wrap { padding: 24px 14px 60px; }
+    .step-card { padding: 24px 20px; }
+    .step-label { display: none; }
+    .preview-key { min-width: 120px; }
+    .review-actions { flex-direction: column; }
+    .review-actions .btn-teal,
+    .review-actions .btn-outline-accent { width: 100%; }
+  }
+
+  /* ─── Late fees nested ─────────────────────────────────────── */
+  .nested-row {
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+    margin-top: 10px;
+  }
+
+  .nested-row .radio-group.inline { flex: 1; }
+  .nested-row .form-group { min-width: 120px; margin-bottom: 0; }
+
+  /* ─── Scrollbar ─────────────────────────────────────────────── */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--surface); }
+  ::-webkit-scrollbar-thumb { background: var(--border-hi); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-mute); }
+</style>
+</head>
+<body>
+
+<!-- ─── App Header ─────────────────────────────────────────── -->
+<header class="app-header">
+  <div class="logo">
+    <div class="logo-mark">R</div>
+    Rev.io PSA
+  </div>
+  <div class="header-badge">Onboarding Wizard</div>
+</header>
+
+<!-- ─── Pre-fill Banner (shown when loaded from Sales Brief) ── -->
+<div id="prefill-banner" style="display:block; background:linear-gradient(90deg,#10b981,#059669); color:#fff; padding:10px 20px; text-align:center; font-size:0.85rem; font-weight:600; letter-spacing:0.02em;">
+  ✅ Pre-filled from Sales Brief — review each field before continuing. Changes are reflected in your SA's review.
+  <button onclick="document.getElementById('prefill-banner').style.display='none'" style="margin-left:16px;background:rgba(255,255,255,0.2);border:none;color:#fff;padding:2px 10px;border-radius:4px;cursor:pointer;font-size:0.8rem;">Dismiss</button>
+</div>
+
+<!-- ─── Main Content ────────────────────────────────────────── -->
+<div class="page-wrap">
+
+  <!-- Progress Bar -->
+  <div class="progress-wrap">
+    <div class="progress-steps" id="progressSteps">
+      <div class="step-node active" data-step="1">
+        <div class="step-dot"><span>1</span></div>
+        <div class="step-label">Company</div>
+      </div>
+      <div class="step-node" data-step="2">
+        <div class="step-dot"><span>2</span></div>
+        <div class="step-label">Billing</div>
+      </div>
+      <div class="step-node" data-step="3">
+        <div class="step-dot"><span>3</span></div>
+        <div class="step-label">Users</div>
+      </div>
+      <div class="step-node" data-step="4">
+        <div class="step-dot"><span>4</span></div>
+        <div class="step-label">Inventory</div>
+      </div>
+      <div class="step-node" data-step="5">
+        <div class="step-dot"><span>5</span></div>
+        <div class="step-label">Review</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════
+       STEP 1 — Company Info
+  ══════════════════════════════════════════════════════════ -->
+  <div class="wizard-step active" id="step1">
+    <div class="step-card">
+      <div class="step-title">Company Information</div>
+      <div class="step-subtitle">Verify your company details before we begin configuration.</div>
+
+      <div class="section-title">Salesforce Record <span style="font-size:0.72rem;font-weight:400;color:var(--text-dim);margin-left:6px;">— edit anything that needs correcting</span></div>
+
+      <div class="sf-grid">
+        <div class="form-group">
+          <div class="form-label">Company Name <span class="sf-badge" style="margin-left:5px;vertical-align:middle;">Salesforce</span></div>
+          <input class="form-input" id="sf-company" type="text" value="Acme Telecom">
+        </div>
+        <div class="form-group">
+          <div class="form-label">Primary Contact <span class="sf-badge" style="margin-left:5px;vertical-align:middle;">Salesforce</span></div>
+          <input class="form-input" id="sf-contact" type="text" value="Sarah Mitchell">
+        </div>
+        <div class="form-group">
+          <div class="form-label">Email Address <span class="sf-badge" style="margin-left:5px;vertical-align:middle;">Salesforce</span></div>
+          <input class="form-input" id="sf-email" type="email" value="sarah@acmetelecom.com">
+        </div>
+        <div class="form-group">
+          <div class="form-label">Phone <span class="sf-badge" style="margin-left:5px;vertical-align:middle;">Salesforce</span></div>
+          <input class="form-input" id="sf-phone" type="tel" value="(555) 847-2201">
+        </div>
+        <div class="form-group" style="grid-column: 1 / -1;">
+          <div class="form-label">Service Address <span class="sf-badge" style="margin-left:5px;vertical-align:middle;">Salesforce</span></div>
+          <input class="form-input" id="sf-address" type="text" value="4821 Commerce Blvd, Austin TX 78701">
+        </div>
+      </div>
+
+      <div class="sf-notice">
+        <span class="info-icon">ℹ️</span>
+        <span>Pre-filled from Salesforce. Correct any fields above — your SA will be notified of changes before configuration begins.</span>
+      </div>
+
+      <div class="step-nav">
+        <div class="nav-spacer"></div>
+        <button class="btn btn-primary" onclick="goToStep(2)">
+          Continue <span>→</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════
+       STEP 2 — Billing Configuration
+  ══════════════════════════════════════════════════════════ -->
+  <div class="wizard-step" id="step2">
+    <div class="step-card">
+      <div class="step-title">Billing Configuration</div>
+      <div class="step-subtitle">Configure how invoicing and billing will work in your PSA instance.</div>
+
+      <!-- Q1: Billing Cycle Type -->
+      <div class="form-group" id="q-billing-cycle">
+        <div class="form-label">Billing Cycle Type <span class="req">*</span></div>
+        <div class="radio-group" id="billingCycleGroup">
+          <label class="radio-option" onclick="selectRadio(this, 'billingCycle', 'cycle')">
+            <input type="radio" name="billingCycle" value="cycle">
+            <div>
+              <div style="font-weight:600;">Cycle-based billing</div>
+              <div style="font-size:0.78rem;color:var(--text-dim);margin-top:2px;">Bills go out on set calendar dates each month</div>
+            </div>
+          </label>
+          <label class="radio-option" onclick="selectRadio(this, 'billingCycle', 'anniversary')">
+            <input type="radio" name="billingCycle" value="anniversary">
+            <div>
+              <div style="font-weight:600;">Anniversary billing</div>
+              <div style="font-size:0.78rem;color:var(--text-dim);margin-top:2px;">Bills are based on each customer's service start date</div>
+            </div>
+          </label>
+        </div>
+        <div class="error-msg" id="err-billingCycle">Please select a billing cycle type.</div>
+
+        <!-- Branch: Cycle date selection -->
+        <div class="branch-section" id="branch-cycleDate">
+          <div class="branch-label">↳ Which billing cycle date(s)?</div>
+          <div class="checkbox-group inline">
+            <label class="checkbox-option" onclick="toggleCheckbox(this, event)">
+              <input type="checkbox" name="cycleDates" value="1st"> 1st of month
+            </label>
+            <label class="checkbox-option" onclick="toggleCheckbox(this, event)">
+              <input type="checkbox" name="cycleDates" value="15th"> 15th of month
+            </label>
+            <label class="checkbox-option" onclick="toggleCheckbox(this, event)">
+              <input type="checkbox" name="cycleDates" value="both"> Both
+            </label>
+            <label class="checkbox-option" onclick="toggleCheckbox(this, event)">
+              <input type="checkbox" name="cycleDates" value="other"> Other
+            </label>
+          </div>
+          <div class="error-msg" id="err-cycleDates">Please select at least one cycle date.</div>
+        </div>
+      </div>
+
+      <hr class="form-divider">
+
+      <!-- Q2: Bill in arrears -->
+      <div class="form-group" id="q-arrears">
+        <div class="form-label">Bill in arrears? <span class="req">*</span></div>
+        <div class="radio-group inline" id="arrearsGroup">
+          <label class="radio-option" style="flex:1;" onclick="selectRadio(this, 'arrears', 'yes')">
+            <input type="radio" name="arrears" value="yes"> Yes
+          </label>
+          <label class="radio-option" style="flex:1;" onclick="selectRadio(this, 'arrears', 'no')">
+            <input type="radio" name="arrears" value="no"> No
+          </label>
+        </div>
+        <div class="error-msg" id="err-arrears">Please select an option.</div>
+      </div>
+
+      <hr class="form-divider">
+
+      <!-- Q3: Grace period -->
+      <div class="form-group" id="q-grace">
+        <div class="form-label">Grace Period <span class="req">*</span></div>
+        <div class="radio-group" id="gracePeriodGroup">
+          <label class="radio-option" onclick="selectRadio(this, 'gracePeriod', 'none')">
+            <input type="radio" name="gracePeriod" value="none"> No grace period
+          </label>
+          <label class="radio-option" onclick="selectRadio(this, 'gracePeriod', 'yes')">
+            <input type="radio" name="gracePeriod" value="yes"> Yes — add a grace period
+          </label>
+        </div>
+        <div class="error-msg" id="err-gracePeriod">Please select an option.</div>
+
+        <div class="branch-section" id="branch-graceDays">
+          <div class="branch-label">↳ How many days?</div>
+          <div class="input-with-unit" style="max-width:200px;">
+            <input type="number" class="form-input" id="graceDays" placeholder="e.g. 10" min="1" max="90">
+            <div class="input-unit">days</div>
+          </div>
+          <div class="error-msg" id="err-graceDays">Please enter the number of grace days.</div>
+        </div>
+      </div>
+
+      <hr class="form-divider">
+
+      <!-- Q4: Late fees -->
+      <div class="form-group" id="q-latefee">
+        <div class="form-label">Late Fees <span class="req">*</span></div>
+        <div class="radio-group" id="lateFeesGroup">
+          <label class="radio-option" onclick="selectRadio(this, 'lateFees', 'none')">
+            <input type="radio" name="lateFees" value="none"> No late fees
+          </label>
+          <label class="radio-option" onclick="selectRadio(this, 'lateFees', 'yes')">
+            <input type="radio" name="lateFees" value="yes"> Yes — charge a late fee
+          </label>
+        </div>
+        <div class="error-msg" id="err-lateFees">Please select an option.</div>
+
+        <div class="branch-section" id="branch-lateFeeDetail">
+          <div class="branch-label">↳ Late fee type</div>
+          <div class="nested-row">
+            <div class="radio-group inline" id="lateFeeTypeGroup" style="flex:1;">
+              <label class="radio-option" style="flex:1;" onclick="selectRadio(this, 'lateFeeType', 'flat'); updateLateFeeUnit()">
+                <input type="radio" name="lateFeeType" value="flat"> Flat amount
+              </label>
+              <label class="radio-option" style="flex:1;" onclick="selectRadio(this, 'lateFeeType', 'pct'); updateLateFeeUnit()">
+                <input type="radio" name="lateFeeType" value="pct"> Percentage
+              </label>
+            </div>
+            <div class="form-group" style="min-width:130px;margin-bottom:0;">
+              <div class="input-with-unit">
+                <input type="number" class="form-input" id="lateFeeAmount" placeholder="0.00" min="0" step="0.01">
+                <div class="input-unit" id="lateFeeUnit">$</div>
+              </div>
+            </div>
+          </div>
+          <div class="error-msg" id="err-lateFeeAmount">Please enter the late fee amount.</div>
+        </div>
+      </div>
+
+      <hr class="form-divider">
+
+      <!-- Q6: Logo Upload -->
+      <div class="form-group" id="q-logo">
+        <div class="form-label">Company Logo <span style="font-size:0.75rem;color:var(--text-mute);font-weight:400;">(optional)</span></div>
+
+        <div style="margin-bottom:10px;">
+          <div class="form-label" style="font-size:0.8rem;margin-bottom:5px;">Find from website</div>
+          <div class="website-row">
+            <input class="form-input" id="websiteUrl" type="url" placeholder="https://acmetelecom.com">
+            <button class="btn-find-logo" onclick="findLogoFromWebsite()" id="btnFindLogo">🔍 Find Logo</button>
+          </div>
+          <div class="logo-scrape-results" id="logoScrapeResults">
+            <div class="logo-scrape-label">Select a logo to use:</div>
+            <div class="logo-scrape-grid" id="logoScrapeGrid"></div>
+          </div>
+        </div>
+
+        <div class="form-label" style="font-size:0.8rem;margin-bottom:5px;">Or upload directly</div>
+        <div class="upload-zone" id="uploadZone">
+          <input type="file" id="logoFile" accept="image/*" onchange="handleLogoUpload(event)">
+          <div class="upload-default-ui">
+            <div class="upload-icon">🖼️</div>
+            <div class="upload-text"><strong>Click to upload</strong> or drag and drop</div>
+            <div class="upload-hint">PNG, JPG, SVG — max 5 MB</div>
+          </div>
+          <div class="upload-preview" id="logoPreview">
+            <img id="logoPreviewImg" src="" alt="Logo preview">
+            <div class="upload-preview-name" id="logoPreviewName"></div>
+            <div class="upload-preview-change" onclick="resetLogo(event)">Change logo</div>
+          </div>
+        </div>
+      </div>
+
+      <hr class="form-divider">
+
+      <!-- Q7: Multiple billing profiles -->
+      <div class="form-group" id="q-multiprofile">
+        <div class="form-label">Multiple Billing Profiles <span class="req">*</span></div>
+        <div class="radio-group inline" id="multiProfileGroup">
+          <label class="radio-option" style="flex:1;" onclick="selectRadio(this, 'multiProfile', 'no')">
+            <input type="radio" name="multiProfile" value="no"> No — single profile
+          </label>
+          <label class="radio-option" style="flex:1;" onclick="selectRadio(this, 'multiProfile', 'yes')">
+            <input type="radio" name="multiProfile" value="yes"> Yes — multiple profiles
+          </label>
+        </div>
+        <div class="error-msg" id="err-multiProfile">Please select an option.</div>
+
+        <div class="branch-section callout info" id="branch-multiProfileNote" style="display:none;margin-top:12px;padding:14px 18px;">
+          <span class="callout-icon">💡</span>
+          <div>
+            <strong style="color:var(--text);">Multiple profiles enabled.</strong> Your SA will work with you to configure each billing profile during implementation. You can define profile names, separate billing cycles, and assign customers to each profile after account setup.
+          </div>
+        </div>
+      </div>
+
+      <div class="step-nav">
+        <button class="btn btn-ghost" onclick="goToStep(1)">← Back</button>
+        <button class="btn btn-primary" onclick="validateAndNext(2, 3)">Continue →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════
+       STEP 3 — User Management
+  ══════════════════════════════════════════════════════════ -->
+  <div class="wizard-step" id="step3">
+    <div class="step-card">
+      <div class="step-title">User Management</div>
+      <div class="step-subtitle">Review and edit the users who will have access to your PSA instance.</div>
+
+      <div class="user-table-wrap">
+        <table class="user-table" id="userTable">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Source</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="userTableBody">
+            <!-- Rows injected by JS -->
+          </tbody>
+        </table>
+      </div>
+
+      <button class="add-user-btn" onclick="addUserRow()">+ Add User</button>
+
+      <div class="permission-note">
+        <span class="icon">ℹ️</span>
+        <span><strong style="color:var(--text-dim);">Admin</strong> users can manage settings, billing, and all customers. <strong style="color:var(--text-dim);">Standard Users</strong> have read/write access to service operations only. Permissions can be refined after provisioning.</span>
+      </div>
+
+      <div class="step-nav">
+        <button class="btn btn-ghost" onclick="goToStep(2)">← Back</button>
+        <button class="btn btn-primary" onclick="validateAndNext(3, 4)">Continue →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════
+       STEP 4 — Inventory
+  ══════════════════════════════════════════════════════════ -->
+  <div class="wizard-step" id="step4">
+    <div class="step-card">
+      <div class="step-title">Inventory Management</div>
+      <div class="step-subtitle">Let us know if your team tracks parts and equipment in the field.</div>
+
+      <div class="form-group" id="q-inventory">
+        <div class="form-label">Inventory Tracking <span class="req">*</span></div>
+        <div class="radio-group" id="inventoryGroup">
+          <label class="radio-option" onclick="selectRadio(this, 'inventory', 'none')">
+            <input type="radio" name="inventory" value="none">
+            <div>
+              <div style="font-weight:600;">No inventory tracking</div>
+              <div style="font-size:0.78rem;color:var(--text-dim);margin-top:2px;">We don't manage parts or equipment in PSA</div>
+            </div>
+          </label>
+          <label class="radio-option" onclick="selectRadio(this, 'inventory', 'yes')">
+            <input type="radio" name="inventory" value="yes">
+            <div>
+              <div style="font-weight:600;">Yes — we track parts and equipment</div>
+              <div style="font-size:0.78rem;color:var(--text-dim);margin-top:2px;">Enable inventory module with default configuration</div>
+            </div>
+          </label>
+        </div>
+        <div class="error-msg" id="err-inventory">Please select an option.</div>
+
+        <div class="branch-section callout teal" id="branch-inventoryDefaults" style="display:none;margin-top:12px;padding:14px 18px;">
+          <span class="callout-icon">📦</span>
+          <div>
+            <strong style="color:var(--text);">Inventory will be enabled with these defaults:</strong>
+            <ul style="margin-top:8px;">
+              <li><strong>Costing method:</strong> Average cost</li>
+              <li><strong>Location types:</strong> Storeroom, Work Truck</li>
+              <li><strong>Unit of measure:</strong> Each (EA)</li>
+              <li><strong>Default GL mapping:</strong> Parts &amp; Materials account</li>
+            </ul>
+            <div style="margin-top:8px;font-size:0.8rem;color:var(--text-mute);">Your SA can customize locations, categories, and vendors during the build.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-nav">
+        <button class="btn btn-ghost" onclick="goToStep(3)">← Back</button>
+        <button class="btn btn-primary" onclick="validateAndNext(4, 5)">Continue →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════
+       STEP 5 — Config Preview / SA Review
+  ══════════════════════════════════════════════════════════ -->
+  <div class="wizard-step" id="step5">
+    <div class="step-card">
+      <div class="step-title">Configuration Preview <span style="font-size:0.75rem;font-weight:500;color:var(--accent-lt);background:rgba(108,99,255,0.12);border:1px solid rgba(108,99,255,0.25);padding:3px 10px;border-radius:20px;vertical-align:middle;margin-left:8px;">SA Review</span></div>
+      <div class="step-subtitle">Review the configuration Alfred has prepared based on client responses. Approve to apply.</div>
+
+      <!-- Build Profile Card -->
+      <div class="preview-section">
+        <div class="section-title">Build Profile</div>
+        <div class="preview-card">
+          <div class="preview-card-header">
+            <div class="card-icon">💳</div>
+            <div class="preview-card-title">Billing Configuration</div>
+          </div>
+          <div class="preview-card-body" id="previewBilling">
+            <!-- filled by JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Users Card -->
+      <div class="preview-section">
+        <div class="section-title">Users</div>
+        <div class="preview-card">
+          <div class="preview-card-header">
+            <div class="card-icon">👥</div>
+            <div class="preview-card-title">User Accounts</div>
+          </div>
+          <div class="preview-card-body" id="previewUsers">
+            <!-- filled by JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Inventory Card -->
+      <div class="preview-section">
+        <div class="section-title">Inventory</div>
+        <div class="preview-card">
+          <div class="preview-card-header">
+            <div class="card-icon">📦</div>
+            <div class="preview-card-title">Inventory Management</div>
+          </div>
+          <div class="preview-card-body" id="previewInventory">
+            <!-- filled by JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- SA Notes -->
+      <div class="form-group" style="margin-top:28px;">
+        <div class="form-label">Notes for SA <span style="color:var(--text-mute);font-weight:400;text-transform:none;letter-spacing:0;">(optional)</span></div>
+        <textarea class="form-input" id="saNotes" placeholder="Add any notes, flags, or questions for the Solutions Architect reviewing this configuration…" rows="3"></textarea>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="review-actions">
+        <button class="btn btn-teal btn-lg" onclick="approveConfig()">
+          ✅ Approve Configuration
+        </button>
+        <button class="btn btn-outline-accent btn-lg" onclick="requestChanges()">
+          ✏️ Request Changes
+        </button>
+      </div>
+
+      <div style="margin-top:12px;">
+        <button class="btn btn-ghost" onclick="goToStep(4)">← Back to Inventory</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════
+       STEP 6 — Confirmation
+  ══════════════════════════════════════════════════════════ -->
+  <div class="wizard-step" id="step6">
+    <div class="step-card">
+      <div class="confirm-wrap">
+        <div class="checkmark-anim"></div>
+        <div class="confirm-title">Configuration Approved</div>
+        <div class="confirm-sub">
+          Alfred has queued this configuration for provisioning. Your Solutions Architect has been notified and will begin the build shortly.
+        </div>
+        <div class="ref-badge">
+          🎫 Reference: <span id="refNumber">PSA-2026-0000</span>
+        </div>
+        <div class="confirm-detail">
+          📬 A confirmation has been sent to <strong style="color:var(--text-dim);">cpalkert@silent-knight.com</strong>
+        </div>
+        <div style="margin-top:32px;">
+          <button class="btn btn-ghost" onclick="resetWizard()" style="margin: 0 auto;">
+            ↺ Start New Onboarding
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /page-wrap -->
+
+<script>
+/* ══════════════════════════════════════════════════════════════
+   State
+══════════════════════════════════════════════════════════════ */
+let currentStep = 1;
+const TOTAL_STEPS = 5; // progress steps (6th is confirmation)
+
+const state = {
+  billingCycle: null,
+  cycleDates: [],
+  arrears: null,
+  gracePeriod: null,
+  graceDays: '',
+  lateFees: null,
+  lateFeeType: null,
+  lateFeeAmount: '',
+  logoFileName: null,
+  logoDataUrl: null,
+  multiProfile: null,
+  inventory: null,
+  users: [
+    { name: 'Caleb Palkert', email: 'cpalkert@silent-knight.com', role: 'Admin',         fromSales: true },
+    { name: 'Teri Cuddy',    email: 'tcuddy@silent-knight.com',  role: 'Standard User', fromSales: true },
+  ],
+  saNotes: '',
+};
+
+/* ══════════════════════════════════════════════════════════════
+   Progress
+══════════════════════════════════════════════════════════════ */
+function updateProgress(step) {
+  document.querySelectorAll('.step-node').forEach(node => {
+    const n = parseInt(node.dataset.step);
+    node.classList.toggle('active', n === step);
+    node.classList.toggle('done', n < step);
+  });
+}
+
+/* ══════════════════════════════════════════════════════════════
+   Navigation
+══════════════════════════════════════════════════════════════ */
+function goToStep(n) {
+  document.querySelectorAll('.wizard-step').forEach(el => el.classList.remove('active'));
+  document.getElementById('step' + n).classList.add('active');
+  currentStep = n;
+  updateProgress(n <= TOTAL_STEPS ? n : TOTAL_STEPS);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function validateAndNext(fromStep, toStep) {
+  if (!validateStep(fromStep)) return;
+  if (toStep === 5) buildPreview();
+  goToStep(toStep);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   Radio / Checkbox helpers
+══════════════════════════════════════════════════════════════ */
+function selectRadio(label, name, value) {
+  // Guard: if already selected, skip (prevents double-fire from label→input propagation)
+  if (label.classList.contains('selected')) return;
+
+  // Update DOM selected state
+  document.querySelectorAll(`input[name="${name}"]`).forEach(inp => {
+    inp.closest('.radio-option').classList.remove('selected');
+  });
+  label.classList.add('selected');
+
+  // Check the underlying radio input
+  const radio = label.querySelector('input[type="radio"]');
+  if (radio) radio.checked = true;
+
+  // Update state
+  state[name] = value;
+
+  // Handle branches
+  handleBranch(name, value);
+}
+
+function toggleCheckbox(label, e) {
+  if (e) e.preventDefault(); // stop browser from double-toggling the checkbox
+  label.classList.toggle('selected');
+  const inp = label.querySelector('input[type="checkbox"]');
+  inp.checked = !inp.checked;
+  // Update state.cycleDates
+  state.cycleDates = Array.from(
+    document.querySelectorAll('input[name="cycleDates"]:checked')
+  ).map(cb => cb.value);
+}
+
+function handleBranch(name, value) {
+  if (name === 'billingCycle') {
+    setVisible('branch-cycleDate', value === 'cycle');
+  }
+  if (name === 'gracePeriod') {
+    setVisible('branch-graceDays', value === 'yes');
+  }
+  if (name === 'lateFees') {
+    setVisible('branch-lateFeeDetail', value === 'yes');
+  }
+  if (name === 'multiProfile') {
+    const el = document.getElementById('branch-multiProfileNote');
+    if (el) el.style.display = value === 'yes' ? 'flex' : 'none';
+  }
+  if (name === 'inventory') {
+    const el = document.getElementById('branch-inventoryDefaults');
+    if (el) el.style.display = value === 'yes' ? 'flex' : 'none';
+  }
+}
+
+function setVisible(id, show) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.classList.toggle('show', show);
+}
+
+function updateLateFeeUnit() {
+  const type = state.lateFeeType;
+  const unitEl = document.getElementById('lateFeeUnit');
+  if (unitEl) unitEl.textContent = type === 'pct' ? '%' : '$';
+}
+
+
+/* ══════════════════════════════════════════════════════════════
+   Logo Finder — website scrape via Clearbit + favicon fallback
+══════════════════════════════════════════════════════════════ */
+function findLogoFromWebsite() {
+  const input = document.getElementById('websiteUrl');
+  const raw = (input.value || '').trim();
+  if (!raw) { input.classList.add('error'); return; }
+  input.classList.remove('error');
+
+  let domain;
+  try {
+    const url = raw.startsWith('http') ? raw : 'https://' + raw;
+    domain = new URL(url).hostname.replace(/^www\./, '');
+  } catch(e) { input.classList.add('error'); return; }
+
+  const btn = document.getElementById('btnFindLogo');
+  btn.disabled = true;
+  btn.textContent = '⏳ Searching...';
+
+  const resultsEl = document.getElementById('logoScrapeResults');
+  const gridEl    = document.getElementById('logoScrapeGrid');
+  gridEl.innerHTML = '';
+  resultsEl.classList.remove('show');
+
+  const candidates = [
+    { label: 'Brand logo',   url: 'https://logo.clearbit.com/' + domain },
+    { label: 'Favicon (lg)', url: 'https://www.google.com/s2/favicons?sz=128&domain=' + domain },
+    { label: 'Favicon',      url: 'https://' + domain + '/favicon.ico' },
+  ];
+
+  let found = 0, checked = 0;
+
+  function onDone() {
+    btn.disabled = false;
+    btn.textContent = '🔍 Find Logo';
+    resultsEl.classList.add('show');
+    if (found === 0) {
+      gridEl.innerHTML = '<span class="logo-scrape-msg">No logo found automatically — try uploading manually below.</span>';
+    }
+  }
+
+  candidates.forEach(c => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = function() {
+      if (img.naturalWidth < 16 || img.naturalHeight < 16) {
+        checked++; if (checked === candidates.length) onDone(); return;
+      }
+      found++;
+      const tile = document.createElement('div');
+      tile.className = 'logo-option';
+      tile.title = c.label;
+      const im = document.createElement('img');
+      im.src = c.url; im.alt = c.label;
+      tile.appendChild(im);
+      tile.onclick = function() { selectScrapedLogo(tile, c.url, domain + ' logo'); };
+      gridEl.appendChild(tile);
+      checked++; if (checked === candidates.length) onDone();
+    };
+    img.onerror = function() { checked++; if (checked === candidates.length) onDone(); };
+    img.src = c.url;
+  });
+}
+
+function selectScrapedLogo(tile, url, name) {
+  document.querySelectorAll('.logo-option').forEach(t => t.classList.remove('selected'));
+  tile.classList.add('selected');
+  state.logoDataUrl = url;
+  state.logoFileName = name;
+  applyLogoPreview(url, name);
+}
+
+function applyLogoPreview(src, name) {
+  const zone   = document.getElementById('uploadZone');
+  const prev   = document.getElementById('logoPreview');
+  const imgEl  = document.getElementById('logoPreviewImg');
+  const nameEl = document.getElementById('logoPreviewName');
+  const defUI  = zone.querySelector('.upload-default-ui');
+  imgEl.src = src;
+  nameEl.textContent = name;
+  defUI.style.display = 'none';
+  prev.style.display = 'flex';
+  zone.classList.add('has-file');
+  zone.classList.remove('error');
+}
+
+/* ══════════════════════════════════════════════════════════════
+   Logo Upload
+══════════════════════════════════════════════════════════════ */
+function handleLogoUpload(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    state.logoDataUrl = ev.target.result;
+    state.logoFileName = file.name;
+    const zone = document.getElementById('uploadZone');
+    const preview = document.getElementById('logoPreview');
+    const img = document.getElementById('logoPreviewImg');
+    const name = document.getElementById('logoPreviewName');
+    const defUI = zone.querySelector('.upload-default-ui');
+    img.src = ev.target.result;
+    name.textContent = file.name;
+    defUI.style.display = 'none';
+    preview.style.display = 'flex';
+    zone.classList.add('has-file');
+    zone.classList.remove('error');
+    document.getElementById('err-logo').classList.remove('show');
+  };
+  reader.readAsDataURL(file);
+}
+
+function resetLogo(e) {
+  e.stopPropagation();
+  state.logoDataUrl = null;
+  state.logoFileName = null;
+  const zone = document.getElementById('uploadZone');
+  const preview = document.getElementById('logoPreview');
+  const defUI = zone.querySelector('.upload-default-ui');
+  preview.style.display = 'none';
+  defUI.style.display = '';
+  zone.classList.remove('has-file');
+  document.getElementById('logoFile').value = '';
+}
+
+// Drag-and-drop
+(function() {
+  const zone = document.getElementById('uploadZone');
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
+  zone.addEventListener('drop', e => {
+    e.preventDefault();
+    zone.classList.remove('dragover');
+    const file = e.dataTransfer.files[0];
+    if (!file) return;
+    const dt = new DataTransfer();
+    dt.items.add(file);
+    document.getElementById('logoFile').files = dt.files;
+    handleLogoUpload({ target: { files: [file] } });
+  });
+})();
+
+/* ══════════════════════════════════════════════════════════════
+   Validation
+══════════════════════════════════════════════════════════════ */
+function showErr(id, show) {
+  const el = document.getElementById(id);
+  if (el) el.classList.toggle('show', show);
+}
+
+function validateStep(step) {
+  let valid = true;
+
+  if (step === 2) {
+    // Billing Cycle
+    if (!state.billingCycle) { showErr('err-billingCycle', true); valid = false; }
+    else showErr('err-billingCycle', false);
+
+    // Cycle dates (only if cycle-based)
+    if (state.billingCycle === 'cycle') {
+      if (state.cycleDates.length === 0) { showErr('err-cycleDates', true); valid = false; }
+      else showErr('err-cycleDates', false);
+    }
+
+    // Arrears
+    if (!state.arrears) { showErr('err-arrears', true); valid = false; }
+    else showErr('err-arrears', false);
+
+    // Grace period
+    if (!state.gracePeriod) { showErr('err-gracePeriod', true); valid = false; }
+    else {
+      showErr('err-gracePeriod', false);
+      if (state.gracePeriod === 'yes') {
+        const val = document.getElementById('graceDays').value;
+        state.graceDays = val;
+        if (!val || parseInt(val) < 1) { showErr('err-graceDays', true); valid = false; }
+        else showErr('err-graceDays', false);
+      }
+    }
+
+    // Late fees
+    if (!state.lateFees) { showErr('err-lateFees', true); valid = false; }
+    else {
+      showErr('err-lateFees', false);
+      if (state.lateFees === 'yes') {
+        const amt = document.getElementById('lateFeeAmount').value;
+        state.lateFeeAmount = amt;
+        if (!amt || parseFloat(amt) < 0) { showErr('err-lateFeeAmount', true); valid = false; }
+        else showErr('err-lateFeeAmount', false);
+      }
+    }
+
+    // Logo — optional, no validation required
+    document.getElementById('uploadZone').classList.remove('error');
+
+    // Multi-profile
+    if (!state.multiProfile) { showErr('err-multiProfile', true); valid = false; }
+    else showErr('err-multiProfile', false);
+  }
+
+  if (step === 3) {
+    // Sync user table
+    syncUsersFromTable();
+    // At least one user must exist
+    if (state.users.length === 0) { alert('Please add at least one user.'); valid = false; }
+  }
+
+  if (step === 4) {
+    if (!state.inventory) { showErr('err-inventory', true); valid = false; }
+    else showErr('err-inventory', false);
+  }
+
+  return valid;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   User Table
+══════════════════════════════════════════════════════════════ */
+function renderUserTable() {
+  const tbody = document.getElementById('userTableBody');
+  tbody.innerHTML = '';
+  state.users.forEach((user, idx) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>
+        <input type="text" value="${escHtml(user.name)}" placeholder="Full name"
+               oninput="updateUser(${idx}, 'name', this.value)">
+      </td>
+      <td>
+        <input type="email" value="${escHtml(user.email)}" placeholder="email@company.com"
+               oninput="updateUser(${idx}, 'email', this.value)">
+      </td>
+      <td>
+        <select onchange="updateUser(${idx}, 'role', this.value)">
+          <option value="Admin" ${user.role === 'Admin' ? 'selected' : ''}>Admin</option>
+          <option value="Standard User" ${user.role === 'Standard User' ? 'selected' : ''}>Standard User</option>
+        </select>
+      </td>
+      <td>
+        ${user.fromSales ? '<span class="sales-badge">✦ Sales Brief</span>' : '<span style="color:var(--text-mute);font-size:0.78rem;">Manual</span>'}
+      </td>
+      <td>
+        <button class="remove-btn" onclick="removeUser(${idx})" title="Remove user">✕</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function updateUser(idx, field, val) {
+  state.users[idx][field] = val;
+}
+
+function syncUsersFromTable() {
+  // Already live-synced via oninput/onchange, but do a final sweep
+  const rows = document.querySelectorAll('#userTableBody tr');
+  rows.forEach((row, idx) => {
+    const inputs = row.querySelectorAll('input, select');
+    if (state.users[idx]) {
+      state.users[idx].name  = inputs[0].value;
+      state.users[idx].email = inputs[1].value;
+      state.users[idx].role  = inputs[2].value;
+    }
+  });
+}
+
+function addUserRow() {
+  state.users.push({ name: '', email: '', role: 'Standard User', fromSales: false });
+  renderUserTable();
+  // Focus name field of new row
+  const tbody = document.getElementById('userTableBody');
+  const lastRow = tbody.lastElementChild;
+  if (lastRow) lastRow.querySelector('input').focus();
+}
+
+function removeUser(idx) {
+  state.users.splice(idx, 1);
+  renderUserTable();
+}
+
+function escHtml(str) {
+  return (str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* ══════════════════════════════════════════════════════════════
+   Preview Builder
+══════════════════════════════════════════════════════════════ */
+function buildPreview() {
+  // ── Billing ──────────────────────────────────────────
+  const cycleLabel = state.billingCycle === 'cycle' ? 'Cycle-based' :
+                     state.billingCycle === 'anniversary' ? 'Anniversary' : '—';
+  const datesLabel = state.billingCycle === 'cycle' && state.cycleDates.length
+    ? state.cycleDates.map(d => d === 'both' ? '1st & 15th' : d === 'other' ? 'Other' : d).join(', ')
+    : null;
+  const arrearsLabel = state.arrears === 'yes' ? 'Yes' : state.arrears === 'no' ? 'No' : '—';
+  const graceLabel = state.gracePeriod === 'none' ? 'None' :
+                     state.gracePeriod === 'yes'  ? `${state.graceDays} days` : '—';
+  let lateLabel;
+  if (state.lateFees === 'none') lateLabel = 'None';
+  else if (state.lateFees === 'yes') {
+    const sym = state.lateFeeType === 'pct' ? '%' : '$';
+    const amt = parseFloat(state.lateFeeAmount || 0).toFixed(2);
+    const typeStr = state.lateFeeType === 'pct' ? 'Percentage' : 'Flat amount';
+    lateLabel = `${typeStr} — ${state.lateFeeType === 'pct' ? amt + '%' : '$' + amt}`;
+  } else { lateLabel = '—'; }
+
+  const logoLabel   = state.logoFileName || 'None uploaded';
+  const multiLabel  = state.multiProfile === 'yes' ? 'Yes' : state.multiProfile === 'no' ? 'No' : '—';
+
+  let billingHTML = `
+    <div class="preview-row">
+      <span class="preview-key">Billing Cycle</span>
+      <span class="preview-val">${cycleLabel}</span>
+    </div>`;
+  if (datesLabel) {
+    billingHTML += `
+    <div class="preview-row">
+      <span class="preview-key">Cycle Date(s)</span>
+      <span class="preview-val accent">${datesLabel}</span>
+    </div>`;
+  }
+  billingHTML += `
+    <div class="preview-row">
+      <span class="preview-key">Bill in Arrears</span>
+      <span class="preview-val">${arrearsLabel}</span>
+    </div>
+    <div class="preview-row">
+      <span class="preview-key">Grace Period</span>
+      <span class="preview-val">${graceLabel}</span>
+    </div>
+    <div class="preview-row">
+      <span class="preview-key">Late Fees</span>
+      <span class="preview-val">${lateLabel}</span>
+    </div>
+    <div class="preview-row">
+      <span class="preview-key">Company Logo</span>
+      <span class="preview-val ${state.logoDataUrl ? 'enabled' : 'disabled'}">${state.logoDataUrl ? '✓ Uploaded — ' + escHtml(logoLabel) : '✗ Not uploaded'}</span>
+    </div>
+    <div class="preview-row">
+      <span class="preview-key">Multiple Profiles</span>
+      <span class="preview-val">${multiLabel}</span>
+    </div>
+  `;
+  document.getElementById('previewBilling').innerHTML = billingHTML;
+
+  // ── Users ─────────────────────────────────────────────
+  syncUsersFromTable();
+  let usersHTML = '<ul class="preview-user-list">';
+  state.users.forEach(u => {
+    const initials = (u.name || 'U').split(' ').map(p => p[0] || '').join('').slice(0,2).toUpperCase();
+    const roleClass = u.role === 'Admin' ? 'role-admin' : 'role-standard';
+    usersHTML += `
+      <li class="preview-user-item">
+        <div class="preview-user-avatar">${initials}</div>
+        <div style="flex:1;min-width:0;">
+          <div class="preview-user-name">${escHtml(u.name || '(unnamed)')}</div>
+          <div class="preview-user-email">${escHtml(u.email || '')}</div>
+        </div>
+        <span class="preview-user-role ${roleClass}">${escHtml(u.role)}</span>
+      </li>`;
+  });
+  usersHTML += '</ul>';
+  document.getElementById('previewUsers').innerHTML = usersHTML;
+
+  // ── Inventory ─────────────────────────────────────────
+  let invHTML = `
+    <div class="preview-row">
+      <span class="preview-key">Inventory Tracking</span>
+      <span class="preview-val ${state.inventory === 'yes' ? 'enabled' : 'disabled'}">
+        ${state.inventory === 'yes' ? '✓ Enabled' : '✗ Disabled'}
+      </span>
+    </div>`;
+  if (state.inventory === 'yes') {
+    invHTML += `
+      <div class="preview-row">
+        <span class="preview-key">Costing Method</span>
+        <span class="preview-val">Average cost</span>
+      </div>
+      <div class="preview-row">
+        <span class="preview-key">Location Types</span>
+        <span class="preview-val">Storeroom, Work Truck</span>
+      </div>
+      <div class="preview-row">
+        <span class="preview-key">Default UOM</span>
+        <span class="preview-val">Each (EA)</span>
+      </div>`;
+  }
+  document.getElementById('previewInventory').innerHTML = invHTML;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   Approve / Request Changes
+══════════════════════════════════════════════════════════════ */
+function approveConfig() {
+  state.saNotes = document.getElementById('saNotes').value;
+  const ref = 'PSA-2026-' + String(Math.floor(1000 + Math.random() * 9000));
+  document.getElementById('refNumber').textContent = ref;
+
+  // Remove progress bar visibility on step 6
+  document.getElementById('progressSteps').style.opacity = '0.35';
+  goToStep(6);
+}
+
+function requestChanges() {
+  const notes = document.getElementById('saNotes').value;
+  // Flash a note UI
+  const textarea = document.getElementById('saNotes');
+  textarea.style.borderColor = 'var(--warning)';
+  textarea.style.boxShadow = '0 0 0 3px rgba(240,165,0,0.15)';
+  textarea.placeholder = 'Please describe what needs to change…';
+  textarea.focus();
+  setTimeout(() => {
+    textarea.style.borderColor = '';
+    textarea.style.boxShadow = '';
+  }, 2000);
+
+  if (!notes.trim()) {
+    // Subtle shake
+    const card = document.querySelector('#step5 .step-card');
+    card.style.animation = 'none';
+    void card.offsetWidth;
+    card.style.animation = 'shake 0.35s ease';
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   Reset
+══════════════════════════════════════════════════════════════ */
+function resetWizard() {
+  // Reset state — back to Silent Knight defaults
+  Object.assign(state, {
+    billingCycle: null, cycleDates: [], arrears: null,
+    gracePeriod: null, graceDays: '', lateFees: null,
+    lateFeeType: null, lateFeeAmount: '',
+    logoFileName: null, logoDataUrl: null, multiProfile: null,
+    inventory: 'yes',
+    users: [
+      { name: 'Caleb Palkert', email: 'cpalkert@silent-knight.com', role: 'Admin',         fromSales: true },
+      { name: 'Teri Cuddy',    email: 'tcuddy@silent-knight.com',  role: 'Standard User', fromSales: true },
+    ],
+    saNotes: '',
+  });
+
+  // Reset radio selections
+  document.querySelectorAll('.radio-option.selected, .checkbox-option.selected').forEach(el => el.classList.remove('selected'));
+  document.querySelectorAll('input[type="radio"], input[type="checkbox"]').forEach(inp => inp.checked = false);
+  // Reset all text inputs
+  document.querySelectorAll('.form-input:not([readonly])').forEach(inp => {
+    if (inp.tagName === 'TEXTAREA') inp.value = '';
+    else if (inp.type !== 'file') inp.value = '';
+  });
+  // Reset branches
+  ['branch-cycleDate','branch-graceDays','branch-lateFeeDetail'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.remove('show');
+  });
+  ['branch-multiProfileNote','branch-inventoryDefaults'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'none';
+  });
+  // Reset logo
+  resetLogo({ stopPropagation: () => {} });
+  // Re-render users
+  renderUserTable();
+  // Reset errors
+  document.querySelectorAll('.error-msg.show').forEach(el => el.classList.remove('show'));
+  // Restore progress bar
+  document.getElementById('progressSteps').style.opacity = '';
+
+  goToStep(1);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   Shake animation
+══════════════════════════════════════════════════════════════ */
+const shakeStyle = document.createElement('style');
+shakeStyle.textContent = `
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    20%      { transform: translateX(-5px); }
+    40%      { transform: translateX(5px); }
+    60%      { transform: translateX(-4px); }
+    80%      { transform: translateX(4px); }
+  }
+`;
+document.head.appendChild(shakeStyle);
+
+/* ══════════════════════════════════════════════════════════════
+   Init
+══════════════════════════════════════════════════════════════ */
+renderUserTable();
+
+
+  // ── Silent Knight Security — hardcoded pre-fill ───────────────────
+  (function silentKnightPrefill() {
+    // Step 1: Company info
+    const sfCompany = document.getElementById('sf-company'); if (sfCompany) sfCompany.value = 'Silent Knight Security';
+    const sfContact = document.getElementById('sf-contact'); if (sfContact) sfContact.value = 'Caleb Palkert';
+    const sfEmail   = document.getElementById('sf-email');   if (sfEmail)   sfEmail.value   = 'cpalkert@silent-knight.com';
+    const sfAddress = document.getElementById('sf-address'); if (sfAddress) sfAddress.value = 'Minnesota';
+
+    // Step 4: Inventory — yes (multi-phase installs, concurrent projects)
+    state.inventory = 'yes';
+
+    // Website for logo finder
+    const websiteUrl = document.getElementById('websiteUrl'); if (websiteUrl) websiteUrl.value = 'https://silent-knight.com';
+
+    // Re-render users (already set in state above)
+    if (typeof renderUserTable === 'function') renderUserTable();
+  })();
+
+  // ── Sales Brief Pre-fill (generic) ──────────────────────────────────────────
+  function prefillFromSalesBrief(data) {
+    // ── Step 1: Company info (DOM inputs, no state) ──
+    if (data.company)  { const el = document.getElementById('sf-company');  if (el) el.value = data.company; }
+    if (data.contact)  { const el = document.getElementById('sf-contact');  if (el) el.value = data.contact; }
+    if (data.email)    { const el = document.getElementById('sf-email');    if (el) el.value = data.email; }
+
+    // ── Step 2: Billing config (write to state + sync radio/checkbox UI) ──
+    if (data.cycleType) {
+      state.billingCycle = data.cycleType;
+      const el = document.querySelector('input[name="billingCycle"][value="' + data.cycleType + '"]');
+      if (el) { el.checked = true; el.dispatchEvent(new Event('change')); }
+    }
+
+    if (data.cycleDates && data.cycleDates.length) {
+      // Sales Brief values: '1', '15', 'both' → questionnaire values: '1st', '15th', 'both'
+      const dateMap = { '1': '1st', '15': '15th', 'both': 'both' };
+      state.cycleDates = data.cycleDates.map(v => dateMap[v] || v);
+      document.querySelectorAll('input[name="cycleDates"]').forEach(cb => {
+        cb.checked = state.cycleDates.includes(cb.value);
+        if (cb.checked) cb.dispatchEvent(new Event('change'));
+      });
+    }
+
+    if (data.arrears) {
+      state.arrears = data.arrears;
+      const el = document.querySelector('input[name="arrears"][value="' + data.arrears + '"]');
+      if (el) { el.checked = true; el.dispatchEvent(new Event('change')); }
+    }
+
+    if (data.multiProfile) {
+      state.multiProfile = data.multiProfile;
+      const el = document.querySelector('input[name="multiProfile"][value="' + data.multiProfile + '"]');
+      if (el) { el.checked = true; el.dispatchEvent(new Event('change')); }
+    }
+
+    // ── Step 4: Inventory ──
+    if (data.inventory) {
+      // Sales Brief: 'yes' → 'yes', 'later'/'no' → 'none'
+      const invMap = { 'yes': 'yes', 'later': 'none', 'no': 'none' };
+      const mapped = invMap[data.inventory] || data.inventory;
+      state.inventory = mapped;
+      const el = document.querySelector('input[name="inventory"][value="' + mapped + '"]');
+      if (el) { el.checked = true; el.dispatchEvent(new Event('change')); }
+    }
+
+    // ── Step 3: Users (replace state.users and re-render) ──
+    if (data.users && data.users.length > 0) {
+      state.users = data.users
+        .filter(u => u.name || u.email)
+        .map(u => ({
+          name: u.name  || '',
+          email: u.email || '',
+          role: u.role  || u.title || 'Standard User',
+          fromSales: true
+        }));
+      if (typeof renderUserTable === 'function') renderUserTable();
+    }
+
+    // Show pre-fill banner
+    const banner = document.getElementById('prefill-banner');
+    if (banner) banner.style.display = 'block';
+  }
+
+  function loadSalesBriefFromHash() {
+    const hash = window.location.hash;
+    if (!hash || !hash.includes('brief=')) return;
+    try {
+      const encoded = hash.split('brief=')[1];
+      const json = decodeURIComponent(escape(atob(encoded)));
+      const data = JSON.parse(json);
+      if (data._source === 'sales-brief') {
+        prefillFromSalesBrief(data);
+      }
+    } catch (e) {
+      console.warn('Could not parse Sales Brief hash data:', e);
+    }
+  }
+
+  // Run after DOM is ready
+  document.addEventListener('DOMContentLoaded', loadSalesBriefFromHash);
+
+</script>
+</body>
+</html>
