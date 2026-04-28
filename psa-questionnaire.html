@@ -1112,6 +1112,12 @@
   <div class="header-badge">Onboarding Wizard</div>
 </header>
 
+<!-- ─── Pre-fill Banner (shown when loaded from Sales Brief) ── -->
+<div id="prefill-banner" style="display:none; background:linear-gradient(90deg,#10b981,#059669); color:#fff; padding:10px 20px; text-align:center; font-size:0.85rem; font-weight:600; letter-spacing:0.02em;">
+  ✅ Pre-filled from Sales Brief — review each field before continuing. Changes are reflected in your SA's review.
+  <button onclick="document.getElementById('prefill-banner').style.display='none'" style="margin-left:16px;background:rgba(255,255,255,0.2);border:none;color:#fff;padding:2px 10px;border-radius:4px;cursor:pointer;font-size:0.8rem;">Dismiss</button>
+</div>
+
 <!-- ─── Main Content ────────────────────────────────────────── -->
 <div class="page-wrap">
 
@@ -2185,6 +2191,90 @@ document.head.appendChild(shakeStyle);
    Init
 ══════════════════════════════════════════════════════════════ */
 renderUserTable();
+
+
+  // ── Sales Brief Pre-fill ──────────────────────────────────────────
+  function prefillFromSalesBrief(data) {
+    // ── Step 1: Company info (DOM inputs, no state) ──
+    if (data.company)  { const el = document.getElementById('sf-company');  if (el) el.value = data.company; }
+    if (data.contact)  { const el = document.getElementById('sf-contact');  if (el) el.value = data.contact; }
+    if (data.email)    { const el = document.getElementById('sf-email');    if (el) el.value = data.email; }
+
+    // ── Step 2: Billing config (write to state + sync radio/checkbox UI) ──
+    if (data.cycleType) {
+      state.billingCycle = data.cycleType;
+      const el = document.querySelector('input[name="billingCycle"][value="' + data.cycleType + '"]');
+      if (el) { el.checked = true; el.dispatchEvent(new Event('change')); }
+    }
+
+    if (data.cycleDates && data.cycleDates.length) {
+      // Sales Brief values: '1', '15', 'both' → questionnaire values: '1st', '15th', 'both'
+      const dateMap = { '1': '1st', '15': '15th', 'both': 'both' };
+      state.cycleDates = data.cycleDates.map(v => dateMap[v] || v);
+      document.querySelectorAll('input[name="cycleDates"]').forEach(cb => {
+        cb.checked = state.cycleDates.includes(cb.value);
+        if (cb.checked) cb.dispatchEvent(new Event('change'));
+      });
+    }
+
+    if (data.arrears) {
+      state.arrears = data.arrears;
+      const el = document.querySelector('input[name="arrears"][value="' + data.arrears + '"]');
+      if (el) { el.checked = true; el.dispatchEvent(new Event('change')); }
+    }
+
+    if (data.multiProfile) {
+      state.multiProfile = data.multiProfile;
+      const el = document.querySelector('input[name="multiProfile"][value="' + data.multiProfile + '"]');
+      if (el) { el.checked = true; el.dispatchEvent(new Event('change')); }
+    }
+
+    // ── Step 4: Inventory ──
+    if (data.inventory) {
+      // Sales Brief: 'yes' → 'yes', 'later'/'no' → 'none'
+      const invMap = { 'yes': 'yes', 'later': 'none', 'no': 'none' };
+      const mapped = invMap[data.inventory] || data.inventory;
+      state.inventory = mapped;
+      const el = document.querySelector('input[name="inventory"][value="' + mapped + '"]');
+      if (el) { el.checked = true; el.dispatchEvent(new Event('change')); }
+    }
+
+    // ── Step 3: Users (replace state.users and re-render) ──
+    if (data.users && data.users.length > 0) {
+      state.users = data.users
+        .filter(u => u.name || u.email)
+        .map(u => ({
+          name: u.name  || '',
+          email: u.email || '',
+          role: u.role  || u.title || 'Standard User',
+          fromSales: true
+        }));
+      if (typeof renderUserTable === 'function') renderUserTable();
+    }
+
+    // Show pre-fill banner
+    const banner = document.getElementById('prefill-banner');
+    if (banner) banner.style.display = 'block';
+  }
+
+  function loadSalesBriefFromHash() {
+    const hash = window.location.hash;
+    if (!hash || !hash.includes('brief=')) return;
+    try {
+      const encoded = hash.split('brief=')[1];
+      const json = decodeURIComponent(escape(atob(encoded)));
+      const data = JSON.parse(json);
+      if (data._source === 'sales-brief') {
+        prefillFromSalesBrief(data);
+      }
+    } catch (e) {
+      console.warn('Could not parse Sales Brief hash data:', e);
+    }
+  }
+
+  // Run after DOM is ready
+  document.addEventListener('DOMContentLoaded', loadSalesBriefFromHash);
+
 </script>
 </body>
 </html>
