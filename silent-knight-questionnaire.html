@@ -1719,46 +1719,68 @@ function findLogoFromWebsite() {
 
   const resultsEl = document.getElementById('logoScrapeResults');
   const gridEl    = document.getElementById('logoScrapeGrid');
-  gridEl.innerHTML = '';
-  resultsEl.classList.remove('show');
+  gridEl.innerHTML = '<span class="logo-scrape-msg" id="logoSearchStatus">Checking sources…</span>';
+  resultsEl.classList.add('show');
 
+  // 6 sources, tried in parallel with individual timeouts
   const candidates = [
-    { label: 'Brand logo',   url: 'https://logo.clearbit.com/' + domain },
-    { label: 'Favicon (lg)', url: 'https://www.google.com/s2/favicons?sz=128&domain=' + domain },
-    { label: 'Favicon',      url: 'https://' + domain + '/favicon.ico' },
+    { label: 'Brand Logo',      url: 'https://logo.clearbit.com/' + domain,                                                                                         minW: 40 },
+    { label: 'Brand Logo HD',   url: 'https://logo.clearbit.com/' + domain + '?size=400',                                                                           minW: 40 },
+    { label: 'Google Icon',     url: 'https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://' + domain + '&size=256',  minW: 32 },
+    { label: 'DuckDuckGo Icon', url: 'https://icons.duckduckgo.com/ip3/' + domain + '.ico',                                                                         minW: 16 },
+    { label: 'Google Favicon',  url: 'https://www.google.com/s2/favicons?sz=128&domain=' + domain,                                                                  minW: 32 },
+    { label: 'Site Favicon',    url: 'https://' + domain + '/favicon.ico',                                                                                          minW: 16 },
   ];
 
   let found = 0, checked = 0;
+  const seenSizes = new Set(); // dedupe by WxH so same image from two sources shows once
 
-  function onDone() {
-    btn.disabled = false;
-    btn.textContent = '🔍 Find Logo';
-    resultsEl.classList.add('show');
-    if (found === 0) {
-      gridEl.innerHTML = '<span class="logo-scrape-msg">No logo found automatically — try uploading manually below.</span>';
+  function loadWithTimeout(url, ms) {
+    return new Promise(function(resolve) {
+      var img = new Image();
+      var timer = setTimeout(function() { img.src = ''; resolve(null); }, ms);
+      img.onload  = function() { clearTimeout(timer); resolve(img); };
+      img.onerror = function() { clearTimeout(timer); resolve(null); };
+      img.src = url;
+    });
+  }
+
+  function onImageResult(c, img) {
+    checked++;
+    var statusEl = document.getElementById('logoSearchStatus');
+
+    if (img && img.naturalWidth >= c.minW && img.naturalHeight >= c.minW) {
+      var sizeKey = img.naturalWidth + 'x' + img.naturalHeight;
+      if (!seenSizes.has(sizeKey)) {
+        seenSizes.add(sizeKey);
+        found++;
+        if (statusEl) statusEl.remove();
+        var tile = document.createElement('div');
+        tile.className = 'logo-option';
+        tile.title = c.label + ' (' + img.naturalWidth + '\u00d7' + img.naturalHeight + ')';
+        var im = document.createElement('img');
+        im.src = c.url; im.alt = c.label;
+        tile.appendChild(im);
+        tile.onclick = (function(t, u) {
+          return function() { selectScrapedLogo(t, u, domain + ' logo'); };
+        })(tile, c.url);
+        gridEl.appendChild(tile);
+      }
+    }
+
+    if (checked === candidates.length) {
+      btn.disabled = false;
+      btn.textContent = '🔍 Find Logo';
+      if (found === 0) {
+        gridEl.innerHTML = '<span class="logo-scrape-msg">No logo found automatically — try uploading one below.</span>';
+      } else if (statusEl) {
+        statusEl.remove();
+      }
     }
   }
 
-  candidates.forEach(c => {
-    const img = new Image();
-    img.crossOrigin = 'anonymous';
-    img.onload = function() {
-      if (img.naturalWidth < 16 || img.naturalHeight < 16) {
-        checked++; if (checked === candidates.length) onDone(); return;
-      }
-      found++;
-      const tile = document.createElement('div');
-      tile.className = 'logo-option';
-      tile.title = c.label;
-      const im = document.createElement('img');
-      im.src = c.url; im.alt = c.label;
-      tile.appendChild(im);
-      tile.onclick = function() { selectScrapedLogo(tile, c.url, domain + ' logo'); };
-      gridEl.appendChild(tile);
-      checked++; if (checked === candidates.length) onDone();
-    };
-    img.onerror = function() { checked++; if (checked === candidates.length) onDone(); };
-    img.src = c.url;
+  candidates.forEach(function(c) {
+    loadWithTimeout(c.url, 4000).then(function(img) { onImageResult(c, img); });
   });
 }
 
