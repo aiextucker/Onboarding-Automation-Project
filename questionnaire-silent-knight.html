@@ -2349,13 +2349,7 @@ renderUserTable();
       var notesEl = document.getElementById('sa-notes');
       if (notesEl && !notesEl.value) notesEl.value = _SA_NOTES;
     }
-    var banner = document.getElementById('prefill-banner');
-    if (banner) {
-      banner.style.display = 'block';
-      banner.style.background = 'linear-gradient(90deg,#10b981,#059669)';
-      banner.querySelector('span').textContent =
-        '✓ Pre-filled from your Sales Brief — review each section and fill in anything missing.';
-    }
+    // Banner suppressed — pre-fill is silent
   }
 
   // Override approveConfig to write submission to Notion
