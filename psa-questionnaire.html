@@ -2294,8 +2294,86 @@ renderUserTable();
     }
   }
 
-  // Run after DOM is ready
-  document.addEventListener('DOMContentLoaded', loadSalesBriefFromHash);
+  // ── Token-based API load ────────────────────────────────────────────────────
+  const API_BASE = 'http://127.0.0.1:3031';
+  var _activeToken = null;
+
+  async function loadFromToken(token) {
+    _activeToken = token;
+    var banner = document.getElementById('prefill-banner');
+    if (banner) {
+      banner.style.display = 'block';
+      banner.style.background = 'linear-gradient(90deg,#6c63ff,#5549e0)';
+      banner.querySelector('span').textContent = '⏳ Loading your pre-filled questionnaire…';
+    }
+    try {
+      var res  = await fetch(API_BASE + '/api/q/' + token);
+      var data = await res.json();
+      if (!res.ok) { showTokenError(data.error || 'Token invalid or expired.'); return; }
+      if (data.status === 'Submitted') {
+        showTokenError('This questionnaire has already been submitted. Contact your SA if you need to make changes.');
+        return;
+      }
+      if (banner) {
+        banner.style.background = 'linear-gradient(90deg,#10b981,#059669)';
+        banner.querySelector('span').textContent =
+          '✓ Pre-filled from your Sales Brief — review each section and fill in anything missing.';
+      }
+      if (data.prefill) prefillFromSalesBrief(Object.assign({ _source: 'sales-brief' }, data.prefill));
+      if (data.clientName)  { var ec = document.getElementById('sf-company'); if (ec && !ec.value) ec.value = data.clientName; }
+      if (data.clientEmail) { var ee = document.getElementById('sf-email');   if (ee && !ee.value) ee.value = data.clientEmail; }
+    } catch (err) {
+      console.error('[loadFromToken]', err);
+      if (banner) {
+        banner.style.background = 'linear-gradient(90deg,#f87171,#dc2626)';
+        banner.querySelector('span').textContent = '⚠️ Could not load your questionnaire. Try refreshing or contact your SA.';
+      }
+    }
+  }
+
+  function showTokenError(msg) {
+    var banner = document.getElementById('prefill-banner');
+    if (banner) {
+      banner.style.display = 'block';
+      banner.style.background = 'linear-gradient(90deg,#f87171,#dc2626)';
+      banner.querySelector('span').textContent = '⚠️ ' + msg;
+    }
+    document.querySelectorAll('.wizard-step button').forEach(function(b) { b.disabled = true; });
+  }
+
+  // ── Wrap approveConfig to POST answers on SA approval ───────────────────
+  var _origApprove = approveConfig;
+  approveConfig = function() {
+    _origApprove();
+    if (!_activeToken) return;
+    syncUsersFromTable();
+    var payload = {
+      billingCycle: state.billingCycle, cycleDates: state.cycleDates,
+      arrears: state.arrears, gracePeriod: state.gracePeriod, graceDays: state.graceDays,
+      lateFees: state.lateFees, lateFeeType: state.lateFeeType, lateFeeAmount: state.lateFeeAmount,
+      multiProfile: state.multiProfile, inventory: state.inventory,
+      users: state.users, saNotes: state.saNotes,
+      company:  (document.getElementById('sf-company')  || {}).value || '',
+      contact:  (document.getElementById('sf-contact')  || {}).value || '',
+      email:    (document.getElementById('sf-email')    || {}).value || '',
+      phone:    (document.getElementById('sf-phone')    || {}).value || '',
+      address:  (document.getElementById('sf-address')  || {}).value || '',
+      logoFileName: state.logoFileName,
+      submittedAt: new Date().toISOString(),
+    };
+    fetch(API_BASE + '/api/q/' + _activeToken + '/submit', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload),
+    }).then(function(r) { return r.json(); })
+      .then(function(d) { console.log('[submit]', d.ok ? 'Sent ✓' : d.error); })
+      .catch(function(err) { console.error('[submit error]', err); });
+  };
+
+  // ── Boot: ?token= param wins, falls back to hash brief ────────────────────
+  document.addEventListener('DOMContentLoaded', function() {
+    var params = new URLSearchParams(window.location.search);
+    var token  = params.get('token');
+    if (token) { loadFromToken(token); } else { loadSalesBriefFromHash(); }
+  });
 
 </script>
 </body>
