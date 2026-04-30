@@ -35,10 +35,9 @@
   .user-name { font-weight: 500; }
   .user-meta { color: var(--text-dim); font-size: 0.8rem; text-align: right; }
   .actions { display: flex; gap: 12px; margin-top: 28px; }
-  .btn { flex: 1; padding: 13px 20px; border: none; border-radius: 8px; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: opacity 0.15s, transform 0.1s; }
+  .btn { width: 100%; padding: 13px 20px; border: none; border-radius: 8px; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: opacity 0.15s, transform 0.1s; }
   .btn:active { transform: scale(0.98); }
   .btn-approve { background: var(--teal); color: #0f1117; }
-  .btn-changes { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
   .btn:disabled { opacity: 0.5; cursor: not-allowed; }
   .status { margin-top: 20px; padding: 14px 18px; border-radius: 8px; font-size: 0.9rem; font-weight: 600; display: none; }
   .status.success { background: rgba(0,212,170,0.12); border: 1px solid var(--teal); color: var(--teal); display: block; }
@@ -87,7 +86,6 @@
 
     <div class="actions">
       <button class="btn btn-approve" id="btnApprove" onclick="dispatch('approve')">✅ Approve &amp; Configure</button>
-      <button class="btn btn-changes" id="btnChanges" onclick="dispatch('changes')">💬 Request Changes</button>
     </div>
     <div class="status" id="statusMsg"></div>
   </div>
@@ -195,10 +193,8 @@
 
   async function dispatch(action) {
     var btnA = document.getElementById('btnApprove');
-    var btnC = document.getElementById('btnChanges');
-    btnA.disabled = true; btnC.disabled = true;
-    btnA.textContent = action === 'approve' ? '⏳ Approving…' : '✅ Approve & Configure';
-    btnC.textContent = action === 'changes' ? '⏳ Sending…'  : '💬 Request Changes';
+    btnA.disabled = true;
+    btnA.textContent = '⏳ Approving…';
 
     try {
       var clientName = document.getElementById('clientName').textContent;
@@ -228,14 +224,12 @@
           ? '✅ Approved! Alfred will begin configuring the PSA instance. You\'ll get a Teams confirmation shortly.'
           : '💬 Changes requested. The SA team will be notified to follow up.';
         btnA.style.display = 'none';
-        btnC.style.display = 'none';
       } else {
         throw new Error('GitHub dispatch returned ' + res.status);
       }
     } catch(e) {
-      btnA.disabled = false; btnC.disabled = false;
+      btnA.disabled = false;
       btnA.textContent = '✅ Approve & Configure';
-      btnC.textContent = '💬 Request Changes';
       showError('Something went wrong: ' + e.message);
     }
   }
