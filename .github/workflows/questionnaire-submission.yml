@@ -180,7 +180,6 @@ jobs:
             // ── Send Adaptive Card to both chats ─────────────────────────────
             const chatIds = [
               process.env.MS_ALEX_CHAT_ID,
-              process.env.MS_GROUP_CHAT_ID,
             ].filter(Boolean);
 
             const attachId = 'q-' + Date.now().toString(36);
