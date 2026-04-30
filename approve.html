@@ -5,245 +5,222 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PSA Config Approval — Rev.io</title>
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  :root {
-    --bg: #0f1117; --surface: #181c27; --surface2: #1e2436;
-    --border: #2a3050; --accent: #6c63ff; --teal: #00d4aa;
-    --text: #e8e8f0; --text-dim: #8a90b0; --error: #ff5a6e;
-    --success: #00d4aa; --warning: #f0a500;
-    --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  }
-  body { background: var(--bg); color: var(--text); font-family: var(--font); min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; }
-  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 36px 40px; max-width: 560px; width: 100%; box-shadow: 0 8px 40px rgba(0,0,0,0.5); }
-  .logo { display: flex; align-items: center; gap: 10px; margin-bottom: 28px; }
-  .logo-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }
-  .logo-text { font-size: 0.85rem; font-weight: 700; letter-spacing: 0.08em; color: var(--text-dim); text-transform: uppercase; }
-  h1 { font-size: 1.4rem; font-weight: 700; margin-bottom: 6px; }
-  .client-name { font-size: 1.1rem; color: var(--teal); font-weight: 600; margin-bottom: 20px; }
-  .meta { font-size: 0.82rem; color: var(--text-dim); margin-bottom: 24px; border-top: 1px solid var(--border); padding-top: 16px; }
-  .meta p { margin-bottom: 4px; }
-  .section { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; margin-bottom: 20px; }
-  .section h3 { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-dim); margin-bottom: 12px; }
-  .row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; font-size: 0.88rem; }
-  .row:last-child { margin-bottom: 0; }
-  .label { color: var(--text-dim); }
-  .val { color: var(--text); font-weight: 500; text-align: right; }
-  .val.warn { color: var(--warning); }
-  .users-list { list-style: none; font-size: 0.87rem; }
-  .users-list li { padding: 6px 0; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; gap: 8px; }
-  .users-list li:last-child { border-bottom: none; }
-  .user-name { font-weight: 500; }
-  .user-meta { color: var(--text-dim); font-size: 0.8rem; text-align: right; }
-  .actions { display: flex; gap: 12px; margin-top: 28px; }
-  .btn { width: 100%; padding: 13px 20px; border: none; border-radius: 8px; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: opacity 0.15s, transform 0.1s; }
-  .btn:active { transform: scale(0.98); }
-  .btn-approve { background: var(--teal); color: #0f1117; }
-  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-  .status { margin-top: 20px; padding: 14px 18px; border-radius: 8px; font-size: 0.9rem; font-weight: 600; display: none; }
-  .status.success { background: rgba(0,212,170,0.12); border: 1px solid var(--teal); color: var(--teal); display: block; }
-  .status.error   { background: rgba(255,90,110,0.12); border: 1px solid var(--error);   color: var(--error);   display: block; }
-  .loading { text-align: center; color: var(--text-dim); padding: 40px 0; }
-  .spinner { width: 32px; height: 32px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 12px; }
-  @keyframes spin { to { transform: rotate(360deg); } }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #0f1117; --surface: #181c27; --surface2: #1e2436;
+  --border: #2a3050; --accent: #6c63ff; --teal: #00d4aa;
+  --text: #e8e8f0; --text-dim: #8a90b0; --error: #ff5a6e;
+  --success: #00d4aa; --warning: #f0a500;
+  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+body { background: var(--bg); color: var(--text); font-family: var(--font); min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 36px 40px; max-width: 560px; width: 100%; box-shadow: 0 8px 40px rgba(0,0,0,0.5); }
+.logo { display: flex; align-items: center; gap: 10px; margin-bottom: 28px; }
+.logo-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }
+.logo-text { font-size: 0.85rem; font-weight: 700; letter-spacing: 0.08em; color: var(--text-dim); text-transform: uppercase; }
+h1 { font-size: 1.4rem; font-weight: 700; margin-bottom: 6px; }
+.client-name { font-size: 1.1rem; color: var(--teal); font-weight: 600; margin-bottom: 20px; }
+.meta { font-size: 0.82rem; color: var(--text-dim); margin-bottom: 24px; border-top: 1px solid var(--border); padding-top: 16px; }
+.meta p { margin-bottom: 4px; }
+.section { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; margin-bottom: 20px; }
+.section h3 { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-dim); margin-bottom: 12px; }
+.row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; font-size: 0.88rem; }
+.row:last-child { margin-bottom: 0; }
+.label { color: var(--text-dim); }
+.val { color: var(--text); font-weight: 500; text-align: right; }
+.val.warn { color: var(--warning); }
+.users-list { list-style: none; font-size: 0.87rem; }
+.users-list li { padding: 6px 0; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; gap: 8px; }
+.users-list li:last-child { border-bottom: none; }
+.user-name { font-weight: 500; }
+.user-meta { color: var(--text-dim); font-size: 0.8rem; text-align: right; }
+.actions { margin-top: 28px; }
+.btn { width: 100%; padding: 13px 20px; border: none; border-radius: 8px; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: opacity 0.15s, transform 0.1s; background: var(--teal); color: #0f1117; }
+.btn:active { transform: scale(0.98); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.status { margin-top: 20px; padding: 14px 18px; border-radius: 8px; font-size: 0.9rem; font-weight: 600; display: none; }
+.status.success { background: rgba(0,212,170,0.12); border: 1px solid var(--teal); color: var(--teal); }
+.status.error { background: rgba(255,90,110,0.12); border: 1px solid var(--error); color: var(--error); }
+.loading { text-align: center; color: var(--text-dim); padding: 40px 0; }
+.spinner { width: 32px; height: 32px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 12px; }
+@keyframes spin { to { transform: rotate(360deg); } }
 </style>
 </head>
 <body>
 <div class="card">
-  <div class="logo"><div class="logo-dot"></div><span class="logo-text">Rev.io · PSA Onboarding</span></div>
-  <div id="loading" class="loading"><div class="spinner"></div><p>Loading submission…</p></div>
-  <div id="content" style="display:none">
-    <h1>Review & Approve Configuration</h1>
-    <div class="client-name" id="clientName"></div>
+  <div class="logo"><div class="logo-dot"></div><span class="logo-text">Rev.io &middot; PSA Onboarding</span></div>
+
+  <div id="app-loading" class="loading">
+    <div class="spinner"></div>
+    <p>Loading submission&hellip;</p>
+  </div>
+
+  <div id="app-content" style="display:none">
+    <h1>Review &amp; Approve Configuration</h1>
+    <div class="client-name" id="r-client"></div>
     <div class="meta">
-      <p><span style="color:var(--text-dim)">Submission ID:</span> <code id="subId" style="font-size:0.8rem;color:var(--accent)"></code></p>
-      <p><span style="color:var(--text-dim)">Submitted:</span> <span id="subTime"></span></p>
-      <p><span style="color:var(--text-dim)">Contact:</span> <span id="contact"></span></p>
+      <p><span style="color:var(--text-dim)">Submission ID:</span> <code id="r-id" style="font-size:0.8rem;color:var(--accent)"></code></p>
+      <p><span style="color:var(--text-dim)">Submitted:</span> <span id="r-time"></span></p>
+      <p><span style="color:var(--text-dim)">Contact:</span> <span id="r-contact"></span></p>
     </div>
 
     <div class="section">
-      <h3>💳 Billing Config</h3>
-      <div class="row"><span class="label">Cycle type</span><span class="val" id="cycleType"></span></div>
-      <div class="row"><span class="label">Cycle date(s)</span><span class="val" id="cycleDates"></span></div>
-      <div class="row"><span class="label">Bill in arrears</span><span class="val" id="arrears"></span></div>
-      <div class="row"><span class="label">Multiple profiles</span><span class="val" id="multiProfile"></span></div>
-      <div class="row"><span class="label">Late fees</span><span class="val" id="lateFees"></span></div>
+      <h3>&#x1F4B3; Billing Config</h3>
+      <div class="row"><span class="label">Cycle type</span><span class="val" id="r-cycle"></span></div>
+      <div class="row"><span class="label">Cycle date(s)</span><span class="val" id="r-dates"></span></div>
+      <div class="row"><span class="label">Bill in arrears</span><span class="val" id="r-arrears"></span></div>
+      <div class="row"><span class="label">Multiple profiles</span><span class="val" id="r-multi"></span></div>
+      <div class="row"><span class="label">Late fees</span><span class="val" id="r-fees"></span></div>
     </div>
 
     <div class="section">
-      <h3>📦 Inventory Tracking</h3>
-      <div class="row"><span class="label">Track inventory</span><span class="val" id="inventory"></span></div>
+      <h3>&#x1F4E6; Inventory Tracking</h3>
+      <div class="row"><span class="label">Track inventory</span><span class="val" id="r-inv"></span></div>
     </div>
 
     <div class="section">
-      <h3>👥 Users</h3>
-      <ul class="users-list" id="userList"></ul>
+      <h3>&#x1F465; Users</h3>
+      <ul class="users-list" id="r-users"></ul>
     </div>
 
-    <div id="saNotesSection" class="section" style="display:none">
-      <h3>📝 Notes from Client</h3>
-      <p id="saNotes" style="font-size:0.88rem;line-height:1.6;color:var(--text-dim)"></p>
+    <div id="r-notes-section" class="section" style="display:none">
+      <h3>&#x1F4DD; Notes from Client</h3>
+      <p id="r-notes" style="font-size:0.88rem;line-height:1.6;color:var(--text-dim)"></p>
     </div>
 
     <div class="actions">
-      <button class="btn btn-approve" id="btnApprove" onclick="dispatch()">✅ Approve &amp; Configure</button>
+      <button class="btn" id="r-btn" onclick="doApprove()">&#x2705; Approve &amp; Configure</button>
     </div>
-    <div class="status" id="statusMsg"></div>
+    <div class="status" id="r-status"></div>
   </div>
 </div>
 
 <script>
-  var GITHUB_DISPATCH_TOKEN = ['ghp_fmu9dXErfsuaxu', 'LIjcWp4e7h5a92R74ZhaYc'].join('');
-  var GITHUB_REPO = 'aiextucker/Onboarding-Automation-Project';
+(function() {
+  var DISPATCH_TOKEN = ['ghp_fmu9dXErfsuaxu', 'LIjcWp4e7h5a92R74ZhaYc'].join('');
+  var REPO = 'aiextucker/Onboarding-Automation-Project';
 
-  var params       = new URLSearchParams(window.location.search);
-  var submissionId = params.get('id')     || '';
-  var notionPageId = params.get('page')   || '';
-  var clientName   = params.get('client') || '';
-  var answers      = {};
+  var params = new URLSearchParams(window.location.search);
+  var subId   = params.get('id')     || '';
+  var pageId  = params.get('page')   || '';
+  var client  = params.get('client') || '';
+  var answers = {};
 
   try {
-    var encoded = params.get('data') || '';
-    if (encoded) answers = JSON.parse(decodeURIComponent(escape(atob(encoded))));
-  } catch(e) { console.warn('Could not parse data param:', e); }
+    var enc = params.get('data');
+    if (enc) answers = JSON.parse(decodeURIComponent(escape(atob(enc))));
+  } catch(e) {}
 
-  function warn(el, val) {
-    if (!el) return;
-    if (!val || val === '⚠️ Not set') el.classList.add('warn');
-    el.textContent = val || '⚠️ Not set';
-  }
-
-  function setEl(id, val) {
+  function setVal(id, text, warnIfEmpty) {
     var el = document.getElementById(id);
-    if (el) el.textContent = val || '';
+    if (!el) return;
+    var val = text || '';
+    el.textContent = val || (warnIfEmpty ? '\u26a0\ufe0f Not set' : '');
+    if (warnIfEmpty && !val) el.classList.add('warn');
   }
 
-  function render() {
-    // Always hide loading immediately
-    var loadEl = document.getElementById('loading');
-    var contentEl = document.getElementById('content');
-    if (loadEl) loadEl.style.display = 'none';
-    if (contentEl) contentEl.style.display = 'block';
-
-    try {
-      if (!submissionId) { showError('No submission ID in URL.'); return; }
-
-      var a = answers;
-      var name = clientName || a.company || 'Unknown';
-
-      setEl('clientName', name);
-      setEl('subId', submissionId);
-      setEl('subTime', a.submittedAt
-        ? new Date(a.submittedAt).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })
-        : '—');
-      setEl('contact', (a.contact || '—') + (a.email ? '  ·  ' + a.email : ''));
-
-      warn(document.getElementById('cycleType'),
-        a.billingCycle === 'cycle'       ? 'Cycle-based' :
-        a.billingCycle === 'anniversary' ? 'Anniversary date' : null);
-      warn(document.getElementById('cycleDates'),
-        (a.cycleDates && a.cycleDates.length) ? a.cycleDates.join(' & ') : null);
-      warn(document.getElementById('arrears'),
-        a.arrears === 'yes' ? 'Yes — bill after service period' :
-        a.arrears === 'no'  ? 'No — bill in advance' : null);
-      warn(document.getElementById('multiProfile'),
-        a.multiProfile === 'yes' ? 'Yes' : a.multiProfile === 'no' ? 'No' : null);
-
-      var lateFeesVal = 'None';
-      if (a.lateFees === 'yes') {
-        var amt = a.lateFeeType === 'percent' ? (a.lateFeeAmount||'?') + '%' : '
-</body>
-</html>
- + (a.lateFeeAmount||'?');
-        lateFeesVal = amt + (a.gracePeriod === 'yes' ? ' (' + (a.graceDays||'?') + '-day grace)' : ', no grace');
-      }
-      setEl('lateFees', lateFeesVal);
-
-      warn(document.getElementById('inventory'),
-        a.inventory === 'yes' ? 'Yes' : a.inventory === 'none' ? 'No' : null);
-
-      var ul = document.getElementById('userList');
-      if (ul) {
-        var users = a.users || [];
-        ul.innerHTML = users.length
-          ? users.map(function(u) {
-              var emailHtml = u.email
-                ? '<span class="user-meta">' + u.email + '<br>' + (u.role || 'Unknown role') + '</span>'
-                : '<span class="user-meta" style="color:var(--warning)">⚠️ no email · ' + (u.role || 'Unknown role') + '</span>';
-              return '<li><span class="user-name">' + (u.name || '(unnamed)') + '</span>' + emailHtml + '</li>';
-            }).join('')
-          : '<li style="color:var(--warning)">⚠️ No users submitted</li>';
-      }
-
-      if (a.saNotes) {
-        setEl('saNotes', a.saNotes);
-        var sec = document.getElementById('saNotesSection');
-        if (sec) sec.style.display = 'block';
-      }
-
-      // If no data came through, show a warning but still let them approve
-      if (!a.billingCycle && !a.company) {
-        var msg = document.getElementById('statusMsg');
-        if (msg) {
-          msg.className = 'status error';
-          msg.textContent = '⚠️ Submission data could not be loaded. You can still approve using the Notion link.';
-          msg.style.display = 'block';
-        }
-      }
-
-    } catch(e) {
-      showError('Error rendering submission: ' + e.message);
-    }
-  }
-
-  async function dispatch() {
-    var btnA = document.getElementById('btnApprove');
-    if (btnA) { btnA.disabled = true; btnA.textContent = '⏳ Approving…'; }
-
-    try {
-      var res = await fetch('https://api.github.com/repos/' + GITHUB_REPO + '/dispatches', {
-        method: 'POST',
-        headers: {
-          'Authorization': 'token ' + GITHUB_DISPATCH_TOKEN,
-          'Accept': 'application/vnd.github.v3+json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          event_type: 'questionnaire-approved',
-          client_payload: {
-            submissionId: submissionId,
-            clientName:   clientName || answers.company || 'Unknown',
-            notionPageId: notionPageId,
-            approvedAt:   new Date().toISOString(),
-            answers:      answers,
-          }
-        })
-      });
-
-      if (res.status === 204) {
-        var msg = document.getElementById('statusMsg');
-        if (msg) { msg.className = 'status success'; msg.textContent = '✅ Approved! Alfred will begin configuring the PSA instance. You\'ll get a Teams confirmation shortly.'; msg.style.display = 'block'; }
-        if (btnA) btnA.style.display = 'none';
-      } else {
-        throw new Error('GitHub dispatch returned ' + res.status);
-      }
-    } catch(e) {
-      if (btnA) { btnA.disabled = false; btnA.textContent = '✅ Approve & Configure'; }
-      showError('Something went wrong: ' + e.message);
-    }
+  function show() {
+    document.getElementById('app-loading').style.display = 'none';
+    document.getElementById('app-content').style.display = 'block';
   }
 
   function showError(msg) {
-    var loadEl = document.getElementById('loading');
-    var contentEl = document.getElementById('content');
-    if (loadEl) loadEl.style.display = 'none';
-    if (contentEl) contentEl.style.display = 'block';
-    var s = document.getElementById('statusMsg');
-    if (s) { s.className = 'status error'; s.textContent = '⚠️ ' + msg; s.style.display = 'block'; }
+    show();
+    var s = document.getElementById('r-status');
+    s.className = 'status error';
+    s.textContent = '\u26a0\ufe0f ' + msg;
+    s.style.display = 'block';
     var actions = document.querySelector('.actions');
     if (actions) actions.style.display = 'none';
   }
 
+  function render() {
+    show();
+    if (!subId) { showError('No submission ID found in URL.'); return; }
+
+    var a = answers;
+    setVal('r-client',  client || a.company || 'Unknown');
+    setVal('r-id',      subId);
+    setVal('r-time',    a.submittedAt ? new Date(a.submittedAt).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' }) : '\u2014');
+    setVal('r-contact', (a.contact || '\u2014') + (a.email ? '  \u00b7  ' + a.email : ''));
+
+    setVal('r-cycle',
+      a.billingCycle === 'cycle' ? 'Cycle-based' :
+      a.billingCycle === 'anniversary' ? 'Anniversary date' : '', true);
+    setVal('r-dates',
+      (a.cycleDates && a.cycleDates.length) ? a.cycleDates.join(' & ') : '', true);
+    setVal('r-arrears',
+      a.arrears === 'yes' ? 'Yes \u2014 after service period' :
+      a.arrears === 'no'  ? 'No \u2014 bill in advance' : '', true);
+    setVal('r-multi',
+      a.multiProfile === 'yes' ? 'Yes' : a.multiProfile === 'no' ? 'No' : '', true);
+
+    var fees = 'None';
+    if (a.lateFees === 'yes') {
+      var amt = a.lateFeeType === 'percent' ? (a.lateFeeAmount||'?') + '%' : '$' + (a.lateFeeAmount||'?');
+      fees = amt + (a.gracePeriod === 'yes' ? ' (' + (a.graceDays||'?') + '-day grace)' : ', no grace');
+    }
+    setVal('r-fees', fees);
+
+    setVal('r-inv',
+      a.inventory === 'yes' ? 'Yes' : a.inventory === 'none' ? 'No' : '', true);
+
+    var ul = document.getElementById('r-users');
+    var users = a.users || [];
+    ul.innerHTML = users.length ? users.map(function(u) {
+      var em = u.email
+        ? '<span class="user-meta">' + u.email + '<br>' + (u.role||'Unknown role') + '</span>'
+        : '<span class="user-meta" style="color:var(--warning)">\u26a0\ufe0f no email</span>';
+      return '<li><span class="user-name">' + (u.name||'(unnamed)') + '</span>' + em + '</li>';
+    }).join('') : '<li style="color:var(--warning)">\u26a0\ufe0f No users submitted</li>';
+
+    if (a.saNotes) {
+      setVal('r-notes', a.saNotes);
+      document.getElementById('r-notes-section').style.display = 'block';
+    }
+  }
+
+  window.doApprove = function() {
+    var btn = document.getElementById('r-btn');
+    btn.disabled = true;
+    btn.textContent = '\u23f3 Approving\u2026';
+
+    fetch('https://api.github.com/repos/' + REPO + '/dispatches', {
+      method: 'POST',
+      headers: {
+        'Authorization': 'token ' + DISPATCH_TOKEN,
+        'Accept': 'application/vnd.github.v3+json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        event_type: 'questionnaire-approved',
+        client_payload: {
+          submissionId: subId,
+          clientName:   client || answers.company || 'Unknown',
+          notionPageId: pageId,
+          approvedAt:   new Date().toISOString(),
+          answers:      answers
+        }
+      })
+    }).then(function(r) {
+      if (r.status === 204) {
+        var s = document.getElementById('r-status');
+        s.className = 'status success';
+        s.textContent = '\u2705 Approved! Alfred will begin configuring the PSA instance.';
+        s.style.display = 'block';
+        btn.style.display = 'none';
+      } else {
+        throw new Error('Dispatch returned ' + r.status);
+      }
+    }).catch(function(e) {
+      btn.disabled = false;
+      btn.textContent = '\u2705 Approve & Configure';
+      showError('Something went wrong: ' + e.message);
+    });
+  };
+
   render();
+})();
 </script>
 </body>
 </html>
