@@ -94,96 +94,75 @@
 <script>
   var GITHUB_DISPATCH_TOKEN = ['ghp_fmu9dXErfsuaxu', 'LIjcWp4e7h5a92R74ZhaYc'].join('');
   var GITHUB_REPO = 'aiextucker/Onboarding-Automation-Project';
-  var NOTION_TOKEN = ['ntn_44454897586bmbie', 'kJJkGrbl7m2iQfSu8zZ8OsF5FE77wc'].join('');
-  var NOTION_DB_ID = '350a59b7-e7b2-8145-aca9-d536b00c13a3';
 
-  var params = new URLSearchParams(window.location.search);
-  var submissionId = params.get('id') || '';
-  var answers = null;
-  var notionPageId = null;
+  var params       = new URLSearchParams(window.location.search);
+  var submissionId = params.get('id')     || '';
+  var notionPageId = params.get('page')   || '';
+  var clientName   = params.get('client') || '';
+  var answers      = {};
 
-  function label(val, map, fallback) {
-    return map[val] || fallback || ('⚠️ Not set');
-  }
+  try {
+    var encoded = params.get('data') || '';
+    if (encoded) answers = JSON.parse(decodeURIComponent(escape(atob(encoded))));
+  } catch(e) { console.warn('Could not parse data param:', e); }
 
   function warn(el, val) {
     if (!val || val === '⚠️ Not set') el.classList.add('warn');
     el.textContent = val || '⚠️ Not set';
   }
 
-  async function load() {
+  function render() {
     if (!submissionId) { showError('No submission ID in URL.'); return; }
+    if (!clientName && !answers.company) { showError('Submission data missing from URL.'); return; }
 
-    // Search Notion for this submission
-    const res = await fetch('https://api.notion.com/v1/databases/' + NOTION_DB_ID + '/query', {
-      method: 'POST',
-      headers: { 'Authorization': 'Bearer ' + NOTION_TOKEN, 'Notion-Version': '2022-06-28', 'Content-Type': 'application/json' },
-      body: JSON.stringify({ filter: { property: 'Token', title: { equals: submissionId } } })
-    });
-    const data = await res.json();
-    const page = data.results && data.results[0];
-    if (!page) { showError('Submission not found. It may have already been processed.'); return; }
+    var a = answers;
+    var name = clientName || a.company || 'Unknown';
 
-    notionPageId = page.id;
-    const props = page.properties;
-    const clientName = props['Client Name']?.rich_text?.[0]?.text?.content || 'Unknown';
-    const submittedAt = props['Submitted At']?.date?.start || null;
-    const submittedDataRaw = props['Submitted Data']?.rich_text?.[0]?.text?.content || '{}';
-    const status = props['Status']?.select?.name || '';
-
-    if (status === 'Approved') {
-      showAlreadyDone('This configuration has already been approved.');
-      return;
-    }
-
-    try { answers = JSON.parse(submittedDataRaw); } catch(e) { answers = {}; }
-
-    // Populate UI
-    document.getElementById('clientName').textContent = clientName;
-    document.getElementById('subId').textContent = submissionId;
-    document.getElementById('subTime').textContent = submittedAt
-      ? new Date(submittedAt).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })
+    document.getElementById('clientName').textContent = name;
+    document.getElementById('subId').textContent      = submissionId;
+    document.getElementById('subTime').textContent    = a.submittedAt
+      ? new Date(a.submittedAt).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })
       : '—';
     document.getElementById('contact').textContent =
-      (answers.contact || '—') + (answers.email ? '  ·  ' + answers.email : '');
+      (a.contact || '—') + (a.email ? '  ·  ' + a.email : '');
 
-    // Billing
     warn(document.getElementById('cycleType'),
-      label(answers.billingCycle, { cycle: 'Cycle-based', anniversary: 'Anniversary date' }));
+      a.billingCycle === 'cycle'       ? 'Cycle-based' :
+      a.billingCycle === 'anniversary' ? 'Anniversary date' : null);
     warn(document.getElementById('cycleDates'),
-      (answers.cycleDates && answers.cycleDates.length) ? answers.cycleDates.join(' & ') : null);
+      (a.cycleDates && a.cycleDates.length) ? a.cycleDates.join(' & ') : null);
     warn(document.getElementById('arrears'),
-      label(answers.arrears, { yes: 'Yes — bill after service period', no: 'No — bill in advance' }));
+      a.arrears === 'yes' ? 'Yes — bill after service period' :
+      a.arrears === 'no'  ? 'No — bill in advance' : null);
     warn(document.getElementById('multiProfile'),
-      label(answers.multiProfile, { yes: 'Yes', no: 'No' }));
+      a.multiProfile === 'yes' ? 'Yes' : a.multiProfile === 'no' ? 'No' : null);
 
     var lateFeesVal = 'None';
-    if (answers.lateFees === 'yes') {
-      var amt = answers.lateFeeType === 'percent' ? (answers.lateFeeAmount||'?') + '%' : '$' + (answers.lateFeeAmount||'?');
-      lateFeesVal = amt + (answers.gracePeriod === 'yes' ? ' (' + (answers.graceDays||'?') + '-day grace)' : ', no grace');
+    if (a.lateFees === 'yes') {
+      var amt = a.lateFeeType === 'percent' ? (a.lateFeeAmount||'?') + '%' : '
+</body>
+</html>
+ + (a.lateFeeAmount||'?');
+      lateFeesVal = amt + (a.gracePeriod === 'yes' ? ' (' + (a.graceDays||'?') + '-day grace)' : ', no grace');
     }
     document.getElementById('lateFees').textContent = lateFeesVal;
 
     warn(document.getElementById('inventory'),
-      label(answers.inventory, { yes: 'Yes', none: 'No' }));
+      a.inventory === 'yes' ? 'Yes' : a.inventory === 'none' ? 'No' : null);
 
-    // Users
     var ul = document.getElementById('userList');
-    var users = answers.users || [];
-    if (users.length === 0) {
-      ul.innerHTML = '<li style="color:var(--warning)">⚠️ No users submitted</li>';
-    } else {
-      ul.innerHTML = users.map(function(u) {
-        var emailHtml = u.email
-          ? '<span class="user-meta">' + u.email + '<br>' + (u.role || 'Unknown role') + '</span>'
-          : '<span class="user-meta" style="color:var(--warning)">⚠️ no email · ' + (u.role || 'Unknown role') + '</span>';
-        return '<li><span class="user-name">' + (u.name || '(unnamed)') + '</span>' + emailHtml + '</li>';
-      }).join('');
-    }
+    var users = a.users || [];
+    ul.innerHTML = users.length
+      ? users.map(function(u) {
+          var emailHtml = u.email
+            ? '<span class="user-meta">' + u.email + '<br>' + (u.role || 'Unknown role') + '</span>'
+            : '<span class="user-meta" style="color:var(--warning)">⚠️ no email · ' + (u.role || 'Unknown role') + '</span>';
+          return '<li><span class="user-name">' + (u.name || '(unnamed)') + '</span>' + emailHtml + '</li>';
+        }).join('')
+      : '<li style="color:var(--warning)">⚠️ No users submitted</li>';
 
-    // SA notes
-    if (answers.saNotes) {
-      document.getElementById('saNotes').textContent = answers.saNotes;
+    if (a.saNotes) {
+      document.getElementById('saNotes').textContent = a.saNotes;
       document.getElementById('saNotesSection').style.display = 'block';
     }
 
@@ -197,7 +176,6 @@
     btnA.textContent = '⏳ Approving…';
 
     try {
-      var clientName = document.getElementById('clientName').textContent;
       var res = await fetch('https://api.github.com/repos/' + GITHUB_REPO + '/dispatches', {
         method: 'POST',
         headers: {
@@ -206,13 +184,13 @@
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          event_type: action === 'approve' ? 'questionnaire-approved' : 'questionnaire-changes-requested',
+          event_type: 'questionnaire-approved',
           client_payload: {
             submissionId: submissionId,
-            clientName: clientName,
+            clientName:   clientName || answers.company || 'Unknown',
             notionPageId: notionPageId,
-            approvedAt: new Date().toISOString(),
-            answers: answers,
+            approvedAt:   new Date().toISOString(),
+            answers:      answers,
           }
         })
       });
@@ -220,9 +198,7 @@
       if (res.status === 204) {
         var msg = document.getElementById('statusMsg');
         msg.className = 'status success';
-        msg.textContent = action === 'approve'
-          ? '✅ Approved! Alfred will begin configuring the PSA instance. You\'ll get a Teams confirmation shortly.'
-          : '💬 Changes requested. The SA team will be notified to follow up.';
+        msg.textContent = '✅ Approved! Alfred will begin configuring the PSA instance. You\'ll get a Teams confirmation shortly.';
         btnA.style.display = 'none';
       } else {
         throw new Error('GitHub dispatch returned ' + res.status);
@@ -240,19 +216,11 @@
     var s = document.getElementById('statusMsg');
     s.className = 'status error';
     s.textContent = '⚠️ ' + msg;
-    document.querySelector('.actions') && (document.querySelector('.actions').style.display = 'none');
+    var actions = document.querySelector('.actions');
+    if (actions) actions.style.display = 'none';
   }
 
-  function showAlreadyDone(msg) {
-    document.getElementById('loading').style.display = 'none';
-    document.getElementById('content').style.display = 'block';
-    var s = document.getElementById('statusMsg');
-    s.className = 'status success';
-    s.textContent = msg;
-    document.querySelector('.actions') && (document.querySelector('.actions').style.display = 'none');
-  }
-
-  load();
+  document.addEventListener('DOMContentLoaded', render);
 </script>
 </body>
 </html>
