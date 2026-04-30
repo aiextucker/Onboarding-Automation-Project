@@ -69,7 +69,12 @@ jobs:
             console.log('[notion] Submission recorded, page id:', page.id);
 
             const notionUrl  = 'https://notion.so/' + page.id.replace(/-/g, '');
-            const approveUrl = 'https://aiextucker.github.io/Onboarding-Automation-Project/approve.html?id=' + encodeURIComponent(submissionId);
+            const encodedAnswers = Buffer.from(unescape(encodeURIComponent(JSON.stringify(answers)))).toString('base64');
+            const approveUrl = 'https://aiextucker.github.io/Onboarding-Automation-Project/approve.html'
+              + '?id='     + encodeURIComponent(submissionId)
+              + '&page='   + encodeURIComponent(page.id)
+              + '&client=' + encodeURIComponent(clientName || '')
+              + '&data='   + encodeURIComponent(encodedAnswers);
 
             // ── Get Teams access token ───────────────────────────────────────
             const tenantId     = process.env.MS_TENANT_ID;
