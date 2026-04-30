@@ -2279,13 +2279,26 @@ renderUserTable();
     if (banner) banner.style.display = 'block';
   }
 
+  // ── Submission ID (set from hash on load) ──────────────────────────────────
+  var _submissionId = null;
+
+  // ── GitHub dispatch config ──────────────────────────────────────────────────
+  // Fine-grained PAT with Actions: write on aiextucker/Onboarding-Automation-Project only.
+  // Visible in dev tools by design — this PAT can only trigger this workflow.
+  var GITHUB_DISPATCH_TOKEN = 'REPLACE_WITH_FINE_GRAINED_PAT';
+  var GITHUB_REPO           = 'aiextucker/Onboarding-Automation-Project';
+
+  // ── Load pre-fill data from URL hash ────────────────────────────────────────
   function loadSalesBriefFromHash() {
     const hash = window.location.hash;
     if (!hash || !hash.includes('brief=')) return;
     try {
-      const encoded = hash.split('brief=')[1];
-      const json = decodeURIComponent(escape(atob(encoded)));
-      const data = JSON.parse(json);
+      // brief= may be followed by & params — take only the brief segment
+      const encoded = hash.split('brief=')[1].split('&')[0];
+      const json    = decodeURIComponent(escape(atob(encoded)));
+      const data    = JSON.parse(json);
+      // Extract submission ID if embedded
+      if (data._id) _submissionId = data._id;
       if (data._source === 'sales-brief') {
         prefillFromSalesBrief(data);
       }
@@ -2294,65 +2307,24 @@ renderUserTable();
     }
   }
 
-  // ── Token-based API load ────────────────────────────────────────────────────
-  const API_BASE = 'http://127.0.0.1:3031';
-  var _activeToken = null;
-
-  async function loadFromToken(token) {
-    _activeToken = token;
-    var banner = document.getElementById('prefill-banner');
-    if (banner) {
-      banner.style.display = 'block';
-      banner.style.background = 'linear-gradient(90deg,#6c63ff,#5549e0)';
-      banner.querySelector('span').textContent = '⏳ Loading your pre-filled questionnaire…';
-    }
-    try {
-      var res  = await fetch(API_BASE + '/api/q/' + token);
-      var data = await res.json();
-      if (!res.ok) { showTokenError(data.error || 'Token invalid or expired.'); return; }
-      if (data.status === 'Submitted') {
-        showTokenError('This questionnaire has already been submitted. Contact your SA if you need to make changes.');
-        return;
-      }
-      if (banner) {
-        banner.style.background = 'linear-gradient(90deg,#10b981,#059669)';
-        banner.querySelector('span').textContent =
-          '✓ Pre-filled from your Sales Brief — review each section and fill in anything missing.';
-      }
-      if (data.prefill) prefillFromSalesBrief(Object.assign({ _source: 'sales-brief' }, data.prefill));
-      if (data.clientName)  { var ec = document.getElementById('sf-company'); if (ec && !ec.value) ec.value = data.clientName; }
-      if (data.clientEmail) { var ee = document.getElementById('sf-email');   if (ee && !ee.value) ee.value = data.clientEmail; }
-    } catch (err) {
-      console.error('[loadFromToken]', err);
-      if (banner) {
-        banner.style.background = 'linear-gradient(90deg,#f87171,#dc2626)';
-        banner.querySelector('span').textContent = '⚠️ Could not load your questionnaire. Try refreshing or contact your SA.';
-      }
-    }
-  }
-
-  function showTokenError(msg) {
-    var banner = document.getElementById('prefill-banner');
-    if (banner) {
-      banner.style.display = 'block';
-      banner.style.background = 'linear-gradient(90deg,#f87171,#dc2626)';
-      banner.querySelector('span').textContent = '⚠️ ' + msg;
-    }
-    document.querySelectorAll('.wizard-step button').forEach(function(b) { b.disabled = true; });
-  }
-
-  // ── Wrap approveConfig to POST answers on SA approval ───────────────────
+  // ── Wrap approveConfig to dispatch to GitHub Actions on SA approval ─────────
   var _origApprove = approveConfig;
   approveConfig = function() {
     _origApprove();
-    if (!_activeToken) return;
     syncUsersFromTable();
-    var payload = {
-      billingCycle: state.billingCycle, cycleDates: state.cycleDates,
-      arrears: state.arrears, gracePeriod: state.gracePeriod, graceDays: state.graceDays,
-      lateFees: state.lateFees, lateFeeType: state.lateFeeType, lateFeeAmount: state.lateFeeAmount,
-      multiProfile: state.multiProfile, inventory: state.inventory,
-      users: state.users, saNotes: state.saNotes,
+    var answers = {
+      billingCycle:  state.billingCycle,
+      cycleDates:    state.cycleDates,
+      arrears:       state.arrears,
+      gracePeriod:   state.gracePeriod,
+      graceDays:     state.graceDays,
+      lateFees:      state.lateFees,
+      lateFeeType:   state.lateFeeType,
+      lateFeeAmount: state.lateFeeAmount,
+      multiProfile:  state.multiProfile,
+      inventory:     state.inventory,
+      users:         state.users,
+      saNotes:       state.saNotes,
       company:  (document.getElementById('sf-company')  || {}).value || '',
       contact:  (document.getElementById('sf-contact')  || {}).value || '',
       email:    (document.getElementById('sf-email')    || {}).value || '',
@@ -2361,18 +2333,39 @@ renderUserTable();
       logoFileName: state.logoFileName,
       submittedAt: new Date().toISOString(),
     };
-    fetch(API_BASE + '/api/q/' + _activeToken + '/submit', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload),
-    }).then(function(r) { return r.json(); })
-      .then(function(d) { console.log('[submit]', d.ok ? 'Sent ✓' : d.error); })
-      .catch(function(err) { console.error('[submit error]', err); });
+    var clientName   = answers.company || 'Unknown';
+    var submissionId = _submissionId || ('q-' + Date.now().toString(36));
+
+    fetch('https://api.github.com/repos/' + GITHUB_REPO + '/dispatches', {
+      method: 'POST',
+      headers: {
+        'Authorization': 'token ' + GITHUB_DISPATCH_TOKEN,
+        'Accept':        'application/vnd.github.v3+json',
+        'Content-Type':  'application/json',
+      },
+      body: JSON.stringify({
+        event_type: 'questionnaire-submitted',
+        client_payload: {
+          submissionId: submissionId,
+          clientName:   clientName,
+          submittedAt:  answers.submittedAt,
+          answers:      answers,
+        },
+      }),
+    })
+    .then(function(r) {
+      if (r.status === 204) {
+        console.log('[submit] Dispatched to GitHub Actions ✓');
+      } else {
+        r.text().then(function(t) { console.error('[submit] Dispatch failed:', r.status, t); });
+      }
+    })
+    .catch(function(err) { console.error('[submit error]', err); });
   };
 
-  // ── Boot: ?token= param wins, falls back to hash brief ────────────────────
+  // ── Boot ────────────────────────────────────────────────────────────────────
   document.addEventListener('DOMContentLoaded', function() {
-    var params = new URLSearchParams(window.location.search);
-    var token  = params.get('token');
-    if (token) { loadFromToken(token); } else { loadSalesBriefFromHash(); }
+    loadSalesBriefFromHash();
   });
 
 </script>
