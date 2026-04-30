@@ -68,14 +68,13 @@ jobs:
             });
             console.log('[notion] Submission recorded, page id:', page.id);
 
-            // Notion page URL (remove dashes from ID)
-            const notionUrl = 'https://notion.so/' + page.id.replace(/-/g, '');
+            const notionUrl  = 'https://notion.so/' + page.id.replace(/-/g, '');
+            const approveUrl = 'https://aiextucker.github.io/Onboarding-Automation-Project/approve.html?id=' + encodeURIComponent(submissionId);
 
             // ── Get Teams access token ───────────────────────────────────────
             const tenantId     = process.env.MS_TENANT_ID;
             const clientId     = process.env.MS_CLIENT_ID;
             const refreshToken = process.env.MS_REFRESH_TOKEN;
-            const chatId       = process.env.MS_ALEX_CHAT_ID;
 
             const tokenRes = await fetch(
               `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/token`,
@@ -91,95 +90,114 @@ jobs:
               }
             );
             const tokenData = await tokenRes.json();
-            if (tokenData.error) {
-              throw new Error('Teams auth failed: ' + tokenData.error_description);
-            }
+            if (tokenData.error) throw new Error('Teams auth failed: ' + tokenData.error_description);
 
-            // ── Build rich Teams message ─────────────────────────────────────
+            // ── Build rich summary strings ───────────────────────────────────
             const a = answers;
 
-            // Billing
-            const cycleLabel = a.billingCycle === 'cycle'       ? 'Cycle-based'
-                             : a.billingCycle === 'anniversary' ? 'Anniversary date'
-                             : '⚠️ Not set';
-            const datesLabel = (a.cycleDates && a.cycleDates.length)
-              ? a.cycleDates.join(' & ')
-              : '—';
-            const arrearsLabel = a.arrears === 'yes' ? 'Yes (bill after service period)'
-                               : a.arrears === 'no'  ? 'No (bill in advance)'
-                               : '⚠️ Not set';
+            const cycleLabel   = a.billingCycle === 'cycle'       ? 'Cycle-based'
+                               : a.billingCycle === 'anniversary' ? 'Anniversary date' : '⚠️ Not set';
+            const datesLabel   = (a.cycleDates && a.cycleDates.length) ? a.cycleDates.join(' & ') : '⚠️ Not set';
+            const arrearsLabel = a.arrears === 'yes' ? 'Yes — after service period'
+                               : a.arrears === 'no'  ? 'No — bill in advance' : '⚠️ Not set';
             const multiLabel   = a.multiProfile === 'yes' ? 'Yes' : a.multiProfile === 'no' ? 'No' : '⚠️ Not set';
 
-            // Late fees
             let lateFeeLine = 'None';
             if (a.lateFees === 'yes') {
-              const feeAmt = a.lateFeeType === 'percent'
-                ? (a.lateFeeAmount || '?') + '%'
-                : '$' + (a.lateFeeAmount || '?');
-              lateFeeLine = feeAmt + (a.gracePeriod === 'yes' ? ` (${a.graceDays || '?'}-day grace period)` : ', no grace period');
+              const amt = a.lateFeeType === 'percent' ? (a.lateFeeAmount||'?') + '%' : '$' + (a.lateFeeAmount||'?');
+              lateFeeLine = amt + (a.gracePeriod === 'yes' ? ` (${a.graceDays||'?'}-day grace)` : ', no grace');
             }
 
-            // Inventory
-            const invLabel = a.inventory === 'yes'  ? 'Yes'
-                           : a.inventory === 'none' ? 'No'
-                           : '⚠️ Not set';
+            const invLabel = a.inventory === 'yes' ? 'Yes' : a.inventory === 'none' ? 'No' : '⚠️ Not set';
 
-            // Users
             const users = a.users || [];
             const userLines = users.length
-              ? users.map(u => {
-                  const role  = u.role  || 'Unknown role';
-                  const email = u.email ? ` — ${u.email}` : ' — ⚠️ no email';
-                  return `  • ${u.name || '(unnamed)'}${email} [${role}]`;
-                }).join('\n')
-              : '  ⚠️ No users submitted';
+              ? users.map(u => `• ${u.name||'(unnamed)'} — ${u.email||'⚠️ no email'} [${u.role||'Unknown role'}]`).join('\n')
+              : '⚠️ No users submitted';
 
-            // SA notes
-            const notesSection = a.saNotes
-              ? `\n**SA Notes from client:**\n${a.saNotes}\n`
-              : '';
+            const submittedET = new Date(submittedAt).toLocaleString('en-US', {
+              timeZone: 'America/New_York', dateStyle: 'medium', timeStyle: 'short'
+            });
 
-            const msg =
-              `✅ **PSA Questionnaire Submitted — ${clientName}**\n\n` +
-              `**Contact:** ${a.contact || '—'}  |  ${a.email || '—'}\n` +
-              `**Submitted:** ${new Date(submittedAt).toLocaleString('en-US', { timeZone: 'America/New_York', dateStyle: 'medium', timeStyle: 'short' })} ET\n` +
-              `**Submission ID:** \`${submissionId}\`\n\n` +
-              `─────────────────────────\n` +
-              `**💳 Billing Config**\n` +
-              `Cycle type: ${cycleLabel}\n` +
-              `Cycle date(s): ${datesLabel}\n` +
-              `Bill in arrears: ${arrearsLabel}\n` +
-              `Multiple profiles: ${multiLabel}\n` +
-              `Late fees: ${lateFeeLine}\n\n` +
-              `**📦 Inventory Tracking:** ${invLabel}\n\n` +
-              `**👥 Users (${users.length})**\n` +
-              userLines + '\n' +
-              notesSection +
-              `\n─────────────────────────\n` +
-              `📋 [View in Notion](${notionUrl})`;
+            // ── Build Adaptive Card ──────────────────────────────────────────
+            const card = {
+              "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+              "type": "AdaptiveCard",
+              "version": "1.4",
+              "body": [
+                {
+                  "type": "TextBlock",
+                  "text": `✅ Questionnaire Submitted — ${clientName}`,
+                  "weight": "Bolder",
+                  "size": "Large",
+                  "wrap": true,
+                  "color": "Good"
+                },
+                {
+                  "type": "FactSet",
+                  "facts": [
+                    { "title": "Contact",   "value": `${a.contact||'—'} · ${a.email||'—'}` },
+                    { "title": "Submitted", "value": submittedET + " ET" },
+                    { "title": "ID",        "value": submissionId },
+                  ]
+                },
+                { "type": "TextBlock", "text": "💳 Billing Config", "weight": "Bolder", "spacing": "Medium" },
+                {
+                  "type": "FactSet",
+                  "facts": [
+                    { "title": "Cycle type",        "value": cycleLabel },
+                    { "title": "Cycle date(s)",      "value": datesLabel },
+                    { "title": "Bill in arrears",    "value": arrearsLabel },
+                    { "title": "Multiple profiles",  "value": multiLabel },
+                    { "title": "Late fees",          "value": lateFeeLine },
+                  ]
+                },
+                { "type": "TextBlock", "text": "📦 Inventory Tracking", "weight": "Bolder", "spacing": "Medium" },
+                { "type": "TextBlock", "text": invLabel, "wrap": true },
+                { "type": "TextBlock", "text": `👥 Users (${users.length})`, "weight": "Bolder", "spacing": "Medium" },
+                { "type": "TextBlock", "text": userLines || "⚠️ None", "wrap": true, "fontType": "Monospace", "size": "Small" },
+              ],
+              "actions": [
+                {
+                  "type": "Action.OpenUrl",
+                  "title": "✅ Review & Approve",
+                  "url": approveUrl,
+                  "style": "positive"
+                },
+                {
+                  "type": "Action.OpenUrl",
+                  "title": "📋 View in Notion",
+                  "url": notionUrl
+                }
+              ]
+            };
 
+            // ── Send Adaptive Card to both chats ─────────────────────────────
             const chatIds = [
-              chatId,                                                        // Alex 1:1
-              process.env.MS_GROUP_CHAT_ID,                                 // Jessica, JD, Jeremy, Alex
+              process.env.MS_ALEX_CHAT_ID,
+              process.env.MS_GROUP_CHAT_ID,
             ].filter(Boolean);
 
+            const attachId = 'q-' + Date.now().toString(36);
             for (const cid of chatIds) {
-              const msgRes = await fetch(
+              const r = await fetch(
                 `https://graph.microsoft.com/v1.0/chats/${cid}/messages`,
                 {
                   method: 'POST',
-                  headers: {
-                    'Authorization': 'Bearer ' + tokenData.access_token,
-                    'Content-Type': 'application/json',
-                  },
-                  body: JSON.stringify({ body: { contentType: 'html', content: msg.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>') } }),
+                  headers: { 'Authorization': 'Bearer ' + tokenData.access_token, 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    body: { contentType: 'html', content: `<attachment id="${attachId}"></attachment>` },
+                    attachments: [{
+                      id: attachId,
+                      contentType: 'application/vnd.microsoft.card.adaptive',
+                      contentUrl: null,
+                      content: JSON.stringify(card),
+                    }]
+                  }),
                 }
               );
-              if (!msgRes.ok) {
-                const errText = await msgRes.text();
-                throw new Error('Teams DM failed (' + cid + '): ' + msgRes.status + ' ' + errText);
-              }
-              console.log('[teams] Message sent to chat', cid);
+              if (!r.ok) { const t = await r.text(); throw new Error(`Teams failed (${cid}): ${r.status} ${t}`); }
+              console.log('[teams] Card sent to', cid);
             }
 
             // ── Mark SA Notified in Notion ───────────────────────────────────
