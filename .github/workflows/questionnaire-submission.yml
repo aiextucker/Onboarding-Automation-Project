@@ -204,6 +204,111 @@ jobs:
               console.log('[teams] Card sent to', cid);
             }
 
+
+            // ── Send confirmation email to client ────────────────────────────
+            const clientEmail = answers.email;
+            if (clientEmail) {
+              const a = answers;
+              const users = a.users || [];
+
+              const cycleLabel   = a.billingCycle === 'cycle'       ? 'Cycle-based'
+                                 : a.billingCycle === 'anniversary' ? 'Anniversary date' : 'Not set';
+              const datesLabel   = (a.cycleDates && a.cycleDates.length) ? a.cycleDates.join(' & ') : '—';
+              const arrearsLabel = a.arrears === 'yes' ? 'Yes — bill after service period'
+                                 : a.arrears === 'no'  ? 'No — bill in advance' : 'Not set';
+              const multiLabel   = a.multiProfile === 'yes' ? 'Yes' : a.multiProfile === 'no' ? 'No' : 'Not set';
+              const invLabel     = a.inventory === 'yes' ? 'Yes' : a.inventory === 'none' ? 'No' : 'Not set';
+
+              let feesLabel = 'None';
+              if (a.lateFees === 'yes') {
+                const amt = a.lateFeeType === 'percent' ? (a.lateFeeAmount||'?') + '%' : '
+            await notionReq('PATCH', '/pages/' + page.id, {
+              properties: { 'SA Notified': { checkbox: true } }
+            });
+
+            console.log('[done] All steps complete for', submissionId);
+          })().catch(err => { console.error('[error]', err.message); process.exit(1); });
+          SCRIPT
+ + (a.lateFeeAmount||'?');
+                feesLabel = amt + (a.gracePeriod === 'yes' ? ` (${a.graceDays||'?'}-day grace period)` : ', no grace period');
+              }
+
+              const userRows = users.map(u =>
+                `<tr><td style="padding:6px 12px;border-bottom:1px solid #e5e7eb;">${u.name||'—'}</td><td style="padding:6px 12px;border-bottom:1px solid #e5e7eb;">${u.email||'—'}</td><td style="padding:6px 12px;border-bottom:1px solid #e5e7eb;">${u.role||'—'}</td></tr>`
+              ).join('');
+
+              const emailHtml = `<!DOCTYPE html>
+<html>
+<body style="margin:0;padding:0;background:#f9fafb;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#f9fafb;padding:40px 20px;">
+<tr><td align="center">
+<table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);">
+  <tr><td style="background:#0f1117;padding:28px 36px;">
+    <p style="margin:0;color:#6c63ff;font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;">Rev.io · PSA Onboarding</p>
+    <h1 style="margin:8px 0 0;color:#ffffff;font-size:22px;font-weight:700;">Questionnaire Submitted ✅</h1>
+  </td></tr>
+  <tr><td style="padding:32px 36px;">
+    <p style="margin:0 0 8px;color:#374151;font-size:15px;">Hi ${a.contact || 'there'},</p>
+    <p style="margin:0 0 24px;color:#6b7280;font-size:14px;line-height:1.6;">Thanks for completing your Rev.io onboarding questionnaire. Here's a summary of what we received — your Solutions Architect will be in touch shortly to confirm next steps and schedule your kickoff.</p>
+
+    <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">
+      <tr><td style="padding:10px 0;border-bottom:1px solid #f3f4f6;">
+        <p style="margin:0;font-size:11px;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:0.06em;">Company</p>
+        <p style="margin:4px 0 0;font-size:14px;color:#111827;font-weight:500;">${a.company||'—'}</p>
+      </td></tr>
+    </table>
+
+    <p style="margin:0 0 12px;font-size:13px;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:0.05em;">💳 Billing Configuration</p>
+    <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;">
+      <tr style="background:#f9fafb;"><td style="padding:8px 12px;font-size:12px;font-weight:600;color:#6b7280;width:50%;">Cycle type</td><td style="padding:8px 12px;font-size:13px;color:#111827;">${cycleLabel}</td></tr>
+      <tr><td style="padding:8px 12px;font-size:12px;font-weight:600;color:#6b7280;border-top:1px solid #e5e7eb;">Cycle date(s)</td><td style="padding:8px 12px;font-size:13px;color:#111827;border-top:1px solid #e5e7eb;">${datesLabel}</td></tr>
+      <tr style="background:#f9fafb;"><td style="padding:8px 12px;font-size:12px;font-weight:600;color:#6b7280;border-top:1px solid #e5e7eb;">Bill in arrears</td><td style="padding:8px 12px;font-size:13px;color:#111827;border-top:1px solid #e5e7eb;">${arrearsLabel}</td></tr>
+      <tr><td style="padding:8px 12px;font-size:12px;font-weight:600;color:#6b7280;border-top:1px solid #e5e7eb;">Multiple profiles</td><td style="padding:8px 12px;font-size:13px;color:#111827;border-top:1px solid #e5e7eb;">${multiLabel}</td></tr>
+      <tr style="background:#f9fafb;"><td style="padding:8px 12px;font-size:12px;font-weight:600;color:#6b7280;border-top:1px solid #e5e7eb;">Late fees</td><td style="padding:8px 12px;font-size:13px;color:#111827;border-top:1px solid #e5e7eb;">${feesLabel}</td></tr>
+      <tr><td style="padding:8px 12px;font-size:12px;font-weight:600;color:#6b7280;border-top:1px solid #e5e7eb;">Inventory tracking</td><td style="padding:8px 12px;font-size:13px;color:#111827;border-top:1px solid #e5e7eb;">${invLabel}</td></tr>
+    </table>
+
+    <p style="margin:0 0 12px;font-size:13px;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:0.05em;">👥 Users</p>
+    <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:32px;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;">
+      <tr style="background:#f9fafb;"><th style="padding:8px 12px;font-size:12px;font-weight:600;color:#6b7280;text-align:left;">Name</th><th style="padding:8px 12px;font-size:12px;font-weight:600;color:#6b7280;text-align:left;">Email</th><th style="padding:8px 12px;font-size:12px;font-weight:600;color:#6b7280;text-align:left;">Role</th></tr>
+      ${userRows}
+    </table>
+
+    <p style="margin:0;font-size:13px;color:#6b7280;line-height:1.6;">If anything looks incorrect, just reply to this email and we'll get it sorted before your kickoff.</p>
+  </td></tr>
+  <tr><td style="background:#f9fafb;padding:20px 36px;border-top:1px solid #e5e7eb;">
+    <p style="margin:0;font-size:12px;color:#9ca3af;text-align:center;">Rev.io · PSA Onboarding · <a href="https://rev.io" style="color:#6c63ff;text-decoration:none;">rev.io</a></p>
+  </td></tr>
+</table>
+</td></tr>
+</table>
+</body>
+</html>`;
+
+              const emailRes = await fetch('https://graph.microsoft.com/v1.0/users/alfred@rev.io/sendMail', {
+                method: 'POST',
+                headers: {
+                  'Authorization': 'Bearer ' + tokenData.access_token,
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  message: {
+                    subject: 'Your Rev.io Onboarding Questionnaire — Submission Confirmed',
+                    body: { contentType: 'HTML', content: emailHtml },
+                    toRecipients: [{ emailAddress: { address: clientEmail, name: a.contact || clientName } }],
+                  },
+                  saveToSentItems: false,
+                }),
+              });
+              if (emailRes.ok) {
+                console.log('[email] Confirmation sent to', clientEmail);
+              } else {
+                const errText = await emailRes.text();
+                console.warn('[email] Failed:', emailRes.status, errText);
+              }
+            } else {
+              console.log('[email] No client email — skipping confirmation');
+            }
             // ── Mark SA Notified in Notion ───────────────────────────────────
             await notionReq('PATCH', '/pages/' + page.id, {
               properties: { 'SA Notified': { checkbox: true } }
