@@ -1113,10 +1113,7 @@
 </header>
 
 <!-- ─── Pre-fill Banner (shown when loaded from Sales Brief) ── -->
-<div id="prefill-banner" style="display:none; background:linear-gradient(90deg,#10b981,#059669); color:#fff; padding:10px 20px; text-align:center; font-size:0.85rem; font-weight:600; letter-spacing:0.02em;">
-  ✅ Pre-filled from Sales Brief — review each field before continuing. Changes are reflected in your SA's review.
-  <button onclick="document.getElementById('prefill-banner').style.display='none'" style="margin-left:16px;background:rgba(255,255,255,0.2);border:none;color:#fff;padding:2px 10px;border-radius:4px;cursor:pointer;font-size:0.8rem;">Dismiss</button>
-</div>
+<div id="prefill-banner" style="display:none;"></div>
 
 <!-- ─── Main Content ────────────────────────────────────────── -->
 <div class="page-wrap">
@@ -1159,31 +1156,28 @@
 
       <div class="sf-grid">
         <div class="form-group">
-          <div class="form-label">Company Name <span class="sf-badge" style="margin-left:5px;vertical-align:middle;">Salesforce</span></div>
+          <div class="form-label">Company Name</div>
           <input class="form-input" id="sf-company" type="text" value="Acme Telecom">
         </div>
         <div class="form-group">
-          <div class="form-label">Primary Contact <span class="sf-badge" style="margin-left:5px;vertical-align:middle;">Salesforce</span></div>
+          <div class="form-label">Primary Contact</div>
           <input class="form-input" id="sf-contact" type="text" value="Sarah Mitchell">
         </div>
         <div class="form-group">
-          <div class="form-label">Email Address <span class="sf-badge" style="margin-left:5px;vertical-align:middle;">Salesforce</span></div>
+          <div class="form-label">Email Address</div>
           <input class="form-input" id="sf-email" type="email" value="sarah@acmetelecom.com">
         </div>
         <div class="form-group">
-          <div class="form-label">Phone <span class="sf-badge" style="margin-left:5px;vertical-align:middle;">Salesforce</span></div>
+          <div class="form-label">Phone</div>
           <input class="form-input" id="sf-phone" type="tel" value="(555) 847-2201">
         </div>
         <div class="form-group" style="grid-column: 1 / -1;">
-          <div class="form-label">Service Address <span class="sf-badge" style="margin-left:5px;vertical-align:middle;">Salesforce</span></div>
+          <div class="form-label">Service Address</div>
           <input class="form-input" id="sf-address" type="text" value="4821 Commerce Blvd, Austin TX 78701">
         </div>
       </div>
 
-      <div class="sf-notice">
-        <span class="info-icon">ℹ️</span>
-        <span>Pre-filled from Salesforce. Correct any fields above — your SA will be notified of changes before configuration begins.</span>
-      </div>
+      
 
       <div class="step-nav">
         <div class="nav-spacer"></div>
@@ -1561,9 +1555,7 @@
         <div class="ref-badge">
           🎫 Reference: <span id="refNumber">PSA-2026-0000</span>
         </div>
-        <div class="confirm-detail">
-          📬 A confirmation has been sent to <strong style="color:var(--text-dim);">sarah@acmetelecom.com</strong>
-        </div>
+
         <div style="margin-top:32px;">
           <button class="btn btn-ghost" onclick="resetWizard()" style="margin: 0 auto;">
             ↺ Start New Onboarding
@@ -2274,9 +2266,7 @@ renderUserTable();
       if (typeof renderUserTable === 'function') renderUserTable();
     }
 
-    // Show pre-fill banner
-    const banner = document.getElementById('prefill-banner');
-    if (banner) banner.style.display = 'block';
+
   }
 
   // ── Submission ID (set from hash on load) ──────────────────────────────────
