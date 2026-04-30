@@ -75,6 +75,7 @@ jobs:
             const refreshToken = process.env.MS_REFRESH_TOKEN;
             const chatId       = process.env.MS_ALEX_CHAT_ID;
 
+            // Public client — must NOT send client_secret on refresh
             const tokenRes = await fetch(
               `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/token`,
               {
@@ -83,7 +84,6 @@ jobs:
                 body: new URLSearchParams({
                   grant_type:    'refresh_token',
                   client_id:     clientId,
-                  ...(clientSecret ? { client_secret: clientSecret } : {}),
                   refresh_token: refreshToken,
                   scope:         'https://graph.microsoft.com/.default offline_access',
                 }),
