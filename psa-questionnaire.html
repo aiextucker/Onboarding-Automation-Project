@@ -1121,23 +1121,23 @@
   <!-- Progress Bar -->
   <div class="progress-wrap">
     <div class="progress-steps" id="progressSteps">
-      <div class="step-node active" data-step="1">
+      <div class="step-node active" data-step="1" onclick="goToStep(1)" style="cursor:pointer;">
         <div class="step-dot"><span>1</span></div>
         <div class="step-label">Company</div>
       </div>
-      <div class="step-node" data-step="2">
+      <div class="step-node" data-step="2" onclick="goToStep(2)" style="cursor:pointer;">
         <div class="step-dot"><span>2</span></div>
         <div class="step-label">Billing</div>
       </div>
-      <div class="step-node" data-step="3">
+      <div class="step-node" data-step="3" onclick="goToStep(3)" style="cursor:pointer;">
         <div class="step-dot"><span>3</span></div>
         <div class="step-label">Users</div>
       </div>
-      <div class="step-node" data-step="4">
+      <div class="step-node" data-step="4" onclick="goToStep(4)" style="cursor:pointer;">
         <div class="step-dot"><span>4</span></div>
         <div class="step-label">Inventory</div>
       </div>
-      <div class="step-node" data-step="5">
+      <div class="step-node" data-step="5" onclick="goToStep(5)" style="cursor:pointer;">
         <div class="step-dot"><span>5</span></div>
         <div class="step-label">Review</div>
       </div>
@@ -1375,7 +1375,7 @@
 
       <div class="step-nav">
         <button class="btn btn-ghost" onclick="goToStep(1)">← Back</button>
-        <button class="btn btn-primary" onclick="validateAndNext(2, 3)">Continue →</button>
+        <button class="btn btn-primary" onclick="goToStep(3)">Continue →</button>
       </div>
     </div>
   </div>
@@ -1414,7 +1414,7 @@
 
       <div class="step-nav">
         <button class="btn btn-ghost" onclick="goToStep(2)">← Back</button>
-        <button class="btn btn-primary" onclick="validateAndNext(3, 4)">Continue →</button>
+        <button class="btn btn-primary" onclick="goToStep(4)">Continue →</button>
       </div>
     </div>
   </div>
@@ -1464,7 +1464,7 @@
 
       <div class="step-nav">
         <button class="btn btn-ghost" onclick="goToStep(3)">← Back</button>
-        <button class="btn btn-primary" onclick="validateAndNext(4, 5)">Continue →</button>
+        <button class="btn btn-primary" onclick="goToStep(5)">Continue →</button>
       </div>
     </div>
   </div>
@@ -1524,6 +1524,9 @@
         <div class="form-label">Notes for SA <span style="color:var(--text-mute);font-weight:400;text-transform:none;letter-spacing:0;">(optional)</span></div>
         <textarea class="form-input" id="saNotes" placeholder="Add any notes, flags, or questions for the Solutions Architect reviewing this configuration…" rows="3"></textarea>
       </div>
+
+      <!-- Validation errors -->
+      <div id="approve-errors" style="display:none; margin-bottom:16px; padding:14px 18px; background:rgba(255,90,110,0.1); border:1px solid var(--error); border-radius:8px; color:var(--error); font-size:0.88rem; line-height:1.7;"></div>
 
       <!-- Action Buttons -->
       <div class="review-actions">
@@ -1610,6 +1613,10 @@ function updateProgress(step) {
    Navigation
 ══════════════════════════════════════════════════════════════ */
 function goToStep(n) {
+  // Sync state from current step before leaving
+  if (currentStep === 3) syncUsersFromTable();
+  // Build preview whenever entering step 5
+  if (n === 5) buildPreview();
   document.querySelectorAll('.wizard-step').forEach(el => el.classList.remove('active'));
   document.getElementById('step' + n).classList.add('active');
   currentStep = n;
@@ -2108,6 +2115,33 @@ function buildPreview() {
 ══════════════════════════════════════════════════════════════ */
 function approveConfig() {
   state.saNotes = document.getElementById('saNotes').value;
+
+  // Validate all required fields before allowing submission
+  let errors = [];
+  if (!state.billingCycle)                                     errors.push('Billing cycle type');
+  if (state.billingCycle === 'cycle' && !state.cycleDates.length) errors.push('Billing cycle date(s)');
+  if (!state.arrears)                                          errors.push('Bill in arrears');
+  if (!state.gracePeriod)                                      errors.push('Grace period');
+  if (state.gracePeriod === 'yes' && !state.graceDays)         errors.push('Grace period days');
+  if (!state.lateFees)                                         errors.push('Late fees');
+  if (state.lateFees === 'yes' && !state.lateFeeAmount)        errors.push('Late fee amount');
+  if (!state.multiProfile)                                     errors.push('Multiple billing profiles');
+  if (!state.inventory)                                        errors.push('Inventory tracking');
+  syncUsersFromTable();
+  if (state.users.length === 0)                                errors.push('At least one user');
+
+  if (errors.length > 0) {
+    const msg = document.getElementById('approve-errors');
+    if (msg) {
+      msg.style.display = 'block';
+      msg.innerHTML = '⚠️ Please complete the following before submitting:<br>• ' + errors.join('<br>• ');
+    }
+    return;
+  }
+
+  const msg = document.getElementById('approve-errors');
+  if (msg) msg.style.display = 'none';
+
   const ref = 'PSA-2026-' + String(Math.floor(1000 + Math.random() * 9000));
   document.getElementById('refNumber').textContent = ref;
 
