@@ -17,6 +17,7 @@ jobs:
           MS_CLIENT_SECRET: ${{ secrets.MS_CLIENT_SECRET }}
           MS_REFRESH_TOKEN: ${{ secrets.MS_REFRESH_TOKEN }}
           MS_ALEX_CHAT_ID: ${{ secrets.MS_ALEX_CHAT_ID }}
+          MS_GROUP_CHAT_ID: 19:2a62f0ac76cf44eaaf7f8f84f5a3c119@thread.v2
           PAYLOAD: ${{ toJson(github.event.client_payload) }}
         run: |
           node << 'SCRIPT'
@@ -157,22 +158,29 @@ jobs:
               `\n─────────────────────────\n` +
               `📋 [View in Notion](${notionUrl})`;
 
-            const msgRes = await fetch(
-              `https://graph.microsoft.com/v1.0/chats/${chatId}/messages`,
-              {
-                method: 'POST',
-                headers: {
-                  'Authorization': 'Bearer ' + tokenData.access_token,
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ body: { contentType: 'html', content: msg.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>') } }),
+            const chatIds = [
+              chatId,                                                        // Alex 1:1
+              process.env.MS_GROUP_CHAT_ID,                                 // Jessica, JD, Jeremy, Alex
+            ].filter(Boolean);
+
+            for (const cid of chatIds) {
+              const msgRes = await fetch(
+                `https://graph.microsoft.com/v1.0/chats/${cid}/messages`,
+                {
+                  method: 'POST',
+                  headers: {
+                    'Authorization': 'Bearer ' + tokenData.access_token,
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({ body: { contentType: 'html', content: msg.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>') } }),
+                }
+              );
+              if (!msgRes.ok) {
+                const errText = await msgRes.text();
+                throw new Error('Teams DM failed (' + cid + '): ' + msgRes.status + ' ' + errText);
               }
-            );
-            if (!msgRes.ok) {
-              const errText = await msgRes.text();
-              throw new Error('Teams DM failed: ' + msgRes.status + ' ' + errText);
+              console.log('[teams] Message sent to chat', cid);
             }
-            console.log('[teams] DM sent for', clientName);
 
             // ── Mark SA Notified in Notion ───────────────────────────────────
             await notionReq('PATCH', '/pages/' + page.id, {
