@@ -85,7 +85,7 @@
     </div>
 
     <div class="actions">
-      <button class="btn btn-approve" id="btnApprove" onclick="dispatch('approve')">✅ Approve &amp; Configure</button>
+      <button class="btn btn-approve" id="btnApprove" onclick="dispatch()">✅ Approve &amp; Configure</button>
     </div>
     <div class="status" id="statusMsg"></div>
   </div>
@@ -107,73 +107,97 @@
   } catch(e) { console.warn('Could not parse data param:', e); }
 
   function warn(el, val) {
+    if (!el) return;
     if (!val || val === '⚠️ Not set') el.classList.add('warn');
     el.textContent = val || '⚠️ Not set';
   }
 
+  function setEl(id, val) {
+    var el = document.getElementById(id);
+    if (el) el.textContent = val || '';
+  }
+
   function render() {
-    if (!submissionId) { showError('No submission ID in URL.'); return; }
-    if (!clientName && !answers.company) { showError('Submission data missing from URL.'); return; }
+    // Always hide loading immediately
+    var loadEl = document.getElementById('loading');
+    var contentEl = document.getElementById('content');
+    if (loadEl) loadEl.style.display = 'none';
+    if (contentEl) contentEl.style.display = 'block';
 
-    var a = answers;
-    var name = clientName || a.company || 'Unknown';
+    try {
+      if (!submissionId) { showError('No submission ID in URL.'); return; }
 
-    document.getElementById('clientName').textContent = name;
-    document.getElementById('subId').textContent      = submissionId;
-    document.getElementById('subTime').textContent    = a.submittedAt
-      ? new Date(a.submittedAt).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })
-      : '—';
-    document.getElementById('contact').textContent =
-      (a.contact || '—') + (a.email ? '  ·  ' + a.email : '');
+      var a = answers;
+      var name = clientName || a.company || 'Unknown';
 
-    warn(document.getElementById('cycleType'),
-      a.billingCycle === 'cycle'       ? 'Cycle-based' :
-      a.billingCycle === 'anniversary' ? 'Anniversary date' : null);
-    warn(document.getElementById('cycleDates'),
-      (a.cycleDates && a.cycleDates.length) ? a.cycleDates.join(' & ') : null);
-    warn(document.getElementById('arrears'),
-      a.arrears === 'yes' ? 'Yes — bill after service period' :
-      a.arrears === 'no'  ? 'No — bill in advance' : null);
-    warn(document.getElementById('multiProfile'),
-      a.multiProfile === 'yes' ? 'Yes' : a.multiProfile === 'no' ? 'No' : null);
+      setEl('clientName', name);
+      setEl('subId', submissionId);
+      setEl('subTime', a.submittedAt
+        ? new Date(a.submittedAt).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })
+        : '—');
+      setEl('contact', (a.contact || '—') + (a.email ? '  ·  ' + a.email : ''));
 
-    var lateFeesVal = 'None';
-    if (a.lateFees === 'yes') {
-      var amt = a.lateFeeType === 'percent' ? (a.lateFeeAmount||'?') + '%' : '
+      warn(document.getElementById('cycleType'),
+        a.billingCycle === 'cycle'       ? 'Cycle-based' :
+        a.billingCycle === 'anniversary' ? 'Anniversary date' : null);
+      warn(document.getElementById('cycleDates'),
+        (a.cycleDates && a.cycleDates.length) ? a.cycleDates.join(' & ') : null);
+      warn(document.getElementById('arrears'),
+        a.arrears === 'yes' ? 'Yes — bill after service period' :
+        a.arrears === 'no'  ? 'No — bill in advance' : null);
+      warn(document.getElementById('multiProfile'),
+        a.multiProfile === 'yes' ? 'Yes' : a.multiProfile === 'no' ? 'No' : null);
+
+      var lateFeesVal = 'None';
+      if (a.lateFees === 'yes') {
+        var amt = a.lateFeeType === 'percent' ? (a.lateFeeAmount||'?') + '%' : '
 </body>
 </html>
  + (a.lateFeeAmount||'?');
-      lateFeesVal = amt + (a.gracePeriod === 'yes' ? ' (' + (a.graceDays||'?') + '-day grace)' : ', no grace');
+        lateFeesVal = amt + (a.gracePeriod === 'yes' ? ' (' + (a.graceDays||'?') + '-day grace)' : ', no grace');
+      }
+      setEl('lateFees', lateFeesVal);
+
+      warn(document.getElementById('inventory'),
+        a.inventory === 'yes' ? 'Yes' : a.inventory === 'none' ? 'No' : null);
+
+      var ul = document.getElementById('userList');
+      if (ul) {
+        var users = a.users || [];
+        ul.innerHTML = users.length
+          ? users.map(function(u) {
+              var emailHtml = u.email
+                ? '<span class="user-meta">' + u.email + '<br>' + (u.role || 'Unknown role') + '</span>'
+                : '<span class="user-meta" style="color:var(--warning)">⚠️ no email · ' + (u.role || 'Unknown role') + '</span>';
+              return '<li><span class="user-name">' + (u.name || '(unnamed)') + '</span>' + emailHtml + '</li>';
+            }).join('')
+          : '<li style="color:var(--warning)">⚠️ No users submitted</li>';
+      }
+
+      if (a.saNotes) {
+        setEl('saNotes', a.saNotes);
+        var sec = document.getElementById('saNotesSection');
+        if (sec) sec.style.display = 'block';
+      }
+
+      // If no data came through, show a warning but still let them approve
+      if (!a.billingCycle && !a.company) {
+        var msg = document.getElementById('statusMsg');
+        if (msg) {
+          msg.className = 'status error';
+          msg.textContent = '⚠️ Submission data could not be loaded. You can still approve using the Notion link.';
+          msg.style.display = 'block';
+        }
+      }
+
+    } catch(e) {
+      showError('Error rendering submission: ' + e.message);
     }
-    document.getElementById('lateFees').textContent = lateFeesVal;
-
-    warn(document.getElementById('inventory'),
-      a.inventory === 'yes' ? 'Yes' : a.inventory === 'none' ? 'No' : null);
-
-    var ul = document.getElementById('userList');
-    var users = a.users || [];
-    ul.innerHTML = users.length
-      ? users.map(function(u) {
-          var emailHtml = u.email
-            ? '<span class="user-meta">' + u.email + '<br>' + (u.role || 'Unknown role') + '</span>'
-            : '<span class="user-meta" style="color:var(--warning)">⚠️ no email · ' + (u.role || 'Unknown role') + '</span>';
-          return '<li><span class="user-name">' + (u.name || '(unnamed)') + '</span>' + emailHtml + '</li>';
-        }).join('')
-      : '<li style="color:var(--warning)">⚠️ No users submitted</li>';
-
-    if (a.saNotes) {
-      document.getElementById('saNotes').textContent = a.saNotes;
-      document.getElementById('saNotesSection').style.display = 'block';
-    }
-
-    document.getElementById('loading').style.display = 'none';
-    document.getElementById('content').style.display = 'block';
   }
 
-  async function dispatch(action) {
+  async function dispatch() {
     var btnA = document.getElementById('btnApprove');
-    btnA.disabled = true;
-    btnA.textContent = '⏳ Approving…';
+    if (btnA) { btnA.disabled = true; btnA.textContent = '⏳ Approving…'; }
 
     try {
       var res = await fetch('https://api.github.com/repos/' + GITHUB_REPO + '/dispatches', {
@@ -197,25 +221,24 @@
 
       if (res.status === 204) {
         var msg = document.getElementById('statusMsg');
-        msg.className = 'status success';
-        msg.textContent = '✅ Approved! Alfred will begin configuring the PSA instance. You\'ll get a Teams confirmation shortly.';
-        btnA.style.display = 'none';
+        if (msg) { msg.className = 'status success'; msg.textContent = '✅ Approved! Alfred will begin configuring the PSA instance. You\'ll get a Teams confirmation shortly.'; msg.style.display = 'block'; }
+        if (btnA) btnA.style.display = 'none';
       } else {
         throw new Error('GitHub dispatch returned ' + res.status);
       }
     } catch(e) {
-      btnA.disabled = false;
-      btnA.textContent = '✅ Approve & Configure';
+      if (btnA) { btnA.disabled = false; btnA.textContent = '✅ Approve & Configure'; }
       showError('Something went wrong: ' + e.message);
     }
   }
 
   function showError(msg) {
-    document.getElementById('loading').style.display = 'none';
-    document.getElementById('content').style.display = 'block';
+    var loadEl = document.getElementById('loading');
+    var contentEl = document.getElementById('content');
+    if (loadEl) loadEl.style.display = 'none';
+    if (contentEl) contentEl.style.display = 'block';
     var s = document.getElementById('statusMsg');
-    s.className = 'status error';
-    s.textContent = '⚠️ ' + msg;
+    if (s) { s.className = 'status error'; s.textContent = '⚠️ ' + msg; s.style.display = 'block'; }
     var actions = document.querySelector('.actions');
     if (actions) actions.style.display = 'none';
   }
