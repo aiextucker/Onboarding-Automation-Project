@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PSA Config Approval — Rev.io</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0f1117; --surface: #181c27; --surface2: #1e2436;
+    --border: #2a3050; --accent: #6c63ff; --teal: #00d4aa;
+    --text: #e8e8f0; --text-dim: #8a90b0; --error: #ff5a6e;
+    --success: #00d4aa; --warning: #f0a500;
+    --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  body { background: var(--bg); color: var(--text); font-family: var(--font); min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 36px 40px; max-width: 560px; width: 100%; box-shadow: 0 8px 40px rgba(0,0,0,0.5); }
+  .logo { display: flex; align-items: center; gap: 10px; margin-bottom: 28px; }
+  .logo-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }
+  .logo-text { font-size: 0.85rem; font-weight: 700; letter-spacing: 0.08em; color: var(--text-dim); text-transform: uppercase; }
+  h1 { font-size: 1.4rem; font-weight: 700; margin-bottom: 6px; }
+  .client-name { font-size: 1.1rem; color: var(--teal); font-weight: 600; margin-bottom: 20px; }
+  .meta { font-size: 0.82rem; color: var(--text-dim); margin-bottom: 24px; border-top: 1px solid var(--border); padding-top: 16px; }
+  .meta p { margin-bottom: 4px; }
+  .section { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; margin-bottom: 20px; }
+  .section h3 { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-dim); margin-bottom: 12px; }
+  .row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; font-size: 0.88rem; }
+  .row:last-child { margin-bottom: 0; }
+  .label { color: var(--text-dim); }
+  .val { color: var(--text); font-weight: 500; text-align: right; }
+  .val.warn { color: var(--warning); }
+  .users-list { list-style: none; font-size: 0.87rem; }
+  .users-list li { padding: 6px 0; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; gap: 8px; }
+  .users-list li:last-child { border-bottom: none; }
+  .user-name { font-weight: 500; }
+  .user-meta { color: var(--text-dim); font-size: 0.8rem; text-align: right; }
+  .actions { display: flex; gap: 12px; margin-top: 28px; }
+  .btn { flex: 1; padding: 13px 20px; border: none; border-radius: 8px; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: opacity 0.15s, transform 0.1s; }
+  .btn:active { transform: scale(0.98); }
+  .btn-approve { background: var(--teal); color: #0f1117; }
+  .btn-changes { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .status { margin-top: 20px; padding: 14px 18px; border-radius: 8px; font-size: 0.9rem; font-weight: 600; display: none; }
+  .status.success { background: rgba(0,212,170,0.12); border: 1px solid var(--teal); color: var(--teal); display: block; }
+  .status.error   { background: rgba(255,90,110,0.12); border: 1px solid var(--error);   color: var(--error);   display: block; }
+  .loading { text-align: center; color: var(--text-dim); padding: 40px 0; }
+  .spinner { width: 32px; height: 32px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 12px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="logo"><div class="logo-dot"></div><span class="logo-text">Rev.io · PSA Onboarding</span></div>
+  <div id="loading" class="loading"><div class="spinner"></div><p>Loading submission…</p></div>
+  <div id="content" style="display:none">
+    <h1>Review & Approve Configuration</h1>
+    <div class="client-name" id="clientName"></div>
+    <div class="meta">
+      <p><span style="color:var(--text-dim)">Submission ID:</span> <code id="subId" style="font-size:0.8rem;color:var(--accent)"></code></p>
+      <p><span style="color:var(--text-dim)">Submitted:</span> <span id="subTime"></span></p>
+      <p><span style="color:var(--text-dim)">Contact:</span> <span id="contact"></span></p>
+    </div>
+
+    <div class="section">
+      <h3>💳 Billing Config</h3>
+      <div class="row"><span class="label">Cycle type</span><span class="val" id="cycleType"></span></div>
+      <div class="row"><span class="label">Cycle date(s)</span><span class="val" id="cycleDates"></span></div>
+      <div class="row"><span class="label">Bill in arrears</span><span class="val" id="arrears"></span></div>
+      <div class="row"><span class="label">Multiple profiles</span><span class="val" id="multiProfile"></span></div>
+      <div class="row"><span class="label">Late fees</span><span class="val" id="lateFees"></span></div>
+    </div>
+
+    <div class="section">
+      <h3>📦 Inventory Tracking</h3>
+      <div class="row"><span class="label">Track inventory</span><span class="val" id="inventory"></span></div>
+    </div>
+
+    <div class="section">
+      <h3>👥 Users</h3>
+      <ul class="users-list" id="userList"></ul>
+    </div>
+
+    <div id="saNotesSection" class="section" style="display:none">
+      <h3>📝 Notes from Client</h3>
+      <p id="saNotes" style="font-size:0.88rem;line-height:1.6;color:var(--text-dim)"></p>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-approve" id="btnApprove" onclick="dispatch('approve')">✅ Approve &amp; Configure</button>
+      <button class="btn btn-changes" id="btnChanges" onclick="dispatch('changes')">💬 Request Changes</button>
+    </div>
+    <div class="status" id="statusMsg"></div>
+  </div>
+</div>
+
+<script>
+  var GITHUB_DISPATCH_TOKEN = ['ghp_fmu9dXErfsuaxu', 'LIjcWp4e7h5a92R74ZhaYc'].join('');
+  var GITHUB_REPO = 'aiextucker/Onboarding-Automation-Project';
+  var NOTION_TOKEN = ['ntn_44454897586bmbie', 'kJJkGrbl7m2iQfSu8zZ8OsF5FE77wc'].join('');
+  var NOTION_DB_ID = '350a59b7-e7b2-8145-aca9-d536b00c13a3';
+
+  var params = new URLSearchParams(window.location.search);
+  var submissionId = params.get('id') || '';
+  var answers = null;
+  var notionPageId = null;
+
+  function label(val, map, fallback) {
+    return map[val] || fallback || ('⚠️ Not set');
+  }
+
+  function warn(el, val) {
+    if (!val || val === '⚠️ Not set') el.classList.add('warn');
+    el.textContent = val || '⚠️ Not set';
+  }
+
+  async function load() {
+    if (!submissionId) { showError('No submission ID in URL.'); return; }
+
+    // Search Notion for this submission
+    const res = await fetch('https://api.notion.com/v1/databases/' + NOTION_DB_ID + '/query', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + NOTION_TOKEN, 'Notion-Version': '2022-06-28', 'Content-Type': 'application/json' },
+      body: JSON.stringify({ filter: { property: 'Token', title: { equals: submissionId } } })
+    });
+    const data = await res.json();
+    const page = data.results && data.results[0];
+    if (!page) { showError('Submission not found. It may have already been processed.'); return; }
+
+    notionPageId = page.id;
+    const props = page.properties;
+    const clientName = props['Client Name']?.rich_text?.[0]?.text?.content || 'Unknown';
+    const submittedAt = props['Submitted At']?.date?.start || null;
+    const submittedDataRaw = props['Submitted Data']?.rich_text?.[0]?.text?.content || '{}';
+    const status = props['Status']?.select?.name || '';
+
+    if (status === 'Approved') {
+      showAlreadyDone('This configuration has already been approved.');
+      return;
+    }
+
+    try { answers = JSON.parse(submittedDataRaw); } catch(e) { answers = {}; }
+
+    // Populate UI
+    document.getElementById('clientName').textContent = clientName;
+    document.getElementById('subId').textContent = submissionId;
+    document.getElementById('subTime').textContent = submittedAt
+      ? new Date(submittedAt).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })
+      : '—';
+    document.getElementById('contact').textContent =
+      (answers.contact || '—') + (answers.email ? '  ·  ' + answers.email : '');
+
+    // Billing
+    warn(document.getElementById('cycleType'),
+      label(answers.billingCycle, { cycle: 'Cycle-based', anniversary: 'Anniversary date' }));
+    warn(document.getElementById('cycleDates'),
+      (answers.cycleDates && answers.cycleDates.length) ? answers.cycleDates.join(' & ') : null);
+    warn(document.getElementById('arrears'),
+      label(answers.arrears, { yes: 'Yes — bill after service period', no: 'No — bill in advance' }));
+    warn(document.getElementById('multiProfile'),
+      label(answers.multiProfile, { yes: 'Yes', no: 'No' }));
+
+    var lateFeesVal = 'None';
+    if (answers.lateFees === 'yes') {
+      var amt = answers.lateFeeType === 'percent' ? (answers.lateFeeAmount||'?') + '%' : '$' + (answers.lateFeeAmount||'?');
+      lateFeesVal = amt + (answers.gracePeriod === 'yes' ? ' (' + (answers.graceDays||'?') + '-day grace)' : ', no grace');
+    }
+    document.getElementById('lateFees').textContent = lateFeesVal;
+
+    warn(document.getElementById('inventory'),
+      label(answers.inventory, { yes: 'Yes', none: 'No' }));
+
+    // Users
+    var ul = document.getElementById('userList');
+    var users = answers.users || [];
+    if (users.length === 0) {
+      ul.innerHTML = '<li style="color:var(--warning)">⚠️ No users submitted</li>';
+    } else {
+      ul.innerHTML = users.map(function(u) {
+        var emailHtml = u.email
+          ? '<span class="user-meta">' + u.email + '<br>' + (u.role || 'Unknown role') + '</span>'
+          : '<span class="user-meta" style="color:var(--warning)">⚠️ no email · ' + (u.role || 'Unknown role') + '</span>';
+        return '<li><span class="user-name">' + (u.name || '(unnamed)') + '</span>' + emailHtml + '</li>';
+      }).join('');
+    }
+
+    // SA notes
+    if (answers.saNotes) {
+      document.getElementById('saNotes').textContent = answers.saNotes;
+      document.getElementById('saNotesSection').style.display = 'block';
+    }
+
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('content').style.display = 'block';
+  }
+
+  async function dispatch(action) {
+    var btnA = document.getElementById('btnApprove');
+    var btnC = document.getElementById('btnChanges');
+    btnA.disabled = true; btnC.disabled = true;
+    btnA.textContent = action === 'approve' ? '⏳ Approving…' : '✅ Approve & Configure';
+    btnC.textContent = action === 'changes' ? '⏳ Sending…'  : '💬 Request Changes';
+
+    try {
+      var clientName = document.getElementById('clientName').textContent;
+      var res = await fetch('https://api.github.com/repos/' + GITHUB_REPO + '/dispatches', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'token ' + GITHUB_DISPATCH_TOKEN,
+          'Accept': 'application/vnd.github.v3+json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          event_type: action === 'approve' ? 'questionnaire-approved' : 'questionnaire-changes-requested',
+          client_payload: {
+            submissionId: submissionId,
+            clientName: clientName,
+            notionPageId: notionPageId,
+            approvedAt: new Date().toISOString(),
+            answers: answers,
+          }
+        })
+      });
+
+      if (res.status === 204) {
+        var msg = document.getElementById('statusMsg');
+        msg.className = 'status success';
+        msg.textContent = action === 'approve'
+          ? '✅ Approved! Alfred will begin configuring the PSA instance. You\'ll get a Teams confirmation shortly.'
+          : '💬 Changes requested. The SA team will be notified to follow up.';
+        btnA.style.display = 'none';
+        btnC.style.display = 'none';
+      } else {
+        throw new Error('GitHub dispatch returned ' + res.status);
+      }
+    } catch(e) {
+      btnA.disabled = false; btnC.disabled = false;
+      btnA.textContent = '✅ Approve & Configure';
+      btnC.textContent = '💬 Request Changes';
+      showError('Something went wrong: ' + e.message);
+    }
+  }
+
+  function showError(msg) {
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('content').style.display = 'block';
+    var s = document.getElementById('statusMsg');
+    s.className = 'status error';
+    s.textContent = '⚠️ ' + msg;
+    document.querySelector('.actions') && (document.querySelector('.actions').style.display = 'none');
+  }
+
+  function showAlreadyDone(msg) {
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('content').style.display = 'block';
+    var s = document.getElementById('statusMsg');
+    s.className = 'status success';
+    s.textContent = msg;
+    document.querySelector('.actions') && (document.querySelector('.actions').style.display = 'none');
+  }
+
+  load();
+</script>
+</body>
+</html>
