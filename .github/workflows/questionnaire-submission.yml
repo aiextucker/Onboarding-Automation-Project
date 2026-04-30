@@ -1,0 +1,137 @@
+name: Handle Questionnaire Submission
+
+on:
+  repository_dispatch:
+    types: [questionnaire-submitted]
+
+jobs:
+  process:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write to Notion and notify SA
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_DB_ID: ${{ secrets.NOTION_DB_ID }}
+          MS_TENANT_ID: ${{ secrets.MS_TENANT_ID }}
+          MS_CLIENT_ID: ${{ secrets.MS_CLIENT_ID }}
+          MS_CLIENT_SECRET: ${{ secrets.MS_CLIENT_SECRET }}
+          MS_REFRESH_TOKEN: ${{ secrets.MS_REFRESH_TOKEN }}
+          MS_ALEX_CHAT_ID: ${{ secrets.MS_ALEX_CHAT_ID }}
+          PAYLOAD: ${{ toJson(github.event.client_payload) }}
+        run: |
+          node << 'SCRIPT'
+          (async () => {
+            const payload = JSON.parse(process.env.PAYLOAD);
+            const { submissionId, clientName, submittedAt, answers } = payload;
+
+            console.log('[start] Processing submission:', submissionId, '/', clientName);
+
+            // ── Notion helpers ───────────────────────────────────────────────
+            const notionToken = process.env.NOTION_TOKEN;
+            const notionDbId  = process.env.NOTION_DB_ID || '350a59b7-e7b2-8145-aca9-d536b00c13a3';
+
+            async function notionReq(method, endpoint, body) {
+              const res = await fetch('https://api.notion.com/v1' + endpoint, {
+                method,
+                headers: {
+                  'Authorization': 'Bearer ' + notionToken,
+                  'Notion-Version': '2022-06-28',
+                  'Content-Type': 'application/json',
+                },
+                body: body ? JSON.stringify(body) : undefined,
+              });
+              const data = await res.json();
+              if (!res.ok || data.object === 'error') {
+                throw new Error('Notion error ' + res.status + ': ' + (data.message || JSON.stringify(data)));
+              }
+              return data;
+            }
+
+            // ── Write submission to Notion ───────────────────────────────────
+            const submittedDataStr = JSON.stringify(answers);
+            // Notion rich_text max 2000 chars — truncate if needed
+            const truncated = submittedDataStr.length > 1900
+              ? submittedDataStr.substring(0, 1900) + '…'
+              : submittedDataStr;
+
+            const page = await notionReq('POST', '/pages', {
+              parent: { database_id: notionDbId },
+              properties: {
+                'Token':          { title: [{ text: { content: submissionId } }] },
+                'Client Name':    { rich_text: [{ text: { content: clientName || '' } }] },
+                'Client Email':   { email: answers.email || null },
+                'Status':         { select: { name: 'Submitted' } },
+                'Submitted Data': { rich_text: [{ text: { content: truncated } }] },
+                'Submitted At':   { date: { start: submittedAt || new Date().toISOString() } },
+                'SA Notified':    { checkbox: false },
+              }
+            });
+            console.log('[notion] Submission recorded, page id:', page.id);
+
+            // ── Get Teams access token ───────────────────────────────────────
+            const tenantId     = process.env.MS_TENANT_ID;
+            const clientId     = process.env.MS_CLIENT_ID;
+            const clientSecret = process.env.MS_CLIENT_SECRET || '';
+            const refreshToken = process.env.MS_REFRESH_TOKEN;
+            const chatId       = process.env.MS_ALEX_CHAT_ID;
+
+            const tokenRes = await fetch(
+              `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/token`,
+              {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams({
+                  grant_type:    'refresh_token',
+                  client_id:     clientId,
+                  ...(clientSecret ? { client_secret: clientSecret } : {}),
+                  refresh_token: refreshToken,
+                  scope:         'https://graph.microsoft.com/.default offline_access',
+                }),
+              }
+            );
+            const tokenData = await tokenRes.json();
+            if (tokenData.error) {
+              throw new Error('Teams auth failed: ' + tokenData.error_description);
+            }
+
+            // ── Send Teams DM to Alex ────────────────────────────────────────
+            const userCount = (answers.users || []).length;
+            const billing   = answers.billingCycle === 'cycle'        ? 'Cycle-based'
+                            : answers.billingCycle === 'anniversary'  ? 'Anniversary'
+                            : 'Not set';
+            const inventory = answers.inventory === 'yes' ? 'Yes' : 'No';
+
+            const msg = `✅ PSA Questionnaire Submitted\n\n`
+              + `**Client:** ${clientName}\n`
+              + `**Submission ID:** ${submissionId}\n\n`
+              + `**Quick summary:**\n`
+              + `• Billing: ${billing}\n`
+              + `• Users: ${userCount}\n`
+              + `• Inventory: ${inventory}\n\n`
+              + `Review and approve in Alfred.`;
+
+            const msgRes = await fetch(
+              `https://graph.microsoft.com/v1.0/chats/${chatId}/messages`,
+              {
+                method: 'POST',
+                headers: {
+                  'Authorization': 'Bearer ' + tokenData.access_token,
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ body: { contentType: 'text', content: msg } }),
+              }
+            );
+            if (!msgRes.ok) {
+              const errText = await msgRes.text();
+              throw new Error('Teams DM failed: ' + msgRes.status + ' ' + errText);
+            }
+            console.log('[teams] DM sent for', clientName);
+
+            // ── Mark SA Notified in Notion ───────────────────────────────────
+            await notionReq('PATCH', '/pages/' + page.id, {
+              properties: { 'SA Notified': { checkbox: true } }
+            });
+
+            console.log('[done] All steps complete for', submissionId);
+          })().catch(err => { console.error('[error]', err.message); process.exit(1); });
+          SCRIPT
