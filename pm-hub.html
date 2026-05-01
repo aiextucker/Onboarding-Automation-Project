@@ -1007,140 +1007,264 @@ function generatePptx() {
 
   try {
     const pptx = new PptxGenJS();
-    const client = activeClient;
+    const client  = activeClient;
     const { briefs = [], tickets = [] } = lastBriefData;
-    const today = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+    const today = new Date().toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
 
-    // ── Palette ───────────────────────────────────────────────────────────────
+    // ── Palette ──────────────────────────────────────────────────────────────
     const BG    = '0f1117';
-    const SURF  = '181c27';
-    const SURF2 = '1e2436';
+    const HDR   = '181c27';
+    const ROW1  = '1e2436';
+    const ROW2  = '181c27';
+    const COLHDR= '242840';
     const ACCENT= '6c63ff';
     const TEAL  = '00d4aa';
     const TEXT  = 'e8e8f0';
     const MUTED = '8a90b0';
+    const BORDER= '2a3050';
     const RED   = 'ff5a6e';
     const YEL   = 'f0a500';
-    const W     = 10, H = 5.63;  // standard 16:9
+    const GRN   = '00d4aa';
+    const W = 13.33, H = 7.5;  // 16:9 widescreen
 
-    pptx.layout = 'LAYOUT_WIDE';
+    pptx.layout  = 'LAYOUT_WIDE';
     pptx.author  = 'Alfred / Rev.io PM Hub';
     pptx.company = 'Rev.io';
 
-    // ── Helper ────────────────────────────────────────────────────────────────
+    // ── Helpers ───────────────────────────────────────────────────────────────
     function bullets(text, max) {
       if (!text) return [];
       return text.split('\n')
         .map(l => l.replace(/^[•\-\*]\s*/, '').trim())
-        .filter(Boolean)
-        .slice(0, max || 10);
+        .filter(Boolean).slice(0, max || 15);
+    }
+    function extractOwner(line) {
+      const m = line.match(/\[([^\]]+)\]/);
+      return m ? m[1] : '';
+    }
+    function stripOwner(line) {
+      return line.replace(/\[[^\]]+\]/g, '').trim();
     }
 
     function addBg(slide) {
       slide.addShape(pptx.ShapeType.rect, { x:0, y:0, w:W, h:H, fill:{ color:BG } });
     }
 
-    function addHeader(slide, title, subtitle) {
-      slide.addShape(pptx.ShapeType.rect, { x:0, y:0, w:W, h:0.55, fill:{ color:SURF } });
+    function addTopBar(slide, clientName, subtitle) {
+      slide.addShape(pptx.ShapeType.rect, { x:0, y:0, w:W, h:0.55, fill:{ color:HDR } });
+      slide.addShape(pptx.ShapeType.rect, { x:0, y:0.55, w:W, h:0.02, fill:{ color:ACCENT } });
       slide.addText([
-        { text: 'Rev.io', options: { color: ACCENT, bold: true } },
-        { text: '  /  ' + title, options: { color: TEXT } }
-      ], { x:0.25, y:0.1, w:7, h:0.35, fontSize:12 });
-      if (subtitle) slide.addText(subtitle, { x:7, y:0.12, w:2.75, h:0.3, fontSize:9, color:MUTED, align:'right' });
+        { text:'Rev.io  ', options:{ color:ACCENT, bold:true, fontSize:11 } },
+        { text:'Onboarding Tracker  ·  ', options:{ color:MUTED, fontSize:11 } },
+        { text: clientName, options:{ color:TEXT, bold:true, fontSize:11 } }
+      ], { x:0.25, y:0.1, w:10, h:0.35 });
+      slide.addText(subtitle, { x:10.5, y:0.12, w:2.7, h:0.3, fontSize:9, color:MUTED, align:'right' });
     }
 
-    function colCard(slide, x, y, w, h, label, labelColor, items, emptyMsg) {
-      slide.addShape(pptx.ShapeType.rect, { x, y, w, h, fill:{color:SURF2}, line:{color:'2a3050',pt:1} });
-      slide.addText(label.toUpperCase(), { x:x+0.12, y:y+0.1, w:w-0.24, h:0.22, fontSize:7.5, bold:true, color:labelColor, charSpacing:1 });
-      slide.addShape(pptx.ShapeType.line, { x:x+0.12, y:y+0.32, w:w-0.24, h:0, line:{color:'2a3050',pt:1} });
-      const listItems = items.length ? items : [emptyMsg || '—'];
-      slide.addText(listItems.map(t => ({ text: '› ' + t, options:{} })), {
-        x:x+0.12, y:y+0.38, w:w-0.24, h:h-0.5,
-        fontSize: 8.5, color: items.length ? TEXT : MUTED,
-        valign:'top', bullet:false, lineSpacingMultiple:1.3,
-        wrap:true,
+    // Phase status bar at bottom of call slides
+    const PHASES = ['Admin','Config','Data Load','CDR Dev','Comparative','Activation','1st Bill Out','Grad'];
+    function addPhaseBar(slide, activationDate, gradDate) {
+      const barY = H - 0.8, barH = 0.65;
+      slide.addShape(pptx.ShapeType.rect, { x:0, y:barY-0.02, w:W, h:barH+0.04, fill:{color:HDR} });
+      const pw = (W * 0.62) / PHASES.length;
+      const today = new Date().toISOString().split('T')[0];
+      const doneCount = activationDate && activationDate <= today ? 5 :
+                        gradDate && gradDate <= today ? 8 : 3;
+      PHASES.forEach((phase, i) => {
+        const px = 0.2 + i * pw;
+        const done = i < doneCount;
+        const color = done ? TEAL : MUTED;
+        slide.addShape(pptx.ShapeType.roundRect, {
+          x: px, y: barY+0.06, w: pw-0.1, h: 0.5,
+          fill:{ color: done ? TEAL+'22' : HDR },
+          line:{ color, pt:1 }, rectRadius:0.03
+        });
+        slide.addText(phase, { x:px, y:barY+0.1, w:pw-0.1, h:0.42, fontSize:7.5, color, align:'center', valign:'middle', bold:done });
+      });
+      // Milestone dates on right
+      const dates = [
+        { label:'Activation', date: client.activationDate },
+        { label:'1st Bill Out', date: client.billOutDate },
+        { label:'Graduation', date: client.gradDate },
+      ].filter(d => d.date);
+      let dx = W * 0.64;
+      dates.forEach(d => {
+        const dc = d.date <= today ? TEAL : YEL;
+        const df = new Date(d.date+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+        slide.addText(d.label, { x:dx, y:barY+0.06, w:1.4, h:0.22, fontSize:7, color:MUTED });
+        slide.addText(df,      { x:dx, y:barY+0.26, w:1.4, h:0.28, fontSize:9, color:dc, bold:true });
+        dx += 1.55;
       });
     }
 
-    // ── SLIDE 1: Client Overview ──────────────────────────────────────────────
-    const s1 = pptx.addSlide();
-    addBg(s1);
-    addHeader(s1, client.name, today);
+    // Table of items
+    function addItemsTable(slide, rows, startY, tableH) {
+      const colW = [4.5, 1.4, 1.8, 1.2, 3.93];  // Component, Status/Due, Owner, ZD#, Notes
+      const colX = [0.2];
+      colW.forEach((w,i) => { if(i>0) colX.push(colX[i-1]+colW[i-1]); });
+      const headers = ['Component','Status / Due','Owner','ZD #','Notes'];
+      const rowH = 0.3;
 
-    // Status badge
-    const sg = client.statusGroup || 'other';
-    const statusColor = sg==='on-track' ? TEAL : sg==='off-track' ? RED : sg==='rts' ? YEL : MUTED;
-    s1.addShape(pptx.ShapeType.roundRect, { x:0.3, y:0.72, w:1.6, h:0.28, fill:{color:statusColor+'22'}, line:{color:statusColor,pt:1}, rectRadius:0.04 });
-    s1.addText(client.status || 'Unknown', { x:0.3, y:0.72, w:1.6, h:0.28, fontSize:8.5, color:statusColor, bold:true, align:'center', valign:'middle' });
+      // Header row
+      headers.forEach((h, ci) => {
+        slide.addShape(pptx.ShapeType.rect, { x:colX[ci], y:startY, w:colW[ci]-0.02, h:rowH, fill:{color:COLHDR} });
+        slide.addText(h, { x:colX[ci]+0.06, y:startY, w:colW[ci]-0.14, h:rowH, fontSize:8, bold:true, color:ACCENT, valign:'middle' });
+      });
 
-    // Health pill
-    if (client.health != null) {
-      const hc = client.health>=70 ? TEAL : client.health>=40 ? YEL : RED;
-      s1.addShape(pptx.ShapeType.roundRect, { x:2.1, y:0.72, w:0.9, h:0.28, fill:{color:hc+'22'}, line:{color:hc,pt:1}, rectRadius:0.04 });
-      s1.addText(client.health+'/100', { x:2.1, y:0.72, w:0.9, h:0.28, fontSize:8.5, color:hc, bold:true, align:'center', valign:'middle' });
+      // Data rows
+      const maxRows = Math.floor((tableH - rowH) / rowH);
+      rows.slice(0, maxRows).forEach((row, ri) => {
+        const ry = startY + rowH + ri * rowH;
+        const fill = ri % 2 === 0 ? ROW1 : ROW2;
+        const isBlocker = row._type === 'blocker';
+        const indicatorColor = isBlocker ? RED : (row.status === 'complete' ? GRN : YEL);
+
+        headers.forEach((_, ci) => {
+          slide.addShape(pptx.ShapeType.rect, { x:colX[ci], y:ry, w:colW[ci]-0.02, h:rowH, fill:{color:fill} });
+        });
+        // Colored left indicator on Component column
+        slide.addShape(pptx.ShapeType.rect, { x:colX[0], y:ry, w:0.04, h:rowH, fill:{color:indicatorColor} });
+
+        const cells = [row.component||'', row.status||'', row.owner||'', row.zd||'', row.notes||''];
+        cells.forEach((val, ci) => {
+          slide.addText(val, {
+            x: colX[ci] + (ci===0?0.1:0.06), y: ry,
+            w: colW[ci] - (ci===0?0.18:0.12), h: rowH,
+            fontSize: 8, color: ci===0 ? TEXT : MUTED, valign:'middle', wrap:true
+          });
+        });
+      });
+
+      return startY + rowH + Math.min(rows.length, maxRows) * rowH;
     }
 
-    // Team
-    const teamLines = [
+    // ── SLIDE 1: Master Overview ──────────────────────────────────────────────
+    const s1 = pptx.addSlide();
+    addBg(s1);
+    addTopBar(s1, client.name, 'Master Overview  ·  ' + today);
+
+    // Status + health + team
+    const sg = client.statusGroup||'other';
+    const statusColor = sg==='on-track' ? TEAL : sg==='off-track' ? RED : sg==='rts' ? YEL : MUTED;
+    s1.addShape(pptx.ShapeType.roundRect, { x:0.2, y:0.7, w:1.5, h:0.26, fill:{color:statusColor+'22'}, line:{color:statusColor,pt:1}, rectRadius:0.03 });
+    s1.addText(client.status||'Unknown', { x:0.2, y:0.7, w:1.5, h:0.26, fontSize:8.5, color:statusColor, bold:true, align:'center', valign:'middle' });
+
+    if (client.health != null) {
+      const hc = client.health>=70 ? TEAL : client.health>=40 ? YEL : RED;
+      s1.addShape(pptx.ShapeType.roundRect, { x:1.85, y:0.7, w:0.85, h:0.26, fill:{color:hc+'22'}, line:{color:hc,pt:1}, rectRadius:0.03 });
+      s1.addText(client.health+'/100', { x:1.85, y:0.7, w:0.85, h:0.26, fontSize:8.5, color:hc, bold:true, align:'center', valign:'middle' });
+    }
+
+    const team = [
       ...(client.sa||[]).map(n=>'SA: '+n),
       ...(client.pm||[]).map(n=>'PM: '+n),
       ...(client.de||[]).map(n=>'DE: '+n),
-    ];
-    s1.addText(teamLines.join('   ·   '), { x:0.3, y:1.08, w:9, h:0.28, fontSize:9.5, color:MUTED });
+    ].join('   ·   ');
+    s1.addText(team, { x:2.9, y:0.7, w:9.5, h:0.28, fontSize:9, color:MUTED, valign:'middle' });
 
-    // Milestones row
-    const milestones = [
+    // Milestone timeline
+    const mils = [
       { label:'Kickoff',      date:client.koDate },
+      { label:'Charter',      date:client.charterDate },
       { label:'Activation',   date:client.activationDate },
       { label:'1st Bill Out', date:client.billOutDate },
       { label:'Graduation',   date:client.gradDate },
     ].filter(m=>m.date);
-    const mw = (W - 0.6) / Math.max(milestones.length, 1);
-    milestones.forEach((m, i) => {
-      const mx = 0.3 + i * mw;
-      s1.addShape(pptx.ShapeType.rect, { x:mx, y:1.45, w:mw-0.1, h:0.55, fill:{color:SURF}, line:{color:'2a3050',pt:1} });
-      s1.addText(m.label, { x:mx+0.08, y:1.48, w:mw-0.26, h:0.18, fontSize:7, color:MUTED });
-      const d = new Date(m.date+'T12:00:00');
-      const df = d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
-      const dc = m.date < new Date().toISOString().split('T')[0] ? TEAL : YEL;
-      s1.addText(df, { x:mx+0.08, y:1.64, w:mw-0.26, h:0.3, fontSize:9.5, color:dc, bold:true });
+    const milY = 1.05, milH = 0.55;
+    const mw = (W - 0.4) / Math.max(mils.length, 1);
+    const todayStr = new Date().toISOString().split('T')[0];
+    mils.forEach((m, i) => {
+      const mx = 0.2 + i * mw;
+      const dc = m.date <= todayStr ? TEAL : YEL;
+      const df = new Date(m.date+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+      s1.addShape(pptx.ShapeType.rect, { x:mx, y:milY, w:mw-0.1, h:milH, fill:{color:HDR}, line:{color:BORDER,pt:1} });
+      if (i > 0) s1.addShape(pptx.ShapeType.line, { x:mx, y:milY+milH/2, w:-0.1, h:0, line:{color:dc+'66',pt:1} });
+      s1.addShape(pptx.ShapeType.rect, { x:mx, y:milY, w:mw-0.1, h:0.03, fill:{color:dc} });
+      s1.addText(m.label, { x:mx+0.08, y:milY+0.06, w:mw-0.26, h:0.2, fontSize:7.5, color:MUTED });
+      s1.addText(df,       { x:mx+0.08, y:milY+0.26, w:mw-0.26, h:0.26, fontSize:10, color:dc, bold:true });
     });
 
-    // Latest call 3-col
-    const latest = briefs[0];
-    if (latest) {
-      s1.addText('LATEST CALL — ' + (latest.date || '') + (latest.owner ? '  ·  '+latest.owner : ''), {
-        x:0.3, y:2.15, w:9, h:0.22, fontSize:8, color:ACCENT, bold:true, charSpacing:0.5
-      });
-      s1.addShape(pptx.ShapeType.line, { x:0.3, y:2.36, w:9.4, h:0, line:{color:'2a3050',pt:1} });
-      const colW = 9.4/3, baseX=0.3;
-      colCard(s1, baseX, 2.42, colW-0.05, 2.8, '✔ Action Items', TEAL, bullets(latest.actionItems, 8));
-      colCard(s1, baseX+colW, 2.42, colW-0.05, 2.8, '⛔ Blockers', RED, bullets(latest.blockers, 8));
-      colCard(s1, baseX+colW*2, 2.42, colW-0.05, 2.8, '→ Next Steps', ACCENT, bullets(latest.openQuestions, 8));
-    }
+    // Phase columns — 5 columns of deliverable items from call history
+    const phases = ['Admin','Config & Training','Data Load','CDR Dev','Comparative'];
+    const phaseY = 1.72, phaseH = H - phaseY - 0.15;
+    const pw2 = (W - 0.4) / phases.length;
+    // Aggregate unique action items across all briefs as "deliverables"
+    const allActions = [];
+    briefs.forEach(b => { bullets(b.actionItems,30).forEach(a => { if(!allActions.includes(a)) allActions.push(a); }); });
+    const allBlockers = [];
+    briefs.forEach(b => { bullets(b.blockers,20).forEach(a => { if(!allBlockers.includes(a)) allBlockers.push(a); }); });
+    // ZD tickets as a phase
+    const zdPhase = tickets.slice(0,8).map(t => t.subject);
 
-    // ── SLIDE 2+: Call History ────────────────────────────────────────────────
-    briefs.slice(0, 6).forEach((brief, idx) => {
+    const phaseItems = [
+      allActions.slice(0,6),
+      allActions.slice(6,12),
+      allActions.slice(12,18),
+      allBlockers.slice(0,6),
+      zdPhase,
+    ];
+
+    phases.forEach((phase, pi) => {
+      const px = 0.2 + pi * pw2;
+      s1.addShape(pptx.ShapeType.rect, { x:px, y:phaseY, w:pw2-0.08, h:phaseH, fill:{color:HDR}, line:{color:BORDER,pt:1} });
+      s1.addShape(pptx.ShapeType.rect, { x:px, y:phaseY, w:pw2-0.08, h:0.28, fill:{color:COLHDR} });
+      s1.addText(phase, { x:px+0.06, y:phaseY, w:pw2-0.2, h:0.28, fontSize:8.5, bold:true, color:ACCENT, valign:'middle' });
+      const items = phaseItems[pi] || [];
+      if (items.length) {
+        s1.addText(
+          items.map((item,ii) => ({ text:'› '+item+'\n', options:{color: ii%2===0?TEXT:MUTED, fontSize:7.5} })),
+          { x:px+0.06, y:phaseY+0.32, w:pw2-0.18, h:phaseH-0.36, valign:'top', wrap:true, lineSpacingMultiple:1.4 }
+        );
+      } else {
+        s1.addText('—', { x:px+0.06, y:phaseY+0.32, w:pw2-0.18, h:0.28, fontSize:8, color:MUTED });
+      }
+    });
+
+    // ── SLIDE 2+: Weekly Call Slides ─────────────────────────────────────────
+    briefs.slice(0, 8).forEach((brief, idx) => {
       const s = pptx.addSlide();
       addBg(s);
-      addHeader(s, client.name + ' — Call #' + (idx+1), brief.date || '');
 
-      const riskColor = brief.risk==='high' ? RED : brief.risk==='medium' ? YEL : TEAL;
-      if (brief.risk) {
-        s.addShape(pptx.ShapeType.roundRect, { x:0.3, y:0.65, w:0.8, h:0.24, fill:{color:riskColor+'22'}, line:{color:riskColor,pt:1}, rectRadius:0.04 });
-        s.addText(brief.risk, { x:0.3, y:0.65, w:0.8, h:0.24, fontSize:8, color:riskColor, bold:true, align:'center', valign:'middle' });
+      const callDate = brief.date
+        ? new Date(brief.date+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})
+        : '';
+      addTopBar(s, client.name, (callDate || '') + (brief.owner ? '  ·  '+brief.owner : '') + (brief.callType ? '  ·  '+brief.callType : ''));
+
+      // Risk banner if high/medium
+      if (brief.risk === 'high' || brief.risk === 'medium') {
+        const rc = brief.risk==='high' ? RED : YEL;
+        s.addShape(pptx.ShapeType.rect, { x:0, y:0.57, w:W, h:0.22, fill:{color:rc+'18'} });
+        s.addText((brief.risk==='high'?'🔴':'🟡')+' '+brief.risk.toUpperCase()+': '+(brief.riskReason||''), {
+          x:0.25, y:0.59, w:W-0.5, h:0.18, fontSize:8, color:rc, bold:true
+        });
       }
-      if (brief.callType) s.addText(brief.callType, { x:1.2, y:0.66, w:1, h:0.22, fontSize:8, color:MUTED });
-      s.addText(esc(brief.title||''), { x:0.3, y:0.95, w:9, h:0.35, fontSize:11, color:TEXT, bold:true });
 
-      const cW = 9.4/3;
-      colCard(s, 0.3, 1.4, cW-0.05, 3.9, '✔ Action Items', TEAL, bullets(brief.actionItems, 12));
-      colCard(s, 0.3+cW, 1.4, cW-0.05, 3.9, '⛔ Blockers', RED, bullets(brief.blockers, 12));
-      colCard(s, 0.3+cW*2, 1.4, cW-0.05, 3.9, '→ Next Steps / Questions', ACCENT, bullets(brief.openQuestions, 12));
+      const tableStart = (brief.risk && brief.risk !== 'low') ? 0.88 : 0.68;
+      const tableEnd = H - 0.85;
+
+      // Build rows: action items + blockers + ZD tickets
+      const rows = [];
+      bullets(brief.actionItems, 12).forEach(item => {
+        rows.push({ component: stripOwner(item), status:'In Progress', owner:extractOwner(item)||brief.owner||'', zd:'', notes:'', _type:'action' });
+      });
+      bullets(brief.blockers, 6).forEach(item => {
+        rows.push({ component: stripOwner(item), status:'Blocked', owner:extractOwner(item)||brief.owner||'', zd:'', notes:'', _type:'blocker' });
+      });
+      // Match ZD tickets to action items where possible
+      tickets.slice(0,4).forEach(t => {
+        const exists = rows.some(r => r.component.toLowerCase().includes(t.subject.toLowerCase().slice(0,15)));
+        if (!exists && idx===0) {
+          rows.push({ component:t.subject.slice(0,60), status:t.status, owner:'', zd:'#'+t.id, notes:'', _type:'zd' });
+        }
+      });
+
+      addItemsTable(s, rows, tableStart, tableEnd - tableStart);
+      addPhaseBar(s, client.activationDate, client.gradDate);
     });
 
     // ── Save ──────────────────────────────────────────────────────────────────
-    const fileName = (client.name||'client').replace(/[^a-zA-Z0-9]/g,'-') + '-Tracker-' + new Date().toISOString().slice(0,10) + '.pptx';
+    const fileName = (client.name||'client').replace(/[^a-zA-Z0-9]/g,'-').replace(/-+/g,'-')
+      + '-Tracker-' + new Date().toISOString().slice(0,10) + '.pptx';
     pptx.writeFile({ fileName });
     btn.disabled = false;
     btn.textContent = '▶ Generate Tracker';
