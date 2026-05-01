@@ -671,6 +671,7 @@ body {
   border-bottom: 1px solid var(--border);
 }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
 </head>
 <body>
 
@@ -998,19 +999,156 @@ function bulletList(text, listCls, emptyCls) {
 }
 
 function generatePptx() {
-  if (!activeClient) return;
+  if (!activeClient || !lastBriefData) return;
   const btn = document.getElementById('pptxBtn');
   if (!btn || btn.disabled) return;
   btn.disabled = true;
   btn.textContent = '⏳ Generating…';
-  fetch('https://api.github.com/repos/aiextucker/Onboarding-Automation-Project/dispatches', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Accept': 'application/vnd.github+json' },
-    body: JSON.stringify({ event_type: 'generate-pptx', client_payload: { clientId: activeClient.id, clientName: activeClient.name } })
-  }).then(r => {
-    btn.textContent = r.ok ? '✅ Generating — check Teams in ~2 min' : '⚠ Error — try again';
-    if (!r.ok) btn.disabled = false;
-  }).catch(() => { btn.disabled = false; btn.textContent = '⚠ Error — try again'; });
+
+  try {
+    const pptx = new PptxGenJS();
+    const client = activeClient;
+    const { briefs = [], tickets = [] } = lastBriefData;
+    const today = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
+    // ── Palette ───────────────────────────────────────────────────────────────
+    const BG    = '0f1117';
+    const SURF  = '181c27';
+    const SURF2 = '1e2436';
+    const ACCENT= '6c63ff';
+    const TEAL  = '00d4aa';
+    const TEXT  = 'e8e8f0';
+    const MUTED = '8a90b0';
+    const RED   = 'ff5a6e';
+    const YEL   = 'f0a500';
+    const W     = 10, H = 5.63;  // standard 16:9
+
+    pptx.layout = 'LAYOUT_WIDE';
+    pptx.author  = 'Alfred / Rev.io PM Hub';
+    pptx.company = 'Rev.io';
+
+    // ── Helper ────────────────────────────────────────────────────────────────
+    function bullets(text, max) {
+      if (!text) return [];
+      return text.split('\n')
+        .map(l => l.replace(/^[•\-\*]\s*/, '').trim())
+        .filter(Boolean)
+        .slice(0, max || 10);
+    }
+
+    function addBg(slide) {
+      slide.addShape(pptx.ShapeType.rect, { x:0, y:0, w:W, h:H, fill:{ color:BG } });
+    }
+
+    function addHeader(slide, title, subtitle) {
+      slide.addShape(pptx.ShapeType.rect, { x:0, y:0, w:W, h:0.55, fill:{ color:SURF } });
+      slide.addText([
+        { text: 'Rev.io', options: { color: ACCENT, bold: true } },
+        { text: '  /  ' + title, options: { color: TEXT } }
+      ], { x:0.25, y:0.1, w:7, h:0.35, fontSize:12 });
+      if (subtitle) slide.addText(subtitle, { x:7, y:0.12, w:2.75, h:0.3, fontSize:9, color:MUTED, align:'right' });
+    }
+
+    function colCard(slide, x, y, w, h, label, labelColor, items, emptyMsg) {
+      slide.addShape(pptx.ShapeType.rect, { x, y, w, h, fill:{color:SURF2}, line:{color:'2a3050',pt:1} });
+      slide.addText(label.toUpperCase(), { x:x+0.12, y:y+0.1, w:w-0.24, h:0.22, fontSize:7.5, bold:true, color:labelColor, charSpacing:1 });
+      slide.addShape(pptx.ShapeType.line, { x:x+0.12, y:y+0.32, w:w-0.24, h:0, line:{color:'2a3050',pt:1} });
+      const listItems = items.length ? items : [emptyMsg || '—'];
+      slide.addText(listItems.map(t => ({ text: '› ' + t, options:{} })), {
+        x:x+0.12, y:y+0.38, w:w-0.24, h:h-0.5,
+        fontSize: 8.5, color: items.length ? TEXT : MUTED,
+        valign:'top', bullet:false, lineSpacingMultiple:1.3,
+        wrap:true,
+      });
+    }
+
+    // ── SLIDE 1: Client Overview ──────────────────────────────────────────────
+    const s1 = pptx.addSlide();
+    addBg(s1);
+    addHeader(s1, client.name, today);
+
+    // Status badge
+    const sg = client.statusGroup || 'other';
+    const statusColor = sg==='on-track' ? TEAL : sg==='off-track' ? RED : sg==='rts' ? YEL : MUTED;
+    s1.addShape(pptx.ShapeType.roundRect, { x:0.3, y:0.72, w:1.6, h:0.28, fill:{color:statusColor+'22'}, line:{color:statusColor,pt:1}, rectRadius:0.04 });
+    s1.addText(client.status || 'Unknown', { x:0.3, y:0.72, w:1.6, h:0.28, fontSize:8.5, color:statusColor, bold:true, align:'center', valign:'middle' });
+
+    // Health pill
+    if (client.health != null) {
+      const hc = client.health>=70 ? TEAL : client.health>=40 ? YEL : RED;
+      s1.addShape(pptx.ShapeType.roundRect, { x:2.1, y:0.72, w:0.9, h:0.28, fill:{color:hc+'22'}, line:{color:hc,pt:1}, rectRadius:0.04 });
+      s1.addText(client.health+'/100', { x:2.1, y:0.72, w:0.9, h:0.28, fontSize:8.5, color:hc, bold:true, align:'center', valign:'middle' });
+    }
+
+    // Team
+    const teamLines = [
+      ...(client.sa||[]).map(n=>'SA: '+n),
+      ...(client.pm||[]).map(n=>'PM: '+n),
+      ...(client.de||[]).map(n=>'DE: '+n),
+    ];
+    s1.addText(teamLines.join('   ·   '), { x:0.3, y:1.08, w:9, h:0.28, fontSize:9.5, color:MUTED });
+
+    // Milestones row
+    const milestones = [
+      { label:'Kickoff',      date:client.koDate },
+      { label:'Activation',   date:client.activationDate },
+      { label:'1st Bill Out', date:client.billOutDate },
+      { label:'Graduation',   date:client.gradDate },
+    ].filter(m=>m.date);
+    const mw = (W - 0.6) / Math.max(milestones.length, 1);
+    milestones.forEach((m, i) => {
+      const mx = 0.3 + i * mw;
+      s1.addShape(pptx.ShapeType.rect, { x:mx, y:1.45, w:mw-0.1, h:0.55, fill:{color:SURF}, line:{color:'2a3050',pt:1} });
+      s1.addText(m.label, { x:mx+0.08, y:1.48, w:mw-0.26, h:0.18, fontSize:7, color:MUTED });
+      const d = new Date(m.date+'T12:00:00');
+      const df = d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+      const dc = m.date < new Date().toISOString().split('T')[0] ? TEAL : YEL;
+      s1.addText(df, { x:mx+0.08, y:1.64, w:mw-0.26, h:0.3, fontSize:9.5, color:dc, bold:true });
+    });
+
+    // Latest call 3-col
+    const latest = briefs[0];
+    if (latest) {
+      s1.addText('LATEST CALL — ' + (latest.date || '') + (latest.owner ? '  ·  '+latest.owner : ''), {
+        x:0.3, y:2.15, w:9, h:0.22, fontSize:8, color:ACCENT, bold:true, charSpacing:0.5
+      });
+      s1.addShape(pptx.ShapeType.line, { x:0.3, y:2.36, w:9.4, h:0, line:{color:'2a3050',pt:1} });
+      const colW = 9.4/3, baseX=0.3;
+      colCard(s1, baseX, 2.42, colW-0.05, 2.8, '✔ Action Items', TEAL, bullets(latest.actionItems, 8));
+      colCard(s1, baseX+colW, 2.42, colW-0.05, 2.8, '⛔ Blockers', RED, bullets(latest.blockers, 8));
+      colCard(s1, baseX+colW*2, 2.42, colW-0.05, 2.8, '→ Next Steps', ACCENT, bullets(latest.openQuestions, 8));
+    }
+
+    // ── SLIDE 2+: Call History ────────────────────────────────────────────────
+    briefs.slice(0, 6).forEach((brief, idx) => {
+      const s = pptx.addSlide();
+      addBg(s);
+      addHeader(s, client.name + ' — Call #' + (idx+1), brief.date || '');
+
+      const riskColor = brief.risk==='high' ? RED : brief.risk==='medium' ? YEL : TEAL;
+      if (brief.risk) {
+        s.addShape(pptx.ShapeType.roundRect, { x:0.3, y:0.65, w:0.8, h:0.24, fill:{color:riskColor+'22'}, line:{color:riskColor,pt:1}, rectRadius:0.04 });
+        s.addText(brief.risk, { x:0.3, y:0.65, w:0.8, h:0.24, fontSize:8, color:riskColor, bold:true, align:'center', valign:'middle' });
+      }
+      if (brief.callType) s.addText(brief.callType, { x:1.2, y:0.66, w:1, h:0.22, fontSize:8, color:MUTED });
+      s.addText(esc(brief.title||''), { x:0.3, y:0.95, w:9, h:0.35, fontSize:11, color:TEXT, bold:true });
+
+      const cW = 9.4/3;
+      colCard(s, 0.3, 1.4, cW-0.05, 3.9, '✔ Action Items', TEAL, bullets(brief.actionItems, 12));
+      colCard(s, 0.3+cW, 1.4, cW-0.05, 3.9, '⛔ Blockers', RED, bullets(brief.blockers, 12));
+      colCard(s, 0.3+cW*2, 1.4, cW-0.05, 3.9, '→ Next Steps / Questions', ACCENT, bullets(brief.openQuestions, 12));
+    });
+
+    // ── Save ──────────────────────────────────────────────────────────────────
+    const fileName = (client.name||'client').replace(/[^a-zA-Z0-9]/g,'-') + '-Tracker-' + new Date().toISOString().slice(0,10) + '.pptx';
+    pptx.writeFile({ fileName });
+    btn.disabled = false;
+    btn.textContent = '▶ Generate Tracker';
+  } catch(err) {
+    console.error('PPTX error:', err);
+    btn.disabled = false;
+    btn.textContent = '⚠ Error — try again';
+  }
 }
 
 function renderDigest(digest) {
