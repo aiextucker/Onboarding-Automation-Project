@@ -227,14 +227,76 @@ jobs:
               c.lastCall = cb?.length ? { date: cb[0].date, risk: cb[0].risk } : null;
             }
 
-            // Match digest to each client
+            // Match digest to each client and fetch block content
+            async function fetchDigestBlocks(pageId) {
+              const res = await fetch(`https://api.notion.com/v1/blocks/${pageId}/children?page_size=100`, {
+                headers: NOTION_HDR
+              });
+              const d = await res.json();
+              return d.results || [];
+            }
+
+            function parseDigestBlocks(blocks) {
+              const sections = {};
+              let curSection = '_top';
+              for (const b of blocks) {
+                const type = b.type;
+                const txt = (b[type]?.rich_text || b[type]?.text || []).map(t=>t.plain_text).join('').trim();
+                if (!txt) continue;
+                if (type === 'heading_2' || type === 'heading_3') {
+                  curSection = txt.replace(/^[^a-zA-Z]+/, '').trim().toLowerCase();
+                  sections[curSection] = sections[curSection] || [];
+                } else if (type === 'callout' || type === 'paragraph') {
+                  sections[curSection] = sections[curSection] || [];
+                  sections[curSection].push(txt);
+                } else if (type === 'bulleted_list_item' || type === 'numbered_list_item') {
+                  sections[curSection] = sections[curSection] || [];
+                  sections[curSection].push(txt);
+                }
+              }
+              // Extract health from callout
+              let health = null, healthLabel = null, statusLine = null;
+              const topBlocks = sections['_top'] || [];
+              for (const line of topBlocks) {
+                if (!statusLine) statusLine = line;
+                const hm = line.match(/(\d+)\/100/);
+                if (hm) { health = parseInt(hm[1]); }
+                const lm = line.match(/(Healthy|Watching|At Risk|Critical)/i);
+                if (lm) healthLabel = lm[1];
+              }
+              return {
+                statusLine: statusLine || '',
+                health, healthLabel,
+                team:        sections['team'] || sections['👥 team'] || [],
+                timeline:    sections['timeline'] || sections['📅 timeline'] || [],
+                mrr:         sections['mrr'] || sections['💰 mrr'] || [],
+                recentCalls: sections['recent calls (7d)'] || sections['recent calls'] || [],
+                zdTickets:   sections['zendesk tickets'] || sections['zendesk'] || [],
+                teamsNotes:  sections['teams notes'] || sections['teams'] || [],
+                raw: sections,
+              };
+            }
+
             const digestsByClientId = {};
             for (const client of clients) {
               if (!client.name) continue;
               const firstWord = client.name.split(/\s+/)[0].toLowerCase();
               const match = digestPages.filter(p => (nStr(p.properties['Name'])||'').toLowerCase().includes(firstWord));
-              if (match.length) digestsByClientId[client.id] = { id: match[match.length-1].id, name: nStr(match[match.length-1].properties['Name']) };
+              if (!match.length) continue;
+              const page = match[match.length-1];
+              try {
+                const blocks = await fetchDigestBlocks(page.id);
+                const parsed = parseDigestBlocks(blocks);
+                digestsByClientId[client.id] = {
+                  id:   page.id,
+                  name: nStr(page.properties['Name']),
+                  ...parsed,
+                };
+              } catch(e) {
+                digestsByClientId[client.id] = { id: page.id, name: nStr(page.properties['Name']) };
+              }
             }
+            console.log(`  Digests fetched: ${Object.keys(digestsByClientId).length}`);
 
             // Zendesk — search by client keyword directly (no org-list pagination issues)
             console.log('Fetching Zendesk tickets…');
