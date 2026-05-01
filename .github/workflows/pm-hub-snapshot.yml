@@ -261,7 +261,7 @@ jobs:
                 if (!statusLine) statusLine = line;
                 const hm = line.match(/(\d+)\/100/);
                 if (hm) { health = parseInt(hm[1]); }
-                const lm = line.match(/(Healthy|Watching|At Risk|Critical)/i);
+                const lm = line.match(/(Healthy|Watching|At Risk|Critical)/i);
                 if (lm) healthLabel = lm[1];
               }
               return {
