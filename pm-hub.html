@@ -573,191 +573,42 @@ let allClients  = [];
 let activeClient = null;
 let lastBriefData = null;
 
-// ── Notion API (direct browser calls) ───────────────────────────────────────
-const NOTION_TOKEN  = atob('bnRuXzQ0NDU0ODk3NTg2Ym1iaWVrSkprR3' + 'JibDdtMmlRZlN1OHpaOE9zRjVGRTc3d2M=');
-const DB_CLIENTS    = '310a59b7-e7b2-806e-a78f-f37d70de8601';
-const DB_BRIEFS     = '344a59b7-e7b2-806b-a4b7-fce85ed24358';
-const DB_DIGESTS    = '349a59b7-e7b2-80e8-a0c6-c0947c44f455';
-const NOTION_VER    = '2022-06-28';
+// ── Snapshot-based data (GitHub Actions refreshes every 15 min) ─────────────
+let snapshot = null;
 
-async function notionPost(path, body) {
-  const res = await fetch('https://api.notion.com/v1' + path, {
-    method: 'POST',
-    headers: { 'Authorization': 'Bearer ' + NOTION_TOKEN, 'Notion-Version': NOTION_VER, 'Content-Type': 'application/json' },
-    body: JSON.stringify(body)
-  });
-  return res.json();
-}
-async function notionGet(path) {
-  const res = await fetch('https://api.notion.com/v1' + path, {
-    headers: { 'Authorization': 'Bearer ' + NOTION_TOKEN, 'Notion-Version': NOTION_VER }
-  });
-  return res.json();
-}
-async function notionQueryAll(dbId, filter, sorts) {
-  let results = [], cursor;
-  do {
-    const body = { page_size: 100 };
-    if (filter) body.filter = filter;
-    if (sorts)  body.sorts  = sorts;
-    if (cursor) body.start_cursor = cursor;
-    const d = await notionPost('/databases/' + dbId + '/query', body);
-    if (d.results) results.push(...d.results);
-    cursor = d.has_more ? d.next_cursor : null;
-  } while (cursor);
-  return results;
-}
-function nStr(prop) {
-  if (!prop) return null;
-  if (prop.type === 'title')     return prop.title?.map(t => t.plain_text).join('') || null;
-  if (prop.type === 'rich_text') return prop.rich_text?.map(t => t.plain_text).join('') || null;
-  if (prop.type === 'select')    return prop.select?.name || null;
-  return null;
-}
-function nDate(prop) { return prop?.date?.start || null; }
-function nNum(prop)  { return prop?.number ?? (prop?.formula?.number ?? null); }
-function nPpl(prop)  { return (prop?.people || []).map(p => p.name).filter(Boolean); }
-function nStat(prop) { return prop?.status?.name || null; }
 function statusGroup(s) {
   if (!s) return 'other';
   const l = s.toLowerCase();
-  if (l.includes('on track')) return 'on-track';
+  if (l.includes('on track'))  return 'on-track';
   if (l.includes('off track')) return 'off-track';
-  if (l === 'rts') return 'rts';
+  if (l === 'rts')     return 'rts';
   if (l === 'on hold') return 'on-hold';
   return 'other';
-}
-// Alias map: client name → brief search terms (mirrors brief-client-map.json)
-const BRIEF_ALIAS = {
-  'Rhode Island Telephone': ['Rhode Island'],
-  'Public Telephone Company': ['PTCOA'],
-};
-const BRIEF_EXCLUDE = new Set(['805 Voip', 'Third Generation of Pennsylvania', 'PSA Mig to Internal']);
-const STOP = new Set(['the','and','for','inc','llc','ltd','corp','co','group','company','services',
-  'solutions','tech','technology','technologies','telecom','communications','telephone','voip',
-  'systems','network','data','global','digital','cloud','psa','mig','migration','internal',
-  'bob','north','south','east','west','public','comm']);
-function briefMatches(briefName, clientName) {
-  const b = briefName.toLowerCase(), c = clientName.toLowerCase();
-  if (b.includes(c) || c.includes(b)) return true;
-  // token-level soft match
-  const cToks = c.split(/[\s\-\/,().]+/).filter(t => t.length >= 2 && !STOP.has(t));
-  const bToks = b.split(/[\s\-\/,().]+/).filter(t => t.length >= 2 && !STOP.has(t));
-  if (!cToks.length || !bToks.length) return false;
-  const shorter = cToks.length <= bToks.length ? cToks : bToks;
-  const longer  = cToks.length <= bToks.length ? bToks  : cToks;
-  const matched = shorter.filter(st => longer.some(lt => lt.includes(st) || st.includes(lt)));
-  return matched.length / shorter.length >= 0.5;
 }
 
 // ── API ───────────────────────────────────────────────────────────────────────
 async function fetchPortfolio() {
-  const EXCLUDED = ['Graduated','Canceled','Completed'];
-  const filter = { and: EXCLUDED.map(s => ({ property: 'Status', status: { does_not_equal: s } }) ) };
-  const [clientPages, callPages] = await Promise.all([
-    notionQueryAll(DB_CLIENTS, filter, [{ property: 'Health Score', direction: 'ascending' }]),
-    notionQueryAll(DB_BRIEFS, { property: 'Call Date', date: { past_month: {} } }, [{ property: 'Call Date', direction: 'descending' }])
-  ]);
-  // Index latest call per client name
-  const latestCall = {};
-  for (const page of callPages) {
-    const pr = page.properties;
-    const name = nStr(pr['Name']);
-    if (!name) continue;
-    const key = name.toLowerCase().trim();
-    if (!latestCall[key]) latestCall[key] = {
-      date: nDate(pr['Call Date']), risk: nStr(pr['Risk Level'])
-    };
+  const res = await fetch('data/portfolio.json?_=' + Date.now());
+  if (!res.ok) throw new Error('Portfolio snapshot unavailable (' + res.status + '). Try refreshing.');
+  snapshot = await res.json();
+  // Update the timestamp display
+  if (snapshot.updatedAt) {
+    const mins = Math.round((Date.now() - new Date(snapshot.updatedAt).getTime()) / 60000);
+    const label = mins < 2 ? 'just now' : mins + 'm ago';
+    document.getElementById('updatedAt').textContent = 'Data from ' + label + ' · refreshes every 15m';
   }
-  // Match latest call to client using alias logic
-  function clientLastCall(clientName) {
-    if (BRIEF_EXCLUDE.has(clientName)) return null;
-    const aliases = BRIEF_ALIAS[clientName];
-    const searchNames = aliases ? aliases : [clientName];
-    for (const [key, val] of Object.entries(latestCall)) {
-      if (searchNames.some(sn => key.includes(sn.toLowerCase()) || sn.toLowerCase().includes(key))) return val;
-    }
-    // soft match
-    for (const [key, val] of Object.entries(latestCall)) {
-      if (briefMatches(key, clientName)) return val;
-    }
-    return null;
-  }
-  const clients = clientPages.map(page => {
-    const pr = page.properties;
-    const name = nStr(pr['Client Name']);
-    const koDate   = nDate(pr['Start/KO Date']);
-    const gradDate = nDate(pr['Current Graduation Date']) || nDate(pr['Graduation Date']);
-    const status   = nStat(pr['Status']);
-    return {
-      id: page.id, name, status,
-      statusGroup: statusGroup(status),
-      sa: nPpl(pr['SA']), pm: nPpl(pr['PM']), de: nPpl(pr['DE']),
-      health: nNum(pr['Health Score']),
-      complexity: nStr(pr['Complexity']),
-      segment: nStr(pr['Segment']),
-      mrr: nNum(pr['Activation MRR']),
-      koDate, gradDate,
-      lastCall: clientLastCall(name),
-    };
-  });
-  return clients;
+  return (snapshot.clients || []).map(c => ({ ...c, statusGroup: statusGroup(c.status) }));
 }
 
 async function fetchBriefs(clientId, days) {
+  if (!snapshot) throw new Error('Portfolio not loaded — please refresh.');
+  const client = allClients.find(c => c.id === clientId);
+  const clientName = client?.name || null;
   const cutoff = new Date(Date.now() - days * 86400000).toISOString().split('T')[0];
-  // Get client name
-  const page = await notionGet('/pages/' + clientId);
-  const clientName = nStr(page.properties['Client Name']);
-  if (!clientName) return { ok: true, clientName: null, briefs: [], tickets: [], digest: null };
-  // Fetch briefs
-  const allBriefs = await notionQueryAll(DB_BRIEFS,
-    { property: 'Call Date', date: { on_or_after: cutoff } },
-    [{ property: 'Call Date', direction: 'descending' }]
-  );
-  const aliases = BRIEF_ALIAS[clientName];
-  const briefs = allBriefs
-    .filter(p => {
-      const bn = nStr(p.properties['Name']) || '';
-      if (aliases) return aliases.some(a => bn.toLowerCase().includes(a.toLowerCase()) || a.toLowerCase().includes(bn.toLowerCase()));
-      return briefMatches(bn, clientName);
-    })
-    .slice(0, 15)
-    .map(p => {
-      const pr = p.properties;
-      return {
-        id: p.id,
-        title:         nStr(pr['Name']),
-        date:          nDate(pr['Call Date']),
-        callType:      nStr(pr['Call Type']),
-        risk:          nStr(pr['Risk Level']),
-        ownerRole:     nStr(pr['Owner Role']),
-        owner:         nStr(pr['Owner']),
-        duration:      nNum(pr['Duration (min)']),
-        keyTakeaways:  nStr(pr['Key Takeaways']),
-        actionItems:   nStr(pr['Action Items']),
-        blockers:      nStr(pr['Blockers']),
-        openQuestions: nStr(pr['Open Questions']),
-        redFlags:      nStr(pr['Red Flags']),
-        configTopics:  nStr(pr['Config Topics']),
-        riskReason:    nStr(pr['Risk Reason']),
-      };
-    });
-  // Fetch most recent digest
-  const firstWord = clientName.split(/\s+/)[0];
-  const digestPages = await notionQueryAll(DB_DIGESTS,
-    { property: 'Name', title: { contains: firstWord } },
-    [{ property: 'Name', direction: 'ascending' }]
-  );
-  let digest = null;
-  if (digestPages.length > 0) {
-    const dp = digestPages[digestPages.length - 1];
-    try {
-      const blocksRes = await notionGet('/blocks/' + dp.id + '/children?page_size=100');
-      digest = parseDigestBlocks(blocksRes.results || [], dp);
-    } catch(e) { /* skip */ }
-  }
-  return { ok: true, clientName, briefs, tickets: [], digest };
+  const briefs = (snapshot.briefsByClientId?.[clientId] || [])
+    .filter(b => !b.date || b.date >= cutoff)
+    .slice(0, 20);
+  return { ok: true, clientName, briefs, tickets: [], digest: null };
 }
 
 // ── Autocomplete ──────────────────────────────────────────────────────────────
