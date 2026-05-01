@@ -74,7 +74,8 @@ jobs:
           const STOP = new Set(['the','and','for','inc','llc','ltd','corp','co','group','company',
             'services','solutions','tech','technology','technologies','telecom','communications',
             'telephone','voip','systems','network','data','global','digital','cloud','psa','mig',
-            'migration','internal','bob','north','south','east','west','public','comm']);
+            'migration','internal','bob','north','south','east','west','public','comm',
+            'rev','io','to','from','with','project','calls','call']);
 
           const BRIEF_ALIAS   = { 'Rhode Island Telephone': ['Rhode Island'], 'Public Telephone Company': ['PTCOA'] };
           const BRIEF_EXCLUDE = new Set(['805 Voip','Third Generation of Pennsylvania','PSA Mig to Internal']);
@@ -82,7 +83,7 @@ jobs:
           function briefMatches(briefName, clientName) {
             const b = briefName.toLowerCase(), c = clientName.toLowerCase();
             if (b.includes(c) || c.includes(b)) return true;
-            const tok = s => s.split(/[\s\-\/,().]+/).filter(t => t.length>=2 && !STOP.has(t));
+            const tok = s => s.split(/[\s\-\/,().]+/).filter(t => t.length>=3 && !STOP.has(t));
             const cT = tok(c), bT = tok(b);
             if (!cT.length || !bT.length) return false;
             const [sh, lo] = cT.length<=bT.length ? [cT,bT] : [bT,cT];
