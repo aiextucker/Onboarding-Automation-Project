@@ -753,7 +753,8 @@ async function fetchBriefs(clientId, days) {
     .filter(b => !b.date || b.date >= cutoff)
     .slice(0, 20);
   const tickets = snapshot.ticketsByClientId?.[clientId] || [];
-  return { ok: true, clientName, briefs, tickets, digest: null };
+  const digest  = snapshot.digestsByClientId?.[clientId] || null;
+  return { ok: true, clientName, briefs, tickets, digest };
 }
 
 // ── Autocomplete ──────────────────────────────────────────────────────────────
