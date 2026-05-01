@@ -116,12 +116,12 @@ jobs:
           async function fetchZdTicketsForClient(clientName) {
             if (!ZD_AUTH) return [];
             const kw = zdKeyword(clientName);
-            // Search directly by org name keyword — avoids org-list pagination/matching issues
-            const query = `type:ticket (status:open OR status:pending OR status:new) organization:"${kw}"`;
+            // status<solved = open + pending + new + hold in one query, no OR needed
+            const query = `type:ticket status<solved organization:${kw}`;
             const d = await zdFetch(`/search.json?query=${encodeURIComponent(query)}&per_page=50&sort_by=updated_at&sort_order=desc`);
             if (!d || !d.results) return [];
             return d.results
-              .filter(t => ['open','pending','new'].includes(t.status))
+              .filter(t => ['open','pending','new','hold'].includes(t.status))
               .map(t => ({
                 id:       t.id,
                 subject:  t.subject,
