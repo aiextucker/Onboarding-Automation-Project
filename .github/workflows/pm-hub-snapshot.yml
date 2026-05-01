@@ -36,7 +36,7 @@ jobs:
           const DB_BRIEFS  = '344a59b7-e7b2-806b-a4b7-fce85ed24358';
           const DB_DIGESTS = '349a59b7-e7b2-80e8-a0c6-c0947c44f455';
 
-          // ── Notion helpers ───────────────────────────────────────────────────
+          // ── Notion helpers ──────────────────────────────────────────────────
           async function notionQuery(dbId, filter, sorts) {
             let results = [], cursor;
             do {
@@ -89,46 +89,51 @@ jobs:
             return sh.filter(st=>lo.some(lt=>lt.includes(st)||st.includes(lt))).length / sh.length >= 0.5;
           }
 
-          // ── Zendesk helpers ──────────────────────────────────────────────────
-          async function zdGet(path) {
+          // ── Zendesk helpers ─────────────────────────────────────────────────
+          // Stop words for ZD keyword extraction — skip generic terms
+          const ZD_STOP = new Set(['migration','to','rev','io','inc','llc','ltd','corp','co',
+            'group','company','services','solutions','tech','technology','telecom','communications',
+            'telephone','voip','systems','network','data','global','digital','cloud','psa','bob',
+            'north','south','east','west','public','comm','partners','consulting','business','phone',
+            'and','for','the','reseller','ky','dba']);
+
+          function zdKeyword(name) {
+            // First significant word (3+ chars, not a stop word)
+            const words = name.toLowerCase().split(/[\s\-\/,().]+/);
+            return words.find(w => w.length >= 3 && !ZD_STOP.has(w)) || words[0];
+          }
+
+          async function zdFetch(path) {
             if (!ZD_AUTH) return null;
-            const res = await fetch(ZD_BASE + path, {
+            const url = path.startsWith('http') ? path : ZD_BASE + path;
+            const res = await fetch(url, {
               headers: { 'Authorization': 'Basic ' + Buffer.from(ZD_AUTH).toString('base64') }
             });
-            if (!res.ok) return null;
+            if (!res.ok) { console.error('ZD', res.status, path.slice(0,60)); return null; }
             return res.json();
           }
 
-          async function fetchZendeskOrgs() {
+          async function fetchZdTicketsForClient(clientName) {
             if (!ZD_AUTH) return [];
-            const orgs = [];
-            let url = '/organizations.json?per_page=100';
-            while (url) {
-              const d = await zdGet(url);
-              if (!d) break;
-              orgs.push(...(d.organizations || []));
-              url = d.next_page ? d.next_page.replace(ZD_BASE, '') : null;
-            }
-            return orgs;
-          }
-
-          async function fetchZendeskTicketsForOrg(orgId) {
-            const d = await zdGet(`/organizations/${orgId}/tickets.json?per_page=50`);
-            if (!d) return [];
-            return (d.tickets || [])
-              .filter(t => t.status === 'open' || t.status === 'pending' || t.status === 'new')
+            const kw = zdKeyword(clientName);
+            // Search directly by org name keyword — avoids org-list pagination/matching issues
+            const query = `type:ticket (status:open OR status:pending OR status:new) organization:"${kw}"`;
+            const d = await zdFetch(`/search.json?query=${encodeURIComponent(query)}&per_page=50&sort_by=updated_at&sort_order=desc`);
+            if (!d || !d.results) return [];
+            return d.results
+              .filter(t => ['open','pending','new'].includes(t.status))
               .map(t => ({
-                id:      t.id,
-                subject: t.subject,
-                status:  t.status,
-                url:     `https://rev-io.zendesk.com/agent/tickets/${t.id}`,
-                updated: t.updated_at?.slice(0,10) || '',
-                created: t.created_at?.slice(0,10) || '',
+                id:       t.id,
+                subject:  t.subject,
+                status:   t.status,
+                url:      `https://rev-io.zendesk.com/agent/tickets/${t.id}`,
+                updated:  t.updated_at?.slice(0,10) || '',
+                created:  t.created_at?.slice(0,10) || '',
                 priority: t.priority || null,
               }));
           }
 
-          // ── Main ─────────────────────────────────────────────────────────────
+          // ── Main ────────────────────────────────────────────────────────────
           (async () => {
             console.log('Fetching clients…');
             const EXCLUDED   = ['Graduated','Canceled','Completed'];
@@ -148,39 +153,35 @@ jobs:
             const digestPages = await notionQuery(DB_DIGESTS, null, [{ property:'Name', direction:'ascending' }]);
             console.log(`  ${digestPages.length} digests`);
 
-            console.log('Fetching Zendesk orgs…');
-            const zdOrgs = await fetchZendeskOrgs();
-            console.log(`  ${zdOrgs.length} ZD orgs`);
-
             // Build client objects with full fields
             const clients = clientPages.map(page => {
               const pr = page.properties;
-              const status   = nStat(pr['Status']);
-              const wrikeId  = nStr(pr['Wrike Project ID']);
-              const koDate   = nDate(pr['Start/KO Date']);
+              const status  = nStat(pr['Status']);
+              const wrikeId = nStr(pr['Wrike Project ID']);
+              const koDate  = nDate(pr['Start/KO Date']);
               const gradDate = nDate(pr['Current Graduation Date']) || nDate(pr['Graduation Date']);
               return {
-                id:               page.id,
-                notionUrl:        `https://www.notion.so/${page.id.replace(/-/g,'')}`,
-                name:             nStr(pr['Client Name']),
+                id:             page.id,
+                notionUrl:      `https://www.notion.so/${page.id.replace(/-/g,'')}`,
+                name:           nStr(pr['Client Name']),
                 status,
-                statusGroup:      statusGroup(status),
-                sa:               nPpl(pr['SA']),
-                pm:               nPpl(pr['PM']),
-                de:               nPpl(pr['DE']),
-                csa:              nPpl(pr['CSA']),
-                health:           nNum(pr['Health Score']),
-                complexity:       nStr(pr['Complexity']),
-                segment:          nStr(pr['Segment']),
-                mrr:              nNum(pr['Activation MRR']),
+                statusGroup:    statusGroup(status),
+                sa:             nPpl(pr['SA']),
+                pm:             nPpl(pr['PM']),
+                de:             nPpl(pr['DE']),
+                csa:            nPpl(pr['CSA']),
+                health:         nNum(pr['Health Score']),
+                complexity:     nStr(pr['Complexity']),
+                segment:        nStr(pr['Segment']),
+                mrr:            nNum(pr['Activation MRR']),
                 koDate,
                 gradDate,
-                activationDate:   nDate(pr['Platform Activation Date']) || nDate(pr['Activation Date']),
-                billOutDate:      nDate(pr['1st Bill Out Date']) || nDate(pr['Bill-Out Date']),
-                charterDate:      nDate(pr['Charter Signed Date']),
-                daysActive:       koDate ? Math.floor((Date.now()-new Date(koDate).getTime())/86400000) : null,
+                activationDate: nDate(pr['Platform Activation Date']) || nDate(pr['Activation Date']),
+                billOutDate:    nDate(pr['1st Bill Out Date']) || nDate(pr['Bill-Out Date']),
+                charterDate:    nDate(pr['Charter Signed Date']),
+                daysActive:     koDate ? Math.floor((Date.now()-new Date(koDate).getTime())/86400000) : null,
                 wrikeId,
-                wrikeUrl:         wrikeId ? `https://www.wrike.com/open.htm?id=${wrikeId}` : null,
+                wrikeUrl:       wrikeId ? `https://www.wrike.com/open.htm?id=${wrikeId}` : null,
               };
             });
 
@@ -234,23 +235,20 @@ jobs:
               if (match.length) digestsByClientId[client.id] = { id: match[match.length-1].id, name: nStr(match[match.length-1].properties['Name']) };
             }
 
-            // Match Zendesk orgs to clients, fetch their tickets
+            // Zendesk — search by client keyword directly (no org-list pagination issues)
+            console.log('Fetching Zendesk tickets…');
             const ticketsByClientId = {};
-            if (zdOrgs.length) {
+            if (ZD_AUTH) {
               for (const client of clients) {
                 if (!client.name) continue;
-                const cLow = client.name.toLowerCase();
-                const org = zdOrgs.find(o => {
-                  const oLow = (o.name||'').toLowerCase();
-                  return oLow.includes(cLow.split(/\s+/)[0]) || cLow.includes(oLow.split(/\s+/)[0]);
-                });
-                if (org) {
-                  ticketsByClientId[client.id] = await fetchZendeskTicketsForOrg(org.id);
-                  if (ticketsByClientId[client.id].length) {
-                    console.log(`  ZD: ${client.name} → ${ticketsByClientId[client.id].length} tickets`);
-                  }
+                const ts = await fetchZdTicketsForClient(client.name);
+                if (ts.length) {
+                  ticketsByClientId[client.id] = ts;
+                  console.log(`  ${client.name}: ${ts.length} tickets (kw: ${zdKeyword(client.name)})`);
                 }
               }
+              const total = Object.values(ticketsByClientId).reduce((s,a)=>s+a.length,0);
+              console.log(`  Total: ${Object.keys(ticketsByClientId).length} clients, ${total} tickets`);
             }
 
             const snapshot = {
