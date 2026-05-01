@@ -526,6 +526,150 @@ body {
   font-size: 0.84rem;
   margin-bottom: 16px;
 }
+
+/* ── Quick links bar ── */
+.quick-links-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+.ql-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  text-decoration: none;
+  font-size: 0.8rem;
+  font-weight: 500;
+  transition: all .15s;
+  background: var(--surface);
+}
+.ql-link:hover { color: var(--text); border-color: var(--border-hi); }
+.ql-link.wrike  { border-color: rgba(106,100,255,.3); }
+.ql-link.wrike:hover  { color: var(--accent-lt); border-color: var(--accent); }
+.ql-link.zd    { border-color: rgba(0,212,170,.3); }
+.ql-link.zd:hover    { color: var(--teal); border-color: var(--teal); }
+.ql-link.notion { border-color: rgba(255,255,255,.15); }
+.ql-sep { flex: 1; }
+.pptx-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(240,165,0,.4);
+  background: var(--yellow-bg);
+  color: var(--yellow);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .15s;
+}
+.pptx-btn:hover { border-color: var(--yellow); background: rgba(240,165,0,.15); }
+.pptx-btn:disabled { opacity: .5; cursor: not-allowed; }
+
+/* ── Latest call summary ── */
+.latest-call-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+.latest-call-panel.risk-high { border-left-color: var(--red); }
+.latest-call-panel.risk-medium { border-left-color: var(--yellow); }
+.lc-header {
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.lc-title { font-size: 0.88rem; font-weight: 600; }
+.lc-meta { display: flex; align-items: center; gap: 10px; font-size: 0.78rem; color: var(--text-mute); }
+.lc-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0;
+}
+@media (max-width: 700px) { .lc-grid { grid-template-columns: 1fr; } }
+.lc-col {
+  padding: 16px 18px;
+  border-right: 1px solid var(--border);
+}
+.lc-col:last-child { border-right: none; }
+.lc-col-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  margin-bottom: 10px;
+}
+.lc-col-label.action  { color: var(--teal); }
+.lc-col-label.blocker { color: var(--red); }
+.lc-col-label.next    { color: var(--accent-lt); }
+.lc-items { list-style: none; padding: 0; }
+.lc-items li {
+  font-size: 0.83rem;
+  color: var(--text-dim);
+  line-height: 1.55;
+  padding: 3px 0 3px 14px;
+  position: relative;
+  border-bottom: 1px solid var(--border);
+}
+.lc-items li:last-child { border-bottom: none; }
+.lc-items li::before { content: '›'; position: absolute; left: 0; color: var(--text-mute); }
+.lc-empty { font-size: 0.82rem; color: var(--text-mute); font-style: italic; padding: 4px 0; }
+.no-latest-call {
+  background: var(--surface);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  padding: 28px;
+  text-align: center;
+  color: var(--text-mute);
+  font-size: 0.84rem;
+  margin-bottom: 20px;
+}
+
+/* ── Milestone timeline ── */
+.milestone-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.ms-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 8px 14px;
+  font-size: 0.78rem;
+}
+.ms-label { color: var(--text-mute); font-size: 0.7rem; margin-bottom: 2px; }
+.ms-date  { color: var(--text); font-weight: 600; }
+.ms-date.past   { color: var(--teal); }
+.ms-date.future { color: var(--yellow); }
+.ms-date.overdue{ color: var(--red); }
+
+/* ── Section title ── */
+.section-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--text-mute);
+  margin: 28px 0 12px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
 </style>
 </head>
 <body>
@@ -608,7 +752,8 @@ async function fetchBriefs(clientId, days) {
   const briefs = (snapshot.briefsByClientId?.[clientId] || [])
     .filter(b => !b.date || b.date >= cutoff)
     .slice(0, 20);
-  return { ok: true, clientName, briefs, tickets: [], digest: null };
+  const tickets = snapshot.ticketsByClientId?.[clientId] || [];
+  return { ok: true, clientName, briefs, tickets, digest: null };
 }
 
 // ── Autocomplete ──────────────────────────────────────────────────────────────
@@ -713,14 +858,12 @@ function renderClientView(client, data) {
   const health = client.health;
   const healthClass = !health ? '' : health >= 70 ? 'health-high' : health >= 40 ? 'health-mid' : 'health-low';
   const sg = client.statusGroup || 'other';
-  const saDe = [
-    client.sa?.[0] && `<span class="meta-item">SA: <strong>${esc(client.sa[0])}</strong></span>`,
-    client.pm?.[0] && `<span class="meta-item">PM: <strong>${esc(client.pm[0])}</strong></span>`,
-    client.de?.[0] && `<span class="meta-item">DE: <strong>${esc(client.de[0])}</strong></span>`,
-  ].filter(Boolean).join('');
-
-  const koFmt = client.koDate ? fmtDate(client.koDate) : '—';
-  const gradFmt = client.gradDate ? fmtDate(client.gradDate) : '—';
+  const team = [
+    ...(client.sa  || []).map(n => `SA: <strong>${esc(n)}</strong>`),
+    ...(client.pm  || []).map(n => `PM: <strong>${esc(n)}</strong>`),
+    ...(client.de  || []).map(n => `DE: <strong>${esc(n)}</strong>`),
+    ...(client.csa || []).map(n => `CSA: <strong>${esc(n)}</strong>`),
+  ].map(s => `<span class="meta-item">${s}</span>`).join('');
   const daysActive = client.daysActive != null ? client.daysActive + 'd active' : '';
 
   main.insertAdjacentHTML('beforeend', `
@@ -729,50 +872,84 @@ function renderClientView(client, data) {
         <div class="client-name">${esc(client.name || data.clientName)}</div>
         <div class="client-meta-row">
           <span class="status-dot ${sg}">${esc(client.status || '—')}</span>
-          ${saDe}
-          <span class="meta-item">KO: <strong>${koFmt}</strong></span>
-          <span class="meta-item">Target Grad: <strong>${gradFmt}</strong></span>
+          ${team}
           ${daysActive ? `<span class="meta-item">${daysActive}</span>` : ''}
         </div>
       </div>
       <div class="client-stats">
-        ${health != null ? `
-        <div class="stat-pill ${healthClass}">
-          <div class="val">${health}</div>
-          <div class="lbl">Health</div>
-        </div>` : ''}
-        <div class="stat-pill">
-          <div class="val">${briefs.length}</div>
-          <div class="lbl">Calls</div>
-        </div>
-        <div class="stat-pill">
-          <div class="val">${tickets.length}</div>
-          <div class="lbl">Tickets</div>
-        </div>
+        ${health != null ? `<div class="stat-pill ${healthClass}"><div class="val">${health}</div><div class="lbl">Health</div></div>` : ''}
+        <div class="stat-pill"><div class="val">${briefs.length}</div><div class="lbl">Calls</div></div>
+        <div class="stat-pill"><div class="val">${tickets.length}</div><div class="lbl">Tickets</div></div>
       </div>
     </div>
   `);
 
-  // ── Client Digest ──
-  main.insertAdjacentHTML('beforeend', `<div class="section-title">Client Digest</div>`);
-  main.appendChild(renderDigest(data.digest));
+  // ── Quick links bar ──
+  main.insertAdjacentHTML('beforeend', `
+    <div class="quick-links-bar">
+      ${client.wrikeUrl ? `<a class="ql-link wrike" href="${esc(client.wrikeUrl)}" target="_blank">📊 Wrike</a>` : ''}
+      <a class="ql-link zd" href="https://rev-io.zendesk.com/agent/organizations" target="_blank">🎫 Zendesk</a>
+      ${client.notionUrl ? `<a class="ql-link notion" href="${esc(client.notionUrl)}" target="_blank">📝 Notion</a>` : ''}
+      <span class="ql-sep"></span>
+      <button class="pptx-btn" id="pptxBtn" onclick="generatePptx()">▶ Generate Tracker</button>
+    </div>
+  `);
 
-  // ── Call briefs ──
-  main.insertAdjacentHTML('beforeend', `<div class="section-title">Call Briefs</div>`);
-
-  if (!briefs.length) {
+  // ── Milestone timeline ──
+  const today = new Date().toISOString().split('T')[0];
+  const milestones = [
+    { label: 'Kickoff',      date: client.koDate },
+    { label: 'Charter',      date: client.charterDate },
+    { label: 'Activation',   date: client.activationDate },
+    { label: '1st Bill Out', date: client.billOutDate },
+    { label: 'Graduation',   date: client.gradDate },
+  ].filter(m => m.date);
+  if (milestones.length) {
     main.insertAdjacentHTML('beforeend', `
-      <div class="no-briefs">
-        <div>📭</div>
-        <p>No call briefs found for this client in the selected time window.</p>
+      <div class="milestone-row">
+        ${milestones.map(m => {
+          const cls = m.date <= today ? 'past' : 'future';
+          return `<div class="ms-item"><div class="ms-label">${m.label}</div><div class="ms-date ${cls}">${fmtDate(m.date)}</div></div>`;
+        }).join('')}
+      </div>`);
+  }
+
+  // ── Latest call summary (hero) ──
+  const latest = briefs[0];
+  if (latest) {
+    const riskCls = latest.risk === 'high' ? 'risk-high' : latest.risk === 'medium' ? 'risk-medium' : '';
+    const riskBadge = latest.risk ? `<span class="badge risk-${latest.risk.toLowerCase()}">${latest.risk.toLowerCase()}</span>` : '';
+    const typeBadge = latest.callType ? `<span class="badge type-${latest.callType}">${latest.callType}</span>` : '';
+    const ffLink = latest.firefliesId
+      ? `<a class="ff-link" href="https://app.fireflies.ai/view/${esc(latest.firefliesId)}" target="_blank">🎙 Transcript</a>` : '';
+    main.insertAdjacentHTML('beforeend', `
+      <div class="latest-call-panel ${riskCls}">
+        <div class="lc-header">
+          <div class="lc-title">Latest Call — ${esc(latest.title || '')}</div>
+          <div class="lc-meta">
+            ${latest.date ? fmtDate(latest.date) : ''}
+            ${latest.duration ? `· ${latest.duration} min` : ''}
+            ${latest.owner ? `· ${esc(latest.owner)}` : ''}
+            ${riskBadge}${typeBadge}${ffLink}
+          </div>
+        </div>
+        <div class="lc-grid">
+          <div class="lc-col">
+            <div class="lc-col-label action">✔ Action Items</div>
+            ${bulletList(latest.actionItems, 'lc-items', 'lc-empty')}
+          </div>
+          <div class="lc-col">
+            <div class="lc-col-label blocker">⛔ Blockers</div>
+            ${bulletList(latest.blockers, 'lc-items', 'lc-empty')}
+          </div>
+          <div class="lc-col">
+            <div class="lc-col-label next">→ Next Steps</div>
+            ${bulletList(latest.openQuestions, 'lc-items', 'lc-empty')}
+          </div>
+        </div>
       </div>`);
   } else {
-    const listEl = document.createElement('div');
-    listEl.className = 'briefs-list';
-    briefs.forEach((brief, i) => {
-      listEl.appendChild(renderBriefCard(brief, i === 0));
-    });
-    main.appendChild(listEl);
+    main.insertAdjacentHTML('beforeend', `<div class="no-latest-call">📭 No call briefs found for this client in the selected time window.</div>`);
   }
 
   // ── Zendesk tickets ──
@@ -798,6 +975,41 @@ function renderClientView(client, data) {
       ` : `<div class="no-tickets">No open or pending tickets found.</div>`}
     </div>
   `);
+
+  // ── Call history ──
+  if (briefs.length > 0) {
+    main.insertAdjacentHTML('beforeend', `<div class="section-title">Call History</div>`);
+    const listEl = document.createElement('div');
+    listEl.className = 'briefs-list';
+    briefs.forEach(brief => listEl.appendChild(renderBriefCard(brief, false)));
+    main.appendChild(listEl);
+  }
+
+  // ── Daily Digest ──
+  main.insertAdjacentHTML('beforeend', `<div class="section-title">Daily Digest</div>`);
+  main.appendChild(renderDigest(data.digest));
+}
+
+function bulletList(text, listCls, emptyCls) {
+  const lines = parseBullets(text);
+  if (!lines.length) return `<div class="${emptyCls}">—</div>`;
+  return `<ul class="${listCls}">${lines.map(l => `<li>${fmtLine(l)}</li>`).join('')}</ul>`;
+}
+
+function generatePptx() {
+  if (!activeClient) return;
+  const btn = document.getElementById('pptxBtn');
+  if (!btn || btn.disabled) return;
+  btn.disabled = true;
+  btn.textContent = '⏳ Generating…';
+  fetch('https://api.github.com/repos/aiextucker/Onboarding-Automation-Project/dispatches', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Accept': 'application/vnd.github+json' },
+    body: JSON.stringify({ event_type: 'generate-pptx', client_payload: { clientId: activeClient.id, clientName: activeClient.name } })
+  }).then(r => {
+    btn.textContent = r.ok ? '✅ Generating — check Teams in ~2 min' : '⚠ Error — try again';
+    if (!r.ok) btn.disabled = false;
+  }).catch(() => { btn.disabled = false; btn.textContent = '⚠ Error — try again'; });
 }
 
 function renderDigest(digest) {
