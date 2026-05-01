@@ -2,8 +2,8 @@ name: PM Hub Data Snapshot
 
 on:
   schedule:
-    - cron: '*/15 * * * *'   # every 15 minutes
-  workflow_dispatch:           # manual trigger
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -17,22 +17,27 @@ jobs:
       - name: Build portfolio snapshot
         env:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          ZD_AUTH: ${{ secrets.ZD_AUTH }}
         run: |
           node << 'SCRIPT'
           const fs = require('fs');
 
-          const TOKEN   = process.env.NOTION_TOKEN;
-          const HEADERS = {
-            'Authorization': 'Bearer ' + TOKEN,
+          const NOTION_TOKEN = process.env.NOTION_TOKEN;
+          const ZD_AUTH      = process.env.ZD_AUTH || '';
+          const ZD_BASE      = 'https://rev-io.zendesk.com/api/v2';
+
+          const NOTION_HDR = {
+            'Authorization': 'Bearer ' + NOTION_TOKEN,
             'Notion-Version': '2022-06-28',
-            'Content-Type':  'application/json',
+            'Content-Type': 'application/json',
           };
 
           const DB_CLIENTS = '310a59b7-e7b2-806e-a78f-f37d70de8601';
           const DB_BRIEFS  = '344a59b7-e7b2-806b-a4b7-fce85ed24358';
           const DB_DIGESTS = '349a59b7-e7b2-80e8-a0c6-c0947c44f455';
 
-          async function queryAll(dbId, filter, sorts) {
+          // ── Notion helpers ───────────────────────────────────────────────────
+          async function notionQuery(dbId, filter, sorts) {
             let results = [], cursor;
             do {
               const body = { page_size: 100 };
@@ -40,35 +45,29 @@ jobs:
               if (sorts)  body.sorts  = sorts;
               if (cursor) body.start_cursor = cursor;
               const res = await fetch(`https://api.notion.com/v1/databases/${dbId}/query`, {
-                method: 'POST', headers: HEADERS, body: JSON.stringify(body),
+                method: 'POST', headers: NOTION_HDR, body: JSON.stringify(body),
               });
               const d = await res.json();
-              if (!d.results) { console.error('Notion error:', JSON.stringify(d)); break; }
+              if (!d.results) { console.error('Notion error:', JSON.stringify(d).slice(0,200)); break; }
               results.push(...d.results);
               cursor = d.has_more ? d.next_cursor : null;
             } while (cursor);
             return results;
           }
 
-          function nStr(prop) {
-            if (!prop) return null;
-            if (prop.type === 'title')     return prop.title?.map(t => t.plain_text).join('') || null;
-            if (prop.type === 'rich_text') return prop.rich_text?.map(t => t.plain_text).join('') || null;
-            if (prop.type === 'select')    return prop.select?.name || null;
-            return null;
-          }
-          function nDate(prop)  { return prop?.date?.start || null; }
-          function nNum(prop)   { return prop?.number ?? (prop?.formula?.number ?? null); }
-          function nPpl(prop)   { return (prop?.people || []).map(p => p.name).filter(Boolean); }
-          function nStat(prop)  { return prop?.status?.name || null; }
+          function nStr(p)  { if (!p) return null; if (p.type==='title') return p.title?.map(t=>t.plain_text).join('')||null; if (p.type==='rich_text') return p.rich_text?.map(t=>t.plain_text).join('')||null; if (p.type==='select') return p.select?.name||null; return null; }
+          function nDate(p) { return p?.date?.start || null; }
+          function nNum(p)  { return p?.number ?? (p?.formula?.number ?? null); }
+          function nPpl(p)  { return (p?.people||[]).map(x=>x.name).filter(Boolean); }
+          function nStat(p) { return p?.status?.name || null; }
 
           function statusGroup(s) {
             if (!s) return 'other';
             const l = s.toLowerCase();
             if (l.includes('on track'))  return 'on-track';
             if (l.includes('off track')) return 'off-track';
-            if (l === 'rts')     return 'rts';
-            if (l === 'on hold') return 'on-hold';
+            if (l==='rts')     return 'rts';
+            if (l==='on hold') return 'on-hold';
             return 'other';
           }
 
@@ -77,78 +76,118 @@ jobs:
             'telephone','voip','systems','network','data','global','digital','cloud','psa','mig',
             'migration','internal','bob','north','south','east','west','public','comm']);
 
-          function tokenize(name) {
-            return name.toLowerCase().split(/[\s\-\/,().]+/).filter(t => t.length >= 2 && !STOP.has(t));
-          }
-
-          const BRIEF_ALIAS = {
-            'Rhode Island Telephone': ['Rhode Island'],
-            'Public Telephone Company': ['PTCOA'],
-          };
+          const BRIEF_ALIAS   = { 'Rhode Island Telephone': ['Rhode Island'], 'Public Telephone Company': ['PTCOA'] };
           const BRIEF_EXCLUDE = new Set(['805 Voip','Third Generation of Pennsylvania','PSA Mig to Internal']);
 
           function briefMatches(briefName, clientName) {
             const b = briefName.toLowerCase(), c = clientName.toLowerCase();
             if (b.includes(c) || c.includes(b)) return true;
-            const cToks = tokenize(clientName), bToks = tokenize(briefName);
-            if (!cToks.length || !bToks.length) return false;
-            const shorter = cToks.length <= bToks.length ? cToks : bToks;
-            const longer  = cToks.length <= bToks.length ? bToks  : cToks;
-            const matched = shorter.filter(st => longer.some(lt => lt.includes(st) || st.includes(lt)));
-            return matched.length / shorter.length >= 0.5;
+            const tok = s => s.split(/[\s\-\/,().]+/).filter(t => t.length>=2 && !STOP.has(t));
+            const cT = tok(c), bT = tok(b);
+            if (!cT.length || !bT.length) return false;
+            const [sh, lo] = cT.length<=bT.length ? [cT,bT] : [bT,cT];
+            return sh.filter(st=>lo.some(lt=>lt.includes(st)||st.includes(lt))).length / sh.length >= 0.5;
           }
 
+          // ── Zendesk helpers ──────────────────────────────────────────────────
+          async function zdGet(path) {
+            if (!ZD_AUTH) return null;
+            const res = await fetch(ZD_BASE + path, {
+              headers: { 'Authorization': 'Basic ' + Buffer.from(ZD_AUTH).toString('base64') }
+            });
+            if (!res.ok) return null;
+            return res.json();
+          }
+
+          async function fetchZendeskOrgs() {
+            if (!ZD_AUTH) return [];
+            const orgs = [];
+            let url = '/organizations.json?per_page=100';
+            while (url) {
+              const d = await zdGet(url);
+              if (!d) break;
+              orgs.push(...(d.organizations || []));
+              url = d.next_page ? d.next_page.replace(ZD_BASE, '') : null;
+            }
+            return orgs;
+          }
+
+          async function fetchZendeskTicketsForOrg(orgId) {
+            const d = await zdGet(`/organizations/${orgId}/tickets.json?per_page=50`);
+            if (!d) return [];
+            return (d.tickets || [])
+              .filter(t => t.status === 'open' || t.status === 'pending' || t.status === 'new')
+              .map(t => ({
+                id:      t.id,
+                subject: t.subject,
+                status:  t.status,
+                url:     `https://rev-io.zendesk.com/agent/tickets/${t.id}`,
+                updated: t.updated_at?.slice(0,10) || '',
+                created: t.created_at?.slice(0,10) || '',
+                priority: t.priority || null,
+              }));
+          }
+
+          // ── Main ─────────────────────────────────────────────────────────────
           (async () => {
-            console.log('Fetching clients...');
-            const EXCLUDED = ['Graduated','Canceled','Completed'];
-            const clientFilter = { and: EXCLUDED.map(s => ({ property: 'Status', status: { does_not_equal: s } })) };
-            const clientPages = await queryAll(DB_CLIENTS, clientFilter, [{ property: 'Health Score', direction: 'ascending' }]);
+            console.log('Fetching clients…');
+            const EXCLUDED   = ['Graduated','Canceled','Completed'];
+            const clientFilter = { and: EXCLUDED.map(s => ({ property:'Status', status:{ does_not_equal:s } })) };
+            const clientPages = await notionQuery(DB_CLIENTS, clientFilter, [{ property:'Health Score', direction:'ascending' }]);
             console.log(`  ${clientPages.length} clients`);
 
-            console.log('Fetching briefs (90d)...');
-            const cutoff = new Date(Date.now() - 90 * 86400000).toISOString().split('T')[0];
-            const briefPages = await queryAll(DB_BRIEFS,
-              { property: 'Call Date', date: { on_or_after: cutoff } },
-              [{ property: 'Call Date', direction: 'descending' }]
+            console.log('Fetching briefs (90d)…');
+            const cutoff = new Date(Date.now()-90*86400000).toISOString().split('T')[0];
+            const briefPages = await notionQuery(DB_BRIEFS,
+              { property:'Call Date', date:{ on_or_after:cutoff } },
+              [{ property:'Call Date', direction:'descending' }]
             );
             console.log(`  ${briefPages.length} briefs`);
 
-            console.log('Fetching digests...');
-            const digestPages = await queryAll(DB_DIGESTS, null, [{ property: 'Name', direction: 'ascending' }]);
+            console.log('Fetching digests…');
+            const digestPages = await notionQuery(DB_DIGESTS, null, [{ property:'Name', direction:'ascending' }]);
             console.log(`  ${digestPages.length} digests`);
 
-            // Build clients array
+            console.log('Fetching Zendesk orgs…');
+            const zdOrgs = await fetchZendeskOrgs();
+            console.log(`  ${zdOrgs.length} ZD orgs`);
+
+            // Build client objects with full fields
             const clients = clientPages.map(page => {
               const pr = page.properties;
-              const status = nStat(pr['Status']);
+              const status   = nStat(pr['Status']);
+              const wrikeId  = nStr(pr['Wrike Project ID']);
               const koDate   = nDate(pr['Start/KO Date']);
               const gradDate = nDate(pr['Current Graduation Date']) || nDate(pr['Graduation Date']);
-              const daysActive = koDate
-                ? Math.floor((Date.now() - new Date(koDate).getTime()) / 86400000)
-                : null;
               return {
-                id:          page.id,
-                name:        nStr(pr['Client Name']),
+                id:               page.id,
+                notionUrl:        `https://www.notion.so/${page.id.replace(/-/g,'')}`,
+                name:             nStr(pr['Client Name']),
                 status,
-                statusGroup: statusGroup(status),
-                sa:          nPpl(pr['SA']),
-                pm:          nPpl(pr['PM']),
-                de:          nPpl(pr['DE']),
-                health:      nNum(pr['Health Score']),
-                complexity:  nStr(pr['Complexity']),
-                segment:     nStr(pr['Segment']),
-                mrr:         nNum(pr['Activation MRR']),
+                statusGroup:      statusGroup(status),
+                sa:               nPpl(pr['SA']),
+                pm:               nPpl(pr['PM']),
+                de:               nPpl(pr['DE']),
+                csa:              nPpl(pr['CSA']),
+                health:           nNum(pr['Health Score']),
+                complexity:       nStr(pr['Complexity']),
+                segment:          nStr(pr['Segment']),
+                mrr:              nNum(pr['Activation MRR']),
                 koDate,
                 gradDate,
-                daysActive,
+                activationDate:   nDate(pr['Platform Activation Date']) || nDate(pr['Activation Date']),
+                billOutDate:      nDate(pr['1st Bill Out Date']) || nDate(pr['Bill-Out Date']),
+                charterDate:      nDate(pr['Charter Signed Date']),
+                daysActive:       koDate ? Math.floor((Date.now()-new Date(koDate).getTime())/86400000) : null,
+                wrikeId,
+                wrikeUrl:         wrikeId ? `https://www.wrike.com/open.htm?id=${wrikeId}` : null,
               };
             });
 
-            // Index briefs by notion page id → for later per-client lookups
-            const briefsByPageId = {};
-            for (const page of briefPages) {
+            // Index briefs
+            const allBriefs = briefPages.map(page => {
               const pr = page.properties;
-              const brief = {
+              return {
                 id:            page.id,
                 title:         nStr(pr['Name']),
                 date:          nDate(pr['Call Date']),
@@ -165,56 +204,61 @@ jobs:
                 configTopics:  nStr(pr['Config Topics']),
                 riskReason:    nStr(pr['Risk Reason']),
               };
-              briefsByPageId[page.id] = brief;
-            }
+            });
 
             // Match briefs to clients
             const briefsByClientId = {};
             for (const client of clients) {
               if (!client.name) continue;
               const aliases = BRIEF_ALIAS[client.name];
-              const matched = briefPages.filter(p => {
-                const bn = nStr(p.properties['Name']) || '';
+              briefsByClientId[client.id] = allBriefs.filter(b => {
+                if (!b.title) return false;
                 if (BRIEF_EXCLUDE.has(client.name)) return false;
-                if (aliases) return aliases.some(a => bn.toLowerCase().includes(a.toLowerCase()) || a.toLowerCase().includes(bn.toLowerCase()));
-                return briefMatches(bn, client.name);
+                if (aliases) return aliases.some(a => b.title.toLowerCase().includes(a.toLowerCase()) || a.toLowerCase().includes(b.title.toLowerCase()));
+                return briefMatches(b.title, client.name);
               });
-              briefsByClientId[client.id] = matched.map(p => briefsByPageId[p.id]).filter(Boolean);
             }
 
-            // Match latest call per client for the list view
-            for (const client of clients) {
-              const clientBriefs = briefsByClientId[client.id] || [];
-              if (clientBriefs.length > 0) {
-                client.lastCall = { date: clientBriefs[0].date, risk: clientBriefs[0].risk };
-              } else {
-                client.lastCall = null;
-              }
+            // Attach lastCall to each client
+            for (const c of clients) {
+              const cb = briefsByClientId[c.id];
+              c.lastCall = cb?.length ? { date: cb[0].date, risk: cb[0].risk } : null;
             }
 
-            // Index digests by client name (first word match)
+            // Match digest to each client
             const digestsByClientId = {};
             for (const client of clients) {
               if (!client.name) continue;
               const firstWord = client.name.split(/\s+/)[0].toLowerCase();
-              const match = digestPages.filter(p => {
-                const dn = (nStr(p.properties['Name']) || '').toLowerCase();
-                return dn.includes(firstWord);
-              });
-              if (match.length > 0) {
-                const last = match[match.length - 1];
-                digestsByClientId[client.id] = {
-                  id:   last.id,
-                  name: nStr(last.properties['Name']),
-                };
+              const match = digestPages.filter(p => (nStr(p.properties['Name'])||'').toLowerCase().includes(firstWord));
+              if (match.length) digestsByClientId[client.id] = { id: match[match.length-1].id, name: nStr(match[match.length-1].properties['Name']) };
+            }
+
+            // Match Zendesk orgs to clients, fetch their tickets
+            const ticketsByClientId = {};
+            if (zdOrgs.length) {
+              for (const client of clients) {
+                if (!client.name) continue;
+                const cLow = client.name.toLowerCase();
+                const org = zdOrgs.find(o => {
+                  const oLow = (o.name||'').toLowerCase();
+                  return oLow.includes(cLow.split(/\s+/)[0]) || cLow.includes(oLow.split(/\s+/)[0]);
+                });
+                if (org) {
+                  ticketsByClientId[client.id] = await fetchZendeskTicketsForOrg(org.id);
+                  if (ticketsByClientId[client.id].length) {
+                    console.log(`  ZD: ${client.name} → ${ticketsByClientId[client.id].length} tickets`);
+                  }
+                }
               }
             }
 
             const snapshot = {
-              updatedAt:        new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
               clients,
               briefsByClientId,
               digestsByClientId,
+              ticketsByClientId,
             };
 
             fs.mkdirSync('data', { recursive: true });
