@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Alfred Demo — Presenter Script</title>
+  <style>
+    :root {
+      --bg:       #0d1117;
+      --surface:  #161b22;
+      --surface2: #1c2230;
+      --border:   #30363d;
+      --blue:     #1D3756;
+      --green:    #6EBE4F;
+      --teal:     #2399B5;
+      --text:     #e6edf3;
+      --muted:    #8b949e;
+      --yellow:   #d29922;
+      --radius:   10px;
+      --mono:     'Fira Code', 'Consolas', monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; font-size: 15px; line-height: 1.7; }
+
+    .header { background: var(--blue); border-bottom: 3px solid var(--yellow); padding: 20px 48px; display: flex; align-items: center; gap: 16px; }
+    .header-logo { font-size: 28px; }
+    .header-title h1 { font-size: 20px; font-weight: 700; }
+    .header-title p { font-size: 12px; color: rgba(255,255,255,0.6); margin-top: 2px; }
+    .header-badge { margin-left: auto; background: rgba(210,153,34,0.15); border: 1px solid var(--yellow); color: var(--yellow); font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 20px; letter-spacing: 0.5px; }
+
+    .main { max-width: 860px; margin: 0 auto; padding: 48px 32px 80px; }
+
+    .tip { background: rgba(210,153,34,0.08); border: 1px solid rgba(210,153,34,0.3); border-left: 3px solid var(--yellow); border-radius: 6px; padding: 12px 16px; font-size: 13px; color: var(--yellow); margin-bottom: 32px; }
+    .tip strong { color: var(--yellow); }
+
+    .act { margin-bottom: 52px; }
+    .act-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; padding-bottom: 14px; border-bottom: 1px solid var(--border); }
+    .act-badge { background: var(--teal); color: #fff; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; letter-spacing: 0.8px; text-transform: uppercase; flex-shrink: 0; }
+    .act-badge.yellow { background: var(--yellow); }
+    .act-badge.green { background: var(--green); color: #0d1117; }
+    .act-title { font-size: 19px; font-weight: 700; }
+    .act-action { margin-left: auto; font-size: 12px; color: var(--muted); font-style: italic; white-space: nowrap; }
+
+    .block { margin-bottom: 22px; }
+    .block-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.7px; color: var(--teal); margin-bottom: 8px; }
+    .block-label.yellow { color: var(--yellow); }
+    .block-label.green { color: var(--green); }
+
+    .script-text { font-size: 15px; line-height: 1.8; color: var(--text); }
+    .script-text p { margin-bottom: 10px; }
+    .script-text p:last-child { margin-bottom: 0; }
+
+    .callout { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 14px 18px; margin: 12px 0; font-size: 13px; }
+    .callout strong { color: var(--green); }
+
+    .point-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
+    .point-list li { display: flex; gap: 12px; align-items: flex-start; font-size: 14px; }
+    .point-list li .bullet { color: var(--teal); font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+    .point-list li .bullet.green { color: var(--green); }
+    .point-list li .bullet.yellow { color: var(--yellow); }
+
+    .pause { display: inline-flex; align-items: center; gap: 6px; background: rgba(210,153,34,0.1); border: 1px solid rgba(210,153,34,0.25); color: var(--yellow); font-size: 11px; font-weight: 700; padding: 2px 10px; border-radius: 12px; margin: 6px 0; letter-spacing: 0.3px; }
+
+    .section-sep { border: none; border-top: 1px solid var(--border); margin: 44px 0; }
+    .footer { text-align: center; color: var(--muted); font-size: 12px; padding: 32px; border-top: 1px solid var(--border); }
+
+    @media print {
+      body { background: #fff; color: #111; }
+      .header { background: #1D3756; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .act-badge, .callout, .tip, .pause { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-logo">🎩</div>
+  <div class="header-title">
+    <h1>Alfred — Presenter Script</h1>
+    <p>Read alongside the demo walkthrough &nbsp;·&nbsp; Keep this tab open, switch to the walkthrough when needed</p>
+  </div>
+  <div class="header-badge">INTERNAL USE</div>
+</div>
+
+<div class="main">
+
+  <div class="tip">
+    <strong>How to use this:</strong> Keep this tab open on a second screen or window. Switch to the demo walkthrough tab when you need to show something. Talking points are written conversationally — don't read them verbatim, use them as your guide.
+  </div>
+
+  <!-- INTRO -->
+  <div class="act">
+    <div class="act-header">
+      <span class="act-badge yellow">Intro</span>
+      <span class="act-title">Setting the Stage</span>
+      <span class="act-action">Pipeline diagram visible on walkthrough</span>
+    </div>
+
+    <div class="block">
+      <div class="block-label">Opening</div>
+      <div class="script-text">
+        <p>The problem we're solving is simple: every new PSA client arrives to kickoff with a blank instance. Day one, the SA is re-collecting information that Sales already knew — prior PSA, accounting software, who the users are, how they want to bill. That's not onboarding, that's data entry.</p>
+        <p>We analyzed 566 PSA onboarding calls — over 411 hours of SA time — and the same four questions came up in 84 to 90 percent of every single call. Information that should have transferred automatically at close.</p>
+        <p>Alfred fixes that. The pipeline you're looking at is how we get from a closed deal in Salesforce to a pre-configured PSA instance — before kickoff, without the SA having to ask twice.</p>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="block-label">Pipeline walkthrough</div>
+      <ul class="point-list">
+        <li><span class="bullet">→</span><span>Deal closes in Salesforce. That's the trigger.</span></li>
+        <li><span class="bullet">→</span><span>Alfred pulls the account and opportunity data and auto-populates the Sales Brief — the structured handoff document the SA gets 48 hours before kickoff.</span></li>
+        <li><span class="bullet">→</span><span>Gaps that transcripts and Salesforce can't fill go to the client as a short pre-populated questionnaire. They're only answering what Sales couldn't capture.</span></li>
+        <li><span class="bullet">→</span><span>The SA reviews a full config preview and approves it. Nothing hits the instance until they sign off.</span></li>
+        <li><span class="bullet green">→</span><span>Alfred calls the PSA API and the instance is built. Customer record, contacts, users, billing config, onboarding ticket, project — all of it, in under 60 seconds.</span></li>
+      </ul>
+    </div>
+
+    <div class="pause">⏸ Switch to the walkthrough tab → scroll past the pipeline</div>
+  </div>
+
+  <hr class="section-sep" />
+
+  <!-- ACT 1 -->
+  <div class="act">
+    <div class="act-header">
+      <span class="act-badge">Act 1</span>
+      <span class="act-title">The Sales Brief</span>
+      <span class="act-action">Click "Open Sales Brief →" button</span>
+    </div>
+
+    <div class="block">
+      <div class="block-label">What it is</div>
+      <div class="script-text">
+        <p>This is the Sales Brief — the structured handoff document that replaces the informal notes, Slack messages, and tribal knowledge that usually fall through the cracks between Sales and onboarding.</p>
+        <p>For this demo we're using a fictional client — Apex Systems Group out of Austin. $8,500 a month, 36-month term. The brief is pre-filled from Salesforce data. In production, Alfred pulls this automatically at close — the SA doesn't fill it, it arrives in their inbox already populated.</p>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="block-label">The Core 8</div>
+      <div class="script-text">
+        <p>The Core 8 section is the heart of it. These are the eight things we need to know before we can do anything meaningful in the PSA — and they're the same eight things that get asked in 85% of kickoff calls when they're not captured at close.</p>
+      </div>
+      <div class="callout">
+        <strong>Walk through each field briefly:</strong><br><br>
+        Prior PSA is ConnectWise Manage — that's a migration, not a net-new setup. That changes the conversation on Day 1.<br><br>
+        Accounting is QuickBooks Online — important because QBO has a direct integration, Desktop doesn't. Sales knew this and it's here.<br><br>
+        RMM is NinjaOne. Payment processor is ACH. Dispatch model, business hours, invoice continuity, SureTax status — all captured. All here. None of it needs to be asked again.
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="block-label">Why it matters</div>
+      <div class="script-text">
+        <p>The SA assigned to this client — Nicole Hills — gets this document 48 hours before she ever speaks to Sarah Chen. She walks into kickoff knowing the full picture. Session one starts at configuration, not at intake.</p>
+      </div>
+    </div>
+
+    <div class="pause">⏸ Switch back to the walkthrough tab → scroll to Act 2</div>
+  </div>
+
+  <hr class="section-sep" />
+
+  <!-- ACT 2 -->
+  <div class="act">
+    <div class="act-header">
+      <span class="act-badge">Act 2</span>
+      <span class="act-title">The Client Questionnaire</span>
+      <span class="act-action">Click "Open Questionnaire →" button</span>
+    </div>
+
+    <div class="block">
+      <div class="block-label">What the client sees</div>
+      <div class="script-text">
+        <p>This is the client-facing side. Alfred generates a questionnaire link and sends it to the client before kickoff. The key thing to understand is what's already filled in versus what the client actually has to answer.</p>
+        <p>Company name, address, contact info — pre-populated from Salesforce. Users — pre-populated from the Sales Brief if Sales captured them. Billing cycle preferences the SA selected — already there. The client isn't starting from scratch. They're confirming and filling the gaps.</p>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="block-label">Billing config</div>
+      <div class="script-text">
+        <p>Apex chose anniversary billing, billed in advance, with a $25 flat late fee and a 10-day grace period. These are decisions the client makes once, here, before kickoff — not during a call where we're trying to configure the system at the same time as we're having the conversation.</p>
+        <p>That billing config feeds directly into which bill profile gets assigned in the PSA. Alfred maps it automatically. No lookup table for the SA to consult.</p>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="block-label">Users</div>
+      <div class="script-text">
+        <p>Four users — Sarah the owner, Marcus the operations manager, Jamie the lead tech, and Taylor in dispatch. Names, emails, job titles, roles. All confirmed before kickoff. Alfred creates each of these as actual PSA users in the next step — you'll see it happen.</p>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="block-label">The SA approval gate</div>
+      <div class="script-text">
+        <p>Step 5 is critical — the SA gets a full config preview before anything is written to the instance. This isn't Alfred going rogue. The SA reviews exactly what's about to be created, adds notes, and approves it. Nicole's note here is about the CW Manage migration and the ticket templates the client wants replicated. That context travels with the record.</p>
+      </div>
+    </div>
+
+    <div class="pause">⏸ Switch back to the walkthrough tab → scroll to Act 3</div>
+  </div>
+
+  <hr class="section-sep" />
+
+  <!-- ACT 3 -->
+  <div class="act">
+    <div class="act-header">
+      <span class="act-badge green">Act 3</span>
+      <span class="act-title">Alfred Pushes to the PSA API</span>
+      <span class="act-action">Walk through the terminal, then open live PSA links</span>
+    </div>
+
+    <div class="block">
+      <div class="block-label">The pipeline runs</div>
+      <div class="script-text">
+        <p>SA approves. Alfred runs. What you're looking at is the actual output from the pre-config script running against the demo PSA instance. This isn't a mockup — these are real API calls that created real records.</p>
+        <p>Seven steps, two service tiers — billing and the PSA core. Let me walk through what each one is actually doing.</p>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="block-label yellow">Step by step</div>
+      <ul class="point-list">
+        <li><span class="bullet">1</span><span><strong>Customer record</strong> — Apex Systems Group is created as a billing customer, assigned to the correct bill profile based on what the client selected in the questionnaire. Bill profile ID 1001.</span></li>
+        <li><span class="bullet">2</span><span><strong>Contacts</strong> — Sarah Chen as primary contact, Marcus Rivera as billing contact. Both linked to the customer record with their correct job titles and contact info.</span></li>
+        <li><span class="bullet">3</span><span><strong>Users ×4</strong> — All four team members created as PSA users with their roles. They can log in to the system before Day 1.</span></li>
+        <li><span class="bullet">4</span><span><strong>Intake note</strong> — The full Alfred brief is pinned to the customer record as a note. Any SA who opens this customer sees the complete picture immediately — Core 8, billing config, SA notes, everything.</span></li>
+        <li><span class="bullet green">5</span><span><strong>Onboarding ticket</strong> — A kickoff service ticket is created and assigned. This is the work item that tracks the onboarding engagement itself.</span></li>
+        <li><span class="bullet green">6</span><span><strong>Onboarding project</strong> — A 30-day project is opened with a start and end date. Structured milestone tracking from day one.</span></li>
+        <li><span class="bullet">7</span><span><strong>Opportunity</strong> — The opportunity record is created in the PSA for pipeline visibility and reporting.</span></li>
+      </ul>
+    </div>
+
+    <div class="block">
+      <div class="block-label">The live PSA moment</div>
+      <div class="script-text">
+        <p>These aren't hypothetical records. Click any of the buttons below the terminal — Customer 1110, Ticket 292, Project 199. You're looking at what Alfred built in the PSA instance. Sarah Chen is in there. The billing config is applied. The intake note is pinned. The ticket is open.</p>
+        <p>This is what the SA opens on Day 1 instead of a blank screen.</p>
+      </div>
+    </div>
+
+    <div class="pause">⏸ Click each PSA link and show the live records</div>
+  </div>
+
+  <hr class="section-sep" />
+
+  <!-- IMPACT -->
+  <div class="act">
+    <div class="act-header">
+      <span class="act-badge yellow">Close</span>
+      <span class="act-title">Impact &amp; What's Next</span>
+      <span class="act-action">Scroll to Impact section</span>
+    </div>
+
+    <div class="block">
+      <div class="block-label">The numbers</div>
+      <div class="script-text">
+        <p>Seven API calls. Under 60 seconds. 60 to 80 percent of the instance configured before the SA and client have ever spoken. That's what this does today, against the demo instance, with a fictional client.</p>
+        <p>The 411 hours is real — that's the SA time we analyzed across 566 calls. Most of it was re-collecting information that existed somewhere. Alfred is the fix.</p>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="block-label">What's next</div>
+      <div class="script-text">
+        <p>Three things are in motion. First, the Salesforce trigger — right now the script runs on demand. The next step is closing the loop so that a Closed-Won in Salesforce fires this automatically, no SA involvement required to initiate.</p>
+        <p>Second, Fireflies extraction — pulling signals from sales call transcripts to pre-fill the brief before the questionnaire even goes out. We've already validated that the transcripts carry most of the Core 8. That's the last mile of making the brief truly automatic.</p>
+        <p>Third, production instance access. The demo runs against a sandbox. We're working with Matthew Hills on a runner setup that allows Alfred to write to live client instances under SA supervision — same approval gate, real instances.</p>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="block-label green">Landing the close</div>
+      <div class="script-text">
+        <p>The SA's job doesn't change — they still own the client relationship, the kickoff call, the onboarding. Alfred just handles the work that shouldn't have been theirs in the first place. Every session that used to start with "can you tell me about your current PSA" now starts at configuration. That's the difference.</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">Alfred · Internal presenter script &nbsp;·&nbsp; Not for distribution &nbsp;·&nbsp; Rev.io Onboarding Automation</div>
+
+</body>
+</html>
