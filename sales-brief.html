@@ -1521,5 +1521,191 @@
 
 </script>
 
+<!-- ══ DEMO AUTO-FILL: ?demo=apex ══ -->
+<script>
+(function() {
+  if (new URLSearchParams(location.search).get('demo') !== 'apex') return;
+
+  // ── Demo banner ──
+  const banner = document.createElement('div');
+  banner.style.cssText = 'position:fixed;top:12px;right:16px;z-index:9999;background:#1a2e1a;border:1px solid #2ecc71;border-radius:20px;padding:6px 14px;font-size:12px;font-weight:600;color:#2ecc71;pointer-events:none;letter-spacing:0.5px;';
+  banner.textContent = '🎯 Demo: Apex Systems Group';
+  document.body.appendChild(banner);
+
+  // ── Helpers ──
+  function fillById(id, value) {
+    const el = document.getElementById(id);
+    if (el) { el.value = value; el.dispatchEvent(new Event('change')); el.dispatchEvent(new Event('input')); }
+  }
+
+  function fillByLabel(labelText, value) {
+    const labels = document.querySelectorAll('label');
+    for (const l of labels) {
+      if (l.textContent.trim().startsWith(labelText)) {
+        const field = l.closest('.field');
+        if (!field) continue;
+        const inp = field.querySelector('input:not([type="radio"]):not([type="checkbox"]), textarea');
+        if (inp) { inp.value = value; inp.dispatchEvent(new Event('change')); inp.dispatchEvent(new Event('input')); return true; }
+      }
+    }
+    return false;
+  }
+
+  function setRadio(name, value) {
+    const r = document.querySelector('input[name="' + name + '"][value="' + value + '"]');
+    if (r) { r.checked = true; r.dispatchEvent(new Event('change')); }
+  }
+
+  function setSelect(labelText, optionText) {
+    const labels = document.querySelectorAll('label');
+    for (const l of labels) {
+      if (l.textContent.trim().startsWith(labelText)) {
+        const sel = l.closest('.field') && l.closest('.field').querySelector('select');
+        if (sel) {
+          for (const o of sel.options) {
+            if (o.text.includes(optionText)) { sel.value = o.value; sel.dispatchEvent(new Event('change')); return; }
+          }
+        }
+      }
+    }
+  }
+
+  function run() {
+    // ── Section 01: Deal Info ──
+    fillById('sb-company', 'Apex Systems Group');
+    fillById('sb-contact', 'Sarah Chen — Owner / CEO');
+    fillById('sb-contact-email', 'schen@apexsystemsgroup.com');
+
+    fillByLabel('Close Date', '2026-04-28');
+    fillByLabel('Monthly Recurring Revenue (MRR)', '$8,500');
+    fillByLabel('Sales Rep', 'Jordan Parker');
+    fillByLabel('Kickoff Target Time', '10:00 AM CT');
+    fillByLabel('Starting Number (if resetting)', '1001');
+    fillByLabel('Business Hours', 'Mon–Fri 8:00 AM – 6:00 PM CT');
+    fillByLabel('Holiday Calendar', 'US Federal holidays');
+
+    setSelect('Contract Term', '36 Months');
+    setSelect('SA Assigned', 'Nicole Hills');
+    setSelect('Business Vertical', 'MSP');
+
+    setRadio('billing_client', 'no');
+    setRadio('golive_tier', 'billing');
+
+    // Brief context
+    const briefLabels = document.querySelectorAll('label');
+    for (const l of briefLabels) {
+      if (l.textContent.trim().startsWith('Brief — Key Context')) {
+        const field = l.closest('.field');
+        if (field) {
+          const ta = field.querySelector('textarea');
+          if (ta) { ta.value = 'Migration from ConnectWise Manage. Client is detail-oriented — Sarah Chen will be hands-on throughout onboarding. Marcus Rivera owns billing. Strong data hygiene. Target go-live: 30 days.'; ta.dispatchEvent(new Event('input')); }
+        }
+        break;
+      }
+    }
+
+    // ── Section 02: Core 8 ──
+    // Q1: Prior PSA
+    setSelect('Current / Prior PSA', 'ConnectWise');
+    setRadio('migration', 'clean');
+    fillByLabel('Approx. Customer / Record Count', '~150 clients, 2,000+ tickets');
+
+    // Q2: Accounting
+    setSelect('Accounting Software', 'QuickBooks Online');
+    setRadio('qb_sync', 'yes');
+    setRadio('gl_codes', 'no');
+
+    // Q3: RMM
+    setSelect('RMM Tool', 'NinjaOne');
+    setRadio('rmm_priority', 'day1');
+
+    // Q4: Payments
+    setSelect('Current Payment Processor', 'None yet');
+    setRadio('payments_switch', 'new');
+    setRadio('merchant', 'na');
+    // Check ACH
+    const achLabels = document.querySelectorAll('.check-group label');
+    for (const l of achLabels) {
+      if (l.textContent.includes('ACH')) {
+        const cb = l.querySelector('input[type="checkbox"]');
+        if (cb && !cb.checked) { cb.checked = true; cb.dispatchEvent(new Event('change')); }
+        break;
+      }
+    }
+
+    // Q5: Users table
+    const tbody = document.getElementById('rolesBody');
+    if (tbody) {
+      // Clear existing rows (keep at least the first one structure)
+      while (tbody.rows.length > 0) {
+        const rows = tbody.querySelectorAll('tr');
+        if (rows.length > 1) rows[rows.length - 1].remove();
+        else break;
+      }
+      // Fill row 0
+      const row0 = tbody.rows[0];
+      if (row0) {
+        const inputs = row0.querySelectorAll('input[type="text"], input[type="email"]');
+        const sel = row0.querySelector('select');
+        if (inputs[0]) inputs[0].value = 'Sarah Chen';
+        if (inputs[1]) inputs[1].value = 'Owner / CEO';
+        if (inputs[2]) inputs[2].value = 'schen@apexsystemsgroup.com';
+        if (sel) sel.value = 'Admin';
+        const mobNo = row0.querySelector('input[name="mob_0"][value="no"]');
+        if (mobNo) mobNo.checked = true;
+      }
+      // Add rows 1–3
+      const extraUsers = [
+        { name: 'Marcus Rivera', title: 'Operations Manager', email: 'mrivera@apexsystemsgroup.com', role: 'Admin', mob: 'no' },
+        { name: 'Jamie Patel',   title: 'Lead Technician',    email: 'jpatel@apexsystemsgroup.com',  role: 'Field Technician', mob: 'yes' },
+        { name: 'Taylor Brooks', title: 'Dispatcher',         email: 'tbrooks@apexsystemsgroup.com', role: 'Dispatcher', mob: 'no' },
+      ];
+      extraUsers.forEach(function(u) {
+        if (typeof addRoleRow === 'function') {
+          addRoleRow();
+          const rows = tbody.querySelectorAll('tr');
+          const lastRow = rows[rows.length - 1];
+          const inputs = lastRow.querySelectorAll('input[type="text"], input[type="email"]');
+          const sel = lastRow.querySelector('select');
+          if (inputs[0]) inputs[0].value = u.name;
+          if (inputs[1]) inputs[1].value = u.title;
+          if (inputs[2]) inputs[2].value = u.email;
+          if (sel) {
+            for (let i = 0; i < sel.options.length; i++) {
+              if (sel.options[i].text === u.role) { sel.value = sel.options[i].value; break; }
+            }
+          }
+          const mobRadio = lastRow.querySelector('input[name^="mob_"][value="' + u.mob + '"]');
+          if (mobRadio) mobRadio.checked = true;
+        }
+      });
+    }
+
+    // Q6: Business hours
+    setRadio('afterhours', 'no');
+    setRadio('sla_holidays', 'yes');
+
+    // Q7: Invoice continuity
+    setRadio('invoice_cont', 'no');
+
+    // Q8: SureTax
+    setRadio('suretax', 'new');
+
+    // ── Section 03: Add-Ons ──
+    setRadio('sms', 'yes');
+    setRadio('sms_num', 'new');
+    setRadio('portal', 'yes');
+    setRadio('inventory', 'no');
+    setRadio('projects', 'yes');
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', run);
+  } else {
+    run();
+  }
+})();
+</script>
+
 </body>
 </html>

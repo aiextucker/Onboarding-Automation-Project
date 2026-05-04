@@ -2386,5 +2386,115 @@ renderUserTable();
   });
 
 </script>
+
+<!-- ══ DEMO AUTO-FILL: ?demo=apex ══ -->
+<script>
+(function() {
+  if (new URLSearchParams(location.search).get('demo') !== 'apex') return;
+
+  // ── Demo banner ──
+  const banner = document.createElement('div');
+  banner.style.cssText = 'position:fixed;top:12px;right:16px;z-index:9999;background:#1a2e1a;border:1px solid #2ecc71;border-radius:20px;padding:6px 14px;font-size:12px;font-weight:600;color:#2ecc71;pointer-events:none;letter-spacing:0.5px;';
+  banner.textContent = '🎯 Demo: Apex Systems Group';
+  document.body.appendChild(banner);
+
+  // ── Helper: click a radio-option label to trigger selectRadio() ──
+  function clickRadioOption(name, value) {
+    const inp = document.querySelector('input[name="' + name + '"][value="' + value + '"]');
+    if (!inp) return;
+    const lbl = inp.closest('.radio-option');
+    if (lbl && lbl.getAttribute('onclick')) {
+      lbl.click();
+    } else {
+      inp.checked = true;
+      inp.dispatchEvent(new Event('change'));
+    }
+  }
+
+  // ── Helper: click a checkbox-option label to toggle it on ──
+  function checkOption(name, value) {
+    const inp = document.querySelector('input[name="' + name + '"][value="' + value + '"]');
+    if (!inp) return;
+    const lbl = inp.closest('.checkbox-option');
+    if (!inp.checked) {
+      if (lbl && lbl.getAttribute('onclick')) {
+        lbl.click();
+      } else {
+        inp.checked = true;
+        inp.dispatchEvent(new Event('change'));
+      }
+    }
+  }
+
+  function fillById(id, value) {
+    const el = document.getElementById(id);
+    if (el) { el.value = value; el.dispatchEvent(new Event('input')); el.dispatchEvent(new Event('change')); }
+  }
+
+  function run() {
+    // ── Step 1: Company info ──
+    fillById('sf-company', 'Apex Systems Group');
+    fillById('sf-contact', 'Sarah Chen');
+    fillById('sf-email',   'schen@apexsystemsgroup.com');
+    fillById('sf-phone',   '512-555-0194');
+    fillById('sf-address', '4801 Southwest Pkwy Suite 220, Austin TX 78735');
+
+    // ── Step 2: Billing config ──
+    // Billing cycle: cycle-based, 1st of month
+    clickRadioOption('billingCycle', 'cycle');
+    checkOption('cycleDates', '1st');
+
+    // Arrears: no
+    clickRadioOption('arrears', 'no');
+
+    // Grace period: yes, 10 days
+    clickRadioOption('gracePeriod', 'yes');
+    fillById('graceDays', '10');
+    // Update state directly too
+    if (typeof state !== 'undefined') {
+      state.graceDays = '10';
+    }
+
+    // Late fees: yes, flat, $25
+    clickRadioOption('lateFees', 'yes');
+    clickRadioOption('lateFeeType', 'flat');
+    if (typeof updateLateFeeUnit === 'function') updateLateFeeUnit();
+    fillById('lateFeeAmount', '25');
+    if (typeof state !== 'undefined') {
+      state.lateFeeAmount = '25';
+    }
+
+    // Multi-profile: no
+    clickRadioOption('multiProfile', 'no');
+
+    // ── Step 3: Users ──
+    if (typeof state !== 'undefined') {
+      state.users = [
+        { name: 'Sarah Chen',    email: 'schen@apexsystemsgroup.com',  role: 'Admin',        fromSales: true },
+        { name: 'Marcus Rivera', email: 'mrivera@apexsystemsgroup.com', role: 'Admin',        fromSales: true },
+        { name: 'Jamie Patel',   email: 'jpatel@apexsystemsgroup.com',  role: 'Standard User', fromSales: true },
+        { name: 'Taylor Brooks', email: 'tbrooks@apexsystemsgroup.com', role: 'Standard User', fromSales: true },
+      ];
+      if (typeof renderUserTable === 'function') renderUserTable();
+    }
+
+    // ── Step 4: Inventory: none ──
+    clickRadioOption('inventory', 'none');
+
+    // ── Step 5: SA Notes ──
+    fillById('saNotes', 'Migrating from ConnectWise Manage — client has existing ticket templates they want replicated. Sarah Chen is hands-on during onboarding. Marcus Rivera owns billing. Target go-live: 30 days.');
+    if (typeof state !== 'undefined') {
+      state.saNotes = document.getElementById('saNotes') ? document.getElementById('saNotes').value : '';
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', run);
+  } else {
+    run();
+  }
+})();
+</script>
+
 </body>
 </html>
