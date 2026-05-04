@@ -39,13 +39,34 @@
     .act-badge { background: var(--teal); color: #fff; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; letter-spacing: 0.8px; text-transform: uppercase; }
     .section-header h2 { font-size: 20px; font-weight: 700; }
 
+    /* Open live button */
+    .open-btn {
+      margin-left: auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(35,153,181,0.12);
+      border: 1px solid var(--teal);
+      color: var(--teal);
+      font-size: 13px;
+      font-weight: 600;
+      padding: 7px 16px;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: background 0.15s, color 0.15s;
+      letter-spacing: 0.2px;
+      white-space: nowrap;
+    }
+    .open-btn:hover { background: var(--teal); color: #fff; }
+    .open-btn .btn-icon { font-size: 15px; }
+
     /* Cards */
     .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px 28px; margin-bottom: 16px; }
     .card-title { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.7px; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
     .card-title .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--teal); display: inline-block; }
 
     /* Pipeline */
-    .pipeline { display: flex; align-items: center; gap: 0; margin: 28px 0 40px; flex-wrap: wrap; gap: 2px; }
+    .pipeline { display: flex; align-items: center; margin: 28px 0 40px; flex-wrap: wrap; gap: 2px; }
     .pipeline-step { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; font-size: 12px; font-weight: 600; text-align: center; min-width: 110px; }
     .pipeline-step .icon { font-size: 16px; display: block; margin-bottom: 3px; }
     .pipeline-step.active { border-color: var(--green); background: rgba(110,190,79,0.08); color: var(--green); }
@@ -86,7 +107,6 @@
     .t-val  { color: #ffa657; }
     .t-head { color: var(--teal); font-weight: bold; }
     .t-sep  { color: #30363d; }
-    .t-sub  { color: var(--muted); font-size: 12px; }
 
     /* API block */
     .api-block { background: var(--surface2); border: 1px solid var(--border); border-left: 3px solid var(--teal); border-radius: 6px; padding: 14px 18px; font-family: var(--mono); font-size: 12px; line-height: 1.7; margin: 10px 0; overflow-x: auto; }
@@ -113,7 +133,7 @@
     .stat-val   { font-size: 32px; font-weight: 800; color: var(--green); }
     .stat-label { font-size: 12px; color: var(--muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
 
-    /* New — step pills for Act 3 */
+    /* Step pills */
     .step-pills { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
     .pill { display: flex; align-items: center; gap: 6px; background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 5px 14px; font-size: 12px; font-weight: 600; }
     .pill .pill-num { background: var(--teal); color: #fff; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; }
@@ -125,9 +145,7 @@
 
     .section { margin-bottom: 52px; }
     .section-sep { border: none; border-top: 1px solid var(--border); margin: 44px 0; }
-
     .footer { text-align: center; color: var(--muted); font-size: 12px; padding: 32px; border-top: 1px solid var(--border); }
-
     .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
     .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
   </style>
@@ -170,11 +188,11 @@
     <div class="section-header">
       <span class="act-badge">Act 1</span>
       <h2>The Sales Brief</h2>
+      <a class="open-btn" href="https://aiextucker.github.io/Onboarding-Automation-Project/sales-brief.html?demo=apex" target="_blank">
+        <span class="btn-icon">📋</span> Open Sales Brief →
+      </a>
     </div>
-    <div style="display:flex; align-items:center; gap:16px; margin-bottom:24px;">
-      <p style="color:var(--muted); font-size:14px; flex:1;">When a deal closes in Salesforce, Alfred pulls account and opportunity data and pre-fills a structured SA handoff brief. The SA receives it 48 hours before kickoff — already loaded with everything Sales knew at close.</p>
-      <a href="sales-brief.html?demo=apex" target="_blank" style="flex-shrink:0; display:inline-flex; align-items:center; gap:6px; background:rgba(35,153,181,0.12); border:1px solid var(--teal); color:var(--teal); font-size:13px; font-weight:600; padding:8px 16px; border-radius:8px; text-decoration:none;">📋 Open Sales Brief →</a>
-    </div>
+    <p style="color:var(--muted); margin-bottom:24px; font-size:14px;">When a deal closes in Salesforce, Alfred pulls account and opportunity data and pre-fills a structured SA handoff brief. The SA receives it 48 hours before kickoff — already loaded with everything Sales knew at close.</p>
 
     <div class="card">
       <div class="card-title"><span class="dot"></span>Client &amp; Deal Info</div>
@@ -233,11 +251,11 @@
     <div class="section-header">
       <span class="act-badge">Act 2</span>
       <h2>The Client Questionnaire</h2>
+      <a class="open-btn" href="https://aiextucker.github.io/Onboarding-Automation-Project/psa-questionnaire.html?demo=apex" target="_blank">
+        <span class="btn-icon">📝</span> Open Questionnaire →
+      </a>
     </div>
-    <div style="display:flex; align-items:center; gap:16px; margin-bottom:24px;">
-      <p style="color:var(--muted); font-size:14px; flex:1;">Alfred generates a tokenized questionnaire link pre-populated from the Sales Brief and sends it to the client. The client fills only what Sales couldn't capture. Alfred presents a full config preview for SA approval — nothing touches the instance until they sign off.</p>
-      <a href="psa-questionnaire.html?demo=apex" target="_blank" style="flex-shrink:0; display:inline-flex; align-items:center; gap:6px; background:rgba(35,153,181,0.12); border:1px solid var(--teal); color:var(--teal); font-size:13px; font-weight:600; padding:8px 16px; border-radius:8px; text-decoration:none;">📝 Open Questionnaire →</a>
-    </div>
+    <p style="color:var(--muted); margin-bottom:24px; font-size:14px;">Alfred generates a tokenized questionnaire link pre-populated from the Sales Brief and sends it to the client. The client fills only what Sales couldn't capture. Alfred presents a full config preview for SA approval — nothing touches the instance until they sign off.</p>
 
     <div class="two-col" style="margin-bottom:16px;">
       <div class="card">
@@ -292,6 +310,18 @@
       <h2>Alfred Pushes to the PSA API</h2>
     </div>
     <p style="color:var(--muted); margin-bottom:20px; font-size:14px;">SA approves. Alfred calls the Rev.io PSA API across two service tiers in 7 sequential steps. The instance is ready before anyone opens a browser.</p>
+
+    <!-- Live PSA links -->
+    <div style="background:rgba(110,190,79,0.07); border:1px solid rgba(110,190,79,0.25); border-radius:8px; padding:10px 16px; margin-bottom:16px; font-size:12px; color:var(--muted); display:flex; align-items:center; gap:10px;">
+      <span style="color:var(--green); font-size:15px;">🔒</span>
+      <span>These records are <strong style="color:var(--text)">locked to a specific demo run</strong> (Apr 28, 2026). The links below open the exact records Alfred created in the PSA demo instance.</span>
+    </div>
+    <div style="display:flex; flex-wrap:wrap; gap:10px; margin-bottom:28px;">
+      <a class="open-btn" href="https://psademo.psarev.io/customers/1110" target="_blank"><span class="btn-icon">🏢</span> Customer 1110 in PSA →</a>
+      <a class="open-btn" href="https://psademo.psarev.io/tickets/292/customers/1110" target="_blank"><span class="btn-icon">🎫</span> Ticket 292 in PSA →</a>
+      <a class="open-btn" href="https://psademo.psarev.io/projects/199" target="_blank"><span class="btn-icon">📁</span> Project 199 in PSA →</a>
+      <a class="open-btn" href="https://psademo.psarev.io/opportunities/6" target="_blank"><span class="btn-icon">💼</span> Opportunity 6 in PSA →</a>
+    </div>
 
     <!-- Step pills -->
     <div class="step-pills">
@@ -388,17 +418,17 @@
       <div>
         <span class="api-label">POST /psac/api/v1/ticket &nbsp;⬅ NEW</span>
         <div class="api-block"><span class="json-key">"customerId"</span>: <span class="json-num">1110</span>,
-<span class="json-key">"ticketTypeId"</span>: <span class="json-num">2</span>, <span class="t-dim">// Service Call</span>
-<span class="json-key">"ticketStatusId"</span>: <span class="json-num">1</span>, <span class="t-dim">// New</span>
-<span class="json-key">"ticketPriorityId"</span>: <span class="json-num">2</span>, <span class="t-dim">// Medium</span>
-<span class="json-key">"ticketDescription"</span>: <span class="json-str">"Onboarding: Apex Systems Group..."</span></div>
+<span class="json-key">"ticketTypeId"</span>: <span class="json-num">2</span>,
+<span class="json-key">"ticketStatusId"</span>: <span class="json-num">1</span>,
+<span class="json-key">"ticketPriorityId"</span>: <span class="json-num">2</span>,
+<span class="json-key">"ticketDescription"</span>: <span class="json-str">"Onboarding: Apex..."</span></div>
         <div class="response-badge">✓ 201 · ticketId: 292</div>
       </div>
       <div>
         <span class="api-label">POST /project-management/api/v1/projects &nbsp;⬅ NEW</span>
         <div class="api-block"><span class="json-key">"customerId"</span>: <span class="json-num">1110</span>,
-<span class="json-key">"projectName"</span>: <span class="json-str">"Apex Systems Group — PSA Onboarding"</span>,
-<span class="json-key">"projectStatusId"</span>: <span class="json-num">1</span>, <span class="t-dim">// Active</span>
+<span class="json-key">"projectName"</span>: <span class="json-str">"Apex — PSA Onboarding"</span>,
+<span class="json-key">"projectStatusId"</span>: <span class="json-num">1</span>,
 <span class="json-key">"startDate"</span>: <span class="json-str">"2026-05-04"</span>,
 <span class="json-key">"endDate"</span>: <span class="json-str">"2026-06-03"</span></div>
         <div class="response-badge">✓ 201 · projectId: 199</div>
