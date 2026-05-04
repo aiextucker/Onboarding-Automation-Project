@@ -210,39 +210,34 @@
     <div class="act-header">
       <span class="act-badge green">Act 3</span>
       <span class="act-title">Alfred Pushes to the PSA API</span>
-      <span class="act-action">Walk through the terminal, then open live PSA links</span>
+      <span class="act-action">Walk through the terminal output</span>
     </div>
 
     <div class="block">
-      <div class="block-label">The pipeline runs</div>
+      <div class="block-label">What Alfred actually does</div>
       <div class="script-text">
-        <p>SA approves. Alfred runs. What you're looking at is the actual output from the pre-config script running against the demo PSA instance. This isn't a mockup — these are real API calls that created real records.</p>
-        <p>Seven steps, two service tiers — billing and the PSA core. Let me walk through what each one is actually doing.</p>
+        <p>SA approves. Alfred runs. Two steps — that's it. This is deliberate. Everything Alfred touches here is configuration that has to exist before the client's data arrives via migration. Customer records, contacts, products, recurring services — that's migration territory. Alfred doesn't touch it.</p>
+        <p>What Alfred owns is the infrastructure the instance needs to be ready: how this client bills, and who has access.</p>
       </div>
     </div>
 
     <div class="block">
       <div class="block-label yellow">Step by step</div>
       <ul class="point-list">
-        <li><span class="bullet">1</span><span><strong>Customer record</strong> — Apex Systems Group is created as a billing customer, assigned to the correct bill profile based on what the client selected in the questionnaire. Bill profile ID 1001.</span></li>
-        <li><span class="bullet">2</span><span><strong>Contacts</strong> — Sarah Chen as primary contact, Marcus Rivera as billing contact. Both linked to the customer record with their correct job titles and contact info.</span></li>
-        <li><span class="bullet">3</span><span><strong>Users ×4</strong> — All four team members created as PSA users with their roles. They can log in to the system before Day 1.</span></li>
-        <li><span class="bullet">4</span><span><strong>Intake note</strong> — The full Alfred brief is pinned to the customer record as a note. Any SA who opens this customer sees the complete picture immediately — Core 8, billing config, SA notes, everything.</span></li>
-        <li><span class="bullet green">5</span><span><strong>Onboarding ticket</strong> — A kickoff service ticket is created and assigned. This is the work item that tracks the onboarding engagement itself.</span></li>
-        <li><span class="bullet green">6</span><span><strong>Onboarding project</strong> — A 30-day project is opened with a start and end date. Structured milestone tracking from day one.</span></li>
-        <li><span class="bullet">7</span><span><strong>Opportunity</strong> — The opportunity record is created in the PSA for pipeline visibility and reporting.</span></li>
+        <li><span class="bullet green">1</span><span><strong>Bill profile</strong> — A client-specific billing profile is created from the questionnaire data. Cycle type, grace period, late fee amount — all mapped to the PSA API and written in. This profile will be assigned to the customer record once migration creates it. Profile ID 1014.</span></li>
+        <li><span class="bullet green">2</span><span><strong>PSA users ×4</strong> — All four team members are created as PSA users with their roles. Sarah, Marcus, Jamie, Taylor — they can log in to the system before the client data even arrives. User IDs 972 through 975.</span></li>
       </ul>
     </div>
 
     <div class="block">
-      <div class="block-label">The live PSA moment</div>
+      <div class="block-label">Why only two steps?</div>
       <div class="script-text">
-        <p>These aren't hypothetical records. Click any of the buttons below the terminal — Customer 1110, Ticket 292, Project 199. You're looking at what Alfred built in the PSA instance. Sarah Chen is in there. The billing config is applied. The intake note is pinned. The ticket is open.</p>
-        <p>This is what the SA opens on Day 1 instead of a blank screen.</p>
+        <p>We mapped every item in the PSA onboarding training tracker against the available API endpoints. Most of Phase 1 and Phase 2 setup — customer records, products, recurring services, inventory — comes through the data migration process. Alfred doesn't duplicate that work.</p>
+        <p>What we don't have API access to today, we're collecting for later. The questionnaire captures more than Alfred can currently write — that's intentional. As API access expands, Alfred's scope expands with it.</p>
       </div>
     </div>
 
-    <div class="pause">⏸ Click each PSA link and show the live records</div>
+    <div class="pause">⏸ Walk through the terminal output, show the 2-step run</div>
   </div>
 
   <hr class="section-sep" />
@@ -258,8 +253,8 @@
     <div class="block">
       <div class="block-label">The numbers</div>
       <div class="script-text">
-        <p>Seven API calls. Under 60 seconds. 60 to 80 percent of the instance configured before the SA and client have ever spoken. That's what this does today, against the demo instance, with a fictional client.</p>
-        <p>The 411 hours is real — that's the SA time we analyzed across 566 calls. Most of it was re-collecting information that existed somewhere. Alfred is the fix.</p>
+        <p>Two API steps. Under 30 seconds. Bill profile configured, users ready to log in, before migration even begins. That's what this does today, against the demo instance, with a fictional client.</p>
+        <p>The 411 hours is real — that's the SA time we analyzed across 566 calls. The scope will grow as API access does. This is the foundation.</p>
       </div>
     </div>
 
