@@ -214,30 +214,52 @@
     </div>
 
     <div class="block">
-      <div class="block-label">What Alfred actually does</div>
+      <div class="block-label">The full picture</div>
       <div class="script-text">
-        <p>SA approves. Alfred runs. Two steps — that's it. This is deliberate. Everything Alfred touches here is configuration that has to exist before the client's data arrives via migration. Customer records, contacts, products, recurring services — that's migration territory. Alfred doesn't touch it.</p>
-        <p>What Alfred owns is the infrastructure the instance needs to be ready: how this client bills, and who has access.</p>
+        <p>SA approves. Alfred runs. But the story isn't just the two API calls — it's everything in that readiness grid. Look at what the SA walks into on Day 1.</p>
+        <p>We mapped every item in the PSA onboarding training tracker — Phase 1 Setup, Phase 2 Operations, Phase 3 Billing — against what Alfred knows and what it can configure. Every single item is either done, data-ready, or accounted for.</p>
       </div>
     </div>
 
     <div class="block">
-      <div class="block-label yellow">Step by step</div>
+      <div class="block-label green">Configured by Alfred — API writes</div>
       <ul class="point-list">
-        <li><span class="bullet green">1</span><span><strong>Bill profile</strong> — A client-specific billing profile is created from the questionnaire data. Cycle type, grace period, late fee amount — all mapped to the PSA API and written in. This profile will be assigned to the customer record once migration creates it. Profile ID 1014.</span></li>
-        <li><span class="bullet green">2</span><span><strong>PSA users ×4</strong> — All four team members are created as PSA users with their roles. Sarah, Marcus, Jamie, Taylor — they can log in to the system before the client data even arrives. User IDs 972 through 975.</span></li>
+        <li><span class="bullet green">✅</span><span><strong>Bill profile</strong> — Client-specific billing profile created from the questionnaire. Anniversary cycle, 1st of month, billed in advance, 10-day grace period, $25 flat late fee. Profile ID 1014. When migration creates the customer record, SA assigns this profile and billing is ready to run.</span></li>
+        <li><span class="bullet green">✅</span><span><strong>PSA users</strong> — All four team members created with their roles. Sarah and Marcus are admins. Jamie is a technician. Taylor is a dispatcher. They can log in before the client data even arrives. IDs 972 through 975.</span></li>
       </ul>
     </div>
 
     <div class="block">
-      <div class="block-label">Why only two steps?</div>
+      <div class="block-label">Data ready — SA trains on kickoff</div>
       <div class="script-text">
-        <p>We mapped every item in the PSA onboarding training tracker against the available API endpoints. Most of Phase 1 and Phase 2 setup — customer records, products, recurring services, inventory — comes through the data migration process. Alfred doesn't duplicate that work.</p>
-        <p>What we don't have API access to today, we're collecting for later. The questionnaire captures more than Alfred can currently write — that's intentional. As API access expands, Alfred's scope expands with it.</p>
+        <p>Everything in blue on that grid is something the SA can configure in the kickoff session without asking a single question — because Alfred already collected the answer.</p>
+      </div>
+      <ul class="point-list">
+        <li><span class="bullet">→</span><span><strong>Customers &amp; Contacts</strong> — Company info, primary and billing contacts are in the Sales Brief. SA enters them in the session rather than asking.</span></li>
+        <li><span class="bullet">→</span><span><strong>System Settings</strong> — Business name, address, industry, hours — all captured.</span></li>
+        <li><span class="bullet">→</span><span><strong>Calendar &amp; Tasks</strong> — Business hours and dispatch model confirmed. Monday through Friday, 8 to 6 Central.</span></li>
+        <li><span class="bullet">→</span><span><strong>Ticketing and Scheduling</strong> — Dispatch model and SLA expectations are documented. The SA isn't starting that conversation from zero.</span></li>
+        <li><span class="bullet">→</span><span><strong>Project Management and Quoting</strong> — Both enabled — client confirmed in the questionnaire. SA configures the settings with confidence.</span></li>
+        <li><span class="bullet">→</span><span><strong>Packages</strong> — Modules are selected. SMS, portal, PM, quoting — all noted.</span></li>
+        <li><span class="bullet">→</span><span><strong>Payment Processors and Billing</strong> — ACH, cycle type, arrears, grace period, late fees — all confirmed and documented.</span></li>
+      </ul>
+    </div>
+
+    <div class="block">
+      <div class="block-label">What migration handles</div>
+      <div class="script-text">
+        <p>Product catalog and recurring services come through the migration from ConnectWise Manage. Alfred knows that's coming — it doesn't duplicate that work. Inventory is off for this client, noted.</p>
       </div>
     </div>
 
-    <div class="pause">⏸ Walk through the terminal output, show the 2-step run</div>
+    <div class="block">
+      <div class="block-label">Scope grows with API access</div>
+      <div class="script-text">
+        <p>The items marked "SA configures" are things we're capturing data for but don't have API endpoints for today — providers, contracts, invoice templates. As access opens up, Alfred writes those too. The questionnaire is already collecting everything we need.</p>
+      </div>
+    </div>
+
+    <div class="pause">⏸ Walk through the readiness grid, then show the terminal output for the 2 API steps</div>
   </div>
 
   <hr class="section-sep" />
