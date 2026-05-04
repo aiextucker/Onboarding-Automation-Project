@@ -200,7 +200,7 @@
       <div class="pipeline-arrow">→</div>
       <div class="pipeline-step"><span class="icon">📝</span>Client<br>Questionnaire</div>
       <div class="pipeline-arrow">→</div>
-      <div class="pipeline-step active"><span class="icon">⚡</span>SA Approves<br>Config</div>
+      <div class="pipeline-step active"><span class="icon">🗒️</span>SA Approves<br>in Notion</div>
       <div class="pipeline-arrow">→</div>
       <div class="pipeline-step active"><span class="icon">🔌</span>Alfred Pushes<br>to PSA API</div>
       <div class="pipeline-arrow">→</div>
@@ -322,9 +322,22 @@
       </table>
     </div>
 
-    <div class="card">
-      <div class="card-title"><span class="dot"></span>Step 5 — SA Review Notes</div>
-      <p style="font-size:13px; color:var(--muted); font-style:italic;">"Migrating from ConnectWise Manage — client has existing ticket templates they want replicated. Sarah Chen is hands-on during onboarding. Marcus Rivera owns billing. Target go-live: 30 days."</p>
+    <div class="card" style="border-color: rgba(35,153,181,0.4); background: rgba(35,153,181,0.04);">
+      <div class="card-title" style="justify-content:space-between;">
+        <span style="display:flex;align-items:center;gap:8px;"><span class="dot"></span>Step 5 — SA Review &amp; Approval</span>
+        <a class="open-btn" href="https://www.notion.so/2e1a59b7e7b28056b3c1f6331f00c9dd" target="_blank" style="font-size:12px; padding:5px 12px;">
+          <span class="btn-icon">🗒️</span> Review in Notion →
+        </a>
+      </div>
+      <p style="font-size:13px; color:var(--muted); margin-bottom:14px;">Before Alfred touches the PSA instance, the SA reviews the full config preview in Notion and must explicitly approve. Nothing is written until this step is complete.</p>
+      <div class="kv-grid">
+        <span class="kv-key">SA Notes</span>
+        <span class="kv-val" style="font-style:italic; color:var(--muted);">“Migrating from ConnectWise Manage — client has existing ticket templates they want replicated. Sarah Chen is hands-on during onboarding. Marcus Rivera owns billing. Target go-live: 30 days.”</span>
+        <span class="kv-key">Status</span>
+        <span class="kv-val green">✓ Approved — Nicole Hills</span>
+        <span class="kv-key">Approved</span>
+        <span class="kv-val">May 4, 2026 — 8:42 PM CT</span>
+      </div>
     </div>
   </div>
 
