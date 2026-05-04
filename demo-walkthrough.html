@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Alfred — PSA Pre-Config Demo</title>
+  <style>
+    :root {
+      --bg:        #0d1117;
+      --surface:   #161b22;
+      --surface2:  #1c2230;
+      --border:    #30363d;
+      --blue:      #1D3756;
+      --green:     #6EBE4F;
+      --teal:      #2399B5;
+      --text:      #e6edf3;
+      --muted:     #8b949e;
+      --yellow:    #d29922;
+      --red:       #f85149;
+      --purple:    #a371f7;
+      --radius:    10px;
+      --mono:      'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-size: 15px; line-height: 1.6; }
+
+    /* Header */
+    .header { background: var(--blue); border-bottom: 3px solid var(--green); padding: 24px 48px; display: flex; align-items: center; gap: 20px; }
+    .header-logo { font-size: 32px; }
+    .header-title h1 { font-size: 22px; font-weight: 700; }
+    .header-title p  { font-size: 13px; color: rgba(255,255,255,0.65); margin-top: 2px; }
+    .header-badge { margin-left: auto; background: rgba(110,190,79,0.15); border: 1px solid var(--green); color: var(--green); font-size: 12px; font-weight: 600; padding: 4px 12px; border-radius: 20px; letter-spacing: 0.5px; }
+
+    /* Layout */
+    .main { max-width: 1080px; margin: 0 auto; padding: 48px 32px 80px; }
+
+    /* Section header */
+    .section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+    .act-badge { background: var(--teal); color: #fff; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; letter-spacing: 0.8px; text-transform: uppercase; }
+    .section-header h2 { font-size: 20px; font-weight: 700; }
+
+    /* Cards */
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px 28px; margin-bottom: 16px; }
+    .card-title { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.7px; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+    .card-title .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--teal); display: inline-block; }
+
+    /* Pipeline */
+    .pipeline { display: flex; align-items: center; gap: 0; margin: 28px 0 40px; flex-wrap: wrap; gap: 2px; }
+    .pipeline-step { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; font-size: 12px; font-weight: 600; text-align: center; min-width: 110px; }
+    .pipeline-step .icon { font-size: 16px; display: block; margin-bottom: 3px; }
+    .pipeline-step.active { border-color: var(--green); background: rgba(110,190,79,0.08); color: var(--green); }
+    .pipeline-arrow { color: var(--muted); font-size: 18px; padding: 0 4px; flex-shrink: 0; }
+
+    /* KV grid */
+    .kv-grid { display: grid; grid-template-columns: 200px 1fr; gap: 6px 16px; }
+    .kv-key { color: var(--muted); font-size: 13px; }
+    .kv-val { font-size: 13px; font-weight: 500; }
+    .kv-val.green { color: var(--green); }
+    .kv-val.teal  { color: var(--teal); }
+    .kv-val.yellow { color: var(--yellow); }
+
+    .divider { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
+
+    /* Table */
+    table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 4px; }
+    th { text-align: left; color: var(--muted); font-weight: 600; padding: 6px 12px; border-bottom: 1px solid var(--border); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+    td { padding: 9px 12px; border-bottom: 1px solid rgba(48,54,61,0.5); }
+    tr:last-child td { border-bottom: none; }
+    .role-badge { font-size: 11px; padding: 2px 8px; border-radius: 12px; font-weight: 600; }
+    .role-admin    { background: rgba(35,153,181,0.2);  color: var(--teal); }
+    .role-tech     { background: rgba(110,190,79,0.2);  color: var(--green); }
+    .role-dispatch { background: rgba(210,153,34,0.2);  color: var(--yellow); }
+
+    /* Terminal */
+    .terminal { background: #0a0c10; border: 1px solid #30363d; border-radius: var(--radius); overflow: hidden; margin-bottom: 20px; font-family: var(--mono); }
+    .terminal-bar { background: #161b22; padding: 10px 16px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--border); }
+    .dot-red    { width:10px;height:10px;border-radius:50%;background:#ff5f56; }
+    .dot-yellow { width:10px;height:10px;border-radius:50%;background:#ffbd2e; }
+    .dot-green2 { width:10px;height:10px;border-radius:50%;background:#27c93f; }
+    .terminal-label { margin-left: auto; font-size: 11px; color: var(--muted); font-family: var(--mono); }
+    .terminal-body { padding: 20px 24px; font-size: 13px; line-height: 1.9; }
+    .t-cmd  { color: #79c0ff; }
+    .t-ok   { color: var(--green); }
+    .t-dim  { color: #484f58; }
+    .t-lbl  { color: var(--muted); }
+    .t-val  { color: #ffa657; }
+    .t-head { color: var(--teal); font-weight: bold; }
+    .t-sep  { color: #30363d; }
+    .t-sub  { color: var(--muted); font-size: 12px; }
+
+    /* API block */
+    .api-block { background: var(--surface2); border: 1px solid var(--border); border-left: 3px solid var(--teal); border-radius: 6px; padding: 14px 18px; font-family: var(--mono); font-size: 12px; line-height: 1.7; margin: 10px 0; overflow-x: auto; }
+    .json-key  { color: #79c0ff; }
+    .json-str  { color: #a5d6ff; }
+    .json-num  { color: #ffa657; }
+    .json-bool { color: var(--green); }
+    .api-label { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-bottom: 6px; display: block; }
+
+    /* Response badge */
+    .response-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(110,190,79,0.12); border: 1px solid rgba(110,190,79,0.3); color: var(--green); font-family: var(--mono); font-size: 12px; padding: 3px 10px; border-radius: 6px; margin-top: 6px; }
+
+    /* Step rows */
+    .steps { display: flex; flex-direction: column; gap: 12px; }
+    .step-row { display: flex; align-items: flex-start; gap: 16px; }
+    .step-num { width: 28px; height: 28px; border-radius: 50%; background: var(--teal); color: #fff; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; }
+    .step-content { flex: 1; }
+    .step-title { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+    .step-desc  { font-size: 13px; color: var(--muted); }
+
+    /* Summary banner */
+    .summary-banner { background: linear-gradient(135deg, rgba(29,55,86,0.6), rgba(35,153,181,0.15)); border: 1px solid var(--teal); border-radius: var(--radius); padding: 28px 32px; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 24px; margin-top: 32px; }
+    .stat { text-align: center; }
+    .stat-val   { font-size: 32px; font-weight: 800; color: var(--green); }
+    .stat-label { font-size: 12px; color: var(--muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    /* New — step pills for Act 3 */
+    .step-pills { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .pill { display: flex; align-items: center; gap: 6px; background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 5px 14px; font-size: 12px; font-weight: 600; }
+    .pill .pill-num { background: var(--teal); color: #fff; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; }
+    .pill.new-step { border-color: var(--green); color: var(--green); background: rgba(110,190,79,0.07); }
+    .pill.new-step .pill-num { background: var(--green); }
+
+    /* Note preview */
+    .note-preview { background: #0a0c10; border: 1px solid var(--border); border-left: 3px solid var(--yellow); border-radius: 6px; padding: 16px 20px; font-family: var(--mono); font-size: 12px; line-height: 1.8; white-space: pre; color: #c9d1d9; overflow-x: auto; }
+
+    .section { margin-bottom: 52px; }
+    .section-sep { border: none; border-top: 1px solid var(--border); margin: 44px 0; }
+
+    .footer { text-align: center; color: var(--muted); font-size: 12px; padding: 32px; border-top: 1px solid var(--border); }
+
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-logo">🎩</div>
+  <div class="header-title">
+    <h1>Alfred — PSA Pre-Configuration Pipeline</h1>
+    <p>Demo walkthrough &nbsp;·&nbsp; Fictional client: Apex Systems Group &nbsp;·&nbsp; Rev.io PSA Demo Instance</p>
+  </div>
+  <div class="header-badge">LIVE DEMO</div>
+</div>
+
+<div class="main">
+
+  <!-- Pipeline overview -->
+  <div style="margin-bottom:48px;">
+    <p style="color:var(--muted); margin-bottom:20px; font-size:14px;">Alfred takes a client from closed deal to a pre-configured PSA instance — automatically, before kickoff.</p>
+    <div class="pipeline">
+      <div class="pipeline-step"><span class="icon">💼</span>Salesforce<br>Closed-Won</div>
+      <div class="pipeline-arrow">→</div>
+      <div class="pipeline-step"><span class="icon">📋</span>Sales Brief<br>Auto-filled</div>
+      <div class="pipeline-arrow">→</div>
+      <div class="pipeline-step"><span class="icon">📝</span>Client<br>Questionnaire</div>
+      <div class="pipeline-arrow">→</div>
+      <div class="pipeline-step active"><span class="icon">⚡</span>SA Approves<br>Config</div>
+      <div class="pipeline-arrow">→</div>
+      <div class="pipeline-step active"><span class="icon">🔌</span>Alfred Pushes<br>to PSA API</div>
+      <div class="pipeline-arrow">→</div>
+      <div class="pipeline-step active"><span class="icon">✅</span>Instance<br>Pre-Built</div>
+    </div>
+  </div>
+
+  <hr class="section-sep" />
+
+  <!-- ACT 1 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="act-badge">Act 1</span>
+      <h2>The Sales Brief</h2>
+    </div>
+    <p style="color:var(--muted); margin-bottom:24px; font-size:14px;">When a deal closes in Salesforce, Alfred pulls account and opportunity data and pre-fills a structured SA handoff brief. The SA receives it 48 hours before kickoff — already loaded with everything Sales knew at close.</p>
+
+    <div class="card">
+      <div class="card-title"><span class="dot"></span>Client &amp; Deal Info</div>
+      <div class="kv-grid">
+        <span class="kv-key">Company</span>          <span class="kv-val">Apex Systems Group</span>
+        <span class="kv-key">Close Date</span>       <span class="kv-val">April 28, 2026</span>
+        <span class="kv-key">MRR</span>              <span class="kv-val green">$8,500 / month</span>
+        <span class="kv-key">Contract Term</span>    <span class="kv-val">36 months</span>
+        <span class="kv-key">SA Assigned</span>      <span class="kv-val">Nicole Hills</span>
+        <span class="kv-key">Sales Rep</span>        <span class="kv-val">Jordan Parker</span>
+        <span class="kv-key">Existing Billing</span> <span class="kv-val">No — net new</span>
+        <span class="kv-key">SF Opportunity</span>   <span class="kv-val teal">0060Z00000XmDtQAJ</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="dot"></span>Core 8 — What Sales Collected at Close</div>
+      <div class="kv-grid">
+        <span class="kv-key">Prior PSA</span>           <span class="kv-val">ConnectWise Manage</span>
+        <span class="kv-key">Accounting SW</span>       <span class="kv-val">QuickBooks Online</span>
+        <span class="kv-key">RMM Tool</span>            <span class="kv-val">NinjaOne</span>
+        <span class="kv-key">Payment Processor</span>   <span class="kv-val">ACH</span>
+        <span class="kv-key">Dispatch Model</span>      <span class="kv-val">Internal helpdesk + field dispatch</span>
+        <span class="kv-key">Business Hours</span>      <span class="kv-val">Mon–Fri 8:00 AM – 6:00 PM CT</span>
+        <span class="kv-key">Invoice Continuity</span>  <span class="kv-val">No — reset to #1001</span>
+        <span class="kv-key">SureTax</span>             <span class="kv-val">New account needed</span>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="card-title"><span class="dot"></span>Primary Contact</div>
+        <div class="kv-grid">
+          <span class="kv-key">Name</span>  <span class="kv-val">Sarah Chen</span>
+          <span class="kv-key">Title</span> <span class="kv-val">Owner / CEO</span>
+          <span class="kv-key">Email</span> <span class="kv-val teal">schen@apexsystemsgroup.com</span>
+          <span class="kv-key">Phone</span> <span class="kv-val">512-555-0194</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="dot"></span>Billing Contact</div>
+        <div class="kv-grid">
+          <span class="kv-key">Name</span>  <span class="kv-val">Marcus Rivera</span>
+          <span class="kv-key">Title</span> <span class="kv-val">Operations Manager</span>
+          <span class="kv-key">Email</span> <span class="kv-val teal">mrivera@apexsystemsgroup.com</span>
+          <span class="kv-key">Phone</span> <span class="kv-val">512-555-0195</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="section-sep" />
+
+  <!-- ACT 2 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="act-badge">Act 2</span>
+      <h2>The Client Questionnaire</h2>
+    </div>
+    <p style="color:var(--muted); margin-bottom:24px; font-size:14px;">Alfred generates a tokenized questionnaire link pre-populated from the Sales Brief and sends it to the client. The client fills only what Sales couldn't capture. Alfred presents a full config preview for SA approval — nothing touches the instance until they sign off.</p>
+
+    <div class="two-col" style="margin-bottom:16px;">
+      <div class="card">
+        <div class="card-title"><span class="dot"></span>Step 2 — Billing Config</div>
+        <div class="kv-grid">
+          <span class="kv-key">Cycle Type</span>       <span class="kv-val">Anniversary</span>
+          <span class="kv-key">Cycle Date</span>       <span class="kv-val">1st of month</span>
+          <span class="kv-key">Bill in Arrears</span>  <span class="kv-val">No (bill in advance)</span>
+          <span class="kv-key">Grace Period</span>     <span class="kv-val">10 days</span>
+          <span class="kv-key">Late Fees</span>        <span class="kv-val green">$25 flat</span>
+          <span class="kv-key">Multiple Profiles</span><span class="kv-val">No</span>
+          <span class="kv-key" style="color:var(--green);font-weight:600;">→ Bill Profile</span> <span class="kv-val green">1st and 15th Cycles (ID: 1001)</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="dot"></span>Step 4 — Modules</div>
+        <div class="kv-grid">
+          <span class="kv-key">Inventory Tracking</span> <span class="kv-val">Disabled</span>
+          <span class="kv-key">Project Management</span> <span class="kv-val green">Enabled</span>
+          <span class="kv-key">Client Portal</span>      <span class="kv-val green">Enabled</span>
+          <span class="kv-key">SMS</span>                <span class="kv-val green">Enabled</span>
+          <span class="kv-key">Quoting</span>            <span class="kv-val green">Enabled</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="dot"></span>Step 3 — Users</div>
+      <table>
+        <thead><tr><th>Name</th><th>Job Title</th><th>Email</th><th>Login</th><th>Role</th></tr></thead>
+        <tbody>
+          <tr><td>Sarah Chen</td><td>Owner / CEO</td><td style="color:var(--teal)">schen@apexsystemsgroup.com</td><td style="font-family:var(--mono);font-size:12px">sarah.chen.apex</td><td><span class="role-badge role-admin">Admin</span></td></tr>
+          <tr><td>Marcus Rivera</td><td>Operations Manager</td><td style="color:var(--teal)">mrivera@apexsystemsgroup.com</td><td style="font-family:var(--mono);font-size:12px">marcus.rivera.apex</td><td><span class="role-badge role-admin">Admin</span></td></tr>
+          <tr><td>Jamie Patel</td><td>Lead Technician</td><td style="color:var(--teal)">jpatel@apexsystemsgroup.com</td><td style="font-family:var(--mono);font-size:12px">jamie.patel.apex</td><td><span class="role-badge role-tech">Technician</span></td></tr>
+          <tr><td>Taylor Brooks</td><td>Dispatch Coordinator</td><td style="color:var(--teal)">tbrooks@apexsystemsgroup.com</td><td style="font-family:var(--mono);font-size:12px">taylor.brooks.apex</td><td><span class="role-badge role-dispatch">Dispatcher</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="dot"></span>Step 5 — SA Review Notes</div>
+      <p style="font-size:13px; color:var(--muted); font-style:italic;">"Migrating from ConnectWise Manage — client has existing ticket templates they want replicated. Sarah Chen is hands-on during onboarding. Marcus Rivera owns billing. Target go-live: 30 days."</p>
+    </div>
+  </div>
+
+  <hr class="section-sep" />
+
+  <!-- ACT 3 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="act-badge">Act 3</span>
+      <h2>Alfred Pushes to the PSA API</h2>
+    </div>
+    <p style="color:var(--muted); margin-bottom:20px; font-size:14px;">SA approves. Alfred calls the Rev.io PSA API across two service tiers in 7 sequential steps. The instance is ready before anyone opens a browser.</p>
+
+    <!-- Step pills -->
+    <div class="step-pills">
+      <div class="pill"><span class="pill-num">1</span> Customer Record</div>
+      <div class="pill"><span class="pill-num">2</span> Contacts</div>
+      <div class="pill"><span class="pill-num">3</span> Users ×4</div>
+      <div class="pill"><span class="pill-num">4</span> Intake Note</div>
+      <div class="pill new-step"><span class="pill-num">5</span> Onboarding Ticket ✦</div>
+      <div class="pill new-step"><span class="pill-num">6</span> Onboarding Project ✦</div>
+      <div class="pill"><span class="pill-num">7</span> Opportunity</div>
+    </div>
+    <p style="font-size:12px; color:var(--muted); margin-bottom:24px;">✦ New capabilities unlocked from complete API reference</p>
+
+    <!-- Terminal -->
+    <div class="terminal">
+      <div class="terminal-bar">
+        <div class="dot-red"></div><div class="dot-yellow"></div><div class="dot-green2"></div>
+        <span class="terminal-label">psa-pre-config.js — psademo.psarev.io</span>
+      </div>
+      <div class="terminal-body">
+<span class="t-cmd">$ PSA_API_KEY=9b514dee... PSA_HOST=psademo.psarev.io node scripts/psa-pre-config.js demo/demo-client.json</span>
+
+<span class="t-sep">╔══════════════════════════════════════════════════════╗</span>
+<span class="t-head">║  Alfred PSA Pre-Config Pipeline                      ║</span>
+<span class="t-sep">╚══════════════════════════════════════════════════════╝</span>
+
+<span class="t-lbl">Client:    </span><span class="t-val">Apex Systems Group</span>
+<span class="t-lbl">MRR:       </span><span class="t-val">$8,500/mo</span>
+<span class="t-lbl">SA:        </span><span class="t-val">Nicole Hills</span>
+<span class="t-lbl">Prior PSA: </span><span class="t-val">ConnectWise Manage</span>
+<span class="t-lbl">Users:     </span><span class="t-val">4 to create</span>
+<span class="t-lbl">Billing:   </span><span class="t-val">Anniversary — 1st</span>
+<span class="t-lbl">Target:    </span><span class="t-val">psademo.psarev.io (demo instance)</span>
+
+<span class="t-sep">──────────────────────────────────────────────────────</span>
+
+<span class="t-lbl">[1/7] Creating customer record...</span>
+  Apex Systems Group (bill profile: Anniversary)... <span class="t-ok">✅</span>
+      → customerId: <span class="t-val">1110</span>  |  billProfileId: <span class="t-val">1001</span>
+
+<span class="t-lbl">[2/7] Creating contacts...</span>
+  Primary: Sarah Chen (Owner / CEO)... <span class="t-ok">✅</span>
+  Billing: Marcus Rivera (Operations Manager)... <span class="t-ok">✅</span>
+
+<span class="t-lbl">[3/7] Creating 4 PSA users...</span>
+  Sarah Chen — Owner / CEO (Admin)... <span class="t-ok">✅</span>
+  Marcus Rivera — Operations Manager (Admin)... <span class="t-ok">✅</span>
+  Jamie Patel — Lead Technician (Technician)... <span class="t-ok">✅</span>
+  Taylor Brooks — Dispatch Coordinator (Dispatcher)... <span class="t-ok">✅</span>
+
+<span class="t-lbl">[4/7] Creating intake note...</span>
+  Pinning Alfred brief to customer account... <span class="t-ok">✅</span>
+      → noteId: <span class="t-val">1003</span>
+
+<span class="t-lbl">[5/7] Creating onboarding ticket...</span>
+  Apex Systems Group — kickoff ticket (Service Call / New)... <span class="t-ok">✅</span>
+      → ticketId: <span class="t-val">292</span>
+
+<span class="t-lbl">[6/7] Creating onboarding project...</span>
+  Apex Systems Group — PSA Onboarding (30-day window)... <span class="t-ok">✅</span>
+      → projectId: <span class="t-val">199</span>
+
+<span class="t-lbl">[7/7] Creating opportunity record...</span>
+  Apex Systems Group — PSA Onboarding ($8,500/mo)... <span class="t-ok">✅</span>
+      → opportunityId: <span class="t-val">6</span>
+
+<span class="t-sep">──────────────────────────────────────────────────────</span>
+
+<span class="t-ok">✅  Pre-config complete!</span>
+
+<span class="t-lbl">Summary:</span>
+  Customer ID:    <span class="t-val">1110</span>  |  Note ID:    <span class="t-val">1003</span>
+  Ticket ID:      <span class="t-val">292</span>   |  Project ID: <span class="t-val">199</span>
+  Opportunity ID: <span class="t-val">6</span>     |  Users:      <span class="t-val">4</span>
+
+<span class="t-dim">Next step: SA reviews config in PSA → confirms before kickoff.</span>
+      </div>
+    </div>
+
+    <!-- What got created -->
+    <p style="color:var(--muted); font-size:13px; margin-bottom:14px;">What got written to the API:</p>
+
+    <div class="three-col" style="margin-bottom:16px;">
+      <div>
+        <span class="api-label">POST /billing/api/v1/customers</span>
+        <div class="api-block"><span class="json-key">"companyName"</span>: <span class="json-str">"Apex Systems Group"</span>,
+<span class="json-key">"billProfileId"</span>: <span class="json-num">1001</span>,
+<span class="json-key">"address"</span>: {
+  <span class="json-key">"cityMunicipality"</span>: <span class="json-str">"Austin"</span>,
+  <span class="json-key">"stateProvinceCode"</span>: <span class="json-str">"TX"</span>
+}</div>
+        <div class="response-badge">✓ 200 · customerId: 1110</div>
+      </div>
+      <div>
+        <span class="api-label">POST /psac/api/v1/ticket &nbsp;⬅ NEW</span>
+        <div class="api-block"><span class="json-key">"customerId"</span>: <span class="json-num">1110</span>,
+<span class="json-key">"ticketTypeId"</span>: <span class="json-num">2</span>, <span class="t-dim">// Service Call</span>
+<span class="json-key">"ticketStatusId"</span>: <span class="json-num">1</span>, <span class="t-dim">// New</span>
+<span class="json-key">"ticketPriorityId"</span>: <span class="json-num">2</span>, <span class="t-dim">// Medium</span>
+<span class="json-key">"ticketDescription"</span>: <span class="json-str">"Onboarding: Apex Systems Group..."</span></div>
+        <div class="response-badge">✓ 201 · ticketId: 292</div>
+      </div>
+      <div>
+        <span class="api-label">POST /project-management/api/v1/projects &nbsp;⬅ NEW</span>
+        <div class="api-block"><span class="json-key">"customerId"</span>: <span class="json-num">1110</span>,
+<span class="json-key">"projectName"</span>: <span class="json-str">"Apex Systems Group — PSA Onboarding"</span>,
+<span class="json-key">"projectStatusId"</span>: <span class="json-num">1</span>, <span class="t-dim">// Active</span>
+<span class="json-key">"startDate"</span>: <span class="json-str">"2026-05-04"</span>,
+<span class="json-key">"endDate"</span>: <span class="json-str">"2026-06-03"</span></div>
+        <div class="response-badge">✓ 201 · projectId: 199</div>
+      </div>
+    </div>
+
+    <!-- Intake note -->
+    <span class="api-label">POST /billing/api/v1/notes — Intake brief pinned to account (noteId: 1003)</span>
+    <div class="note-preview">=== ALFRED INTAKE BRIEF — Apex Systems Group ===
+Close Date: 2026-04-28  |  MRR: $8,500/mo  |  Term: 36 months
+Sales Rep: Jordan Parker  |  SA Assigned: Nicole Hills
+
+--- Core 8 ---
+Prior PSA:          ConnectWise Manage
+Accounting SW:      QuickBooks Online
+RMM:                NinjaOne
+Payment Processor:  ACH
+Dispatch Model:     Internal helpdesk + field dispatch
+Business Hours:     Mon–Fri 8:00 AM – 6:00 PM CT
+Invoice Continuity: No — reset to 1001
+SureTax:            New account needed
+
+--- Billing Config ---
+Cycle Type:         Anniversary     Bill Profile Assigned: 1001 (1st and 15th Cycles)
+Bill in Arrears:    No              Grace Period: 10 days
+Late Fees:          $25 (Flat)      Multiple Profiles: No
+
+--- SA Notes ---
+Migrating from ConnectWise Manage — client has existing ticket templates they want replicated.
+Sarah Chen is hands-on during onboarding. Marcus Rivera owns billing. Target go-live: 30 days.
+
+Auto-generated by Alfred pre-config pipeline. SA: review and confirm before kickoff.</div>
+  </div>
+
+  <hr class="section-sep" />
+
+  <!-- Impact -->
+  <div class="section">
+    <div class="section-header"><h2>Impact</h2></div>
+    <p style="color:var(--muted); font-size:14px; margin-bottom:8px;">Before Alfred: SAs spent sessions 1–2 collecting info that Sales already knew — then entering it manually one field at a time.</p>
+    <div class="summary-banner">
+      <div class="stat"><div class="stat-val">7</div><div class="stat-label">API calls per client</div></div>
+      <div class="stat"><div class="stat-val">&lt;60s</div><div class="stat-label">Full pre-config runtime</div></div>
+      <div class="stat"><div class="stat-val">60–80%</div><div class="stat-label">Config complete before Day 1</div></div>
+      <div class="stat"><div class="stat-val">411h</div><div class="stat-label">SA time analyzed (566 calls)</div></div>
+    </div>
+
+    <div class="card" style="margin-top:24px;">
+      <div class="card-title"><span class="dot"></span>What's next</div>
+      <div class="steps">
+        <div class="step-row">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <div class="step-title">Salesforce auto-trigger</div>
+            <div class="step-desc">Closed-Won → webhook → Alfred fires the full pipeline without SA involvement</div>
+          </div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <div class="step-title">Fireflies extraction</div>
+            <div class="step-desc">Sales call transcripts → LLM extraction → brief pre-fill before the questionnaire even goes out</div>
+          </div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <div class="step-title">Production instance access</div>
+            <div class="step-desc">Self-hosted GitHub Actions runner → JWT-vending → write to any client's live PSA instance (in progress with Matthew Hills)</div>
+          </div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">4</div>
+          <div class="step-content">
+            <div class="step-title">Additional modules</div>
+            <div class="step-desc">As endpoints are opened: service boards, user groups, dispatch schedules, agreements, custom fields</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">Alfred · Rev.io Onboarding Automation &nbsp;·&nbsp; Demo instance: psademo.psarev.io &nbsp;·&nbsp; All client data is fictional</div>
+
+</body>
+</html>
