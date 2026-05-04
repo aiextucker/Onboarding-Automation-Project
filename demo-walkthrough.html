@@ -148,6 +148,33 @@
     .footer { text-align: center; color: var(--muted); font-size: 12px; padding: 32px; border-top: 1px solid var(--border); }
     .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
     .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+
+    /* Readiness grid */
+    .readiness-phase { margin-bottom: 24px; }
+    .readiness-phase-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--muted); margin-bottom: 10px; }
+    .readiness-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px; }
+    .readiness-item { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; display: flex; align-items: flex-start; gap: 10px; }
+    .readiness-item.configured { border-color: rgba(110,190,79,0.4); background: rgba(110,190,79,0.06); }
+    .readiness-item.data-ready { border-color: rgba(35,153,181,0.4); background: rgba(35,153,181,0.06); }
+    .readiness-item.migration  { border-color: rgba(163,113,247,0.4); background: rgba(163,113,247,0.06); }
+    .readiness-item.sa-config  { border-color: var(--border); background: var(--surface2); }
+    .ri-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+    .ri-body { flex: 1; }
+    .ri-name { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+    .ri-status { font-size: 11px; }
+    .ri-status.green  { color: var(--green); }
+    .ri-status.teal   { color: var(--teal); }
+    .ri-status.purple { color: var(--purple); }
+    .ri-status.muted  { color: var(--muted); }
+    .ri-detail { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+    .legend { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 20px; }
+    .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); }
+    .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .legend-dot.green  { background: var(--green); }
+    .legend-dot.teal   { background: var(--teal); }
+    .legend-dot.purple { background: var(--purple); }
+    .legend-dot.muted  { background: var(--border); }
   </style>
 </head>
 <body>
@@ -307,14 +334,122 @@
   <div class="section">
     <div class="section-header">
       <span class="act-badge">Act 3</span>
-      <h2>Alfred Pushes to the PSA API</h2>
+      <h2>What's Ready Before Kickoff</h2>
     </div>
-    <p style="color:var(--muted); margin-bottom:20px; font-size:14px;">SA approves. Alfred calls the Rev.io PSA API and creates what can be pre-built before migration: a client-specific bill profile and all PSA user accounts. Everything else arrives via the data migration process.</p>
+    <p style="color:var(--muted); margin-bottom:20px; font-size:14px;">SA approves. Alfred runs. By the time the kickoff call starts, every Phase 1 and Phase 2 training item is either configured, data-ready, or handled — the SA walks in with a complete picture instead of a blank screen.</p>
 
-    <!-- Live PSA links -->
-    <div style="background:rgba(110,190,79,0.07); border:1px solid rgba(110,190,79,0.25); border-radius:8px; padding:10px 16px; margin-bottom:16px; font-size:12px; color:var(--muted); display:flex; align-items:center; gap:10px;">
+    <!-- Legend -->
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot green"></div> Configured by Alfred (API)</div>
+      <div class="legend-item"><div class="legend-dot teal"></div> Data ready — SA trains in kickoff</div>
+      <div class="legend-item"><div class="legend-dot purple"></div> Handled by data migration</div>
+      <div class="legend-item"><div class="legend-dot muted"></div> SA configures post-kickoff</div>
+    </div>
+
+    <!-- Phase 1 -->
+    <div class="readiness-phase">
+      <div class="readiness-phase-label">★ Phase 1 — Setup</div>
+      <div class="readiness-grid">
+        <div class="readiness-item configured">
+          <div class="ri-icon">✅</div>
+          <div class="ri-body"><div class="ri-name">User Management</div><div class="ri-status green">Configured by Alfred</div><div class="ri-detail">4 users created — IDs 972–975</div></div>
+        </div>
+        <div class="readiness-item data-ready">
+          <div class="ri-icon">📘</div>
+          <div class="ri-body"><div class="ri-name">Customers &amp; Contacts</div><div class="ri-status teal">Data ready</div><div class="ri-detail">Company info, primary + billing contacts in Sales Brief</div></div>
+        </div>
+        <div class="readiness-item data-ready">
+          <div class="ri-icon">📘</div>
+          <div class="ri-body"><div class="ri-name">System Settings</div><div class="ri-status teal">Data ready</div><div class="ri-detail">Business name, address, hours, industry captured</div></div>
+        </div>
+        <div class="readiness-item data-ready">
+          <div class="ri-icon">📘</div>
+          <div class="ri-body"><div class="ri-name">Calendar &amp; Tasks</div><div class="ri-status teal">Data ready</div><div class="ri-detail">Mon–Fri 8am–6pm CT, dispatch model confirmed</div></div>
+        </div>
+        <div class="readiness-item data-ready">
+          <div class="ri-icon">📘</div>
+          <div class="ri-body"><div class="ri-name">Packages</div><div class="ri-status teal">Data ready</div><div class="ri-detail">Modules selected: PM, portal, SMS, quoting</div></div>
+        </div>
+        <div class="readiness-item migration">
+          <div class="ri-icon">📦</div>
+          <div class="ri-body"><div class="ri-name">Product Catalog</div><div class="ri-status purple">Data migration</div><div class="ri-detail">Migrating from ConnectWise Manage</div></div>
+        </div>
+        <div class="readiness-item migration">
+          <div class="ri-icon">📦</div>
+          <div class="ri-body"><div class="ri-name">Inventory Management</div><div class="ri-status purple">Not applicable</div><div class="ri-detail">Inventory tracking disabled by client</div></div>
+        </div>
+        <div class="readiness-item sa-config">
+          <div class="ri-icon">⏳</div>
+          <div class="ri-body"><div class="ri-name">Providers</div><div class="ri-status muted">SA configures</div><div class="ri-detail">NinjaOne (RMM), QBO noted in brief</div></div>
+        </div>
+        <div class="readiness-item sa-config">
+          <div class="ri-icon">⏳</div>
+          <div class="ri-body"><div class="ri-name">Purchase Orders</div><div class="ri-status muted">SA configures</div><div class="ri-detail">Post-kickoff setup</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Phase 2 -->
+    <div class="readiness-phase">
+      <div class="readiness-phase-label">★ Phase 2 — Operations</div>
+      <div class="readiness-grid">
+        <div class="readiness-item data-ready">
+          <div class="ri-icon">📘</div>
+          <div class="ri-body"><div class="ri-name">Ticketing</div><div class="ri-status teal">Data ready</div><div class="ri-detail">Dispatch model, SLA expectations, business hours confirmed</div></div>
+        </div>
+        <div class="readiness-item data-ready">
+          <div class="ri-icon">📘</div>
+          <div class="ri-body"><div class="ri-name">Project Management</div><div class="ri-status teal">Data ready</div><div class="ri-detail">Enabled — client confirmed in questionnaire</div></div>
+        </div>
+        <div class="readiness-item data-ready">
+          <div class="ri-icon">📘</div>
+          <div class="ri-body"><div class="ri-name">Scheduling</div><div class="ri-status teal">Data ready</div><div class="ri-detail">Business hours + field dispatch model confirmed</div></div>
+        </div>
+        <div class="readiness-item data-ready">
+          <div class="ri-icon">📘</div>
+          <div class="ri-body"><div class="ri-name">Quoting</div><div class="ri-status teal">Data ready</div><div class="ri-detail">Enabled — client confirmed in questionnaire</div></div>
+        </div>
+        <div class="readiness-item migration">
+          <div class="ri-icon">📦</div>
+          <div class="ri-body"><div class="ri-name">Recurring Services</div><div class="ri-status purple">Data migration</div><div class="ri-detail">Migrating from ConnectWise Manage</div></div>
+        </div>
+        <div class="readiness-item sa-config">
+          <div class="ri-icon">⏳</div>
+          <div class="ri-body"><div class="ri-name">Contracts</div><div class="ri-status muted">SA configures</div><div class="ri-detail">36-month term, modules noted in brief</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Phase 3 highlight -->
+    <div class="readiness-phase">
+      <div class="readiness-phase-label">★ Phase 3 — Billing &amp; Analytics (highlights)</div>
+      <div class="readiness-grid">
+        <div class="readiness-item configured">
+          <div class="ri-icon">✅</div>
+          <div class="ri-body"><div class="ri-name">Bill Profiles</div><div class="ri-status green">Configured by Alfred</div><div class="ri-detail">Profile ID 1014 — Anniversary/1st, $25 late fee, 10-day grace</div></div>
+        </div>
+        <div class="readiness-item data-ready">
+          <div class="ri-icon">📘</div>
+          <div class="ri-body"><div class="ri-name">Payment Processors</div><div class="ri-status teal">Data ready</div><div class="ri-detail">ACH — processor confirmed in Core 8</div></div>
+        </div>
+        <div class="readiness-item data-ready">
+          <div class="ri-icon">📘</div>
+          <div class="ri-body"><div class="ri-name">Billing</div><div class="ri-status teal">Data ready</div><div class="ri-detail">Cycle, arrears, grace period, late fees all confirmed</div></div>
+        </div>
+        <div class="readiness-item sa-config">
+          <div class="ri-icon">⏳</div>
+          <div class="ri-body"><div class="ri-name">Invoice Templates</div><div class="ri-status muted">SA configures</div><div class="ri-detail">Custom templates from CW Manage to replicate</div></div>
+        </div>
+      </div>
+    </div>
+
+    <hr style="border:none;border-top:1px solid var(--border);margin:32px 0;">
+
+    <!-- API steps -->
+    <p style="color:var(--muted); font-size:13px; margin-bottom:16px;">What Alfred wrote to the API:</p>
+    <div style="background:rgba(110,190,79,0.07); border:1px solid rgba(110,190,79,0.25); border-radius:8px; padding:10px 16px; margin-bottom:20px; font-size:12px; color:var(--muted); display:flex; align-items:center; gap:10px;">
       <span style="color:var(--green); font-size:15px;">🔒</span>
-      <span>These records are <strong style="color:var(--text)">locked to a specific demo run</strong> (May 4, 2026). Bill Profile ID: <strong style="color:var(--text)">1014</strong> &nbsp;·&nbsp; Users: <strong style="color:var(--text)">972–975</strong></span>
+      <span>Locked to demo run (May 4, 2026) — Bill Profile ID: <strong style="color:var(--text)">1014</strong> &nbsp;·&nbsp; Users: <strong style="color:var(--text)">972–975</strong></span>
     </div>
 
     <!-- Step pills -->
