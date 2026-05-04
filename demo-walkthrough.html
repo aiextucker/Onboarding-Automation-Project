@@ -267,7 +267,7 @@
           <span class="kv-key">Grace Period</span>     <span class="kv-val">10 days</span>
           <span class="kv-key">Late Fees</span>        <span class="kv-val green">$25 flat</span>
           <span class="kv-key">Multiple Profiles</span><span class="kv-val">No</span>
-          <span class="kv-key" style="color:var(--green);font-weight:600;">→ Bill Profile</span> <span class="kv-val green">1st and 15th Cycles (ID: 1001)</span>
+          <span class="kv-key" style="color:var(--green);font-weight:600;">→ Bill Profile</span> <span class="kv-val green">Alfred creates client-specific profile (ID: 1014)</span>
         </div>
       </div>
       <div class="card">
@@ -309,31 +309,19 @@
       <span class="act-badge">Act 3</span>
       <h2>Alfred Pushes to the PSA API</h2>
     </div>
-    <p style="color:var(--muted); margin-bottom:20px; font-size:14px;">SA approves. Alfred calls the Rev.io PSA API across two service tiers in 7 sequential steps. The instance is ready before anyone opens a browser.</p>
+    <p style="color:var(--muted); margin-bottom:20px; font-size:14px;">SA approves. Alfred calls the Rev.io PSA API and creates what can be pre-built before migration: a client-specific bill profile and all PSA user accounts. Everything else arrives via the data migration process.</p>
 
     <!-- Live PSA links -->
     <div style="background:rgba(110,190,79,0.07); border:1px solid rgba(110,190,79,0.25); border-radius:8px; padding:10px 16px; margin-bottom:16px; font-size:12px; color:var(--muted); display:flex; align-items:center; gap:10px;">
       <span style="color:var(--green); font-size:15px;">🔒</span>
-      <span>These records are <strong style="color:var(--text)">locked to a specific demo run</strong> (Apr 28, 2026). The links below open the exact records Alfred created in the PSA demo instance.</span>
-    </div>
-    <div style="display:flex; flex-wrap:wrap; gap:10px; margin-bottom:28px;">
-      <a class="open-btn" href="https://psademo.psarev.io/customers/1110" target="_blank"><span class="btn-icon">🏢</span> Customer 1110 in PSA →</a>
-      <a class="open-btn" href="https://psademo.psarev.io/tickets/292/customers/1110" target="_blank"><span class="btn-icon">🎫</span> Ticket 292 in PSA →</a>
-      <a class="open-btn" href="https://psademo.psarev.io/projects/199" target="_blank"><span class="btn-icon">📁</span> Project 199 in PSA →</a>
-      <a class="open-btn" href="https://psademo.psarev.io/opportunities/6" target="_blank"><span class="btn-icon">💼</span> Opportunity 6 in PSA →</a>
+      <span>These records are <strong style="color:var(--text)">locked to a specific demo run</strong> (May 4, 2026). Bill Profile ID: <strong style="color:var(--text)">1014</strong> &nbsp;·&nbsp; Users: <strong style="color:var(--text)">972–975</strong></span>
     </div>
 
     <!-- Step pills -->
     <div class="step-pills">
-      <div class="pill"><span class="pill-num">1</span> Customer Record</div>
-      <div class="pill"><span class="pill-num">2</span> Contacts</div>
-      <div class="pill"><span class="pill-num">3</span> Users ×4</div>
-      <div class="pill"><span class="pill-num">4</span> Intake Note</div>
-      <div class="pill new-step"><span class="pill-num">5</span> Onboarding Ticket ✦</div>
-      <div class="pill new-step"><span class="pill-num">6</span> Onboarding Project ✦</div>
-      <div class="pill"><span class="pill-num">7</span> Opportunity</div>
+      <div class="pill new-step"><span class="pill-num">1</span> Bill Profile</div>
+      <div class="pill new-step"><span class="pill-num">2</span> Users ×4</div>
     </div>
-    <p style="font-size:12px; color:var(--muted); margin-bottom:24px;">✦ New capabilities unlocked from complete API reference</p>
 
     <!-- Terminal -->
     <div class="terminal">
@@ -349,118 +337,63 @@
 <span class="t-sep">╚══════════════════════════════════════════════════════╝</span>
 
 <span class="t-lbl">Client:    </span><span class="t-val">Apex Systems Group</span>
-<span class="t-lbl">MRR:       </span><span class="t-val">$8,500/mo</span>
 <span class="t-lbl">SA:        </span><span class="t-val">Nicole Hills</span>
-<span class="t-lbl">Prior PSA: </span><span class="t-val">ConnectWise Manage</span>
-<span class="t-lbl">Users:     </span><span class="t-val">4 to create</span>
 <span class="t-lbl">Billing:   </span><span class="t-val">Anniversary — 1st</span>
-<span class="t-lbl">Target:    </span><span class="t-val">psademo.psarev.io (demo instance)</span>
+<span class="t-lbl">Users:     </span><span class="t-val">4 to create</span>
+<span class="t-lbl">Target:    </span><span class="t-val">psademo.psarev.io</span>
 
 <span class="t-sep">──────────────────────────────────────────────────────</span>
 
-<span class="t-lbl">[1/7] Creating customer record...</span>
-  Apex Systems Group (bill profile: Anniversary)... <span class="t-ok">✅</span>
-      → customerId: <span class="t-val">1110</span>  |  billProfileId: <span class="t-val">1001</span>
+<span class="t-lbl">[1/2] Creating bill profile...</span>
+  Apex Systems Group — Billing Profile (Anniversary)... <span class="t-ok">✅</span>
+      → billProfileId: <span class="t-val">1014</span>  |  name: <span class="t-val">"Apex Systems Group — Billing Profile"</span>
 
-<span class="t-lbl">[2/7] Creating contacts...</span>
-  Primary: Sarah Chen (Owner / CEO)... <span class="t-ok">✅</span>
-  Billing: Marcus Rivera (Operations Manager)... <span class="t-ok">✅</span>
-
-<span class="t-lbl">[3/7] Creating 4 PSA users...</span>
+<span class="t-lbl">[2/2] Creating 4 PSA users...</span>
   Sarah Chen — Owner / CEO (Admin)... <span class="t-ok">✅</span>
   Marcus Rivera — Operations Manager (Admin)... <span class="t-ok">✅</span>
   Jamie Patel — Lead Technician (Technician)... <span class="t-ok">✅</span>
   Taylor Brooks — Dispatch Coordinator (Dispatcher)... <span class="t-ok">✅</span>
-
-<span class="t-lbl">[4/7] Creating intake note...</span>
-  Pinning Alfred brief to customer account... <span class="t-ok">✅</span>
-      → noteId: <span class="t-val">1003</span>
-
-<span class="t-lbl">[5/7] Creating onboarding ticket...</span>
-  Apex Systems Group — kickoff ticket (Service Call / New)... <span class="t-ok">✅</span>
-      → ticketId: <span class="t-val">292</span>
-
-<span class="t-lbl">[6/7] Creating onboarding project...</span>
-  Apex Systems Group — PSA Onboarding (30-day window)... <span class="t-ok">✅</span>
-      → projectId: <span class="t-val">199</span>
-
-<span class="t-lbl">[7/7] Creating opportunity record...</span>
-  Apex Systems Group — PSA Onboarding ($8,500/mo)... <span class="t-ok">✅</span>
-      → opportunityId: <span class="t-val">6</span>
 
 <span class="t-sep">──────────────────────────────────────────────────────</span>
 
 <span class="t-ok">✅  Pre-config complete!</span>
 
 <span class="t-lbl">Summary:</span>
-  Customer ID:    <span class="t-val">1110</span>  |  Note ID:    <span class="t-val">1003</span>
-  Ticket ID:      <span class="t-val">292</span>   |  Project ID: <span class="t-val">199</span>
-  Opportunity ID: <span class="t-val">6</span>     |  Users:      <span class="t-val">4</span>
+  Bill Profile ID: <span class="t-val">1014</span>  ("Apex Systems Group — Billing Profile")
+  Users created:   <span class="t-val">4</span>  (IDs: 972–975)
 
-<span class="t-dim">Next step: SA reviews config in PSA → confirms before kickoff.</span>
+<span class="t-dim">Next: SA assigns bill profile to customer record once migration is complete.</span>
       </div>
     </div>
 
-    <!-- What got created -->
+    <!-- What got written -->
     <p style="color:var(--muted); font-size:13px; margin-bottom:14px;">What got written to the API:</p>
 
-    <div class="three-col" style="margin-bottom:16px;">
+    <div class="two-col" style="margin-bottom:16px;">
       <div>
-        <span class="api-label">POST /billing/api/v1/customers</span>
-        <div class="api-block"><span class="json-key">"companyName"</span>: <span class="json-str">"Apex Systems Group"</span>,
-<span class="json-key">"billProfileId"</span>: <span class="json-num">1001</span>,
-<span class="json-key">"address"</span>: {
-  <span class="json-key">"cityMunicipality"</span>: <span class="json-str">"Austin"</span>,
-  <span class="json-key">"stateProvinceCode"</span>: <span class="json-str">"TX"</span>
+        <span class="api-label">POST /billing/api/v1/configuration/bill-profiles</span>
+        <div class="api-block"><span class="json-key">"name"</span>: <span class="json-str">"Apex Systems Group — Billing Profile"</span>,
+<span class="json-key">"defaultForBusiness"</span>: <span class="json-bool">false</span>,
+<span class="json-key">"lateFees"</span>: { <span class="json-key">"days"</span>: <span class="json-num">10</span>, <span class="json-key">"flatAmount"</span>: <span class="json-num">25</span> },
+<span class="json-key">"recurringCycles"</span>: {
+  <span class="json-key">"initialCycleScheme"</span>: <span class="json-str">"Cycle"</span>,
+  <span class="json-key">"initialCycleDirection"</span>: <span class="json-str">"Backward"</span>,
+  <span class="json-key">"cycleInitializationRules"</span>: [
+    { <span class="json-key">"cycleDay"</span>: <span class="json-num">1</span> }
+  ]
 }</div>
-        <div class="response-badge">✓ 200 · customerId: 1110</div>
+        <div class="response-badge">✓ 200 · billProfileId: 1014</div>
       </div>
       <div>
-        <span class="api-label">POST /psac/api/v1/ticket &nbsp;⬅ NEW</span>
-        <div class="api-block"><span class="json-key">"customerId"</span>: <span class="json-num">1110</span>,
-<span class="json-key">"ticketTypeId"</span>: <span class="json-num">2</span>,
-<span class="json-key">"ticketStatusId"</span>: <span class="json-num">1</span>,
-<span class="json-key">"ticketPriorityId"</span>: <span class="json-num">2</span>,
-<span class="json-key">"ticketDescription"</span>: <span class="json-str">"Onboarding: Apex..."</span></div>
-        <div class="response-badge">✓ 201 · ticketId: 292</div>
-      </div>
-      <div>
-        <span class="api-label">POST /project-management/api/v1/projects &nbsp;⬅ NEW</span>
-        <div class="api-block"><span class="json-key">"customerId"</span>: <span class="json-num">1110</span>,
-<span class="json-key">"projectName"</span>: <span class="json-str">"Apex — PSA Onboarding"</span>,
-<span class="json-key">"projectStatusId"</span>: <span class="json-num">1</span>,
-<span class="json-key">"startDate"</span>: <span class="json-str">"2026-05-04"</span>,
-<span class="json-key">"endDate"</span>: <span class="json-str">"2026-06-03"</span></div>
-        <div class="response-badge">✓ 201 · projectId: 199</div>
+        <span class="api-label">POST /billing/api/v1/users (repeated ×4)</span>
+        <div class="api-block"><span class="json-key">"firstName"</span>: <span class="json-str">"Sarah"</span>,
+<span class="json-key">"lastName"</span>: <span class="json-str">"Chen"</span>,
+<span class="json-key">"emailAddress"</span>: <span class="json-str">"schen@apexsystemsgroup.com"</span>,
+<span class="json-key">"loginName"</span>: <span class="json-str">"sarah.chen.apex"</span>,
+<span class="json-key">"jobTitle"</span>: <span class="json-str">"Owner / CEO"</span></div>
+        <div class="response-badge">✓ 200 · billingUserId: 972–975</div>
       </div>
     </div>
-
-    <!-- Intake note -->
-    <span class="api-label">POST /billing/api/v1/notes — Intake brief pinned to account (noteId: 1003)</span>
-    <div class="note-preview">=== ALFRED INTAKE BRIEF — Apex Systems Group ===
-Close Date: 2026-04-28  |  MRR: $8,500/mo  |  Term: 36 months
-Sales Rep: Jordan Parker  |  SA Assigned: Nicole Hills
-
---- Core 8 ---
-Prior PSA:          ConnectWise Manage
-Accounting SW:      QuickBooks Online
-RMM:                NinjaOne
-Payment Processor:  ACH
-Dispatch Model:     Internal helpdesk + field dispatch
-Business Hours:     Mon–Fri 8:00 AM – 6:00 PM CT
-Invoice Continuity: No — reset to 1001
-SureTax:            New account needed
-
---- Billing Config ---
-Cycle Type:         Anniversary     Bill Profile Assigned: 1001 (1st and 15th Cycles)
-Bill in Arrears:    No              Grace Period: 10 days
-Late Fees:          $25 (Flat)      Multiple Profiles: No
-
---- SA Notes ---
-Migrating from ConnectWise Manage — client has existing ticket templates they want replicated.
-Sarah Chen is hands-on during onboarding. Marcus Rivera owns billing. Target go-live: 30 days.
-
-Auto-generated by Alfred pre-config pipeline. SA: review and confirm before kickoff.</div>
   </div>
 
   <hr class="section-sep" />
@@ -470,8 +403,8 @@ Auto-generated by Alfred pre-config pipeline. SA: review and confirm before kick
     <div class="section-header"><h2>Impact</h2></div>
     <p style="color:var(--muted); font-size:14px; margin-bottom:8px;">Before Alfred: SAs spent sessions 1–2 collecting info that Sales already knew — then entering it manually one field at a time.</p>
     <div class="summary-banner">
-      <div class="stat"><div class="stat-val">7</div><div class="stat-label">API calls per client</div></div>
-      <div class="stat"><div class="stat-val">&lt;60s</div><div class="stat-label">Full pre-config runtime</div></div>
+      <div class="stat"><div class="stat-val">2</div><div class="stat-label">API steps per client</div></div>
+      <div class="stat"><div class="stat-val">&lt;30s</div><div class="stat-label">Full pre-config runtime</div></div>
       <div class="stat"><div class="stat-val">60–80%</div><div class="stat-label">Config complete before Day 1</div></div>
       <div class="stat"><div class="stat-val">411h</div><div class="stat-label">SA time analyzed (566 calls)</div></div>
     </div>
