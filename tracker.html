@@ -15,798 +15,971 @@
   --border:    #2a3050;
   --border-hi: #3d4870;
   --accent:    #6c63ff;
-  --accent-dk: #5549e0;
-  --accent-lt: #8b84ff;
   --teal:      #00d4aa;
-  --teal-dk:   #00b090;
   --text:      #e8e8f0;
   --text-dim:  #8a90b0;
   --text-mute: #525870;
   --red:       #ff5a6e;
-  --red-bg:    rgba(255,90,110,0.1);
   --yellow:    #f0a500;
-  --yellow-bg: rgba(240,165,0,0.1);
-  --green:     #00d4aa;
-  --green-bg:  rgba(0,212,170,0.1);
   --blue:      #4fa3ff;
-  --blue-bg:   rgba(79,163,255,0.1);
-  --purple:    #a78bfa;
-  --purple-bg: rgba(167,139,250,0.1);
-  --orange:    #fb923c;
-  --orange-bg: rgba(251,146,60,0.1);
-  --radius:    10px;
-  --radius-sm: 6px;
-  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
-html { font-size: 15px; }
+html { font-size: 14px; }
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: var(--font);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   min-height: 100vh;
-  line-height: 1.6;
+  line-height: 1.5;
 }
 
-/* ── Header ── */
-.app-header {
+/* ── STICKY HEADER ── */
+#site-header {
+  position: sticky; top: 0; z-index: 100;
   background: var(--surface);
   border-bottom: 1px solid var(--border);
-  padding: 0 24px;
-  height: 56px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  position: sticky;
-  top: 0;
-  z-index: 100;
+  display: flex; align-items: center; gap: 12px;
+  padding: 0 20px; height: 48px;
 }
-.logo { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 1rem; }
-.logo-mark {
-  width: 30px; height: 30px;
-  background: linear-gradient(135deg, var(--accent) 0%, var(--teal) 100%);
-  border-radius: 8px;
-  display: flex; align-items: center; justify-content: center;
-  font-weight: 800; font-size: 0.78rem; color: #fff;
+#site-header .logo {
+  font-weight: 700; font-size: 15px; color: var(--teal); white-space: nowrap;
+  letter-spacing: 0.03em;
 }
-.logo-sub { font-size: 0.72rem; color: var(--text-mute); font-weight: 400; margin-left: 2px; }
-.back-link {
-  color: var(--text-dim); text-decoration: none; font-size: 0.8rem;
-  padding: 4px 10px; border-radius: var(--radius-sm);
-  border: 1px solid var(--border); transition: all .15s;
-  margin-left: 16px;
+#site-header .back-link {
+  color: var(--text-dim); font-size: 12px; text-decoration: none;
+  display: flex; align-items: center; gap: 4px; white-space: nowrap;
 }
-.back-link:hover { color: var(--text); border-color: var(--border-hi); }
-.header-right { display: flex; align-items: center; gap: 10px; }
-.snapshot-select {
-  background: var(--surface2);
-  color: var(--text);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 4px 10px;
-  font-size: 0.8rem;
-  cursor: pointer;
+#site-header .back-link:hover { color: var(--text); }
+#site-header .sep { color: var(--border-hi); }
+#client-name-header {
+  font-weight: 600; font-size: 14px; color: var(--text); white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis; flex: 1;
 }
-.snapshot-select:hover { border-color: var(--border-hi); }
-.pdf-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 14px;
-  border-radius: var(--radius-sm);
-  border: 1px solid rgba(79,163,255,.4);
-  background: var(--blue-bg);
-  color: var(--blue);
-  font-size: 0.8rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all .15s;
+#site-header .hdr-controls {
+  display: flex; align-items: center; gap: 8px; flex-shrink: 0;
 }
-.pdf-btn:hover { border-color: var(--blue); background: rgba(79,163,255,.15); }
+#snapshot-select {
+  background: var(--surface2); border: 1px solid var(--border); border-radius: 6px;
+  color: var(--text-dim); font-size: 12px; padding: 4px 8px; cursor: pointer;
+}
+#snapshot-select:focus { outline: none; border-color: var(--accent); }
+.btn-export {
+  background: var(--surface3); border: 1px solid var(--border-hi); border-radius: 6px;
+  color: var(--text-dim); font-size: 12px; padding: 4px 10px; cursor: pointer;
+  white-space: nowrap;
+}
+.btn-export:hover { color: var(--text); border-color: var(--accent); }
 
-/* ── Content ── */
-.main { max-width: 1200px; margin: 0 auto; padding: 28px 24px; }
-
-/* ── Loading / Error ── */
-.loading {
-  display: flex; flex-direction: column; align-items: center;
-  justify-content: center; gap: 16px; padding: 80px;
-  color: var(--text-mute);
-}
-.spinner {
-  width: 32px; height: 32px;
-  border: 3px solid var(--border);
-  border-top-color: var(--accent);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-.error-bar {
-  background: var(--red-bg); border: 1px solid var(--red);
-  color: var(--red); padding: 16px 20px; border-radius: var(--radius);
-  margin: 32px; font-size: 0.9rem;
-}
-
-/* ── Client hero ── */
-.client-hero {
+/* ── HERO ── */
+#client-hero {
   background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 24px 28px;
-  margin-bottom: 24px;
+  border-bottom: 1px solid var(--border);
+  padding: 16px 24px;
 }
-.hero-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
-.client-name { font-size: 2rem; font-weight: 800; line-height: 1.2; margin-bottom: 12px; }
-.hero-badges { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+.hero-row1 {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 10px;
+}
+.hero-name { font-size: 22px; font-weight: 700; }
 .status-badge {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 700;
+  display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 11px;
+  font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
 }
-.status-badge.on-track  { background: rgba(0,212,170,.15); color: var(--teal); border: 1px solid rgba(0,212,170,.3); }
-.status-badge.off-track { background: var(--red-bg); color: var(--red); border: 1px solid rgba(255,90,110,.3); }
-.status-badge.rts       { background: var(--yellow-bg); color: var(--yellow); border: 1px solid rgba(240,165,0,.3); }
-.status-badge.on-hold   { background: rgba(139,132,255,.1); color: var(--accent-lt); border: 1px solid rgba(139,132,255,.3); }
-.status-badge.other     { background: var(--surface2); color: var(--text-dim); border: 1px solid var(--border); }
+.status-on-track  { background: rgba(0,212,170,0.15); color: var(--teal); border: 1px solid var(--teal); }
+.status-on-hold   { background: rgba(240,165,0,0.15); color: var(--yellow); border: 1px solid var(--yellow); }
+.status-off-track { background: rgba(255,90,110,0.15); color: var(--red); border: 1px solid var(--red); }
+.status-rts       { background: rgba(107,99,255,0.15); color: var(--accent); border: 1px solid var(--accent); }
+.status-default   { background: rgba(138,144,176,0.15); color: var(--text-dim); border: 1px solid var(--border-hi); }
 
 .health-pill {
-  display: inline-flex; align-items: center;
-  padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 700;
+  display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 11px;
+  font-weight: 700;
 }
-.health-pill.health-high { background: rgba(0,212,170,.15); color: var(--teal); border: 1px solid rgba(0,212,170,.3); }
-.health-pill.health-mid  { background: var(--yellow-bg); color: var(--yellow); border: 1px solid rgba(240,165,0,.3); }
-.health-pill.health-low  { background: var(--red-bg); color: var(--red); border: 1px solid rgba(255,90,110,.3); }
+.health-good  { background: rgba(0,212,170,0.15); color: var(--teal); }
+.health-warn  { background: rgba(240,165,0,0.15); color: var(--yellow); }
+.health-bad   { background: rgba(255,90,110,0.15); color: var(--red); }
 
-.meta-row { display: flex; flex-wrap: wrap; gap: 16px; font-size: 0.84rem; color: var(--text-dim); }
-.meta-item { display: flex; align-items: center; gap: 4px; }
-.meta-item strong { color: var(--text); }
-.meta-label { color: var(--text-mute); font-size: 0.75rem; text-transform: uppercase; letter-spacing: .06em; }
+.hero-row2 {
+  display: flex; flex-wrap: wrap; gap: 20px;
+}
+.hero-kv { display: flex; flex-direction: column; gap: 2px; }
+.hero-kv .lbl { font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em; }
+.hero-kv .val { font-size: 13px; color: var(--text); font-weight: 500; }
+.hero-kv .val a { color: var(--blue); text-decoration: none; }
+.hero-kv .val a:hover { text-decoration: underline; }
 
-.hero-stats { display: flex; gap: 12px; flex-shrink: 0; }
-.stat-pill {
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 12px 18px;
-  text-align: center;
-  min-width: 72px;
+/* ── MAIN SECTIONS ── */
+.section {
+  margin: 24px auto; max-width: 1400px; padding: 0 20px;
 }
-.stat-pill .val { font-size: 1.4rem; font-weight: 800; line-height: 1; }
-.stat-pill .lbl { font-size: 0.68rem; color: var(--text-mute); text-transform: uppercase; letter-spacing: .06em; margin-top: 4px; }
-
-/* ── Milestone pizza tracker ── */
-.milestone-tracker {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 24px 28px;
-  margin-bottom: 24px;
-}
-.milestone-tracker-title {
-  font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
-  letter-spacing: .08em; color: var(--text-mute);
-  margin-bottom: 20px; padding-bottom: 8px; border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: space-between;
-}
-.milestone-ctx { display: flex; gap: 16px; }
-.milestone-ctx span { font-size: 0.8rem; color: var(--text-dim); font-weight: 400; letter-spacing: 0; text-transform: none; }
-.milestone-ctx span strong { color: var(--teal); }
-
-.pizza-track {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 20px;
-  margin-bottom: 8px;
-}
-.pizza-line {
-  position: absolute;
-  left: 20px; right: 20px;
-  top: 50%; transform: translateY(-50%);
-  height: 3px;
-  background: var(--border);
-  z-index: 0;
-}
-.pizza-line-fill {
-  position: absolute;
-  left: 0; top: 0;
-  height: 100%;
-  background: var(--teal);
-  transition: width .4s ease;
-}
-.pizza-node {
-  position: relative;
-  z-index: 1;
-  display: flex; flex-direction: column; align-items: center;
-  gap: 8px;
-}
-.pizza-circle {
-  width: 36px; height: 36px;
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 0.9rem;
-  transition: all .2s;
-}
-.pizza-circle.done {
-  background: var(--teal);
-  box-shadow: 0 0 0 4px rgba(0,212,170,.2);
-  color: #0f1117;
-}
-.pizza-circle.future {
-  background: var(--surface2);
-  border: 2px solid var(--border);
-  color: var(--text-mute);
-}
-.pizza-circle.active {
-  background: var(--surface2);
-  border: 2px solid var(--teal);
-  color: var(--teal);
-  box-shadow: 0 0 0 4px rgba(0,212,170,.15);
-}
-.pizza-label { font-size: 0.73rem; font-weight: 600; color: var(--text-dim); white-space: nowrap; }
-.pizza-date  { font-size: 0.68rem; color: var(--text-mute); }
-.pizza-date.done-date   { color: var(--teal); }
-.pizza-date.future-date { color: var(--yellow); }
-.pizza-date.missing     { color: var(--border-hi); font-style: italic; }
-
-/* ── Phase columns ── */
-.phase-section { margin-bottom: 24px; }
 .section-title {
-  font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
-  letter-spacing: .08em; color: var(--text-mute);
-  margin-bottom: 12px; padding-bottom: 6px;
-  border-bottom: 1px solid var(--border);
+  font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--text-dim); border-bottom: 1px solid var(--border); padding-bottom: 8px; margin-bottom: 16px;
 }
-.phase-cols {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 12px;
-}
-@media (max-width: 900px) { .phase-cols { grid-template-columns: repeat(3, 1fr); } }
-@media (max-width: 600px) { .phase-cols { grid-template-columns: 1fr 1fr; } }
 
+/* ── MASTER OVERVIEW — 5 COLUMNS ── */
+#master-overview-grid {
+  display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px;
+}
 .phase-col {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: var(--radius);
+  border-radius: 8px;
   overflow: hidden;
 }
 .phase-col-header {
   background: var(--surface3);
-  padding: 10px 14px;
-  font-size: 0.75rem; font-weight: 700;
-  color: var(--accent);
+  padding: 8px 10px;
+  font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
+  color: var(--text-dim); text-align: center;
   border-bottom: 1px solid var(--border);
 }
-.phase-col-body { padding: 10px 14px; }
-.phase-item {
-  font-size: 0.78rem; color: var(--text-dim);
-  padding: 4px 0 4px 12px;
-  position: relative;
-  border-bottom: 1px solid var(--border);
-  line-height: 1.45;
+.phase-col table {
+  width: 100%; border-collapse: collapse;
 }
-.phase-item:last-child { border-bottom: none; }
-.phase-item::before { content: '›'; position: absolute; left: 0; color: var(--text-mute); }
-.phase-item.blocker::before { content: '⛔'; font-size: 0.7rem; }
-.phase-empty { font-size: 0.78rem; color: var(--text-mute); font-style: italic; }
+.phase-col table th {
+  background: var(--surface2);
+  font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
+  color: var(--text-mute); padding: 5px 8px; text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+.phase-col table td {
+  padding: 5px 8px; font-size: 12px; border-bottom: 1px solid var(--border);
+  vertical-align: middle; line-height: 1.3;
+}
+.phase-col table tr:last-child td { border-bottom: none; }
+.phase-col table tr:nth-child(odd) td  { background: var(--surface); }
+.phase-col table tr:nth-child(even) td { background: var(--surface2); }
+.td-component { color: var(--text); }
+.td-status-complete { color: var(--teal); font-weight: 600; font-size: 11px; white-space: nowrap; }
+.td-status-ticket   { color: var(--blue); font-weight: 600; font-size: 11px; white-space: nowrap; }
+.td-status-pending  { color: var(--text-mute); font-size: 11px; }
 
-/* ── Recent calls ── */
-.calls-section { margin-bottom: 24px; }
+/* ── CALL HISTORY CARDS ── */
 .call-card {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: var(--radius);
+  border-radius: 8px;
+  margin-bottom: 20px;
   overflow: hidden;
-  margin-bottom: 12px;
   page-break-inside: avoid;
 }
 .call-card-header {
-  padding: 14px 18px;
-  display: flex; align-items: center; justify-content: space-between;
-  flex-wrap: wrap; gap: 8px;
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  padding: 10px 14px;
+  background: var(--surface3);
   border-bottom: 1px solid var(--border);
 }
-.call-date { font-size: 0.78rem; color: var(--text-mute); min-width: 80px; }
-.call-info { flex: 1; }
-.call-type-badge { font-size: 0.72rem; color: var(--text-dim); background: var(--surface2); padding: 2px 8px; border-radius: 4px; border: 1px solid var(--border); }
-.call-owner { font-size: 0.78rem; color: var(--text-dim); }
-.risk-badge {
-  display: inline-block; padding: 2px 8px; border-radius: 4px;
-  font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
-}
-.risk-badge.high   { background: var(--red-bg); color: var(--red); border: 1px solid rgba(255,90,110,.3); }
-.risk-badge.medium { background: var(--yellow-bg); color: var(--yellow); border: 1px solid rgba(240,165,0,.3); }
-.risk-badge.low    { background: var(--green-bg); color: var(--green); border: 1px solid rgba(0,212,170,.3); }
-.risk-badge.unknown { background: var(--surface2); color: var(--text-mute); border: 1px solid var(--border); }
-
-.call-body { padding: 16px 18px; }
-.call-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
-@media (max-width: 700px) { .call-grid { grid-template-columns: 1fr; } }
-.call-section-label {
-  font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em;
-  margin-bottom: 8px;
-}
-.call-section-label.takeaway { color: var(--accent-lt); }
-.call-section-label.action   { color: var(--teal); }
-.call-section-label.blocker  { color: var(--red); }
-.call-items { list-style: none; padding: 0; }
-.call-items li {
-  font-size: 0.8rem; color: var(--text-dim);
-  padding: 3px 0 3px 14px; position: relative;
-  border-bottom: 1px solid var(--border); line-height: 1.5;
-}
-.call-items li:last-child { border-bottom: none; }
-.call-items li::before { content: '›'; position: absolute; left: 0; color: var(--text-mute); }
-.call-items li.blocker-item { color: var(--red); }
-.call-items li.blocker-item::before { content: '⛔'; font-size: 0.7rem; }
-.call-empty { font-size: 0.8rem; color: var(--text-mute); font-style: italic; }
-
-/* ── Tickets table ── */
-.tickets-section { margin-bottom: 24px; }
-.tickets-table { width: 100%; border-collapse: collapse; }
-.tickets-table th {
-  text-align: left; padding: 10px 14px;
-  font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em;
-  color: var(--text-mute); background: var(--surface2);
-  border-bottom: 1px solid var(--border);
-}
-.tickets-table td {
-  padding: 10px 14px; font-size: 0.82rem;
-  color: var(--text-dim); border-bottom: 1px solid var(--border);
-}
-.tickets-table tr:last-child td { border-bottom: none; }
-.tickets-table tr:hover td { background: var(--surface2); }
-.ticket-subject-link { color: var(--text); text-decoration: none; }
-.ticket-subject-link:hover { color: var(--accent-lt); text-decoration: underline; }
-.ticket-status {
-  display: inline-block; padding: 2px 8px; border-radius: 4px;
-  font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
-}
-.ticket-status.open    { background: var(--blue-bg); color: var(--blue); }
-.ticket-status.new     { background: var(--green-bg); color: var(--green); }
-.ticket-status.pending { background: var(--yellow-bg); color: var(--yellow); }
-.ticket-status.hold    { background: var(--orange-bg); color: var(--orange); }
-.ticket-priority { font-size: 0.78rem; }
-.ticket-priority.urgent  { color: var(--red); font-weight: 700; }
-.ticket-priority.high    { color: var(--yellow); }
-.ticket-priority.normal  { color: var(--text-mute); }
-.ticket-priority.low     { color: var(--text-mute); }
-.ticket-link-btn {
-  display: inline-flex; align-items: center; gap: 4px;
-  color: var(--accent); text-decoration: none; font-size: 0.78rem;
-  padding: 2px 8px; border-radius: 4px; border: 1px solid rgba(108,99,255,.3);
-  transition: all .15s;
-}
-.ticket-link-btn:hover { border-color: var(--accent); background: rgba(108,99,255,.1); }
-.no-tickets {
-  background: var(--surface);
-  border: 1px dashed var(--border);
-  border-radius: var(--radius);
-  padding: 28px; text-align: center;
-  color: var(--text-mute); font-size: 0.84rem;
-}
-.tickets-wrap {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  overflow: hidden;
-}
-
-/* ── Footer ── */
-.page-footer {
-  text-align: center;
-  padding: 32px 24px;
+.call-card-header .ph-label {
+  font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
   color: var(--text-mute);
-  font-size: 0.78rem;
+}
+.call-card-header .sep { color: var(--border-hi); }
+.call-card-header .call-type {
+  font-size: 12px; font-weight: 600; color: var(--accent); text-transform: capitalize;
+}
+.call-card-header .call-date { font-size: 12px; color: var(--text-dim); }
+.call-card-header .call-owner { font-size: 12px; color: var(--text-dim); }
+.risk-badge {
+  display: inline-block; padding: 1px 8px; border-radius: 10px; font-size: 10px;
+  font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
+}
+.risk-high   { background: rgba(255,90,110,0.15); color: var(--red); }
+.risk-medium { background: rgba(240,165,0,0.15); color: var(--yellow); }
+.risk-low    { background: rgba(0,212,170,0.15); color: var(--teal); }
+.risk-none   { background: rgba(138,144,176,0.12); color: var(--text-mute); }
+
+/* call card body: 2-column layout */
+.call-card-body {
+  display: grid; grid-template-columns: 1fr 200px; gap: 0;
+}
+/* main table area */
+.call-main-table {
+  border-right: 1px solid var(--border);
+  overflow-x: auto;
+}
+.call-main-table table {
+  width: 100%; border-collapse: collapse; min-width: 480px;
+}
+.call-main-table table th {
+  background: var(--surface2);
+  font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
+  color: var(--text-mute); padding: 6px 10px; text-align: left;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+.call-main-table table td {
+  padding: 5px 10px; font-size: 12px; border-bottom: 1px solid var(--border);
+  vertical-align: top; line-height: 1.4;
+}
+.call-main-table table tr:last-child td { border-bottom: none; }
+.call-main-table table tr:nth-child(odd) td  { background: var(--surface); }
+.call-main-table table tr:nth-child(even) td { background: var(--surface2); }
+.row-blocker td { background: rgba(255,90,110,0.08) !important; border-left: 2px solid var(--red); }
+.row-ticket td { background: rgba(79,163,255,0.06) !important; }
+.row-flag td { background: rgba(255,90,110,0.06) !important; }
+.td-comp { color: var(--text); font-weight: 500; max-width: 160px; }
+.td-due  { color: var(--text-dim); white-space: nowrap; }
+.td-owner { color: var(--accent); white-space: nowrap; }
+.td-zd a { color: var(--blue); text-decoration: none; font-size: 11px; }
+.td-zd a:hover { text-decoration: underline; }
+.td-notes { color: var(--text-dim); max-width: 300px; }
+.tag-blocker { color: var(--red); font-weight: 700; font-size: 10px; }
+.tag-flag    { color: var(--yellow); font-weight: 600; font-size: 10px; }
+.tag-ticket  { color: var(--blue); font-size: 10px; }
+
+/* dates panel */
+.call-dates-panel {
+  padding: 12px 14px;
+  display: flex; flex-direction: column; gap: 8px;
+  min-width: 190px;
+}
+.dates-status-badge {
+  display: block; text-align: center; padding: 4px 0;
+  border-radius: 6px; font-size: 11px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+.call-dates-panel .kv { display: flex; justify-content: space-between; align-items: baseline; }
+.call-dates-panel .kv .k {
+  font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.05em;
+}
+.call-dates-panel .kv .v { font-size: 12px; color: var(--text); font-weight: 500; }
+.call-dates-panel .kv .v.mrr { color: var(--teal); }
+.call-dates-panel hr { border: none; border-top: 1px solid var(--border); }
+
+/* ── PHASE STRIP ── */
+.phase-strip {
+  display: flex; border-top: 1px solid var(--border);
+}
+.phase-strip-box {
+  flex: 1; padding: 6px 4px; text-align: center;
+  font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
+  border-right: 1px solid var(--border);
+}
+.phase-strip-box:last-child { border-right: none; }
+.phase-done    { background: rgba(0,212,170,0.12); color: var(--teal); }
+.phase-pending { background: var(--surface3); color: var(--text-mute); }
+.phase-strip-legend {
+  display: flex; align-items: center; gap: 12px; padding: 6px 14px;
   border-top: 1px solid var(--border);
-  margin-top: 32px;
+  background: var(--surface2); flex-wrap: wrap;
 }
-.page-footer .snapshot-ts { color: var(--text-dim); }
+.legend-chip { font-size: 10px; color: var(--text-dim); white-space: nowrap; }
 
-/* ── Print styles ── */
+/* ── ZD TICKETS TABLE ── */
+.zd-table { width: 100%; border-collapse: collapse; }
+.zd-table th {
+  background: var(--surface2);
+  font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
+  color: var(--text-mute); padding: 7px 10px; text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+.zd-table td {
+  padding: 6px 10px; font-size: 12px; border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+.zd-table tr:last-child td { border-bottom: none; }
+.zd-table tr:nth-child(odd) td  { background: var(--surface); }
+.zd-table tr:nth-child(even) td { background: var(--surface2); }
+.zd-table .td-id a { color: var(--blue); text-decoration: none; font-weight: 600; }
+.zd-table .td-id a:hover { text-decoration: underline; }
+.zd-table .td-subj { color: var(--text); max-width: 400px; }
+.priority-urgent { color: var(--red); font-weight: 700; font-size: 11px; text-transform: uppercase; }
+.priority-high   { color: var(--yellow); font-weight: 600; font-size: 11px; text-transform: uppercase; }
+.priority-normal { color: var(--text-dim); font-size: 11px; text-transform: uppercase; }
+.priority-low    { color: var(--text-mute); font-size: 11px; text-transform: uppercase; }
+.zd-status { font-size: 11px; text-transform: capitalize; color: var(--text-dim); }
+.zd-status.open   { color: var(--teal); }
+.zd-status.solved { color: var(--text-mute); }
+.zd-status.pending { color: var(--yellow); }
+
+/* ── EMPTY / LOADING ── */
+#loading-msg { text-align: center; padding: 60px; color: var(--text-dim); font-size: 16px; }
+#error-msg   { text-align: center; padding: 60px; color: var(--red); font-size: 14px; }
+.no-client-msg { text-align: center; padding: 60px; color: var(--text-dim); }
+
+/* ── FOOTER ── */
+#footer {
+  margin-top: 40px; padding: 16px 24px;
+  border-top: 1px solid var(--border);
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 11px; color: var(--text-mute);
+}
+
+/* ── PRINT ── */
 @media print {
+  body { background: #fff !important; color: #000 !important; }
+  #site-header .hdr-controls, #snapshot-select, .btn-export { display: none !important; }
+  #site-header { position: static; background: #fff; border-bottom: 1px solid #ccc; }
+  .call-card, #master-overview-grid, .section { page-break-inside: avoid; }
   :root {
-    --bg: #fff; --surface: #fff; --surface2: #f5f5f7; --surface3: #eeeeef;
-    --border: #d1d5db; --border-hi: #9ca3af;
-    --text: #111827; --text-dim: #374151; --text-mute: #6b7280;
-    --accent: #6c63ff; --teal: #008c72; --red: #dc2626; --yellow: #d97706;
-    --blue: #2563eb; --green: #059669;
-    --red-bg: #fef2f2; --yellow-bg: #fffbeb; --green-bg: #f0fdf4; --blue-bg: #eff6ff;
-    --surface2: #f9fafb; --surface3: #f3f4f6;
+    --bg: #fff; --surface: #f8f8f8; --surface2: #f0f0f0; --surface3: #e8e8e8;
+    --border: #ddd; --border-hi: #bbb;
+    --text: #111; --text-dim: #444; --text-mute: #888;
+    --teal: #007a64; --red: #c0392b; --yellow: #b07800; --blue: #1a5fa0; --accent: #4a3fb0;
   }
-  body { background: #fff; color: #111827; }
-  .app-header { display: none !important; }
-  .snapshot-select, .pdf-btn, .back-link { display: none !important; }
-
-  .print-header {
-    display: block !important;
-    padding: 16px 0 12px;
-    border-bottom: 2px solid #d1d5db;
-    margin-bottom: 20px;
-  }
-  .print-header h1 { font-size: 1.4rem; font-weight: 800; color: #111827; }
-  .print-header .print-meta { font-size: 0.82rem; color: #6b7280; margin-top: 4px; }
-
-  @page { margin: 0.5in; }
-  .main { padding: 0; max-width: 100%; }
-  .milestone-tracker, .call-card { page-break-inside: avoid; }
-  .call-card { margin-bottom: 8px; }
-  .phase-cols { grid-template-columns: repeat(5, 1fr); }
+  #print-header { display: flex !important; }
 }
-.print-header { display: none; }
+#print-header {
+  display: none;
+  justify-content: space-between; align-items: center;
+  padding: 8px 0 12px 0; border-bottom: 2px solid #333; margin-bottom: 12px;
+  font-size: 13px; font-weight: 700;
+}
 </style>
 </head>
 <body>
 
-<header class="app-header" id="appHeader">
-  <div style="display:flex;align-items:center;">
-    <div class="logo">
-      <div class="logo-mark">R</div>
-      <span>PM Hub <span class="logo-sub">/ Rev.io Onboarding</span></span>
-    </div>
-    <a href="pm-hub.html" class="back-link">← Back to PM Hub</a>
-  </div>
-  <div class="header-right">
-    <select class="snapshot-select" id="snapshotSelect">
+<!-- PRINT HEADER -->
+<div id="print-header">
+  <span id="print-client-name"></span>
+  <span>Rev.io Onboarding Tracker</span>
+  <span id="print-date"></span>
+</div>
+
+<!-- STICKY HEADER -->
+<header id="site-header">
+  <span class="logo">🎩 Alfred</span>
+  <span class="sep">|</span>
+  <a href="pm-hub.html" class="back-link">← PM Hub</a>
+  <span class="sep">|</span>
+  <span id="client-name-header">Loading…</span>
+  <div class="hdr-controls">
+    <select id="snapshot-select">
       <option value="">Latest</option>
     </select>
-    <button class="pdf-btn" onclick="window.print()">⬇ Export PDF</button>
+    <button class="btn-export" onclick="window.print()">⬇ Export PDF</button>
   </div>
 </header>
 
-<div class="print-header" id="printHeader">
-  <h1 id="printTitle">Rev.io Onboarding Tracker</h1>
-  <div class="print-meta" id="printMeta"></div>
-</div>
+<!-- LOADING -->
+<div id="loading-msg">Loading client data…</div>
+<div id="error-msg" style="display:none"></div>
 
-<main class="main" id="main">
-  <div class="loading">
-    <div class="spinner"></div>
-    <div>Loading tracker…</div>
+<!-- MAIN CONTENT (hidden until data loads) -->
+<div id="main-content" style="display:none">
+
+  <!-- CLIENT HERO -->
+  <section id="client-hero">
+    <div class="hero-row1">
+      <span class="hero-name" id="h-name"></span>
+      <span class="status-badge" id="h-status"></span>
+      <span class="health-pill" id="h-health"></span>
+    </div>
+    <div class="hero-row2">
+      <div class="hero-kv"><span class="lbl">SA</span><span class="val" id="h-sa"></span></div>
+      <div class="hero-kv"><span class="lbl">PM</span><span class="val" id="h-pm"></span></div>
+      <div class="hero-kv"><span class="lbl">Days Active</span><span class="val" id="h-days"></span></div>
+      <div class="hero-kv"><span class="lbl">KO Date</span><span class="val" id="h-ko"></span></div>
+      <div class="hero-kv"><span class="lbl">Activation</span><span class="val" id="h-act"></span></div>
+      <div class="hero-kv"><span class="lbl">1st Bill Out</span><span class="val" id="h-bill"></span></div>
+      <div class="hero-kv"><span class="lbl">Graduation</span><span class="val" id="h-grad"></span></div>
+      <div class="hero-kv"><span class="lbl">MRR</span><span class="val" id="h-mrr"></span></div>
+      <div class="hero-kv"><span class="lbl">Links</span><span class="val" id="h-links"></span></div>
+    </div>
+  </section>
+
+  <!-- MASTER OVERVIEW -->
+  <div class="section">
+    <div class="section-title">Master Overview — Project Components</div>
+    <div id="master-overview-grid"></div>
   </div>
-</main>
+
+  <!-- CALL HISTORY -->
+  <div class="section">
+    <div class="section-title">Call History</div>
+    <div id="call-history"></div>
+  </div>
+
+  <!-- ZENDESK TICKETS -->
+  <div class="section" id="zd-section">
+    <div class="section-title">Open Zendesk Tickets</div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden">
+      <table class="zd-table" id="zd-table">
+        <thead>
+          <tr>
+            <th style="width:80px">Ticket #</th>
+            <th>Subject</th>
+            <th style="width:80px">Priority</th>
+            <th style="width:80px">Status</th>
+            <th style="width:100px">Updated</th>
+          </tr>
+        </thead>
+        <tbody id="zd-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer id="footer">
+    <span>🎩 Alfred · Rev.io Onboarding</span>
+    <span id="footer-ts"></span>
+  </footer>
+
+</div><!-- /main-content -->
 
 <script>
-'use strict';
+// ──────────────────────────────────────────────
+// PHASE DEFINITIONS (from PPTX template)
+// ──────────────────────────────────────────────
+const PHASES = [
+  {
+    key: 'admin',
+    label: 'Administration',
+    components: [
+      'DM Questionnaire','DM Template/Data Access','SA Questionnaire','Tax Questionnaire',
+      'Logo','Tax Mapping','Statement Format Review','Rev.io U Signup',
+      'Project Charter','Schedule Config Calls','Legacy Demo'
+    ]
+  },
+  {
+    key: 'config',
+    label: 'Configurations & Training',
+    components: [
+      'Bill Profile','Service Types','Product Catalog','Usage Plans/Plan Groups',
+      'Free Minutes Setup','Payment Methods','Collection Templates','Custom Fields',
+      'Email Templates','Packages/Product Groups','Provider Settings',
+      'Users/Permissions','Bill Center Configuration','ECP Configuration'
+    ]
+  },
+  {
+    key: 'data',
+    label: 'Data Load',
+    components: [
+      'Initial Data Load','Token Import','Token Migration','CW Load'
+    ]
+  },
+  {
+    key: 'cdr',
+    label: 'CDR Development',
+    components: [
+      'Rd1 – Legacy Reports','Rd1 – Run in Rev.io','Rd1 – Work Issues','Rd1 – Wrap Up',
+      'Rd2 – Legacy Reports','Rd2 – Run in Rev.io','Rd2 – Work Issues','Rd2 – Wrap Up'
+    ]
+  },
+  {
+    key: 'comparative',
+    label: 'Comparative',
+    components: [
+      'Comparative Signoff','Statement Signoff'
+    ]
+  }
+];
 
-// ── URL params ──────────────────────────────────────────────────────────────
-const params     = new URLSearchParams(location.search);
-const clientId   = params.get('client');
-const snapshotDate = params.get('snapshot');
-
-// ── Helpers ─────────────────────────────────────────────────────────────────
-function esc(s) {
-  if (!s) return '';
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
+// ──────────────────────────────────────────────
+// HELPERS
+// ──────────────────────────────────────────────
 function fmtDate(d) {
   if (!d) return '—';
-  const dt = new Date(d + 'T12:00:00');
+  const dt = new Date(d + 'T00:00:00');
   return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
-function parseBullets(text) {
-  if (!text) return [];
-  return text.split('\n').map(l => l.replace(/^[•\-\*]\s*/, '').trim()).filter(Boolean);
-}
-function bulletListHtml(text, cls) {
-  const lines = parseBullets(text);
-  if (!lines.length) return `<span class="call-empty">—</span>`;
-  return `<ul class="call-items">${lines.map(l => `<li>${esc(l)}</li>`).join('')}</ul>`;
-}
-function blockerListHtml(text) {
-  const lines = parseBullets(text);
-  if (!lines.length) return `<span class="call-empty">—</span>`;
-  return `<ul class="call-items">${lines.map(l => `<li class="blocker-item">${esc(l)}</li>`).join('')}</ul>`;
+
+function fmtMrr(v) {
+  if (!v) return '—';
+  return '$' + Number(v).toLocaleString('en-US') + '/mo';
 }
 
-function statusGroup(s) {
-  if (!s) return 'other';
-  const l = s.toLowerCase();
-  if (l.includes('on track'))  return 'on-track';
-  if (l.includes('off track')) return 'off-track';
-  if (l === 'rts')     return 'rts';
-  if (l === 'on hold') return 'on-hold';
-  return 'other';
+function statusClass(sg) {
+  const m = { 'on-track':'on-track','on-hold':'on-hold','off-track':'off-track','rts':'rts' };
+  return 'status-' + (m[sg] || 'default');
 }
 
-// ── Data loading ─────────────────────────────────────────────────────────────
-async function loadSnapshot() {
-  let dataUrl;
-  if (snapshotDate) {
-    dataUrl = `data/snapshots/${snapshotDate}.json`;
-  } else {
-    dataUrl = `data/portfolio.json?_=` + Date.now();
-  }
-  const res = await fetch(dataUrl);
-  if (!res.ok) {
-    if (snapshotDate) {
-      // fallback to latest
-      const res2 = await fetch('data/portfolio.json?_=' + Date.now());
-      if (!res2.ok) throw new Error('Snapshot unavailable (' + res2.status + ')');
-      return res2.json();
+function statusLabel(s) { return s || 'Unknown'; }
+
+function healthClass(h) {
+  if (h == null) return 'health-warn';
+  if (h >= 70) return 'health-good';
+  if (h >= 45) return 'health-warn';
+  return 'health-bad';
+}
+
+function riskClass(r) {
+  const m = { high:'risk-high', medium:'risk-medium', low:'risk-low' };
+  return m[(r||'').toLowerCase()] || 'risk-none';
+}
+
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// Search all brief text for component keyword matches
+function detectComponentStatus(component, briefs, tickets) {
+  const kw = component.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+  // Check tickets first
+  const matchTicket = (tickets||[]).find(t => {
+    const sub = (t.subject||'').toLowerCase();
+    // fuzzy: any word of kw present in ticket subject
+    const words = kw.split(' ').filter(w => w.length > 3);
+    return words.length > 0 && words.some(w => sub.includes(w));
+  });
+
+  // Check briefs for "complete" near component
+  let isComplete = false;
+  for (const brief of (briefs||[])) {
+    const allText = [
+      brief.keyTakeaways, brief.actionItems, brief.configTopics
+    ].filter(Boolean).join(' ').toLowerCase();
+    const words = kw.split(' ').filter(w => w.length > 3);
+    if (words.length === 0) continue;
+    const hasKw = words.some(w => allText.includes(w));
+    if (hasKw) {
+      // look for "complete" or "done" or "✓" within 80 chars of component name
+      const idx = allText.indexOf(words[0]);
+      if (idx >= 0) {
+        const window = allText.substring(Math.max(0,idx-60), idx+120);
+        if (/complet|done|finish|set up|set-up|configured|✓/.test(window)) {
+          isComplete = true;
+          break;
+        }
+      }
     }
-    throw new Error('Portfolio data unavailable (' + res.status + ')');
   }
-  return res.json();
+
+  if (isComplete) return { type: 'complete' };
+  if (matchTicket) return { type: 'ticket', id: matchTicket.id, url: matchTicket.url };
+  return { type: 'pending' };
 }
 
-async function loadManifest() {
+// Parse action items text into rows
+function parseActionItems(text) {
+  if (!text) return [];
+  return text.split('\n')
+    .map(l => l.replace(/^[•\-\*]\s*/, '').trim())
+    .filter(l => l.length > 0)
+    .map(line => {
+      // Try to extract [Owner]
+      const ownerMatch = line.match(/^\[([^\]]+)\]/);
+      const owner = ownerMatch ? ownerMatch[1] : '';
+      const rest = ownerMatch ? line.slice(ownerMatch[0].length).trim() : line;
+      // Try to extract due date
+      const dueMatch = rest.match(/\(due:\s*([^)]+)\)/i);
+      const due = dueMatch ? dueMatch[1].trim() : '';
+      const notes = rest.replace(/\(due:[^)]+\)/i, '').trim();
+      // Try to extract ZD#
+      const zdMatch = rest.match(/(?:ZD|ticket)\s*#?\s*(\d{5,})/i);
+      const zd = zdMatch ? zdMatch[1] : '';
+      // Component = first ~40 chars of notes (up to comma or colon)
+      const comp = notes.split(/[:,]/)[0].trim().slice(0, 60);
+      return { comp, due, owner, zd, notes };
+    });
+}
+
+function parseListLines(text) {
+  if (!text) return [];
+  return text.split('\n')
+    .map(l => l.replace(/^[•\-\*]\s*/, '').trim())
+    .filter(l => l.length > 0);
+}
+
+// Determine which phases are "done" relative to client activation
+function phasesDone(client) {
+  // Simple heuristic: if activated, admin is done; if billOutDate, data load is done; etc.
+  const done = { admin: false, config: false, data: false, cdr: false, comparative: false };
+  if (client.activationDate) {
+    done.admin = true;
+    done.config = true; // typically config is done by activation
+  }
+  if (client.billOutDate) {
+    done.data = true;
+  }
+  if (client.statusGroup === 'rts') {
+    done.cdr = true;
+    done.comparative = true;
+  }
+  return done;
+}
+
+// ──────────────────────────────────────────────
+// RENDER MASTER OVERVIEW (Slide 1)
+// ──────────────────────────────────────────────
+function renderMasterOverview(client, briefs, tickets) {
+  const grid = document.getElementById('master-overview-grid');
+  grid.innerHTML = '';
+
+  PHASES.forEach(phase => {
+    const col = document.createElement('div');
+    col.className = 'phase-col';
+
+    let rows = '';
+    phase.components.forEach(comp => {
+      const status = detectComponentStatus(comp, briefs, tickets);
+      let statusHtml = '';
+      if (status.type === 'complete') {
+        statusHtml = `<span class="td-status-complete">✓ Complete</span>`;
+      } else if (status.type === 'ticket') {
+        const url = status.url || `https://rev-io.zendesk.com/agent/tickets/${status.id}`;
+        statusHtml = `<a href="${esc(url)}" target="_blank" class="td-status-ticket">ZD #${status.id}</a>`;
+      } else {
+        statusHtml = `<span class="td-status-pending">—</span>`;
+      }
+      rows += `<tr>
+        <td class="td-component">${esc(comp)}</td>
+        <td>${statusHtml}</td>
+      </tr>`;
+    });
+
+    col.innerHTML = `
+      <div class="phase-col-header">${esc(phase.label)}</div>
+      <table>
+        <thead><tr><th>Component</th><th>Status / ZD #</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>`;
+    grid.appendChild(col);
+  });
+}
+
+// ──────────────────────────────────────────────
+// RENDER CALL HISTORY (Slides 2+)
+// ──────────────────────────────────────────────
+function renderCallHistory(client, briefs, tickets) {
+  const container = document.getElementById('call-history');
+  container.innerHTML = '';
+
+  if (!briefs || briefs.length === 0) {
+    container.innerHTML = '<div style="color:var(--text-mute);padding:20px;text-align:center">No call records found.</div>';
+    return;
+  }
+
+  // Sort newest first
+  const sorted = [...briefs].sort((a,b) => (b.date||'').localeCompare(a.date||''));
+  const done = phasesDone(client);
+
+  sorted.forEach(brief => {
+    const card = document.createElement('div');
+    card.className = 'call-card';
+
+    // ── Header bar
+    const riskCls = riskClass(brief.risk);
+    const callTypeFmt = (brief.callType||'').replace(/_/g,' ');
+    card.innerHTML += `<div class="call-card-header">
+      <span class="ph-label">Project Components</span>
+      <span class="sep">·</span>
+      <span class="call-type">${esc(callTypeFmt)}</span>
+      <span class="sep">·</span>
+      <span class="call-date">${esc(fmtDate(brief.date))}</span>
+      <span class="sep">·</span>
+      <span class="call-owner">${esc(brief.owner||brief.ownerRole||'')}</span>
+      <span class="sep">·</span>
+      <span class="risk-badge ${riskCls}">${esc((brief.risk||'none').toUpperCase())} Risk</span>
+    </div>`;
+
+    // ── Body
+    const body = document.createElement('div');
+    body.className = 'call-card-body';
+
+    // Main table
+    const mainDiv = document.createElement('div');
+    mainDiv.className = 'call-main-table';
+
+    // Build table rows from action items
+    const actions = parseActionItems(brief.actionItems);
+    const blockers = parseListLines(brief.blockers);
+    const redFlags = parseListLines(brief.redFlags);
+
+    // Match ZD tickets to briefs by looking for ticket subjects in brief text
+    const briefText = [brief.keyTakeaways, brief.actionItems, brief.configTopics].filter(Boolean).join(' ');
+    const matchedTickets = (tickets||[]).filter(t => {
+      const words = (t.subject||'').toLowerCase().split(/\s+/).filter(w=>w.length>4);
+      return words.some(w => briefText.toLowerCase().includes(w));
+    }).slice(0,5);
+
+    let tableRows = '';
+
+    // Action item rows
+    actions.forEach(row => {
+      tableRows += `<tr>
+        <td class="td-comp">${esc(row.comp)}</td>
+        <td class="td-due">${esc(row.due||'—')}</td>
+        <td class="td-owner">${esc(row.owner)}</td>
+        <td class="td-zd">${row.zd ? `<a href="https://rev-io.zendesk.com/agent/tickets/${esc(row.zd)}" target="_blank">ZD #${esc(row.zd)}</a>` : ''}</td>
+        <td class="td-notes">${esc(row.notes)}</td>
+      </tr>`;
+    });
+
+    // Blocker rows
+    blockers.forEach(b => {
+      tableRows += `<tr class="row-blocker">
+        <td class="td-comp"><span class="tag-blocker">⛔ BLOCKER</span></td>
+        <td class="td-due">—</td>
+        <td class="td-owner"></td>
+        <td class="td-zd"></td>
+        <td class="td-notes">${esc(b)}</td>
+      </tr>`;
+    });
+
+    // Red flag rows (if different from blockers)
+    redFlags.forEach(f => {
+      // Skip if same as a blocker
+      if (blockers.some(b => b.trim() === f.trim())) return;
+      tableRows += `<tr class="row-flag">
+        <td class="td-comp"><span class="tag-flag">⚠ FLAG</span></td>
+        <td class="td-due">—</td>
+        <td class="td-owner"></td>
+        <td class="td-zd"></td>
+        <td class="td-notes">${esc(f)}</td>
+      </tr>`;
+    });
+
+    // Matched ZD ticket rows
+    matchedTickets.forEach(t => {
+      tableRows += `<tr class="row-ticket">
+        <td class="td-comp"><span class="tag-ticket">🎫 Ticket</span> ${esc(t.subject||'')}</td>
+        <td class="td-due">${esc(t.updated||'')}</td>
+        <td class="td-owner"></td>
+        <td class="td-zd"><a href="${esc(t.url||'')}" target="_blank">ZD #${t.id}</a></td>
+        <td class="td-notes">${esc(t.status||'')}</td>
+      </tr>`;
+    });
+
+    if (!tableRows) {
+      tableRows = `<tr><td colspan="5" style="color:var(--text-mute);text-align:center;padding:16px">No structured action items extracted.</td></tr>`;
+    }
+
+    mainDiv.innerHTML = `<table>
+      <thead><tr>
+        <th style="width:180px">Component</th>
+        <th style="width:90px">Status/Due</th>
+        <th style="width:120px">Owner</th>
+        <th style="width:80px">ZD #</th>
+        <th>Notes</th>
+      </tr></thead>
+      <tbody>${tableRows}</tbody>
+    </table>`;
+
+    // Dates panel
+    const datesDiv = document.createElement('div');
+    datesDiv.className = 'call-dates-panel';
+
+    // Status badge
+    const sg = client.statusGroup || '';
+    let badgeCls = 'status-' + (sg==='on-track'?'on-track':sg==='on-hold'?'on-hold':sg==='off-track'?'off-track':sg==='rts'?'rts':'default');
+    const statusTxt = client.status || 'Unknown';
+    datesDiv.innerHTML = `
+      <div class="dates-status-badge status-badge ${badgeCls}">${esc(statusTxt)}</div>
+      <hr>
+      <div class="kv"><span class="k">Date</span><span class="v">${esc(fmtDate(brief.date))}</span></div>
+      <div class="kv"><span class="k">License Fee</span><span class="v mrr">${esc(fmtMrr(client.mrr))}</span></div>
+      <div class="kv"><span class="k">Activation</span><span class="v">${esc(fmtDate(client.activationDate))}</span></div>
+      <div class="kv"><span class="k">1st Bill Out</span><span class="v">${esc(fmtDate(client.billOutDate))}</span></div>
+      <div class="kv"><span class="k">Graduation</span><span class="v">${esc(fmtDate(client.gradDate))}</span></div>
+    `;
+
+    body.appendChild(mainDiv);
+    body.appendChild(datesDiv);
+    card.appendChild(body);
+
+    // ── Phase strip
+    const strip = document.createElement('div');
+    strip.className = 'phase-strip';
+    PHASES.forEach(ph => {
+      const box = document.createElement('div');
+      box.className = 'phase-strip-box ' + (done[ph.key] ? 'phase-done' : 'phase-pending');
+      box.textContent = ph.label;
+      strip.appendChild(box);
+    });
+    card.appendChild(strip);
+
+    // Legend
+    const legend = document.createElement('div');
+    legend.className = 'phase-strip-legend';
+    legend.innerHTML = `
+      <span class="legend-chip">🟢 On Track</span>
+      <span class="legend-chip">🟡 On Hold</span>
+      <span class="legend-chip">🔴 Off Track</span>
+      <span class="legend-chip">◻ Not Started</span>
+      <span class="legend-chip">✓ Complete</span>
+    `;
+    card.appendChild(legend);
+
+    container.appendChild(card);
+  });
+}
+
+// ──────────────────────────────────────────────
+// RENDER ZD TICKETS
+// ──────────────────────────────────────────────
+function renderTickets(tickets) {
+  const tbody = document.getElementById('zd-tbody');
+  const section = document.getElementById('zd-section');
+  if (!tickets || tickets.length === 0) {
+    section.style.display = 'none';
+    return;
+  }
+
+  // Sort: open/pending first, then by updated desc
+  const sorted = [...tickets].sort((a,b) => {
+    const priority = ['urgent','high','normal','low'];
+    const aOpen = ['open','pending'].includes((a.status||'').toLowerCase()) ? 0 : 1;
+    const bOpen = ['open','pending'].includes((b.status||'').toLowerCase()) ? 0 : 1;
+    if (aOpen !== bOpen) return aOpen - bOpen;
+    return (b.updated||'').localeCompare(a.updated||'');
+  });
+
+  tbody.innerHTML = sorted.map(t => {
+    const statusCls = (t.status||'').toLowerCase();
+    const priorCls = 'priority-' + (t.priority||'normal').toLowerCase();
+    return `<tr>
+      <td class="td-id"><a href="${esc(t.url||'')}" target="_blank">#${t.id}</a></td>
+      <td class="td-subj">${esc(t.subject||'')}</td>
+      <td><span class="${priorCls}">${esc(t.priority||'normal')}</span></td>
+      <td><span class="zd-status ${statusCls}">${esc(t.status||'')}</span></td>
+      <td style="color:var(--text-dim);font-size:12px">${esc(fmtDate(t.updated))}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ──────────────────────────────────────────────
+// RENDER HERO
+// ──────────────────────────────────────────────
+function renderHero(client) {
+  document.getElementById('h-name').textContent = client.name || '—';
+  document.getElementById('client-name-header').textContent = client.name || '—';
+  document.getElementById('print-client-name').textContent = client.name || '—';
+
+  const statusEl = document.getElementById('h-status');
+  statusEl.textContent = client.status || 'Unknown';
+  statusEl.className = 'status-badge ' + statusClass(client.statusGroup||'');
+
+  const healthEl = document.getElementById('h-health');
+  const h = client.health;
+  healthEl.textContent = h != null ? `Health: ${h}%` : 'Health: —';
+  healthEl.className = 'health-pill ' + healthClass(h);
+
+  document.getElementById('h-sa').textContent = (client.sa||[]).join(', ') || '—';
+  document.getElementById('h-pm').textContent = (client.pm||[]).join(', ') || '—';
+  document.getElementById('h-days').textContent = client.daysActive != null ? client.daysActive + ' days' : '—';
+  document.getElementById('h-ko').textContent = fmtDate(client.koDate);
+  document.getElementById('h-act').textContent = fmtDate(client.activationDate);
+  document.getElementById('h-bill').textContent = fmtDate(client.billOutDate);
+  document.getElementById('h-grad').textContent = fmtDate(client.gradDate);
+  document.getElementById('h-mrr').textContent = fmtMrr(client.mrr);
+
+  const links = [];
+  if (client.wrikeUrl) links.push(`<a href="${esc(client.wrikeUrl)}" target="_blank">Wrike</a>`);
+  if (client.notionUrl) links.push(`<a href="${esc(client.notionUrl)}" target="_blank">Notion</a>`);
+  document.getElementById('h-links').innerHTML = links.join(' · ') || '—';
+}
+
+// ──────────────────────────────────────────────
+// SNAPSHOT SELECTOR
+// ──────────────────────────────────────────────
+async function loadSnapshotManifest(clientId) {
   try {
     const res = await fetch('data/snapshots/manifest.json');
-    if (!res.ok) return [];
-    return res.json();
-  } catch { return []; }
-}
-
-// ── Snapshot selector ────────────────────────────────────────────────────────
-async function initSnapshotSelector() {
-  const sel = document.getElementById('snapshotSelect');
-  const manifest = await loadManifest();
-  if (manifest.length) {
-    manifest.forEach(date => {
+    if (!res.ok) return;
+    const manifest = await res.json();
+    const sel = document.getElementById('snapshot-select');
+    (manifest.dates||manifest||[]).forEach(d => {
       const opt = document.createElement('option');
-      opt.value = date;
-      opt.textContent = date;
-      if (date === snapshotDate) opt.selected = true;
+      opt.value = d; opt.textContent = d;
       sel.appendChild(opt);
     });
-  }
-  if (!snapshotDate) sel.value = '';
-  sel.addEventListener('change', () => {
-    const v = sel.value;
-    if (!v) {
-      const url = new URL(location.href);
-      url.searchParams.delete('snapshot');
-      location.href = url.toString();
-    } else {
-      const url = new URL(location.href);
-      url.searchParams.set('snapshot', v);
-      location.href = url.toString();
-    }
-  });
-}
+    // Select current snapshot if in URL
+    const params = new URLSearchParams(location.search);
+    const snap = params.get('snapshot');
+    if (snap) sel.value = snap;
 
-// ── Render ───────────────────────────────────────────────────────────────────
-function renderTracker(snapshot) {
-  if (!clientId) {
-    document.getElementById('main').innerHTML = `<div class="error-bar">⚠ No client specified. Add ?client=&lt;id&gt; to the URL.</div>`;
-    return;
-  }
-
-  const client = (snapshot.clients || []).find(c => c.id === clientId);
-  if (!client) {
-    document.getElementById('main').innerHTML = `<div class="error-bar">⚠ Client not found in snapshot data.</div>`;
-    return;
-  }
-
-  const briefs  = (snapshot.briefsByClientId  || {})[clientId] || [];
-  const tickets = (snapshot.ticketsByClientId || {})[clientId] || [];
-  const today   = new Date().toISOString().split('T')[0];
-  const sg      = client.statusGroup || statusGroup(client.status);
-
-  // ── Print header ──
-  const printTitle = document.getElementById('printTitle');
-  const printMeta  = document.getElementById('printMeta');
-  printTitle.textContent = (client.name || 'Client') + ' — Rev.io Onboarding Tracker';
-  printMeta.textContent  = 'Snapshot: ' + (snapshotDate || 'Latest') + ' · Data as of: ' + (snapshot.updatedAt ? new Date(snapshot.updatedAt).toLocaleString() : '—');
-
-  // Update page title
-  document.title = (client.name || 'Client') + ' — Tracker · Rev.io';
-
-  const main = document.getElementById('main');
-  main.innerHTML = '';
-
-  // ── 1. Client Hero ──
-  const health = client.health;
-  const healthClass = !health ? '' : health >= 70 ? 'health-high' : health >= 40 ? 'health-mid' : 'health-low';
-  const teamParts = [
-    ...(client.sa  || []).map(n => `<span class="meta-item"><span class="meta-label">SA</span> <strong>${esc(n)}</strong></span>`),
-    ...(client.pm  || []).map(n => `<span class="meta-item"><span class="meta-label">PM</span> <strong>${esc(n)}</strong></span>`),
-    ...(client.de  || []).map(n => `<span class="meta-item"><span class="meta-label">DE</span> <strong>${esc(n)}</strong></span>`),
-    ...(client.csa || []).map(n => `<span class="meta-item"><span class="meta-label">CSA</span> <strong>${esc(n)}</strong></span>`),
-  ];
-  if (client.complexity) teamParts.push(`<span class="meta-item"><span class="meta-label">Complexity</span> <strong>${esc(client.complexity)}</strong></span>`);
-  if (client.segment)    teamParts.push(`<span class="meta-item"><span class="meta-label">Segment</span> <strong>${esc(client.segment)}</strong></span>`);
-  if (client.mrr)        teamParts.push(`<span class="meta-item"><span class="meta-label">MRR</span> <strong>$${client.mrr.toLocaleString()}</strong></span>`);
-
-  const daysToGrad = client.gradDate
-    ? Math.ceil((new Date(client.gradDate + 'T12:00:00').getTime() - Date.now()) / 86400000)
-    : null;
-
-  main.insertAdjacentHTML('beforeend', `
-    <div class="client-hero">
-      <div class="hero-top">
-        <div>
-          <div class="client-name">${esc(client.name || 'Unknown Client')}</div>
-          <div class="hero-badges">
-            <span class="status-badge ${sg}">${esc(client.status || '—')}</span>
-            ${health != null ? `<span class="health-pill ${healthClass}">Health: ${health}/100</span>` : ''}
-          </div>
-          <div class="meta-row">
-            ${teamParts.join('')}
-            ${client.daysActive != null ? `<span class="meta-item"><span class="meta-label">Days Active</span> <strong>${client.daysActive}</strong></span>` : ''}
-          </div>
-        </div>
-        <div class="hero-stats">
-          ${health != null ? `<div class="stat-pill ${healthClass}"><div class="val">${health}</div><div class="lbl">Health</div></div>` : ''}
-          <div class="stat-pill"><div class="val">${briefs.length}</div><div class="lbl">Calls</div></div>
-          <div class="stat-pill"><div class="val">${tickets.length}</div><div class="lbl">Tickets</div></div>
-          ${daysToGrad != null ? `<div class="stat-pill"><div class="val">${daysToGrad < 0 ? '✓' : daysToGrad}</div><div class="lbl">${daysToGrad < 0 ? 'Graduated' : 'Days Left'}</div></div>` : ''}
-        </div>
-      </div>
-    </div>
-  `);
-
-  // ── 2. Milestone pizza tracker ──
-  const milestones = [
-    { label: 'Kickoff',      icon: '🚀', date: client.koDate },
-    { label: 'Charter',      icon: '📋', date: client.charterDate },
-    { label: 'Activation',   icon: '⚡', date: client.activationDate },
-    { label: '1st Bill Out', icon: '💰', date: client.billOutDate },
-    { label: 'Graduation',   icon: '🎓', date: client.gradDate },
-  ];
-
-  const completedCount = milestones.filter(m => m.date && m.date <= today).length;
-  const totalWithDates = milestones.filter(m => m.date).length;
-  const progressPct = totalWithDates > 1
-    ? Math.round(((completedCount - 1) / (milestones.length - 1)) * 100)
-    : (completedCount > 0 ? 100 : 0);
-
-  const nodesHtml = milestones.map((m, i) => {
-    const done   = m.date && m.date <= today;
-    const next   = !done && milestones.slice(0, i).every(pm => pm.date && pm.date <= today);
-    const cls    = done ? 'done' : (next ? 'active' : 'future');
-    const dateCls = !m.date ? 'missing' : (done ? 'done-date' : 'future-date');
-    return `
-      <div class="pizza-node">
-        <div class="pizza-circle ${cls}">${done ? '✓' : m.icon}</div>
-        <div class="pizza-label">${esc(m.label)}</div>
-        <div class="pizza-date ${dateCls}">${m.date ? fmtDate(m.date) : 'TBD'}</div>
-      </div>`;
-  }).join('');
-
-  main.insertAdjacentHTML('beforeend', `
-    <div class="milestone-tracker">
-      <div class="milestone-tracker-title">
-        <span>Project Milestones</span>
-        <div class="milestone-ctx">
-          ${client.daysActive != null ? `<span><strong>${client.daysActive}</strong> days active</span>` : ''}
-          ${daysToGrad != null && daysToGrad > 0 ? `<span><strong>${daysToGrad}</strong> days to graduation</span>` : ''}
-        </div>
-      </div>
-      <div class="pizza-track">
-        <div class="pizza-line"><div class="pizza-line-fill" style="width:${progressPct}%"></div></div>
-        ${nodesHtml}
-      </div>
-    </div>
-  `);
-
-  // ── 3. Phase progress columns ──
-  const allActions  = [];
-  const allBlockers = [];
-  briefs.forEach(b => {
-    parseBullets(b.actionItems).forEach(a => { if (!allActions.includes(a))  allActions.push(a); });
-    parseBullets(b.blockers).forEach(a   => { if (!allBlockers.includes(a)) allBlockers.push(a); });
-  });
-
-  const phases = [
-    { name: 'Admin',             items: allActions.slice(0,  8) },
-    { name: 'Config & Training', items: allActions.slice(8,  16) },
-    { name: 'Data Load',         items: allActions.slice(16, 24) },
-    { name: 'CDR Dev',           items: allBlockers.slice(0, 8) },
-    { name: 'Comparative',       items: tickets.slice(0, 8).map(t => t.subject) },
-  ];
-
-  const phaseCols = phases.map(ph => `
-    <div class="phase-col">
-      <div class="phase-col-header">${esc(ph.name)}</div>
-      <div class="phase-col-body">
-        ${ph.items.length
-          ? ph.items.map(item => `<div class="phase-item">${esc(item)}</div>`).join('')
-          : `<div class="phase-empty">—</div>`}
-      </div>
-    </div>`).join('');
-
-  main.insertAdjacentHTML('beforeend', `
-    <div class="phase-section">
-      <div class="section-title">Phase Progress</div>
-      <div class="phase-cols">${phaseCols}</div>
-    </div>
-  `);
-
-  // ── 4. Recent calls ──
-  const recentBriefs = briefs.slice(0, 8);
-  main.insertAdjacentHTML('beforeend', `<div class="section-title calls-section">Recent Calls</div>`);
-  if (recentBriefs.length === 0) {
-    main.insertAdjacentHTML('beforeend', `<div class="no-tickets">No call briefs on file.</div>`);
-  } else {
-    recentBriefs.forEach(brief => {
-      const rg = (brief.risk || 'unknown').toLowerCase();
-      main.insertAdjacentHTML('beforeend', `
-        <div class="call-card">
-          <div class="call-card-header">
-            <span class="call-date">${brief.date ? fmtDate(brief.date) : '—'}</span>
-            <div class="call-info">
-              ${brief.callType ? `<span class="call-type-badge">${esc(brief.callType)}</span>` : ''}
-            </div>
-            ${brief.owner ? `<span class="call-owner">${esc(brief.owner)}</span>` : ''}
-            <span class="risk-badge ${rg}">${rg}</span>
-          </div>
-          <div class="call-body">
-            <div class="call-grid">
-              <div>
-                <div class="call-section-label takeaway">↗ Key Takeaways</div>
-                ${bulletListHtml(brief.keyTakeaways)}
-              </div>
-              <div>
-                <div class="call-section-label action">✔ Action Items</div>
-                ${bulletListHtml(brief.actionItems)}
-              </div>
-              <div>
-                <div class="call-section-label blocker">⛔ Blockers</div>
-                ${blockerListHtml(brief.blockers)}
-              </div>
-            </div>
-          </div>
-        </div>
-      `);
+    sel.addEventListener('change', () => {
+      const params = new URLSearchParams(location.search);
+      if (sel.value) {
+        params.set('snapshot', sel.value);
+      } else {
+        params.delete('snapshot');
+      }
+      location.search = params.toString();
     });
+  } catch(e) {
+    // No snapshots — that's fine
   }
-
-  // ── 5. Zendesk tickets ──
-  main.insertAdjacentHTML('beforeend', `<div class="section-title tickets-section">Open Zendesk Tickets</div>`);
-  if (tickets.length === 0) {
-    main.insertAdjacentHTML('beforeend', `<div class="no-tickets">No open or pending tickets found.</div>`);
-  } else {
-    const rows = tickets.map(t => `
-      <tr>
-        <td>#${t.id}</td>
-        <td><a class="ticket-subject-link" href="${esc(t.url)}" target="_blank">${esc(t.subject)}</a></td>
-        <td><span class="ticket-status ${t.status}">${t.status}</span></td>
-        <td><span class="ticket-priority ${t.priority || 'normal'}">${t.priority || 'normal'}</span></td>
-        <td>${t.updated || '—'}</td>
-        <td><a class="ticket-link-btn" href="${esc(t.url)}" target="_blank">↗ Open</a></td>
-      </tr>`).join('');
-    main.insertAdjacentHTML('beforeend', `
-      <div class="tickets-wrap">
-        <table class="tickets-table">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Subject</th>
-              <th>Status</th>
-              <th>Priority</th>
-              <th>Updated</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>${rows}</tbody>
-        </table>
-      </div>
-    `);
-  }
-
-  // ── 6. Footer ──
-  main.insertAdjacentHTML('beforeend', `
-    <div class="page-footer">
-      Generated by Alfred · Rev.io
-      ${snapshot.updatedAt ? `<span class="snapshot-ts"> · Snapshot: ${new Date(snapshot.updatedAt).toLocaleString()}</span>` : ''}
-      ${snapshotDate ? `<span class="snapshot-ts"> · Archive: ${snapshotDate}</span>` : ''}
-    </div>
-  `);
 }
 
-// ── Init ─────────────────────────────────────────────────────────────────────
-(async () => {
-  try {
-    await initSnapshotSelector();
-    const snapshot = await loadSnapshot();
-    renderTracker(snapshot);
-  } catch (err) {
-    document.getElementById('main').innerHTML = `<div class="error-bar">⚠ ${esc(err.message)}</div>`;
+// ──────────────────────────────────────────────
+// MAIN INIT
+// ──────────────────────────────────────────────
+async function init() {
+  const params = new URLSearchParams(location.search);
+  const clientId = params.get('client');
+  const snapshot = params.get('snapshot');
+
+  // Set print date
+  document.getElementById('print-date').textContent = new Date().toLocaleDateString('en-US', {
+    year:'numeric', month:'long', day:'numeric'
+  });
+
+  if (!clientId) {
+    document.getElementById('loading-msg').style.display = 'none';
+    document.getElementById('error-msg').style.display = 'block';
+    document.getElementById('error-msg').innerHTML = `
+      <div class="no-client-msg">
+        <div style="font-size:48px;margin-bottom:16px">🎩</div>
+        <div style="font-size:18px;font-weight:700;margin-bottom:8px">No client selected</div>
+        <div>Add <code>?client=&lt;clientId&gt;</code> to the URL, or <a href="pm-hub.html" style="color:var(--blue)">return to PM Hub</a>.</div>
+      </div>`;
+    return;
   }
-})();
+
+  // Determine data source
+  const dataUrl = snapshot
+    ? `data/snapshots/${snapshot}.json`
+    : 'data/portfolio.json';
+
+  let data;
+  try {
+    const res = await fetch(dataUrl);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    data = await res.json();
+  } catch(e) {
+    // If snapshot failed, fall back to portfolio.json
+    if (snapshot) {
+      try {
+        const res2 = await fetch('data/portfolio.json');
+        data = await res2.json();
+      } catch(e2) {
+        document.getElementById('loading-msg').style.display = 'none';
+        document.getElementById('error-msg').style.display = 'block';
+        document.getElementById('error-msg').textContent = 'Failed to load portfolio data: ' + e2.message;
+        return;
+      }
+    } else {
+      document.getElementById('loading-msg').style.display = 'none';
+      document.getElementById('error-msg').style.display = 'block';
+      document.getElementById('error-msg').textContent = 'Failed to load portfolio data: ' + e.message;
+      return;
+    }
+  }
+
+  const client = (data.clients||[]).find(c => c.id === clientId);
+  if (!client) {
+    document.getElementById('loading-msg').style.display = 'none';
+    document.getElementById('error-msg').style.display = 'block';
+    document.getElementById('error-msg').textContent = `Client "${clientId}" not found in portfolio data.`;
+    return;
+  }
+
+  const briefs  = (data.briefsByClientId||{})[clientId] || [];
+  const tickets = (data.ticketsByClientId||{})[clientId] || [];
+
+  // Snapshot selector
+  await loadSnapshotManifest(clientId);
+
+  // Render
+  renderHero(client);
+  renderMasterOverview(client, briefs, tickets);
+  renderCallHistory(client, briefs, tickets);
+  renderTickets(tickets);
+
+  // Footer timestamp
+  const ts = data.updatedAt ? new Date(data.updatedAt).toLocaleString() : new Date().toLocaleString();
+  document.getElementById('footer-ts').textContent = 'Snapshot: ' + ts;
+
+  // Show content
+  document.getElementById('loading-msg').style.display = 'none';
+  document.getElementById('main-content').style.display = 'block';
+  document.title = client.name + ' — Rev.io Onboarding Tracker';
+}
+
+init();
 </script>
 </body>
 </html>
