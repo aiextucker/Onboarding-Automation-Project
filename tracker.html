@@ -364,7 +364,6 @@ body {
     <div class="hero-row1">
       <span class="hero-name" id="h-name"></span>
       <span class="status-badge" id="h-status"></span>
-      <span class="health-pill" id="h-health"></span>
     </div>
     <div class="hero-row2">
       <div class="hero-kv"><span class="lbl">SA</span><span class="val" id="h-sa"></span></div>
@@ -383,12 +382,6 @@ body {
   <div class="section">
     <div class="section-title">Master Overview — Project Components</div>
     <div id="master-overview-grid"></div>
-  </div>
-
-  <!-- CALL HISTORY -->
-  <div class="section">
-    <div class="section-title">Call History</div>
-    <div id="call-history"></div>
   </div>
 
   <!-- ZENDESK TICKETS -->
@@ -841,11 +834,6 @@ function renderHero(client) {
   statusEl.textContent = client.status || 'Unknown';
   statusEl.className = 'status-badge ' + statusClass(client.statusGroup||'');
 
-  const healthEl = document.getElementById('h-health');
-  const h = client.health;
-  healthEl.textContent = h != null ? `Health: ${h}%` : 'Health: —';
-  healthEl.className = 'health-pill ' + healthClass(h);
-
   document.getElementById('h-sa').textContent = (client.sa||[]).join(', ') || '—';
   document.getElementById('h-pm').textContent = (client.pm||[]).join(', ') || '—';
   document.getElementById('h-days').textContent = client.daysActive != null ? client.daysActive + ' days' : '—';
@@ -966,7 +954,6 @@ async function init() {
   // Render
   renderHero(client);
   renderMasterOverview(client, briefs, tickets);
-  renderCallHistory(client, briefs, tickets);
   renderTickets(tickets);
 
   // Footer timestamp
