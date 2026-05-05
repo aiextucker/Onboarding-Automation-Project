@@ -1,6 +1,8 @@
 name: Handle Questionnaire Approval
 
 on:
+  push:
+    branches: []
   repository_dispatch:
     types: [questionnaire-approved, questionnaire-changes-requested]
 
