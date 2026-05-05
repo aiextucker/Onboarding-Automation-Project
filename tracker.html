@@ -154,6 +154,55 @@ body {
 .td-status-ticket   { color: var(--blue); font-weight: 600; font-size: 11px; white-space: nowrap; }
 .td-status-pending  { color: var(--text-mute); font-size: 11px; }
 
+/* ── PROJECT COMPONENTS TABLE ── */
+#proj-comp-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+#proj-comp-table {
+  width: 100%; border-collapse: collapse;
+}
+#proj-comp-table th {
+  background: var(--surface2);
+  font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
+  color: var(--text-mute); padding: 6px 10px; text-align: left;
+  border-bottom: 1px solid var(--border); white-space: nowrap;
+}
+#proj-comp-table td {
+  padding: 4px 10px; font-size: 12px; border-bottom: 1px solid var(--border);
+  vertical-align: middle; line-height: 1.35; height: 28px;
+}
+#proj-comp-table tr:last-child td { border-bottom: none; }
+#proj-comp-table tr:nth-child(odd)  td { background: var(--surface); }
+#proj-comp-table tr:nth-child(even) td { background: var(--surface2); }
+.pc-row-blocked td { background: rgba(255,90,110,0.10) !important; border-left: 3px solid var(--red); }
+.pc-row-complete td { background: var(--surface) !important; border-left: 3px solid var(--teal); opacity: 0.75; }
+.pc-comp { color: var(--text); font-weight: 500; }
+.pc-status-complete { color: var(--teal); font-weight: 600; font-size: 11px; }
+.pc-status-blocked  { color: var(--red);  font-weight: 700; font-size: 11px; }
+.pc-status-date     { color: var(--text-mute); font-size: 11px; }
+.pc-owner { color: var(--accent); white-space: nowrap; font-size: 12px; }
+.pc-zd a  { color: var(--blue); text-decoration: none; font-size: 11px; }
+.pc-zd a:hover { text-decoration: underline; }
+.pc-notes { color: var(--text-dim); font-size: 11px; }
+.pc-zd-chip {
+  display: inline-block; padding: 1px 6px; border-radius: 8px; font-size: 10px;
+  background: rgba(79,163,255,0.12); color: var(--blue); margin-left: 4px;
+}
+#proj-comp-show-all {
+  display: block; width: 100%; padding: 6px; text-align: center;
+  font-size: 11px; color: var(--text-dim); cursor: pointer;
+  background: var(--surface2); border: none; border-top: 1px solid var(--border);
+}
+#proj-comp-show-all:hover { color: var(--text); }
+.section-badge {
+  display: inline-block; padding: 1px 7px; border-radius: 10px; font-size: 10px;
+  font-weight: 700; background: rgba(138,144,176,0.15); color: var(--text-mute);
+  margin-left: 6px; vertical-align: middle; letter-spacing: 0.02em;
+}
+
 /* ── CALL HISTORY CARDS ── */
 .call-card {
   background: var(--surface);
@@ -382,6 +431,26 @@ body {
   <div class="section">
     <div class="section-title">Master Overview — Project Components</div>
     <div id="master-overview-grid"></div>
+  </div>
+
+  <!-- PROJECT COMPONENTS -->
+  <div class="section" id="proj-comp-section">
+    <div class="section-title" id="proj-comp-title">Project Components</div>
+    <div id="proj-comp-wrap">
+      <table id="proj-comp-table">
+        <thead>
+          <tr>
+            <th style="width:35%">Component</th>
+            <th style="width:15%">Status / Due</th>
+            <th style="width:15%">Owner</th>
+            <th style="width:10%">ZD #</th>
+            <th style="width:25%">Notes</th>
+          </tr>
+        </thead>
+        <tbody id="proj-comp-tbody"></tbody>
+      </table>
+      <button id="proj-comp-show-all" style="display:none">Show all</button>
+    </div>
   </div>
 
   <!-- ZENDESK TICKETS -->
@@ -620,6 +689,171 @@ function renderMasterOverview(client, briefs, tickets) {
       </table>`;
     grid.appendChild(col);
   });
+}
+
+// ──────────────────────────────────────────────
+// RENDER PROJECT COMPONENTS (aggregated action items)
+// ──────────────────────────────────────────────
+function renderProjectComponents(client, briefs, tickets) {
+  const tbody = document.getElementById('proj-comp-tbody');
+  const title = document.getElementById('proj-comp-title');
+  const showAllBtn = document.getElementById('proj-comp-show-all');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+
+  const MAX_ROWS = 40;
+
+  // Sort briefs newest first
+  const sorted = [...briefs].sort((a,b) => (b.date||'').localeCompare(a.date||''));
+
+  // Build flat list of items from actionItems + blockers, newest brief first
+  const rawItems = [];
+  sorted.forEach(brief => {
+    const parseLines = (field, isBlocker) => {
+      if (!field) return;
+      field.split('\n').forEach(line => {
+        const trimmed = line.trim();
+        if (!trimmed) return;
+        rawItems.push({ line: trimmed, brief, isBlocker });
+      });
+    };
+    parseLines(brief.actionItems, false);
+    parseLines(brief.blockers, true);
+  });
+
+  // Deduplicate: key = first 30 chars lowercase; newest brief wins (already ordered newest first)
+  const seen = new Map();
+  const deduped = [];
+  rawItems.forEach(item => {
+    const key = item.line.toLowerCase().slice(0, 30).trim();
+    if (!seen.has(key)) {
+      seen.set(key, true);
+      deduped.push(item);
+    }
+  });
+
+  if (deduped.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--text-mute);padding:16px;font-size:12px">No components tracked yet</td></tr>`;
+    title.innerHTML = 'Project Components';
+    return;
+  }
+
+  // Parse owner, ZD# and notes from each line
+  const ownerRe = /\[([^\]]+)\]/;
+  const zdRe    = /\b(\d{5,6})\b/;
+
+  const rows = deduped.map(item => {
+    let text  = item.line;
+    let owner = '';
+    let zdNum = '';
+    let notes = '';
+
+    // Extract owner
+    const ownerMatch = text.match(ownerRe);
+    if (ownerMatch) {
+      owner = ownerMatch[1].trim();
+      text  = text.replace(ownerMatch[0], '').trim();
+    } else {
+      owner = item.brief.owner || item.brief.ownerRole || '';
+    }
+
+    // Extract ZD#
+    const zdMatch = text.match(zdRe);
+    if (zdMatch) {
+      zdNum = zdMatch[1];
+      text  = text.replace(zdMatch[0], '').trim().replace(/^[:#\-–—,]+\s*/, '').trim();
+    }
+
+    // Remainder is component label + notes split by " - " or ": "
+    let compText = text;
+    const dashIdx = text.search(/ [-–—:] /);
+    if (dashIdx > 10) {
+      compText = text.slice(0, dashIdx).trim();
+      notes    = text.slice(dashIdx).replace(/^\s*[-–—:]\s*/, '').trim();
+    }
+
+    // Determine status
+    let statusType = 'date';
+    if (item.isBlocker) statusType = 'blocked';
+    else if (/complete/i.test(text) || /complete/i.test(notes)) statusType = 'complete';
+
+    // Match ZD ticket
+    let matchedTicket = null;
+    if (tickets && tickets.length > 0) {
+      const firstWord = compText.split(/\s+/)[0].toLowerCase().replace(/[^a-z0-9]/g,'');
+      if (firstWord.length >= 3) {
+        matchedTicket = tickets.find(t => {
+          const subj = (t.subject||t.raw_subject||'').toLowerCase();
+          return subj.includes(firstWord);
+        });
+      }
+    }
+    if (!zdNum && matchedTicket) {
+      zdNum = String(matchedTicket.id);
+    }
+
+    return { compText, statusType, owner, zdNum, notes, brief: item.brief, matchedTicket };
+  });
+
+  // Render rows, limit to MAX_ROWS initially
+  const esc = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  const fmtDate = d => d ? d.slice(0,10) : '';
+
+  const renderRow = (row) => {
+    let statusHtml = '';
+    if (row.statusType === 'complete') {
+      statusHtml = `<span class="pc-status-complete">✓ Complete</span>`;
+    } else if (row.statusType === 'blocked') {
+      statusHtml = `<span class="pc-status-blocked">⛔ Blocked</span>`;
+    } else {
+      statusHtml = `<span class="pc-status-date">${esc(fmtDate(row.brief.date))}</span>`;
+    }
+
+    let zdHtml = '';
+    if (row.zdNum) {
+      const url = row.matchedTicket
+        ? (row.matchedTicket.url || `https://rev-io.zendesk.com/agent/tickets/${row.zdNum}`)
+        : `https://rev-io.zendesk.com/agent/tickets/${row.zdNum}`;
+      zdHtml = `<a href="${esc(url)}" target="_blank">${esc(row.zdNum)}</a>`;
+    }
+
+    let notesHtml = esc(row.notes);
+    if (row.matchedTicket) {
+      const ticketStatus = row.matchedTicket.status || '';
+      notesHtml += `<span class="pc-zd-chip">${esc(ticketStatus)}</span>`;
+    }
+
+    const rowCls = row.statusType === 'blocked' ? 'pc-row-blocked'
+                 : row.statusType === 'complete' ? 'pc-row-complete' : '';
+
+    const tr = document.createElement('tr');
+    if (rowCls) tr.className = rowCls;
+    tr.innerHTML = `
+      <td class="pc-comp">${esc(row.compText)}</td>
+      <td>${statusHtml}</td>
+      <td class="pc-owner">${esc(row.owner)}</td>
+      <td class="pc-zd">${zdHtml}</td>
+      <td class="pc-notes">${notesHtml}</td>`;
+    return tr;
+  };
+
+  const visibleRows = rows.slice(0, MAX_ROWS);
+  const hiddenRows  = rows.slice(MAX_ROWS);
+
+  visibleRows.forEach(row => tbody.appendChild(renderRow(row)));
+
+  // Count badge
+  title.innerHTML = `Project Components <span class="section-badge">${rows.length}</span>`;
+
+  // Show-all toggle
+  if (hiddenRows.length > 0) {
+    showAllBtn.style.display = 'block';
+    showAllBtn.textContent = `Show all (${rows.length} items)`;
+    showAllBtn.addEventListener('click', () => {
+      hiddenRows.forEach(row => tbody.appendChild(renderRow(row)));
+      showAllBtn.style.display = 'none';
+    }, { once: true });
+  }
 }
 
 // ──────────────────────────────────────────────
@@ -954,6 +1188,7 @@ async function init() {
   // Render
   renderHero(client);
   renderMasterOverview(client, briefs, tickets);
+  renderProjectComponents(client, briefs, tickets);
   renderTickets(tickets);
 
   // Footer timestamp
