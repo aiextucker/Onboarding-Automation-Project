@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Client Tracker — Rev.io Onboarding</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:        #0f1117;
+  --surface:   #181c27;
+  --surface2:  #1e2436;
+  --surface3:  #242840;
+  --border:    #2a3050;
+  --border-hi: #3d4870;
+  --accent:    #6c63ff;
+  --accent-dk: #5549e0;
+  --accent-lt: #8b84ff;
+  --teal:      #00d4aa;
+  --teal-dk:   #00b090;
+  --text:      #e8e8f0;
+  --text-dim:  #8a90b0;
+  --text-mute: #525870;
+  --red:       #ff5a6e;
+  --red-bg:    rgba(255,90,110,0.1);
+  --yellow:    #f0a500;
+  --yellow-bg: rgba(240,165,0,0.1);
+  --green:     #00d4aa;
+  --green-bg:  rgba(0,212,170,0.1);
+  --blue:      #4fa3ff;
+  --blue-bg:   rgba(79,163,255,0.1);
+  --purple:    #a78bfa;
+  --purple-bg: rgba(167,139,250,0.1);
+  --orange:    #fb923c;
+  --orange-bg: rgba(251,146,60,0.1);
+  --radius:    10px;
+  --radius-sm: 6px;
+  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+html { font-size: 15px; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  min-height: 100vh;
+  line-height: 1.6;
+}
+
+/* ── Header ── */
+.app-header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.logo { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 1rem; }
+.logo-mark {
+  width: 30px; height: 30px;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--teal) 100%);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 0.78rem; color: #fff;
+}
+.logo-sub { font-size: 0.72rem; color: var(--text-mute); font-weight: 400; margin-left: 2px; }
+.back-link {
+  color: var(--text-dim); text-decoration: none; font-size: 0.8rem;
+  padding: 4px 10px; border-radius: var(--radius-sm);
+  border: 1px solid var(--border); transition: all .15s;
+  margin-left: 16px;
+}
+.back-link:hover { color: var(--text); border-color: var(--border-hi); }
+.header-right { display: flex; align-items: center; gap: 10px; }
+.snapshot-select {
+  background: var(--surface2);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 4px 10px;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+.snapshot-select:hover { border-color: var(--border-hi); }
+.pdf-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(79,163,255,.4);
+  background: var(--blue-bg);
+  color: var(--blue);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .15s;
+}
+.pdf-btn:hover { border-color: var(--blue); background: rgba(79,163,255,.15); }
+
+/* ── Content ── */
+.main { max-width: 1200px; margin: 0 auto; padding: 28px 24px; }
+
+/* ── Loading / Error ── */
+.loading {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; gap: 16px; padding: 80px;
+  color: var(--text-mute);
+}
+.spinner {
+  width: 32px; height: 32px;
+  border: 3px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.error-bar {
+  background: var(--red-bg); border: 1px solid var(--red);
+  color: var(--red); padding: 16px 20px; border-radius: var(--radius);
+  margin: 32px; font-size: 0.9rem;
+}
+
+/* ── Client hero ── */
+.client-hero {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px 28px;
+  margin-bottom: 24px;
+}
+.hero-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.client-name { font-size: 2rem; font-weight: 800; line-height: 1.2; margin-bottom: 12px; }
+.hero-badges { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+.status-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 700;
+}
+.status-badge.on-track  { background: rgba(0,212,170,.15); color: var(--teal); border: 1px solid rgba(0,212,170,.3); }
+.status-badge.off-track { background: var(--red-bg); color: var(--red); border: 1px solid rgba(255,90,110,.3); }
+.status-badge.rts       { background: var(--yellow-bg); color: var(--yellow); border: 1px solid rgba(240,165,0,.3); }
+.status-badge.on-hold   { background: rgba(139,132,255,.1); color: var(--accent-lt); border: 1px solid rgba(139,132,255,.3); }
+.status-badge.other     { background: var(--surface2); color: var(--text-dim); border: 1px solid var(--border); }
+
+.health-pill {
+  display: inline-flex; align-items: center;
+  padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 700;
+}
+.health-pill.health-high { background: rgba(0,212,170,.15); color: var(--teal); border: 1px solid rgba(0,212,170,.3); }
+.health-pill.health-mid  { background: var(--yellow-bg); color: var(--yellow); border: 1px solid rgba(240,165,0,.3); }
+.health-pill.health-low  { background: var(--red-bg); color: var(--red); border: 1px solid rgba(255,90,110,.3); }
+
+.meta-row { display: flex; flex-wrap: wrap; gap: 16px; font-size: 0.84rem; color: var(--text-dim); }
+.meta-item { display: flex; align-items: center; gap: 4px; }
+.meta-item strong { color: var(--text); }
+.meta-label { color: var(--text-mute); font-size: 0.75rem; text-transform: uppercase; letter-spacing: .06em; }
+
+.hero-stats { display: flex; gap: 12px; flex-shrink: 0; }
+.stat-pill {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 18px;
+  text-align: center;
+  min-width: 72px;
+}
+.stat-pill .val { font-size: 1.4rem; font-weight: 800; line-height: 1; }
+.stat-pill .lbl { font-size: 0.68rem; color: var(--text-mute); text-transform: uppercase; letter-spacing: .06em; margin-top: 4px; }
+
+/* ── Milestone pizza tracker ── */
+.milestone-tracker {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px 28px;
+  margin-bottom: 24px;
+}
+.milestone-tracker-title {
+  font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .08em; color: var(--text-mute);
+  margin-bottom: 20px; padding-bottom: 8px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.milestone-ctx { display: flex; gap: 16px; }
+.milestone-ctx span { font-size: 0.8rem; color: var(--text-dim); font-weight: 400; letter-spacing: 0; text-transform: none; }
+.milestone-ctx span strong { color: var(--teal); }
+
+.pizza-track {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  margin-bottom: 8px;
+}
+.pizza-line {
+  position: absolute;
+  left: 20px; right: 20px;
+  top: 50%; transform: translateY(-50%);
+  height: 3px;
+  background: var(--border);
+  z-index: 0;
+}
+.pizza-line-fill {
+  position: absolute;
+  left: 0; top: 0;
+  height: 100%;
+  background: var(--teal);
+  transition: width .4s ease;
+}
+.pizza-node {
+  position: relative;
+  z-index: 1;
+  display: flex; flex-direction: column; align-items: center;
+  gap: 8px;
+}
+.pizza-circle {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.9rem;
+  transition: all .2s;
+}
+.pizza-circle.done {
+  background: var(--teal);
+  box-shadow: 0 0 0 4px rgba(0,212,170,.2);
+  color: #0f1117;
+}
+.pizza-circle.future {
+  background: var(--surface2);
+  border: 2px solid var(--border);
+  color: var(--text-mute);
+}
+.pizza-circle.active {
+  background: var(--surface2);
+  border: 2px solid var(--teal);
+  color: var(--teal);
+  box-shadow: 0 0 0 4px rgba(0,212,170,.15);
+}
+.pizza-label { font-size: 0.73rem; font-weight: 600; color: var(--text-dim); white-space: nowrap; }
+.pizza-date  { font-size: 0.68rem; color: var(--text-mute); }
+.pizza-date.done-date   { color: var(--teal); }
+.pizza-date.future-date { color: var(--yellow); }
+.pizza-date.missing     { color: var(--border-hi); font-style: italic; }
+
+/* ── Phase columns ── */
+.phase-section { margin-bottom: 24px; }
+.section-title {
+  font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .08em; color: var(--text-mute);
+  margin-bottom: 12px; padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+.phase-cols {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+}
+@media (max-width: 900px) { .phase-cols { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 600px) { .phase-cols { grid-template-columns: 1fr 1fr; } }
+
+.phase-col {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.phase-col-header {
+  background: var(--surface3);
+  padding: 10px 14px;
+  font-size: 0.75rem; font-weight: 700;
+  color: var(--accent);
+  border-bottom: 1px solid var(--border);
+}
+.phase-col-body { padding: 10px 14px; }
+.phase-item {
+  font-size: 0.78rem; color: var(--text-dim);
+  padding: 4px 0 4px 12px;
+  position: relative;
+  border-bottom: 1px solid var(--border);
+  line-height: 1.45;
+}
+.phase-item:last-child { border-bottom: none; }
+.phase-item::before { content: '›'; position: absolute; left: 0; color: var(--text-mute); }
+.phase-item.blocker::before { content: '⛔'; font-size: 0.7rem; }
+.phase-empty { font-size: 0.78rem; color: var(--text-mute); font-style: italic; }
+
+/* ── Recent calls ── */
+.calls-section { margin-bottom: 24px; }
+.call-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 12px;
+  page-break-inside: avoid;
+}
+.call-card-header {
+  padding: 14px 18px;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 8px;
+  border-bottom: 1px solid var(--border);
+}
+.call-date { font-size: 0.78rem; color: var(--text-mute); min-width: 80px; }
+.call-info { flex: 1; }
+.call-type-badge { font-size: 0.72rem; color: var(--text-dim); background: var(--surface2); padding: 2px 8px; border-radius: 4px; border: 1px solid var(--border); }
+.call-owner { font-size: 0.78rem; color: var(--text-dim); }
+.risk-badge {
+  display: inline-block; padding: 2px 8px; border-radius: 4px;
+  font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+}
+.risk-badge.high   { background: var(--red-bg); color: var(--red); border: 1px solid rgba(255,90,110,.3); }
+.risk-badge.medium { background: var(--yellow-bg); color: var(--yellow); border: 1px solid rgba(240,165,0,.3); }
+.risk-badge.low    { background: var(--green-bg); color: var(--green); border: 1px solid rgba(0,212,170,.3); }
+.risk-badge.unknown { background: var(--surface2); color: var(--text-mute); border: 1px solid var(--border); }
+
+.call-body { padding: 16px 18px; }
+.call-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+@media (max-width: 700px) { .call-grid { grid-template-columns: 1fr; } }
+.call-section-label {
+  font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em;
+  margin-bottom: 8px;
+}
+.call-section-label.takeaway { color: var(--accent-lt); }
+.call-section-label.action   { color: var(--teal); }
+.call-section-label.blocker  { color: var(--red); }
+.call-items { list-style: none; padding: 0; }
+.call-items li {
+  font-size: 0.8rem; color: var(--text-dim);
+  padding: 3px 0 3px 14px; position: relative;
+  border-bottom: 1px solid var(--border); line-height: 1.5;
+}
+.call-items li:last-child { border-bottom: none; }
+.call-items li::before { content: '›'; position: absolute; left: 0; color: var(--text-mute); }
+.call-items li.blocker-item { color: var(--red); }
+.call-items li.blocker-item::before { content: '⛔'; font-size: 0.7rem; }
+.call-empty { font-size: 0.8rem; color: var(--text-mute); font-style: italic; }
+
+/* ── Tickets table ── */
+.tickets-section { margin-bottom: 24px; }
+.tickets-table { width: 100%; border-collapse: collapse; }
+.tickets-table th {
+  text-align: left; padding: 10px 14px;
+  font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em;
+  color: var(--text-mute); background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+}
+.tickets-table td {
+  padding: 10px 14px; font-size: 0.82rem;
+  color: var(--text-dim); border-bottom: 1px solid var(--border);
+}
+.tickets-table tr:last-child td { border-bottom: none; }
+.tickets-table tr:hover td { background: var(--surface2); }
+.ticket-subject-link { color: var(--text); text-decoration: none; }
+.ticket-subject-link:hover { color: var(--accent-lt); text-decoration: underline; }
+.ticket-status {
+  display: inline-block; padding: 2px 8px; border-radius: 4px;
+  font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+}
+.ticket-status.open    { background: var(--blue-bg); color: var(--blue); }
+.ticket-status.new     { background: var(--green-bg); color: var(--green); }
+.ticket-status.pending { background: var(--yellow-bg); color: var(--yellow); }
+.ticket-status.hold    { background: var(--orange-bg); color: var(--orange); }
+.ticket-priority { font-size: 0.78rem; }
+.ticket-priority.urgent  { color: var(--red); font-weight: 700; }
+.ticket-priority.high    { color: var(--yellow); }
+.ticket-priority.normal  { color: var(--text-mute); }
+.ticket-priority.low     { color: var(--text-mute); }
+.ticket-link-btn {
+  display: inline-flex; align-items: center; gap: 4px;
+  color: var(--accent); text-decoration: none; font-size: 0.78rem;
+  padding: 2px 8px; border-radius: 4px; border: 1px solid rgba(108,99,255,.3);
+  transition: all .15s;
+}
+.ticket-link-btn:hover { border-color: var(--accent); background: rgba(108,99,255,.1); }
+.no-tickets {
+  background: var(--surface);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  padding: 28px; text-align: center;
+  color: var(--text-mute); font-size: 0.84rem;
+}
+.tickets-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+/* ── Footer ── */
+.page-footer {
+  text-align: center;
+  padding: 32px 24px;
+  color: var(--text-mute);
+  font-size: 0.78rem;
+  border-top: 1px solid var(--border);
+  margin-top: 32px;
+}
+.page-footer .snapshot-ts { color: var(--text-dim); }
+
+/* ── Print styles ── */
+@media print {
+  :root {
+    --bg: #fff; --surface: #fff; --surface2: #f5f5f7; --surface3: #eeeeef;
+    --border: #d1d5db; --border-hi: #9ca3af;
+    --text: #111827; --text-dim: #374151; --text-mute: #6b7280;
+    --accent: #6c63ff; --teal: #008c72; --red: #dc2626; --yellow: #d97706;
+    --blue: #2563eb; --green: #059669;
+    --red-bg: #fef2f2; --yellow-bg: #fffbeb; --green-bg: #f0fdf4; --blue-bg: #eff6ff;
+    --surface2: #f9fafb; --surface3: #f3f4f6;
+  }
+  body { background: #fff; color: #111827; }
+  .app-header { display: none !important; }
+  .snapshot-select, .pdf-btn, .back-link { display: none !important; }
+
+  .print-header {
+    display: block !important;
+    padding: 16px 0 12px;
+    border-bottom: 2px solid #d1d5db;
+    margin-bottom: 20px;
+  }
+  .print-header h1 { font-size: 1.4rem; font-weight: 800; color: #111827; }
+  .print-header .print-meta { font-size: 0.82rem; color: #6b7280; margin-top: 4px; }
+
+  @page { margin: 0.5in; }
+  .main { padding: 0; max-width: 100%; }
+  .milestone-tracker, .call-card { page-break-inside: avoid; }
+  .call-card { margin-bottom: 8px; }
+  .phase-cols { grid-template-columns: repeat(5, 1fr); }
+}
+.print-header { display: none; }
+</style>
+</head>
+<body>
+
+<header class="app-header" id="appHeader">
+  <div style="display:flex;align-items:center;">
+    <div class="logo">
+      <div class="logo-mark">R</div>
+      <span>PM Hub <span class="logo-sub">/ Rev.io Onboarding</span></span>
+    </div>
+    <a href="pm-hub.html" class="back-link">← Back to PM Hub</a>
+  </div>
+  <div class="header-right">
+    <select class="snapshot-select" id="snapshotSelect">
+      <option value="">Latest</option>
+    </select>
+    <button class="pdf-btn" onclick="window.print()">⬇ Export PDF</button>
+  </div>
+</header>
+
+<div class="print-header" id="printHeader">
+  <h1 id="printTitle">Rev.io Onboarding Tracker</h1>
+  <div class="print-meta" id="printMeta"></div>
+</div>
+
+<main class="main" id="main">
+  <div class="loading">
+    <div class="spinner"></div>
+    <div>Loading tracker…</div>
+  </div>
+</main>
+
+<script>
+'use strict';
+
+// ── URL params ──────────────────────────────────────────────────────────────
+const params     = new URLSearchParams(location.search);
+const clientId   = params.get('client');
+const snapshotDate = params.get('snapshot');
+
+// ── Helpers ─────────────────────────────────────────────────────────────────
+function esc(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function fmtDate(d) {
+  if (!d) return '—';
+  const dt = new Date(d + 'T12:00:00');
+  return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+function parseBullets(text) {
+  if (!text) return [];
+  return text.split('\n').map(l => l.replace(/^[•\-\*]\s*/, '').trim()).filter(Boolean);
+}
+function bulletListHtml(text, cls) {
+  const lines = parseBullets(text);
+  if (!lines.length) return `<span class="call-empty">—</span>`;
+  return `<ul class="call-items">${lines.map(l => `<li>${esc(l)}</li>`).join('')}</ul>`;
+}
+function blockerListHtml(text) {
+  const lines = parseBullets(text);
+  if (!lines.length) return `<span class="call-empty">—</span>`;
+  return `<ul class="call-items">${lines.map(l => `<li class="blocker-item">${esc(l)}</li>`).join('')}</ul>`;
+}
+
+function statusGroup(s) {
+  if (!s) return 'other';
+  const l = s.toLowerCase();
+  if (l.includes('on track'))  return 'on-track';
+  if (l.includes('off track')) return 'off-track';
+  if (l === 'rts')     return 'rts';
+  if (l === 'on hold') return 'on-hold';
+  return 'other';
+}
+
+// ── Data loading ─────────────────────────────────────────────────────────────
+async function loadSnapshot() {
+  let dataUrl;
+  if (snapshotDate) {
+    dataUrl = `data/snapshots/${snapshotDate}.json`;
+  } else {
+    dataUrl = `data/portfolio.json?_=` + Date.now();
+  }
+  const res = await fetch(dataUrl);
+  if (!res.ok) {
+    if (snapshotDate) {
+      // fallback to latest
+      const res2 = await fetch('data/portfolio.json?_=' + Date.now());
+      if (!res2.ok) throw new Error('Snapshot unavailable (' + res2.status + ')');
+      return res2.json();
+    }
+    throw new Error('Portfolio data unavailable (' + res.status + ')');
+  }
+  return res.json();
+}
+
+async function loadManifest() {
+  try {
+    const res = await fetch('data/snapshots/manifest.json');
+    if (!res.ok) return [];
+    return res.json();
+  } catch { return []; }
+}
+
+// ── Snapshot selector ────────────────────────────────────────────────────────
+async function initSnapshotSelector() {
+  const sel = document.getElementById('snapshotSelect');
+  const manifest = await loadManifest();
+  if (manifest.length) {
+    manifest.forEach(date => {
+      const opt = document.createElement('option');
+      opt.value = date;
+      opt.textContent = date;
+      if (date === snapshotDate) opt.selected = true;
+      sel.appendChild(opt);
+    });
+  }
+  if (!snapshotDate) sel.value = '';
+  sel.addEventListener('change', () => {
+    const v = sel.value;
+    if (!v) {
+      const url = new URL(location.href);
+      url.searchParams.delete('snapshot');
+      location.href = url.toString();
+    } else {
+      const url = new URL(location.href);
+      url.searchParams.set('snapshot', v);
+      location.href = url.toString();
+    }
+  });
+}
+
+// ── Render ───────────────────────────────────────────────────────────────────
+function renderTracker(snapshot) {
+  if (!clientId) {
+    document.getElementById('main').innerHTML = `<div class="error-bar">⚠ No client specified. Add ?client=&lt;id&gt; to the URL.</div>`;
+    return;
+  }
+
+  const client = (snapshot.clients || []).find(c => c.id === clientId);
+  if (!client) {
+    document.getElementById('main').innerHTML = `<div class="error-bar">⚠ Client not found in snapshot data.</div>`;
+    return;
+  }
+
+  const briefs  = (snapshot.briefsByClientId  || {})[clientId] || [];
+  const tickets = (snapshot.ticketsByClientId || {})[clientId] || [];
+  const today   = new Date().toISOString().split('T')[0];
+  const sg      = client.statusGroup || statusGroup(client.status);
+
+  // ── Print header ──
+  const printTitle = document.getElementById('printTitle');
+  const printMeta  = document.getElementById('printMeta');
+  printTitle.textContent = (client.name || 'Client') + ' — Rev.io Onboarding Tracker';
+  printMeta.textContent  = 'Snapshot: ' + (snapshotDate || 'Latest') + ' · Data as of: ' + (snapshot.updatedAt ? new Date(snapshot.updatedAt).toLocaleString() : '—');
+
+  // Update page title
+  document.title = (client.name || 'Client') + ' — Tracker · Rev.io';
+
+  const main = document.getElementById('main');
+  main.innerHTML = '';
+
+  // ── 1. Client Hero ──
+  const health = client.health;
+  const healthClass = !health ? '' : health >= 70 ? 'health-high' : health >= 40 ? 'health-mid' : 'health-low';
+  const teamParts = [
+    ...(client.sa  || []).map(n => `<span class="meta-item"><span class="meta-label">SA</span> <strong>${esc(n)}</strong></span>`),
+    ...(client.pm  || []).map(n => `<span class="meta-item"><span class="meta-label">PM</span> <strong>${esc(n)}</strong></span>`),
+    ...(client.de  || []).map(n => `<span class="meta-item"><span class="meta-label">DE</span> <strong>${esc(n)}</strong></span>`),
+    ...(client.csa || []).map(n => `<span class="meta-item"><span class="meta-label">CSA</span> <strong>${esc(n)}</strong></span>`),
+  ];
+  if (client.complexity) teamParts.push(`<span class="meta-item"><span class="meta-label">Complexity</span> <strong>${esc(client.complexity)}</strong></span>`);
+  if (client.segment)    teamParts.push(`<span class="meta-item"><span class="meta-label">Segment</span> <strong>${esc(client.segment)}</strong></span>`);
+  if (client.mrr)        teamParts.push(`<span class="meta-item"><span class="meta-label">MRR</span> <strong>$${client.mrr.toLocaleString()}</strong></span>`);
+
+  const daysToGrad = client.gradDate
+    ? Math.ceil((new Date(client.gradDate + 'T12:00:00').getTime() - Date.now()) / 86400000)
+    : null;
+
+  main.insertAdjacentHTML('beforeend', `
+    <div class="client-hero">
+      <div class="hero-top">
+        <div>
+          <div class="client-name">${esc(client.name || 'Unknown Client')}</div>
+          <div class="hero-badges">
+            <span class="status-badge ${sg}">${esc(client.status || '—')}</span>
+            ${health != null ? `<span class="health-pill ${healthClass}">Health: ${health}/100</span>` : ''}
+          </div>
+          <div class="meta-row">
+            ${teamParts.join('')}
+            ${client.daysActive != null ? `<span class="meta-item"><span class="meta-label">Days Active</span> <strong>${client.daysActive}</strong></span>` : ''}
+          </div>
+        </div>
+        <div class="hero-stats">
+          ${health != null ? `<div class="stat-pill ${healthClass}"><div class="val">${health}</div><div class="lbl">Health</div></div>` : ''}
+          <div class="stat-pill"><div class="val">${briefs.length}</div><div class="lbl">Calls</div></div>
+          <div class="stat-pill"><div class="val">${tickets.length}</div><div class="lbl">Tickets</div></div>
+          ${daysToGrad != null ? `<div class="stat-pill"><div class="val">${daysToGrad < 0 ? '✓' : daysToGrad}</div><div class="lbl">${daysToGrad < 0 ? 'Graduated' : 'Days Left'}</div></div>` : ''}
+        </div>
+      </div>
+    </div>
+  `);
+
+  // ── 2. Milestone pizza tracker ──
+  const milestones = [
+    { label: 'Kickoff',      icon: '🚀', date: client.koDate },
+    { label: 'Charter',      icon: '📋', date: client.charterDate },
+    { label: 'Activation',   icon: '⚡', date: client.activationDate },
+    { label: '1st Bill Out', icon: '💰', date: client.billOutDate },
+    { label: 'Graduation',   icon: '🎓', date: client.gradDate },
+  ];
+
+  const completedCount = milestones.filter(m => m.date && m.date <= today).length;
+  const totalWithDates = milestones.filter(m => m.date).length;
+  const progressPct = totalWithDates > 1
+    ? Math.round(((completedCount - 1) / (milestones.length - 1)) * 100)
+    : (completedCount > 0 ? 100 : 0);
+
+  const nodesHtml = milestones.map((m, i) => {
+    const done   = m.date && m.date <= today;
+    const next   = !done && milestones.slice(0, i).every(pm => pm.date && pm.date <= today);
+    const cls    = done ? 'done' : (next ? 'active' : 'future');
+    const dateCls = !m.date ? 'missing' : (done ? 'done-date' : 'future-date');
+    return `
+      <div class="pizza-node">
+        <div class="pizza-circle ${cls}">${done ? '✓' : m.icon}</div>
+        <div class="pizza-label">${esc(m.label)}</div>
+        <div class="pizza-date ${dateCls}">${m.date ? fmtDate(m.date) : 'TBD'}</div>
+      </div>`;
+  }).join('');
+
+  main.insertAdjacentHTML('beforeend', `
+    <div class="milestone-tracker">
+      <div class="milestone-tracker-title">
+        <span>Project Milestones</span>
+        <div class="milestone-ctx">
+          ${client.daysActive != null ? `<span><strong>${client.daysActive}</strong> days active</span>` : ''}
+          ${daysToGrad != null && daysToGrad > 0 ? `<span><strong>${daysToGrad}</strong> days to graduation</span>` : ''}
+        </div>
+      </div>
+      <div class="pizza-track">
+        <div class="pizza-line"><div class="pizza-line-fill" style="width:${progressPct}%"></div></div>
+        ${nodesHtml}
+      </div>
+    </div>
+  `);
+
+  // ── 3. Phase progress columns ──
+  const allActions  = [];
+  const allBlockers = [];
+  briefs.forEach(b => {
+    parseBullets(b.actionItems).forEach(a => { if (!allActions.includes(a))  allActions.push(a); });
+    parseBullets(b.blockers).forEach(a   => { if (!allBlockers.includes(a)) allBlockers.push(a); });
+  });
+
+  const phases = [
+    { name: 'Admin',             items: allActions.slice(0,  8) },
+    { name: 'Config & Training', items: allActions.slice(8,  16) },
+    { name: 'Data Load',         items: allActions.slice(16, 24) },
+    { name: 'CDR Dev',           items: allBlockers.slice(0, 8) },
+    { name: 'Comparative',       items: tickets.slice(0, 8).map(t => t.subject) },
+  ];
+
+  const phaseCols = phases.map(ph => `
+    <div class="phase-col">
+      <div class="phase-col-header">${esc(ph.name)}</div>
+      <div class="phase-col-body">
+        ${ph.items.length
+          ? ph.items.map(item => `<div class="phase-item">${esc(item)}</div>`).join('')
+          : `<div class="phase-empty">—</div>`}
+      </div>
+    </div>`).join('');
+
+  main.insertAdjacentHTML('beforeend', `
+    <div class="phase-section">
+      <div class="section-title">Phase Progress</div>
+      <div class="phase-cols">${phaseCols}</div>
+    </div>
+  `);
+
+  // ── 4. Recent calls ──
+  const recentBriefs = briefs.slice(0, 8);
+  main.insertAdjacentHTML('beforeend', `<div class="section-title calls-section">Recent Calls</div>`);
+  if (recentBriefs.length === 0) {
+    main.insertAdjacentHTML('beforeend', `<div class="no-tickets">No call briefs on file.</div>`);
+  } else {
+    recentBriefs.forEach(brief => {
+      const rg = (brief.risk || 'unknown').toLowerCase();
+      main.insertAdjacentHTML('beforeend', `
+        <div class="call-card">
+          <div class="call-card-header">
+            <span class="call-date">${brief.date ? fmtDate(brief.date) : '—'}</span>
+            <div class="call-info">
+              ${brief.callType ? `<span class="call-type-badge">${esc(brief.callType)}</span>` : ''}
+            </div>
+            ${brief.owner ? `<span class="call-owner">${esc(brief.owner)}</span>` : ''}
+            <span class="risk-badge ${rg}">${rg}</span>
+          </div>
+          <div class="call-body">
+            <div class="call-grid">
+              <div>
+                <div class="call-section-label takeaway">↗ Key Takeaways</div>
+                ${bulletListHtml(brief.keyTakeaways)}
+              </div>
+              <div>
+                <div class="call-section-label action">✔ Action Items</div>
+                ${bulletListHtml(brief.actionItems)}
+              </div>
+              <div>
+                <div class="call-section-label blocker">⛔ Blockers</div>
+                ${blockerListHtml(brief.blockers)}
+              </div>
+            </div>
+          </div>
+        </div>
+      `);
+    });
+  }
+
+  // ── 5. Zendesk tickets ──
+  main.insertAdjacentHTML('beforeend', `<div class="section-title tickets-section">Open Zendesk Tickets</div>`);
+  if (tickets.length === 0) {
+    main.insertAdjacentHTML('beforeend', `<div class="no-tickets">No open or pending tickets found.</div>`);
+  } else {
+    const rows = tickets.map(t => `
+      <tr>
+        <td>#${t.id}</td>
+        <td><a class="ticket-subject-link" href="${esc(t.url)}" target="_blank">${esc(t.subject)}</a></td>
+        <td><span class="ticket-status ${t.status}">${t.status}</span></td>
+        <td><span class="ticket-priority ${t.priority || 'normal'}">${t.priority || 'normal'}</span></td>
+        <td>${t.updated || '—'}</td>
+        <td><a class="ticket-link-btn" href="${esc(t.url)}" target="_blank">↗ Open</a></td>
+      </tr>`).join('');
+    main.insertAdjacentHTML('beforeend', `
+      <div class="tickets-wrap">
+        <table class="tickets-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Subject</th>
+              <th>Status</th>
+              <th>Priority</th>
+              <th>Updated</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+    `);
+  }
+
+  // ── 6. Footer ──
+  main.insertAdjacentHTML('beforeend', `
+    <div class="page-footer">
+      Generated by Alfred · Rev.io
+      ${snapshot.updatedAt ? `<span class="snapshot-ts"> · Snapshot: ${new Date(snapshot.updatedAt).toLocaleString()}</span>` : ''}
+      ${snapshotDate ? `<span class="snapshot-ts"> · Archive: ${snapshotDate}</span>` : ''}
+    </div>
+  `);
+}
+
+// ── Init ─────────────────────────────────────────────────────────────────────
+(async () => {
+  try {
+    await initSnapshotSelector();
+    const snapshot = await loadSnapshot();
+    renderTracker(snapshot);
+  } catch (err) {
+    document.getElementById('main').innerHTML = `<div class="error-bar">⚠ ${esc(err.message)}</div>`;
+  }
+})();
+</script>
+</body>
+</html>
