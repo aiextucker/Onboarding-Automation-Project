@@ -1,13 +1,12 @@
 name: Handle Questionnaire Approval
 
 on:
-  push:
-    branches: []
   repository_dispatch:
     types: [questionnaire-approved, questionnaire-changes-requested]
 
 jobs:
   process:
+    if: github.event_name == 'repository_dispatch'
     runs-on: ubuntu-latest
     steps:
       - name: Update Notion and notify team
