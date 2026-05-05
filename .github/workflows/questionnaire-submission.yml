@@ -3,6 +3,8 @@ name: Handle Questionnaire Submission
 on:
   repository_dispatch:
     types: [questionnaire-submitted]
+  push:
+    branches: []
 
 jobs:
   process:
