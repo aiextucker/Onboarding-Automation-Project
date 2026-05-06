@@ -638,6 +638,55 @@ body {
   font-size: 0.84rem;
   margin-bottom: 20px;
 }
+.stale-call-alert, .match-warning {
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  font-size: .82rem;
+  line-height: 1.45;
+  margin-bottom: 16px;
+}
+.stale-call-alert { border: 1px solid rgba(240,165,0,.38); background: var(--yellow-bg); color: var(--yellow); }
+.match-warning { border: 1px solid rgba(108,99,255,.35); background: rgba(108,99,255,.08); color: var(--accent-lt); }
+.action-rollup-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+.rollup-header {
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: center;
+}
+.rollup-title { font-size: .86rem; font-weight: 700; }
+.rollup-subtitle { font-size: .72rem; color: var(--text-mute); }
+.rollup-list { list-style: none; margin: 0; padding: 0; }
+.rollup-item {
+  padding: 11px 18px;
+  border-bottom: 1px solid var(--border);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px 14px;
+}
+.rollup-item:last-child { border-bottom: none; }
+.rollup-text { color: var(--text-dim); font-size: .84rem; line-height: 1.45; }
+.rollup-meta { color: var(--text-mute); font-size: .72rem; white-space: nowrap; }
+.owner-tag, .due-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  margin-right: 5px;
+  font-size: .68rem;
+  font-weight: 700;
+}
+.owner-tag { color: var(--teal); background: rgba(0,212,170,.09); border: 1px solid rgba(0,212,170,.25); }
+.due-tag { color: var(--yellow); background: rgba(240,165,0,.09); border: 1px solid rgba(240,165,0,.25); }
 
 /* ── Milestone timeline ── */
 .milestone-row {
@@ -750,12 +799,17 @@ async function fetchBriefs(clientId, days) {
   const client = allClients.find(c => c.id === clientId);
   const clientName = client?.name || null;
   const cutoff = new Date(Date.now() - days * 86400000).toISOString().split('T')[0];
-  const briefs = (snapshot.briefsByClientId?.[clientId] || [])
+  const allBriefs = snapshot.briefsByClientId?.[clientId] || [];
+  const briefs = allBriefs
     .filter(b => !b.date || b.date >= cutoff)
     .slice(0, 20);
+  const latestAny = allBriefs[0] || null;
+  const staleCall = latestAny && latestAny.date
+    ? Math.floor((Date.now() - new Date(latestAny.date + 'T00:00:00').getTime()) / 86400000)
+    : null;
   const tickets = snapshot.ticketsByClientId?.[clientId] || [];
   const digest  = snapshot.digestsByClientId?.[clientId] || null;
-  return { ok: true, clientName, briefs, tickets, digest };
+  return { ok: true, clientName, briefs, allBriefs, latestAny, staleCall, tickets, digest };
 }
 
 // ── Autocomplete ──────────────────────────────────────────────────────────────
@@ -852,7 +906,7 @@ function showError(msg) {
 }
 
 function renderClientView(client, data) {
-  const { briefs = [], tickets = [] } = data;
+  const { briefs = [], allBriefs = [], tickets = [] } = data;
   const main = document.getElementById('main');
   main.innerHTML = '';
 
@@ -946,13 +1000,16 @@ function renderClientView(client, data) {
           </div>
           <div class="lc-col">
             <div class="lc-col-label next">→ Next Steps</div>
-            ${bulletList(latest.openQuestions, 'lc-items', 'lc-empty')}
+            ${bulletList(latest.nextSteps || latest.openQuestions, 'lc-items', 'lc-empty')}
           </div>
         </div>
       </div>`);
   } else {
     main.insertAdjacentHTML('beforeend', `<div class="no-latest-call">📭 No call briefs found for this client in the selected time window.</div>`);
   }
+
+  renderCallActivityWarnings(main, data);
+  main.appendChild(renderActionRollup(allBriefs.length ? allBriefs : briefs));
 
   // ── Zendesk tickets ──
   main.insertAdjacentHTML('beforeend', `<div class="section-title">Zendesk Tickets</div>`);
@@ -1004,6 +1061,77 @@ function openTracker(e) {
   a.href = 'tracker.html?client=' + encodeURIComponent(activeClient.id);
 }
 
+function renderCallActivityWarnings(main, data) {
+  const latestAny = data.latestAny;
+  const days = data.staleCall;
+  if (days != null && days >= 14) {
+    main.insertAdjacentHTML('beforeend', `
+      <div class="stale-call-alert">
+        ⚠ Last matched call was ${days} days ago${latestAny?.date ? ` (${fmtDate(latestAny.date)})` : ''}. Consider confirming recent activity or follow-up status.
+      </div>`);
+  }
+  const soft = (data.allBriefs || data.briefs || []).filter(b => b.match?.soft).slice(0, 3);
+  if (soft.length) {
+    main.insertAdjacentHTML('beforeend', `
+      <div class="match-warning">
+        ⓘ Some calls were fuzzy-matched to this client: ${soft.map(b => esc(b.title || b.match?.matchedAs || 'Untitled')).join(', ')}. Verify if anything looks off.
+      </div>`);
+  }
+}
+
+function renderActionRollup(briefs) {
+  const el = document.createElement('div');
+  el.className = 'action-rollup-panel';
+  const actions = collectActions(briefs).slice(0, 12);
+  if (!actions.length) {
+    el.innerHTML = `
+      <div class="rollup-header">
+        <div><div class="rollup-title">Open Action Roll-Up</div><div class="rollup-subtitle">No extracted action items found in recent calls.</div></div>
+      </div>`;
+    return el;
+  }
+  el.innerHTML = `
+    <div class="rollup-header">
+      <div>
+        <div class="rollup-title">Open Action Roll-Up</div>
+        <div class="rollup-subtitle">Aggregated from the most recent ${Math.min(briefs.length, 20)} matched call brief${briefs.length === 1 ? '' : 's'}</div>
+      </div>
+      <span class="ticket-count has-tickets">${actions.length} item${actions.length === 1 ? '' : 's'}</span>
+    </div>
+    <ul class="rollup-list">
+      ${actions.map(a => `
+        <li class="rollup-item">
+          <div class="rollup-text">${a.owner ? `<span class="owner-tag">${esc(a.owner)}</span>` : ''}${a.due ? `<span class="due-tag">due ${esc(a.due)}</span>` : ''}${fmtLine(a.text)}</div>
+          <div class="rollup-meta">${a.date ? fmtDate(a.date) : '—'}${a.ownerName ? ` · ${esc(a.ownerName)}` : ''}</div>
+        </li>`).join('')}
+    </ul>`;
+  return el;
+}
+
+function collectActions(briefs) {
+  const seen = new Set();
+  const out = [];
+  for (const brief of briefs || []) {
+    for (const raw of parseBullets(brief.actionItems)) {
+      const text = raw.trim();
+      const key = text.toLowerCase();
+      if (!text || seen.has(key)) continue;
+      seen.add(key);
+      out.push({ ...parseActionMeta(text), text, date: brief.date, ownerName: brief.owner });
+    }
+  }
+  return out;
+}
+
+function parseActionMeta(line) {
+  const bracketOwner = line.match(/^\[([^\]]{2,40})\]/);
+  const leadingOwner = line.match(/^([A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)\s+(?:to|will|should|needs to)\b/);
+  const due = line.match(/\b(?:by|before|due|on)\s+((?:end of day|EOD|today|tomorrow|next week|next month|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|\d{1,2}\/\d{1,2}(?:\/\d{2,4})?|\d{4}-\d{2}-\d{2}))/i);
+  return {
+    owner: bracketOwner?.[1] || leadingOwner?.[1] || null,
+    due: due?.[1] || null,
+  };
+}
 
 function renderDigest(digest) {
   const el = document.createElement('div');
@@ -1098,6 +1226,7 @@ function renderBriefCard(brief, autoOpen) {
       <div class="brief-sections">
         ${briefSection('✔ Action Items',   'action',   brief.actionItems)}
         ${briefSection('⛔ Blockers',       'blocker',  brief.blockers)}
+        ${briefSection('→ Next Steps',      'question', brief.nextSteps)}
         ${briefSection('? Open Questions', 'question', brief.openQuestions)}
         ${briefSection('⚑ Red Flags',      'flag',     brief.redFlags)}
         ${briefSection('↗ Key Takeaways',  'takeaway', brief.keyTakeaways, true)}
