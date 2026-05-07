@@ -3,41 +3,58 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PSA Onboarding Graduation Criteria</title>
+  <title>PSA Onboarding Graduation Criteria — Rev.io</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@500;700;900&family=Nunito+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg: #0f1117;
-      --surface: #1a1d27;
-      --surface2: #20232f;
-      --border: #2a2d3e;
-      --accent: #6c63ff;
-      --accent-soft: rgba(108, 99, 255, 0.12);
-      --green: #00d4aa;
-      --green-soft: rgba(0, 212, 170, 0.12);
-      --yellow: #f5c542;
-      --yellow-soft: rgba(245, 197, 66, 0.12);
-      --red: #ff5c7c;
-      --red-soft: rgba(255, 92, 124, 0.12);
-      --text: #e8eaf0;
-      --text-muted: #8892a4;
-      --text-dim: #5a6378;
+      /* Rev.io Brand Colors */
+      --prussian:      #1D3756;
+      --prussian-dark: #12243A;
+      --prussian-mid:  #1a3250;
+      --prussian-lite: #234263;
+      --prussian-faint:#1e3a5c;
+      --mantis:        #6EBE4F;
+      --mantis-soft:   rgba(110, 190, 79, 0.14);
+      --turquoise:     #2399B5;
+      --turquoise-soft:rgba(35, 153, 181, 0.14);
+      --grad-blue:     #1667CC;
+      --grad-green:    #3DC570;
+      --orange:        #E8623A; /* PSA product accent */
+      --orange-soft:   rgba(232, 98, 58, 0.12);
+      --text:          #E8EAF0;
+      --text-muted:    #8BA4C0;
+      --text-dim:      #4E6A88;
+      --border:        rgba(255,255,255,0.09);
+      --border-mid:    rgba(255,255,255,0.13);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      background: var(--bg);
+      background: var(--prussian-dark);
       color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-family: 'Nunito Sans', 'Avenir', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       font-size: 15px;
       line-height: 1.6;
       min-height: 100vh;
     }
 
+    /* ─── Header ─────────────────────────────── */
     .page-header {
-      background: linear-gradient(135deg, #12141f 0%, #1a1d2e 100%);
-      border-bottom: 1px solid var(--border);
+      background: linear-gradient(135deg, #1B3B61 0%, #194477 100%);
+      border-bottom: 1px solid rgba(255,255,255,0.1);
       padding: 40px 0 32px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .page-header::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--grad-blue), var(--grad-green));
     }
 
     .container {
@@ -49,44 +66,58 @@
     .logo-row {
       display: flex;
       align-items: center;
-      gap: 12px;
-      margin-bottom: 24px;
+      gap: 14px;
+      margin-bottom: 22px;
     }
 
-    .logo-badge {
-      background: var(--accent);
-      color: #fff;
-      font-size: 13px;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      padding: 4px 10px;
-      border-radius: 4px;
-      text-transform: uppercase;
+    .logo-img {
+      height: 36px;
+      width: auto;
+      object-fit: contain;
+    }
+
+    .logo-divider {
+      width: 1px;
+      height: 24px;
+      background: rgba(255,255,255,0.2);
     }
 
     .logo-label {
-      color: var(--text-muted);
+      color: rgba(255,255,255,0.55);
       font-size: 13px;
       font-weight: 500;
     }
 
     h1 {
+      font-family: 'Raleway', 'Brandon Grotesque', 'Nunito Sans', sans-serif;
       font-size: 28px;
-      font-weight: 700;
+      font-weight: 900;
       color: #fff;
-      letter-spacing: -0.3px;
-      margin-bottom: 10px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .accent-label {
+      font-family: 'Nunito Sans', 'Avenir', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--mantis);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
     }
 
     .subtitle {
-      color: var(--text-muted);
-      font-size: 15px;
-      max-width: 600px;
+      color: rgba(255,255,255,0.6);
+      font-size: 14px;
+      max-width: 580px;
+      line-height: 1.6;
     }
 
     .meta-row {
       display: flex;
-      gap: 24px;
+      gap: 28px;
       margin-top: 20px;
       flex-wrap: wrap;
     }
@@ -98,32 +129,33 @@
     }
 
     .meta-label {
-      font-size: 11px;
+      font-size: 10px;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--text-dim);
-      font-weight: 600;
+      letter-spacing: 0.1em;
+      color: rgba(255,255,255,0.35);
+      font-weight: 700;
     }
 
     .meta-value {
       font-size: 13px;
-      color: var(--text-muted);
+      color: rgba(255,255,255,0.6);
     }
 
+    /* ─── Content ─────────────────────────────── */
     .content {
-      padding: 40px 0 80px;
+      padding: 40px 0 100px;
     }
 
     .intro-card {
-      background: var(--accent-soft);
-      border: 1px solid rgba(108, 99, 255, 0.25);
+      background: var(--turquoise-soft);
+      border: 1px solid rgba(35, 153, 181, 0.25);
       border-radius: 10px;
-      padding: 20px 24px;
-      margin-bottom: 36px;
+      padding: 18px 22px;
+      margin-bottom: 32px;
     }
 
     .intro-card p {
-      color: var(--text);
+      color: rgba(255,255,255,0.8);
       font-size: 14px;
       line-height: 1.7;
     }
@@ -132,202 +164,12 @@
       color: #fff;
     }
 
-    .section {
-      margin-bottom: 32px;
-    }
-
-    .section-header {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 14px 20px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 10px 10px 0 0;
-      cursor: pointer;
-      user-select: none;
-    }
-
-    .section-icon {
-      width: 32px;
-      height: 32px;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 16px;
-      flex-shrink: 0;
-    }
-
-    .section-title {
-      font-size: 15px;
-      font-weight: 600;
-      color: #fff;
-      flex: 1;
-    }
-
-    .section-badge {
-      font-size: 11px;
-      font-weight: 600;
-      padding: 3px 8px;
-      border-radius: 20px;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-    }
-
-    .badge-required {
-      background: var(--red-soft);
-      color: var(--red);
-      border: 1px solid rgba(255, 92, 124, 0.25);
-    }
-
-    .section-body {
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-top: none;
-      border-radius: 0 0 10px 10px;
-      padding: 4px 0;
-    }
-
-    .criterion {
-      display: flex;
-      align-items: flex-start;
-      gap: 14px;
-      padding: 14px 20px;
-      border-bottom: 1px solid rgba(255,255,255,0.04);
-      transition: background 0.15s;
-    }
-
-    .criterion:last-child {
-      border-bottom: none;
-    }
-
-    .criterion:hover {
-      background: rgba(255,255,255,0.02);
-    }
-
-    .criterion-check {
-      width: 20px;
-      height: 20px;
-      border-radius: 5px;
-      border: 2px solid var(--border);
-      background: transparent;
-      flex-shrink: 0;
-      margin-top: 1px;
-      cursor: pointer;
-      transition: all 0.15s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-    }
-
-    .criterion-check:hover {
-      border-color: var(--accent);
-    }
-
-    .criterion-check.checked {
-      background: var(--green);
-      border-color: var(--green);
-    }
-
-    .criterion-check.checked::after {
-      content: '';
-      width: 5px;
-      height: 9px;
-      border: 2px solid #0f1117;
-      border-top: none;
-      border-left: none;
-      transform: rotate(45deg) translateY(-1px);
-    }
-
-    .criterion-content {
-      flex: 1;
-    }
-
-    .criterion-title {
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--text);
-      line-height: 1.4;
-    }
-
-    .criterion-desc {
-      font-size: 13px;
-      color: var(--text-muted);
-      margin-top: 3px;
-      line-height: 1.5;
-    }
-
-    .criterion-tag {
-      display: inline-block;
-      font-size: 10px;
-      font-weight: 600;
-      padding: 2px 6px;
-      border-radius: 3px;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      margin-top: 5px;
-      background: var(--accent-soft);
-      color: var(--accent);
-      border: 1px solid rgba(108, 99, 255, 0.2);
-    }
-
-    .criterion-tag.tag-billing {
-      background: var(--green-soft);
-      color: var(--green);
-      border-color: rgba(0, 212, 170, 0.2);
-    }
-
-    .criterion-tag.tag-config {
-      background: var(--yellow-soft);
-      color: var(--yellow);
-      border-color: rgba(245, 197, 66, 0.2);
-    }
-
-    .criterion-example {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-top: 8px;
-    }
-
-    .criterion-example label {
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.07em;
-      color: var(--text-dim);
-      font-weight: 600;
-      white-space: nowrap;
-    }
-
-    .criterion-example input {
-      flex: 1;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 5px;
-      padding: 5px 10px;
-      color: var(--text);
-      font-size: 13px;
-      font-family: inherit;
-      outline: none;
-      transition: border-color 0.15s;
-      min-width: 0;
-    }
-
-    .criterion-example input:focus {
-      border-color: var(--accent);
-    }
-
-    .criterion-example input::placeholder {
-      color: var(--text-dim);
-    }
-
+    /* ─── Progress ─────────────────────────────── */
     .progress-bar-wrap {
-      background: var(--surface);
-      border: 1px solid var(--border);
+      background: var(--prussian-lite);
+      border: 1px solid var(--border-mid);
       border-radius: 10px;
-      padding: 20px 24px;
+      padding: 18px 22px;
       margin-bottom: 32px;
     }
 
@@ -339,100 +181,267 @@
     }
 
     .progress-title {
-      font-size: 13px;
-      font-weight: 600;
+      font-family: 'Raleway', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
       color: var(--text-muted);
       text-transform: uppercase;
-      letter-spacing: 0.07em;
+      letter-spacing: 0.1em;
     }
 
     .progress-count {
-      font-size: 14px;
-      font-weight: 700;
+      font-size: 13px;
+      font-weight: 600;
       color: var(--text);
     }
 
     .progress-track {
-      height: 8px;
-      background: var(--border);
-      border-radius: 4px;
+      height: 6px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 3px;
       overflow: hidden;
     }
 
     .progress-fill {
       height: 100%;
-      background: linear-gradient(90deg, var(--accent), var(--green));
-      border-radius: 4px;
+      background: linear-gradient(90deg, var(--grad-blue), var(--grad-green));
+      border-radius: 3px;
       transition: width 0.4s ease;
       width: 0%;
     }
 
-    .signoff-card {
-      background: var(--surface);
+    /* ─── Sections ─────────────────────────────── */
+    .section {
+      margin-bottom: 28px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 13px 18px;
+      background: var(--prussian-lite);
+      border: 1px solid var(--border-mid);
+      border-radius: 10px 10px 0 0;
+    }
+
+    .section-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      flex-shrink: 0;
+      background: linear-gradient(135deg, var(--grad-blue), var(--grad-green));
+    }
+
+    .section-title {
+      font-family: 'Raleway', 'Brandon Grotesque', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      color: #fff;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      flex: 1;
+    }
+
+    .section-badge {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      background: var(--orange-soft);
+      color: var(--orange);
+      border: 1px solid rgba(232, 98, 58, 0.25);
+    }
+
+    .section-body {
+      background: var(--prussian-faint);
       border: 1px solid var(--border);
+      border-top: none;
+      border-radius: 0 0 10px 10px;
+      padding: 4px 0;
+    }
+
+    /* ─── Criteria ─────────────────────────────── */
+    .criterion {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 14px 18px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      transition: background 0.15s;
+    }
+
+    .criterion:last-child { border-bottom: none; }
+    .criterion:hover { background: rgba(255,255,255,0.025); }
+
+    .criterion-check {
+      width: 20px;
+      height: 20px;
+      border-radius: 5px;
+      border: 2px solid rgba(255,255,255,0.18);
+      background: transparent;
+      flex-shrink: 0;
+      margin-top: 1px;
+      cursor: pointer;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .criterion-check:hover { border-color: var(--mantis); }
+
+    .criterion-check.checked {
+      background: var(--mantis);
+      border-color: var(--mantis);
+    }
+
+    .criterion-check.checked::after {
+      content: '';
+      width: 5px;
+      height: 9px;
+      border: 2px solid var(--prussian-dark);
+      border-top: none;
+      border-left: none;
+      transform: rotate(45deg) translateY(-1px);
+    }
+
+    .criterion-content { flex: 1; }
+
+    .criterion-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.4;
+    }
+
+    .criterion-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 3px;
+      line-height: 1.5;
+    }
+
+    .tags { margin-top: 6px; display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+
+    .tag {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 3px;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+    }
+
+    .tag-blue    { background: var(--turquoise-soft); color: var(--turquoise); border: 1px solid rgba(35,153,181,0.25); }
+    .tag-green   { background: var(--mantis-soft);    color: var(--mantis);    border: 1px solid rgba(110,190,79,0.25); }
+    .tag-orange  { background: var(--orange-soft);    color: var(--orange);    border: 1px solid rgba(232,98,58,0.25); }
+    .tag-warn    { background: rgba(245,197,66,0.1);  color: #f5c542;          border: 1px solid rgba(245,197,66,0.2); }
+
+    .criterion-example {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 9px;
+    }
+
+    .criterion-example label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      color: var(--text-dim);
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .criterion-example input {
+      flex: 1;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 5px;
+      padding: 5px 10px;
+      color: var(--text);
+      font-size: 13px;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.15s;
+      min-width: 0;
+    }
+
+    .criterion-example input:focus { border-color: var(--turquoise); }
+    .criterion-example input::placeholder { color: var(--text-dim); }
+
+    /* ─── Sign-Off ─────────────────────────────── */
+    .signoff-card {
+      background: var(--prussian-lite);
+      border: 1px solid var(--border-mid);
       border-radius: 10px;
-      padding: 24px;
-      margin-top: 32px;
+      padding: 22px;
+      margin-top: 28px;
     }
 
     .signoff-title {
-      font-size: 15px;
-      font-weight: 600;
-      color: #fff;
+      font-family: 'Raleway', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
       margin-bottom: 16px;
     }
 
     .signoff-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 16px;
+      gap: 14px;
     }
 
     .signoff-field label {
       display: block;
-      font-size: 11px;
+      font-size: 10px;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.09em;
       color: var(--text-dim);
-      font-weight: 600;
-      margin-bottom: 6px;
+      font-weight: 700;
+      margin-bottom: 5px;
     }
 
     .signoff-field input {
       width: 100%;
-      background: var(--surface2);
-      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.1);
       border-radius: 6px;
       padding: 8px 12px;
       color: var(--text);
-      font-size: 14px;
+      font-size: 13px;
       font-family: inherit;
       outline: none;
       transition: border-color 0.15s;
     }
 
-    .signoff-field input:focus {
-      border-color: var(--accent);
-    }
-
-    .signoff-field input::placeholder {
-      color: var(--text-dim);
-    }
+    .signoff-field input:focus { border-color: var(--turquoise); }
+    .signoff-field input::placeholder { color: var(--text-dim); }
 
     .signoff-line {
       grid-column: 1 / -1;
       height: 1px;
       background: var(--border);
-      margin: 4px 0;
+      margin: 2px 0;
     }
 
+    /* ─── Status Bar ─────────────────────────────── */
     .status-bar {
       position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: var(--surface);
-      border-top: 1px solid var(--border);
+      bottom: 0; left: 0; right: 0;
+      background: var(--prussian-lite);
+      border-top: 1px solid var(--border-mid);
       padding: 12px 32px;
       display: flex;
       align-items: center;
@@ -443,7 +452,7 @@
     .status-left {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
     }
 
     .status-dot {
@@ -454,75 +463,75 @@
       transition: background 0.3s;
     }
 
-    .status-dot.ready {
-      background: var(--green);
-    }
+    .status-dot.ready { background: var(--mantis); }
 
     .status-text {
       font-size: 13px;
       color: var(--text-muted);
     }
 
+    .btn-row { display: flex; gap: 10px; }
+
     .btn {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      padding: 9px 18px;
-      border-radius: 7px;
-      font-size: 13px;
-      font-weight: 600;
+      gap: 7px;
+      padding: 9px 20px;
+      border-radius: 50px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
       cursor: pointer;
       border: none;
       transition: all 0.15s;
-      font-family: inherit;
+      font-family: 'Raleway', sans-serif;
     }
 
     .btn-primary {
-      background: var(--accent);
+      background: var(--turquoise);
       color: #fff;
+      border: 1px solid transparent;
     }
 
-    .btn-primary:hover {
-      background: #7d75ff;
-    }
+    .btn-primary:hover:not(:disabled) { background: #1e89a3; }
+    .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
 
     .btn-secondary {
-      background: var(--surface2);
+      background: transparent;
       color: var(--text-muted);
-      border: 1px solid var(--border);
+      border: 1px solid rgba(255,255,255,0.15);
     }
 
-    .btn-secondary:hover {
-      color: var(--text);
-      border-color: var(--text-muted);
-    }
-
-    .btn-row {
-      display: flex;
-      gap: 10px;
-    }
+    .btn-secondary:hover { color: var(--text); border-color: rgba(255,255,255,0.3); }
 
     @media print {
       .status-bar { display: none; }
-      body { background: #fff; color: #000; }
-      .page-header { background: #f5f5f5; }
     }
   </style>
 </head>
 <body>
 
+<!-- ─── Header ────────────────────────────────────── -->
 <div class="page-header">
   <div class="container">
     <div class="logo-row">
-      <span class="logo-badge">Rev.io PSA</span>
+      <img src="../assets/logos/revio-psa.png" alt="Rev.io PSA" class="logo-img"
+           onerror="this.style.display='none'; document.getElementById('logo-text').style.display='flex';" />
+      <div id="logo-text" style="display:none; align-items:center; gap:8px;">
+        <span style="font-family:'Raleway',sans-serif;font-weight:900;font-size:18px;color:#fff;letter-spacing:0.05em;">rev.io</span>
+        <span style="font-size:11px;font-weight:700;color:var(--mantis);letter-spacing:0.12em;text-transform:uppercase;">PSA</span>
+      </div>
+      <div class="logo-divider"></div>
       <span class="logo-label">Onboarding Team</span>
     </div>
+    <div class="accent-label">Onboarding Program</div>
     <h1>PSA Graduation Criteria</h1>
     <p class="subtitle">Minimum requirements a client must satisfy before transitioning from Onboarding to Customer Success.</p>
     <div class="meta-row">
       <div class="meta-item">
         <span class="meta-label">Version</span>
-        <span class="meta-value">v1.0 — Draft</span>
+        <span class="meta-value">v1.1 — Draft</span>
       </div>
       <div class="meta-item">
         <span class="meta-label">Created</span>
@@ -536,6 +545,7 @@
   </div>
 </div>
 
+<!-- ─── Content ───────────────────────────────────── -->
 <div class="content">
   <div class="container">
 
@@ -543,11 +553,11 @@
       <p>A client <strong>graduates</strong> when they can independently <strong>work tickets and bill customers accurately</strong> within Rev.io PSA. All items below must be checked before a CS handoff is initiated. Graduation should not be granted under schedule pressure if requirements are not met.</p>
     </div>
 
-    <!-- Progress Bar -->
+    <!-- Progress -->
     <div class="progress-bar-wrap">
       <div class="progress-label-row">
         <span class="progress-title">Completion</span>
-        <span class="progress-count" id="progressCount">0 of 15 criteria met</span>
+        <span class="progress-count" id="progressCount">0 of 14 criteria met</span>
       </div>
       <div class="progress-track">
         <div class="progress-fill" id="progressFill"></div>
@@ -557,9 +567,9 @@
     <!-- 1. User Management -->
     <div class="section">
       <div class="section-header">
-        <div class="section-icon" style="background:rgba(108,99,255,0.15);">👤</div>
-        <span class="section-title">1. User Management & Permissions</span>
-        <span class="section-badge badge-required">Required</span>
+        <div class="section-icon">👤</div>
+        <span class="section-title">1. User Management &amp; Permissions</span>
+        <span class="section-badge">Required</span>
       </div>
       <div class="section-body">
         <div class="criterion">
@@ -567,7 +577,7 @@
           <div class="criterion-content">
             <div class="criterion-title">At least one non-admin user created</div>
             <div class="criterion-desc">Client has added a technician or billing user beyond the default admin account.</div>
-            <span class="criterion-tag">User Mgmt</span>
+            <div class="tags"><span class="tag tag-blue">User Mgmt</span></div>
             <div class="criterion-example"><label>Username:</label><input type="text" placeholder="e.g. jsmith" /></div>
           </div>
         </div>
@@ -576,7 +586,7 @@
           <div class="criterion-content">
             <div class="criterion-title">At least one permission set configured and assigned</div>
             <div class="criterion-desc">Role-based access confirmed — users have appropriate permissions for their function.</div>
-            <span class="criterion-tag">User Mgmt</span>
+            <div class="tags"><span class="tag tag-blue">User Mgmt</span></div>
             <div class="criterion-example"><label>Permission Set:</label><input type="text" placeholder="e.g. Technician" /></div>
           </div>
         </div>
@@ -586,9 +596,9 @@
     <!-- 2. Product Catalog -->
     <div class="section">
       <div class="section-header">
-        <div class="section-icon" style="background:rgba(0,212,170,0.12);">📦</div>
+        <div class="section-icon">📦</div>
         <span class="section-title">2. Product Catalog</span>
-        <span class="section-badge badge-required">Required</span>
+        <span class="section-badge">Required</span>
       </div>
       <div class="section-body">
         <div class="criterion">
@@ -596,19 +606,19 @@
           <div class="criterion-content">
             <div class="criterion-title">Products and services loaded into the catalog</div>
             <div class="criterion-desc">Active services the client sells are present in PSA with correct names and pricing.</div>
-            <span class="criterion-tag tag-config">Config</span>
+            <div class="tags"><span class="tag tag-orange">Config</span></div>
             <div class="criterion-example"><label>Example Product:</label><input type="text" placeholder="e.g. Managed Services - Standard" /></div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- 3. Customer Import & Training -->
+    <!-- 3. Customer Import -->
     <div class="section">
       <div class="section-header">
-        <div class="section-icon" style="background:rgba(245,197,66,0.12);">🏢</div>
-        <span class="section-title">3. Customer Import & Setup</span>
-        <span class="section-badge badge-required">Required</span>
+        <div class="section-icon">🏢</div>
+        <span class="section-title">3. Customer Import &amp; Setup</span>
+        <span class="section-badge">Required</span>
       </div>
       <div class="section-body">
         <div class="criterion">
@@ -616,7 +626,7 @@
           <div class="criterion-content">
             <div class="criterion-title">Customer data imported or manually entered</div>
             <div class="criterion-desc">Client's customer base is live in PSA — either via data import or manual entry.</div>
-            <span class="criterion-tag tag-config">Config</span>
+            <div class="tags"><span class="tag tag-orange">Config</span></div>
           </div>
         </div>
         <div class="criterion">
@@ -624,7 +634,7 @@
           <div class="criterion-content">
             <div class="criterion-title">Created at least one customer record from start to finish</div>
             <div class="criterion-desc">Client (or SA with client present) completed the full customer creation workflow including contacts and billing settings.</div>
-            <span class="criterion-tag">Training</span>
+            <div class="tags"><span class="tag tag-green">Training</span></div>
             <div class="criterion-example"><label>Customer Name:</label><input type="text" placeholder="e.g. Acme IT Solutions" /></div>
           </div>
         </div>
@@ -634,9 +644,9 @@
     <!-- 4. System Settings -->
     <div class="section">
       <div class="section-header">
-        <div class="section-icon" style="background:rgba(108,99,255,0.15);">⚙️</div>
+        <div class="section-icon">⚙️</div>
         <span class="section-title">4. System Settings</span>
-        <span class="section-badge badge-required">Required</span>
+        <span class="section-badge">Required</span>
       </div>
       <div class="section-body">
         <div class="criterion">
@@ -644,8 +654,7 @@
           <div class="criterion-content">
             <div class="criterion-title">Bill Profile(s) configured and activated</div>
             <div class="criterion-desc">Billing cycle, cycle dates, arrears settings, and grace period are set and confirmed. Build profile is active.</div>
-            <span class="criterion-tag tag-config">Config</span>
-            <span class="criterion-tag tag-billing">Billing</span>
+            <div class="tags"><span class="tag tag-orange">Config</span><span class="tag tag-green">Billing</span></div>
             <div class="criterion-example"><label>Profile Name:</label><input type="text" placeholder="e.g. Monthly - 1st" /></div>
           </div>
         </div>
@@ -653,16 +662,16 @@
           <div class="criterion-check" onclick="toggleCheck(this)"></div>
           <div class="criterion-content">
             <div class="criterion-title">Email configuration completed</div>
-            <div class="criterion-desc">Outbound email is configured and tested — invoices, notifications, and ticket emails route correctly from the client's domain or Rev.io defaults.</div>
-            <span class="criterion-tag tag-config">Config</span>
+            <div class="criterion-desc">Outbound email is configured and tested — invoices, notifications, and ticket emails route correctly.</div>
+            <div class="tags"><span class="tag tag-orange">Config</span></div>
           </div>
         </div>
         <div class="criterion">
           <div class="criterion-check" onclick="toggleCheck(this)"></div>
           <div class="criterion-content">
-            <div class="criterion-title">Standard workflow configured <span style="font-weight:400;color:var(--yellow);font-size:12px;">⚠ TBD — to be defined with team</span></div>
+            <div class="criterion-title">Standard workflow configured <span style="font-weight:400;color:#f5c542;font-size:12px;">⚠ TBD — to be defined with team</span></div>
             <div class="criterion-desc">The agreed-upon standard workflow every PSA client needs is in place and confirmed working.</div>
-            <span class="criterion-tag tag-config">Config</span>
+            <div class="tags"><span class="tag tag-orange">Config</span></div>
             <div class="criterion-example"><label>Workflow Name:</label><input type="text" placeholder="e.g. New Ticket Assignment" /></div>
           </div>
         </div>
@@ -672,9 +681,9 @@
     <!-- 5. Tax Configuration -->
     <div class="section">
       <div class="section-header">
-        <div class="section-icon" style="background:rgba(255,92,124,0.12);">🧾</div>
+        <div class="section-icon">🧾</div>
         <span class="section-title">5. Tax Configuration</span>
-        <span class="section-badge badge-required">Required</span>
+        <span class="section-badge">Required</span>
       </div>
       <div class="section-body">
         <div class="criterion">
@@ -682,7 +691,7 @@
           <div class="criterion-content">
             <div class="criterion-title">Tax mappings loaded</div>
             <div class="criterion-desc">Tax jurisdictions are configured in PSA. SureTax activated and credentials entered (if applicable).</div>
-            <span class="criterion-tag tag-billing">Billing</span>
+            <div class="tags"><span class="tag tag-green">Billing</span></div>
           </div>
         </div>
         <div class="criterion">
@@ -690,7 +699,7 @@
           <div class="criterion-content">
             <div class="criterion-title">Taxes appear on a generated invoice</div>
             <div class="criterion-desc">A test or draft invoice shows tax line items populated. Accuracy of rates is outside onboarding scope.</div>
-            <span class="criterion-tag tag-billing">Billing</span>
+            <div class="tags"><span class="tag tag-green">Billing</span></div>
           </div>
         </div>
       </div>
@@ -699,9 +708,9 @@
     <!-- 6. Ticketing & Billing -->
     <div class="section">
       <div class="section-header">
-        <div class="section-icon" style="background:rgba(0,212,170,0.12);">✅</div>
-        <span class="section-title">6. Ticketing & Billing Validation</span>
-        <span class="section-badge badge-required">Required</span>
+        <div class="section-icon">✅</div>
+        <span class="section-title">6. Ticketing &amp; Billing Validation</span>
+        <span class="section-badge">Required</span>
       </div>
       <div class="section-body">
         <div class="criterion">
@@ -709,7 +718,7 @@
           <div class="criterion-content">
             <div class="criterion-title">Client has created and worked at least one ticket end-to-end</div>
             <div class="criterion-desc">Ticket opened, assigned, updated, and closed. Client understands the ticket lifecycle in PSA.</div>
-            <span class="criterion-tag">Training</span>
+            <div class="tags"><span class="tag tag-green">Training</span></div>
             <div class="criterion-example"><label>Ticket #:</label><input type="text" placeholder="e.g. TKT-0042" /></div>
           </div>
         </div>
@@ -718,7 +727,7 @@
           <div class="criterion-content">
             <div class="criterion-title">At least one invoice created</div>
             <div class="criterion-desc">Client has generated a complete invoice. Delivery to the end customer is not required at this stage.</div>
-            <span class="criterion-tag tag-billing">Billing</span>
+            <div class="tags"><span class="tag tag-green">Billing</span></div>
             <div class="criterion-example"><label>Invoice #:</label><input type="text" placeholder="e.g. INV-1001" /></div>
           </div>
         </div>
@@ -727,13 +736,13 @@
           <div class="criterion-content">
             <div class="criterion-title">Client can independently navigate ticketing and billing workflows</div>
             <div class="criterion-desc">SA has assessed that the client's team can operate PSA without hand-holding for their core daily tasks.</div>
-            <span class="criterion-tag">Training</span>
+            <div class="tags"><span class="tag tag-green">Training</span></div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- SA Sign-Off -->
+    <!-- Sign-Off -->
     <div class="signoff-card">
       <div class="signoff-title">SA Sign-Off</div>
       <div class="signoff-grid">
@@ -764,15 +773,15 @@
   </div>
 </div>
 
-<!-- Status Bar -->
+<!-- ─── Status Bar ─────────────────────────────────── -->
 <div class="status-bar">
   <div class="status-left">
     <div class="status-dot" id="statusDot"></div>
-    <span class="status-text" id="statusText">0 of 15 criteria met — not ready to graduate</span>
+    <span class="status-text" id="statusText">0 of 14 criteria met — not ready to graduate</span>
   </div>
   <div class="btn-row">
     <button class="btn btn-secondary" onclick="window.print()">Print / Save PDF</button>
-    <button class="btn btn-primary" id="graduateBtn" disabled onclick="alert('All criteria met — client is cleared for CS handoff.')">Mark as Graduated</button>
+    <button class="btn btn-primary" id="graduateBtn" disabled onclick="alert('All criteria met — client is cleared for CS handoff.')">Mark as Graduated →</button>
   </div>
 </div>
 
@@ -787,13 +796,12 @@
   function updateProgress() {
     const checked = document.querySelectorAll('.criterion-check.checked').length;
     const pct = Math.round((checked / TOTAL) * 100);
-
     document.getElementById('progressFill').style.width = pct + '%';
     document.getElementById('progressCount').textContent = checked + ' of ' + TOTAL + ' criteria met';
 
-    const dot = document.getElementById('statusDot');
+    const dot  = document.getElementById('statusDot');
     const text = document.getElementById('statusText');
-    const btn = document.getElementById('graduateBtn');
+    const btn  = document.getElementById('graduateBtn');
 
     if (checked === TOTAL) {
       dot.classList.add('ready');
