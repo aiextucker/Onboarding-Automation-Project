@@ -285,6 +285,44 @@
       border-color: rgba(245, 197, 66, 0.2);
     }
 
+    .criterion-example {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .criterion-example label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--text-dim);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .criterion-example input {
+      flex: 1;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      padding: 5px 10px;
+      color: var(--text);
+      font-size: 13px;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.15s;
+      min-width: 0;
+    }
+
+    .criterion-example input:focus {
+      border-color: var(--accent);
+    }
+
+    .criterion-example input::placeholder {
+      color: var(--text-dim);
+    }
+
     .progress-bar-wrap {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -530,6 +568,7 @@
             <div class="criterion-title">At least one non-admin user created</div>
             <div class="criterion-desc">Client has added a technician or billing user beyond the default admin account.</div>
             <span class="criterion-tag">User Mgmt</span>
+            <div class="criterion-example"><label>Username:</label><input type="text" placeholder="e.g. jsmith" /></div>
           </div>
         </div>
         <div class="criterion">
@@ -538,6 +577,7 @@
             <div class="criterion-title">At least one permission set configured and assigned</div>
             <div class="criterion-desc">Role-based access confirmed — users have appropriate permissions for their function.</div>
             <span class="criterion-tag">User Mgmt</span>
+            <div class="criterion-example"><label>Permission Set:</label><input type="text" placeholder="e.g. Technician" /></div>
           </div>
         </div>
       </div>
@@ -557,14 +597,7 @@
             <div class="criterion-title">Products and services loaded into the catalog</div>
             <div class="criterion-desc">Active services the client sells are present in PSA with correct names and pricing.</div>
             <span class="criterion-tag tag-config">Config</span>
-          </div>
-        </div>
-        <div class="criterion">
-          <div class="criterion-check" onclick="toggleCheck(this)"></div>
-          <div class="criterion-content">
-            <div class="criterion-title">Client can locate and apply products to a ticket or invoice</div>
-            <div class="criterion-desc">Demonstrated proficiency — SA has observed or confirmed the client can use the catalog independently.</div>
-            <span class="criterion-tag tag-config">Config</span>
+            <div class="criterion-example"><label>Example Product:</label><input type="text" placeholder="e.g. Managed Services - Standard" /></div>
           </div>
         </div>
       </div>
@@ -592,6 +625,7 @@
             <div class="criterion-title">Created at least one customer record from start to finish</div>
             <div class="criterion-desc">Client (or SA with client present) completed the full customer creation workflow including contacts and billing settings.</div>
             <span class="criterion-tag">Training</span>
+            <div class="criterion-example"><label>Customer Name:</label><input type="text" placeholder="e.g. Acme IT Solutions" /></div>
           </div>
         </div>
       </div>
@@ -612,6 +646,7 @@
             <div class="criterion-desc">Billing cycle, cycle dates, arrears settings, and grace period are set and confirmed. Build profile is active.</div>
             <span class="criterion-tag tag-config">Config</span>
             <span class="criterion-tag tag-billing">Billing</span>
+            <div class="criterion-example"><label>Profile Name:</label><input type="text" placeholder="e.g. Monthly - 1st" /></div>
           </div>
         </div>
         <div class="criterion">
@@ -625,9 +660,10 @@
         <div class="criterion">
           <div class="criterion-check" onclick="toggleCheck(this)"></div>
           <div class="criterion-content">
-            <div class="criterion-title">At least one workflow configured</div>
-            <div class="criterion-desc">Client has a working automation or dispatch workflow in place for their primary use case (e.g., ticket assignment, status changes).</div>
+            <div class="criterion-title">Standard workflow configured <span style="font-weight:400;color:var(--yellow);font-size:12px;">⚠ TBD — to be defined with team</span></div>
+            <div class="criterion-desc">The agreed-upon standard workflow every PSA client needs is in place and confirmed working.</div>
             <span class="criterion-tag tag-config">Config</span>
+            <div class="criterion-example"><label>Workflow Name:</label><input type="text" placeholder="e.g. New Ticket Assignment" /></div>
           </div>
         </div>
       </div>
@@ -644,16 +680,16 @@
         <div class="criterion">
           <div class="criterion-check" onclick="toggleCheck(this)"></div>
           <div class="criterion-content">
-            <div class="criterion-title">Tax mappings loaded and verified</div>
-            <div class="criterion-desc">Tax jurisdictions and rates are configured. SureTax activated and credentials entered (if applicable).</div>
+            <div class="criterion-title">Tax mappings loaded</div>
+            <div class="criterion-desc">Tax jurisdictions are configured in PSA. SureTax activated and credentials entered (if applicable).</div>
             <span class="criterion-tag tag-billing">Billing</span>
           </div>
         </div>
         <div class="criterion">
           <div class="criterion-check" onclick="toggleCheck(this)"></div>
           <div class="criterion-content">
-            <div class="criterion-title">Test invoice shows correct tax calculation</div>
-            <div class="criterion-desc">Client or SA has generated a test invoice and confirmed taxes are calculating as expected.</div>
+            <div class="criterion-title">Taxes appear on a generated invoice</div>
+            <div class="criterion-desc">A test or draft invoice shows tax line items populated. Accuracy of rates is outside onboarding scope.</div>
             <span class="criterion-tag tag-billing">Billing</span>
           </div>
         </div>
@@ -674,14 +710,16 @@
             <div class="criterion-title">Client has created and worked at least one ticket end-to-end</div>
             <div class="criterion-desc">Ticket opened, assigned, updated, and closed. Client understands the ticket lifecycle in PSA.</div>
             <span class="criterion-tag">Training</span>
+            <div class="criterion-example"><label>Ticket #:</label><input type="text" placeholder="e.g. TKT-0042" /></div>
           </div>
         </div>
         <div class="criterion">
           <div class="criterion-check" onclick="toggleCheck(this)"></div>
           <div class="criterion-content">
-            <div class="criterion-title">At least one invoice generated and sent to a customer</div>
-            <div class="criterion-desc">Client has run or simulated a billing cycle and confirmed invoice delivery. Invoice content and formatting approved by client.</div>
+            <div class="criterion-title">At least one invoice created</div>
+            <div class="criterion-desc">Client has generated a complete invoice. Delivery to the end customer is not required at this stage.</div>
             <span class="criterion-tag tag-billing">Billing</span>
+            <div class="criterion-example"><label>Invoice #:</label><input type="text" placeholder="e.g. INV-1001" /></div>
           </div>
         </div>
         <div class="criterion">
@@ -739,7 +777,7 @@
 </div>
 
 <script>
-  const TOTAL = 15;
+  const TOTAL = 14;
 
   function toggleCheck(el) {
     el.classList.toggle('checked');
