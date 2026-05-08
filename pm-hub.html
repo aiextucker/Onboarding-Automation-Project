@@ -322,6 +322,33 @@ body {
 .psa-bar-fill.on-hold { background: var(--text-mute); }
 .psa-bar-fill.rts     { background: var(--orange); }
 .psa-milestone-meta { margin-top: 8px; font-size: 0.75rem; color: var(--text-mute); display: flex; gap: 16px; flex-wrap: wrap; }
+.psa-health-drivers {
+  margin-top: 12px;
+  padding: 9px 12px;
+  background: rgba(255,90,110,0.07);
+  border: 1px solid rgba(255,90,110,0.2);
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  line-height: 1.5;
+}
+.psa-health-drivers.healthy { background: var(--green-bg); border-color: rgba(0,212,170,.2); }
+.psa-health-drivers.on-hold { background: var(--surface3); border-color: var(--border); }
+.psa-health-drivers.rts     { background: var(--orange-bg); border-color: rgba(251,146,60,.2); }
+.psa-health-drivers .hd-label { font-weight: 700; font-size: 0.7rem; text-transform: uppercase; letter-spacing: .07em; margin-right: 6px; }
+.psa-stale-warning {
+  margin-top: 10px;
+  padding: 7px 12px;
+  background: var(--orange-bg);
+  border: 1px solid rgba(251,146,60,.3);
+  border-radius: var(--radius-sm);
+  font-size: 0.79rem;
+  color: var(--orange);
+}
+.psa-sentiment { display: inline-flex; align-items: center; gap: 4px; font-size: 0.75rem; font-weight: 600; }
+.psa-sentiment.s-high { color: var(--green); }
+.psa-sentiment.s-mid  { color: var(--yellow); }
+.psa-sentiment.s-low  { color: var(--red); }
 .long-term-rts-flag {
   display: inline-flex; align-items: center; gap: 5px;
   background: var(--orange-bg); color: var(--orange);
@@ -979,7 +1006,17 @@ function renderClientView(client, data) {
     stats.push(`<div class="stat-pill ${healthClass(client.health)}"><div class="val">${client.health}</div><div class="lbl">Health</div></div>`);
   }
   if (isPsa && client.psaMilestonePercent != null) {
-    stats.push(`<div class="stat-pill"><div class="val" style="color:var(--teal)">${client.psaMilestonePercent}%</div><div class="lbl">Milestones</div></div>`);
+    const msLabel = client.psaTotalMilestones ? `${client.psaMilestonePercent}%` : `${client.psaMilestonePercent}%`;
+    const overdueWarn = client.psaOverdueMilestones > 0 ? ` style="color:var(--red)"` : '';
+    stats.push(`<div class="stat-pill"><div class="val"${overdueWarn} style="color:${client.psaOverdueMilestones > 0 ? 'var(--red)' : 'var(--teal)'}">${msLabel}</div><div class="lbl">Milestones${client.psaTotalMilestones ? ' / ' + client.psaTotalMilestones : ''}</div></div>`);
+  }
+  if (isPsa && client.psaDaysSinceContact != null) {
+    const dCls = client.psaDaysSinceContact >= 14 ? 'health-low' : client.psaDaysSinceContact >= 7 ? 'health-mid' : 'health-high';
+    stats.push(`<div class="stat-pill ${dCls}"><div class="val">${client.psaDaysSinceContact}</div><div class="lbl">Days Since Contact</div></div>`);
+  }
+  if (isPsa && client.psaAvgSentiment != null) {
+    const sentCls = client.psaAvgSentiment >= 4 ? 'health-high' : client.psaAvgSentiment >= 3 ? 'health-mid' : 'health-low';
+    stats.push(`<div class="stat-pill ${sentCls}"><div class="val">${client.psaAvgSentiment.toFixed(1)}</div><div class="lbl">Avg Sentiment</div></div>`);
   }
   if (isBilling) {
     stats.push(`<div class="stat-pill"><div class="val">${briefs.length}</div><div class="lbl">Billing Calls</div></div>`);
@@ -1035,19 +1072,32 @@ function renderClientView(client, data) {
     if (client.psaKoDate)   metaParts.push(`KO: ${fmtDate(client.psaKoDate)}`);
     if (client.psaGradDate) metaParts.push(`Forecast Grad: ${fmtDate(client.psaGradDate)}`);
     if (client.psaMrr)      metaParts.push(`MRR: $${client.psaMrr.toLocaleString()}`);
+    if (client.psaOverdueMilestones > 0) metaParts.push(`⚠ ${client.psaOverdueMilestones} overdue milestone${client.psaOverdueMilestones > 1 ? 's' : ''}`);
+    // Forecast health badge
+    const fhBadge = client.psaForecastHealth
+      ? `<span class="psa-health-flag ${psaHealthFlagClass(client.psaForecastHealth)}" style="font-size:0.68rem">${esc(client.psaForecastHealth)}</span>` : '';
+    // Health drivers callout
+    const hdHtml = client.psaHealthDrivers
+      ? `<div class="psa-health-drivers ${hCls}"><span class="hd-label">Why:</span>${esc(client.psaHealthDrivers)}</div>` : '';
+    // Stale contact warning
+    const staleHtml = (client.psaDaysSinceContact != null && client.psaDaysSinceContact >= 14)
+      ? `<div class="psa-stale-warning">⏱ Last contact ${client.psaDaysSinceContact} days ago — engagement may be at risk.</div>` : '';
     main.insertAdjacentHTML('beforeend', `
       <div class="psa-milestone-bar">
         <div class="psa-milestone-header">
           <span class="psa-milestone-title">PSA Training Progress</span>
           <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
             ${health ? `<span class="psa-health-flag ${hCls}">${esc(health)}</span>` : ''}
-            <span class="psa-milestone-pct">${pct}%</span>
+            ${fhBadge}
+            <span class="psa-milestone-pct">${pct}%${client.psaTotalMilestones ? ` <span style="font-size:0.8rem;color:var(--text-mute);font-weight:400">/ ${client.psaTotalMilestones}</span>` : ''}</span>
           </div>
         </div>
         <div class="psa-bar-track">
           <div class="psa-bar-fill ${barCls}" style="width:${Math.min(pct,100)}%"></div>
         </div>
-        ${metaParts.length ? `<div class="psa-milestone-meta">${metaParts.map(esc).join('<span style="color:var(--border-hi)">·</span>')}</div>` : ''}
+        ${metaParts.length ? `<div class="psa-milestone-meta">${metaParts.map(p => esc(p)).join('<span style="color:var(--border-hi)"> · </span>')}</div>` : ''}
+        ${hdHtml}
+        ${staleHtml}
       </div>
     `);
   }
