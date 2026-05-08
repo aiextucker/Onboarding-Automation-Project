@@ -64,7 +64,7 @@ jobs:
             return results;
           }
 
-          function nStr(p)  { if (!p) return null; if (p.type==='title') return p.title?.map(t=>t.plain_text).join('')||null; if (p.type==='rich_text') return p.rich_text?.map(t=>t.plain_text).join('')||null; if (p.type==='select') return p.select?.name||null; return null; }
+          function nStr(p)  { if (!p) return null; if (p.type==='title') return p.title?.map(t=>t.plain_text).join('')||null; if (p.type==='rich_text') return p.rich_text?.map(t=>t.plain_text).join('')||null; if (p.type==='select') return p.select?.name||null; if (p.type==='formula') return p.formula?.string||null; return null; }
           function nDate(p) { return p?.date?.start?.slice(0,10) || null; }
           function nNum(p)  { return p?.number ?? (p?.formula?.number ?? null); }
           function nPpl(p)  { return (p?.people||[]).map(x=>x.name).filter(Boolean); }
