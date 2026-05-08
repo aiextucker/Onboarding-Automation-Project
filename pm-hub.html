@@ -879,13 +879,14 @@ async function fetchClientData(clientId, days) {
   const allInteractions = snapshot.interactionsByClientId?.[clientId] || [];
   const interactions = allInteractions.filter(i => !i.date || i.date >= cutoff).slice(0, 25);
 
-  // Tickets (billing only)
+  // Tickets
   const tickets = hasBilling(client) ? (snapshot.ticketsByClientId?.[clientId] || []) : [];
+  const psaTickets = hasPsa(client) ? (snapshot.psaTicketsByClientId?.[clientId] || []) : [];
 
   // Digest (billing only)
   const digest = hasBilling(client) ? (snapshot.digestsByClientId?.[clientId] || null) : null;
 
-  return { briefs, allBriefs, psaBriefs, allPsaBriefs, interactions, tickets, digest, latestBilling, staleCall };
+  return { briefs, allBriefs, psaBriefs, allPsaBriefs, interactions, tickets, psaTickets, digest, latestBilling, staleCall };
 }
 
 // ── Autocomplete ──────────────────────────────────────────────────────────────
@@ -979,7 +980,7 @@ function showError(msg) {
 }
 
 function renderClientView(client, data) {
-  const { briefs = [], allBriefs = [], psaBriefs = [], interactions = [], tickets = [], digest } = data;
+  const { briefs = [], allBriefs = [], psaBriefs = [], interactions = [], tickets = [], psaTickets = [], digest } = data;
   const main = document.getElementById('main');
   main.innerHTML = '';
 
@@ -1024,6 +1025,10 @@ function renderClientView(client, data) {
   if (isPsa) {
     stats.push(`<div class="stat-pill"><div class="val">${psaBriefs.length}</div><div class="lbl">PSA Calls</div></div>`);
     stats.push(`<div class="stat-pill"><div class="val">${interactions.length}</div><div class="lbl">Interactions</div></div>`);
+    if (psaTickets.length) {
+      const hasHigh = psaTickets.some(t => t.priority === 'High');
+      stats.push(`<div class="stat-pill ${hasHigh ? 'health-low' : ''}"><div class="val">${psaTickets.length}</div><div class="lbl">PSA Tickets</div></div>`);
+    }
   }
   if (isBilling) {
     stats.push(`<div class="stat-pill"><div class="val">${tickets.length}</div><div class="lbl">Tickets</div></div>`);
@@ -1247,6 +1252,36 @@ function renderClientView(client, data) {
           </div>` : `<div class="no-tickets">No open or pending tickets found.</div>`}
       </div>
     `);
+  }
+
+  // ── PSA tickets ──
+  if (isPsa) {
+    main.insertAdjacentHTML('beforeend', `
+      <div class="section-title">PSA Tickets${isDual(client) ? '<span class="lob-tag psa">PSA</span>' : ''}</div>`);
+    const ptCount = psaTickets.length;
+    const ptRows = ptCount ? psaTickets.map(t => {
+      const prioClass = t.priority === 'High' ? 'new' : t.priority === 'Medium' ? 'open' : 'pending';
+      const statusClass = t.status === 'New' ? 'new' : t.status === 'Open' ? 'open' : 'pending';
+      const link = t.url ? `<a href="${esc(t.url)}" target="_blank">${esc(t.description || '#' + t.id)}</a>` : esc(t.description || '#' + t.id);
+      return `
+        <div class="ticket-row">
+          <span class="ticket-id">#${t.id}</span>
+          <span class="ticket-subject">${link}</span>
+          ${t.type ? `<span class="ticket-status ${prioClass}" style="background:transparent;border:1px solid currentColor;font-size:0.67rem">${esc(t.type)}</span>` : ''}
+          <span class="ticket-status ${statusClass}">${esc(t.status)}</span>
+          ${t.priority === 'High' ? '<span class="ticket-status new" style="font-size:0.67rem">High</span>' : ''}
+          <span class="ticket-date">${esc(t.tech || '')}</span>
+        </div>`;
+    }).join('') : '<div class="no-tickets">No open PSA tickets.</div>';
+
+    main.insertAdjacentHTML('beforeend', `
+      <div class="tickets-panel">
+        <div class="tickets-header">
+          <h3>Open PSA Tickets</h3>
+          <span class="ticket-count ${ptCount ? 'has-tickets' : ''}">${ptCount} ticket${ptCount !== 1 ? 's' : ''}</span>
+        </div>
+        ${ptCount ? '<div class="ticket-list">' + ptRows + '</div>' : '<div class="no-tickets">No open PSA tickets.</div>'}
+      </div>`);
   }
 
   // ── PSA call history ──
