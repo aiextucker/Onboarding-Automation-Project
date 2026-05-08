@@ -34,6 +34,10 @@
   --purple-bg: rgba(167,139,250,0.1);
   --orange:    #fb923c;
   --orange-bg: rgba(251,146,60,0.1);
+  --psa:       #22d3ee;
+  --psa-bg:    rgba(34,211,238,0.1);
+  --billing:   #818cf8;
+  --billing-bg:rgba(129,140,248,0.1);
   --radius:    10px;
   --radius-sm: 6px;
   --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -77,7 +81,16 @@ body {
   border: 1px solid var(--border); transition: all .15s;
 }
 .header-link:hover { color: var(--text); border-color: var(--border-hi); }
-.header-link.active { color: var(--accent); border-color: var(--accent); }
+
+/* ── LOB badges ── */
+.lob-badge {
+  display: inline-flex; align-items: center;
+  font-size: 0.7rem; font-weight: 700;
+  padding: 2px 8px; border-radius: 20px;
+  letter-spacing: .04em; white-space: nowrap;
+}
+.lob-badge.billing { background: var(--billing-bg); color: var(--billing); border: 1px solid rgba(129,140,248,.25); }
+.lob-badge.psa     { background: var(--psa-bg);     color: var(--psa);     border: 1px solid rgba(34,211,238,.25); }
 
 /* ── Search bar ── */
 .search-bar {
@@ -116,7 +129,7 @@ body {
   background: var(--surface2);
   border: 1px solid var(--border-hi);
   border-radius: var(--radius-sm);
-  max-height: 280px;
+  max-height: 320px;
   overflow-y: auto;
   z-index: 200;
   display: none;
@@ -127,7 +140,7 @@ body {
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   font-size: 0.88rem;
   transition: background .1s;
 }
@@ -196,7 +209,8 @@ body {
   gap: 16px;
 }
 .client-name { font-size: 1.4rem; font-weight: 700; margin-bottom: 6px; }
-.client-meta-row { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; margin-top: 8px; }
+.client-lob-row { display: flex; gap: 6px; margin-bottom: 8px; flex-wrap: wrap; align-items: center; }
+.client-meta-row { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
 .meta-item { display: flex; align-items: center; gap: 5px; font-size: 0.82rem; color: var(--text-dim); }
 .meta-item strong { color: var(--text); }
 .client-stats { display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-start; }
@@ -213,6 +227,11 @@ body {
 .stat-pill.health-low .val  { color: var(--red); }
 .stat-pill.health-mid .val  { color: var(--yellow); }
 .stat-pill.health-high .val { color: var(--green); }
+.stat-pill.psa-health .val  { font-size: 0.95rem; font-weight: 600; }
+.stat-pill.psa-health.at-risk   .val { color: var(--red); }
+.stat-pill.psa-health.on-track  .val { color: var(--green); }
+.stat-pill.psa-health.on-hold   .val { color: var(--yellow); }
+.stat-pill.psa-health.rts       .val { color: var(--orange); }
 
 /* ── Badges ── */
 .badge {
@@ -225,12 +244,14 @@ body {
 .badge.risk-medium { background: var(--yellow-bg); color: var(--yellow); }
 .badge.risk-low    { background: var(--green-bg);  color: var(--green); }
 .badge.risk-unknown{ background: var(--surface3);  color: var(--text-mute); }
+.badge.risk-Low    { background: var(--green-bg);  color: var(--green); }
+.badge.risk-Medium { background: var(--yellow-bg); color: var(--yellow); }
+.badge.risk-High   { background: var(--red-bg);    color: var(--red); }
 .badge.type-kickoff    { background: var(--purple-bg); color: var(--purple); }
 .badge.type-config     { background: var(--blue-bg);   color: var(--blue); }
-.badge.type-training   { background: var(--teal-bg, rgba(0,212,170,.1)); color: var(--teal); }
+.badge.type-training   { background: rgba(0,212,170,.1); color: var(--teal); }
 .badge.type-support    { background: var(--orange-bg); color: var(--orange); }
 .badge.type-other      { background: var(--surface3);  color: var(--text-dim); }
-.badge.type-demo       { background: var(--purple-bg); color: var(--purple); }
 .badge.role-SA  { background: var(--blue-bg);   color: var(--blue); }
 .badge.role-PM  { background: var(--purple-bg); color: var(--purple); }
 .badge.role-DE  { background: var(--orange-bg); color: var(--orange); }
@@ -248,6 +269,66 @@ body {
 .status-dot.rts::before       { background: var(--yellow); }
 .status-dot.on-hold::before   { background: var(--text-mute); }
 .status-dot.other::before     { background: var(--blue); }
+.status-dot.canceled::before  { background: var(--text-mute); }
+.status-dot.graduated::before { background: var(--teal); }
+
+/* ── PSA milestone bar ── */
+.psa-milestone-bar {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  margin-bottom: 20px;
+}
+.psa-milestone-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.psa-milestone-title { font-size: 0.84rem; font-weight: 600; }
+.psa-milestone-pct {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--teal);
+}
+.psa-health-flag {
+  font-size: 0.75rem; font-weight: 600;
+  padding: 2px 10px; border-radius: 20px;
+}
+.psa-health-flag.at-risk    { background: var(--red-bg);    color: var(--red); }
+.psa-health-flag.healthy    { background: var(--green-bg);  color: var(--green); }
+.psa-health-flag.on-track   { background: var(--green-bg);  color: var(--green); }
+.psa-health-flag.off-track  { background: var(--red-bg);    color: var(--red); }
+.psa-health-flag.on-hold    { background: var(--surface3);  color: var(--text-mute); }
+.psa-health-flag.watching   { background: var(--yellow-bg); color: var(--yellow); }
+.psa-health-flag.rts        { background: var(--orange-bg); color: var(--orange); }
+.psa-health-flag.default    { background: var(--surface3);  color: var(--text-dim); }
+.psa-bar-track {
+  height: 8px;
+  background: var(--surface3);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.psa-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--teal) 0%, var(--accent) 100%);
+  transition: width .4s ease;
+}
+.psa-bar-fill.at-risk { background: linear-gradient(90deg, var(--red) 0%, var(--orange) 100%); }
+.psa-bar-fill.on-hold { background: var(--text-mute); }
+.psa-bar-fill.rts     { background: var(--orange); }
+.psa-milestone-meta { margin-top: 8px; font-size: 0.75rem; color: var(--text-mute); display: flex; gap: 16px; flex-wrap: wrap; }
+.long-term-rts-flag {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: var(--orange-bg); color: var(--orange);
+  border: 1px solid rgba(251,146,60,.3);
+  font-size: 0.72rem; font-weight: 700;
+  padding: 2px 8px; border-radius: 20px;
+}
 
 /* ── Section titles ── */
 .section-title {
@@ -256,17 +337,22 @@ body {
   color: var(--text-mute);
   text-transform: uppercase;
   letter-spacing: .08em;
-  margin-bottom: 12px;
+  margin: 28px 0 12px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
   gap: 8px;
 }
-.section-title::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: var(--border);
+.section-title .lob-tag {
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 20px;
+  letter-spacing: .04em;
 }
+.section-title .lob-tag.psa     { background: var(--psa-bg);     color: var(--psa); }
+.section-title .lob-tag.billing { background: var(--billing-bg); color: var(--billing); }
 
 /* ── Call brief cards ── */
 .briefs-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 28px; }
@@ -290,38 +376,17 @@ body {
   user-select: none;
   flex-wrap: wrap;
 }
-.brief-date {
-  font-size: 0.8rem;
-  color: var(--text-dim);
-  white-space: nowrap;
-  min-width: 80px;
-}
+.brief-date { font-size: 0.8rem; color: var(--text-dim); white-space: nowrap; min-width: 80px; }
 .brief-title-col { flex: 1; min-width: 0; }
-.brief-title {
-  font-size: 0.9rem;
-  font-weight: 500;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  color: var(--text);
-}
+.brief-title { font-size: 0.9rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text); }
 .brief-badges { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 3px; }
 .brief-meta { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 .brief-duration { font-size: 0.75rem; color: var(--text-mute); white-space: nowrap; }
 .brief-owner { font-size: 0.78rem; color: var(--text-dim); white-space: nowrap; }
-.brief-chevron {
-  color: var(--text-mute);
-  font-size: 0.75rem;
-  transition: transform .2s;
-  flex-shrink: 0;
-}
+.brief-chevron { color: var(--text-mute); font-size: 0.75rem; transition: transform .2s; flex-shrink: 0; }
 .brief-card.open .brief-chevron { transform: rotate(180deg); }
 
-.brief-body {
-  display: none;
-  border-top: 1px solid var(--border);
-  padding: 0;
-}
+.brief-body { display: none; border-top: 1px solid var(--border); }
 .brief-card.open .brief-body { display: block; }
 
 .brief-sections { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
@@ -335,76 +400,86 @@ body {
 .brief-section:nth-child(even) { border-right: none; }
 .brief-section:last-child,
 .brief-section:nth-last-child(2):nth-child(odd) { border-bottom: none; }
-.brief-section.full-width {
-  grid-column: 1 / -1;
-  border-right: none;
-}
+.brief-section.full-width { grid-column: 1 / -1; border-right: none; }
 .brief-section.full-width:last-child { border-bottom: none; }
 
 .bs-label {
-  font-size: 0.7rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: .07em;
-  margin-bottom: 8px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
+  font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .07em; margin-bottom: 8px;
+  display: flex; align-items: center; gap: 6px;
 }
-.bs-label.action  { color: var(--teal); }
-.bs-label.blocker { color: var(--red); }
-.bs-label.question{ color: var(--blue); }
-.bs-label.flag    { color: var(--yellow); }
-.bs-label.takeaway{ color: var(--accent-lt); }
-.bs-label.config  { color: var(--text-dim); }
+.bs-label.action   { color: var(--teal); }
+.bs-label.blocker  { color: var(--red); }
+.bs-label.question { color: var(--blue); }
+.bs-label.flag     { color: var(--yellow); }
+.bs-label.takeaway { color: var(--accent-lt); }
+.bs-label.config   { color: var(--text-dim); }
+.bs-label.summary  { color: var(--psa); }
 
-.bs-content {
-  font-size: 0.84rem;
-  color: var(--text-dim);
-  line-height: 1.65;
-}
+.bs-content { font-size: 0.84rem; color: var(--text-dim); line-height: 1.65; }
 .bs-content.empty { color: var(--text-mute); font-style: italic; }
 .bs-content ul { list-style: none; padding: 0; }
-.bs-content li {
-  padding: 2px 0 2px 14px;
-  position: relative;
-}
-.bs-content li::before {
-  content: '›';
-  position: absolute;
-  left: 0;
+.bs-content li { padding: 2px 0 2px 14px; position: relative; }
+.bs-content li::before { content: '›'; position: absolute; left: 0; color: var(--text-mute); }
+
+/* ── Fireflies link ── */
+.ff-link {
+  font-size: 0.75rem;
   color: var(--text-mute);
+  text-decoration: none;
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  transition: all .15s;
+  white-space: nowrap;
 }
-.bs-content li.has-owner .owner-tag {
-  color: var(--accent-lt);
-  font-weight: 500;
-}
+.ff-link:hover { color: var(--psa); border-color: var(--psa); }
 
-/* ── Risk reason banner ── */
-.risk-banner {
-  margin: 12px 18px 0;
-  padding: 8px 12px;
-  background: var(--red-bg);
-  border: 1px solid rgba(255,90,110,.2);
-  border-radius: var(--radius-sm);
-  font-size: 0.8rem;
-  color: var(--red);
-  display: flex;
-  gap: 8px;
-}
-.risk-banner.medium { background: var(--yellow-bg); border-color: rgba(240,165,0,.2); color: var(--yellow); }
-
-/* ── No-brief placeholder ── */
-.no-briefs {
+/* ── Interactions panel ── */
+.interactions-panel {
   background: var(--surface);
-  border: 1px dashed var(--border);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 36px;
-  text-align: center;
-  color: var(--text-mute);
+  overflow: hidden;
   margin-bottom: 20px;
 }
-.no-briefs p { font-size: 0.85rem; margin-top: 6px; }
+.interactions-header {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.interactions-header h3 { font-size: 0.9rem; font-weight: 600; }
+.interaction-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--border);
+  transition: background .1s;
+}
+.interaction-row:last-child { border-bottom: none; }
+.interaction-row:hover { background: var(--surface2); }
+.int-date { font-size: 0.75rem; color: var(--text-mute); white-space: nowrap; min-width: 72px; margin-top: 2px; }
+.int-body { flex: 1; min-width: 0; }
+.int-title { font-size: 0.86rem; font-weight: 500; color: var(--text); line-height: 1.4; }
+.int-outcome { font-size: 0.8rem; color: var(--text-dim); margin-top: 3px; line-height: 1.4; }
+.int-meta { display: flex; align-items: center; gap: 6px; margin-top: 5px; flex-wrap: wrap; }
+.int-type {
+  font-size: 0.68rem; font-weight: 700; padding: 1px 6px; border-radius: 20px;
+  background: var(--surface3); color: var(--text-dim);
+}
+.int-sentiment {
+  font-size: 0.7rem; font-weight: 600; padding: 1px 6px; border-radius: 20px;
+}
+.int-sentiment.s1, .int-sentiment.s2 { background: var(--red-bg);   color: var(--red); }
+.int-sentiment.s3                     { background: var(--yellow-bg); color: var(--yellow); }
+.int-sentiment.s4, .int-sentiment.s5 { background: var(--green-bg);  color: var(--green); }
+.int-owner { font-size: 0.72rem; color: var(--text-mute); }
+.int-followup {
+  font-size: 0.68rem; font-weight: 600; padding: 1px 6px; border-radius: 20px;
+  background: var(--orange-bg); color: var(--orange);
+}
+.no-interactions { padding: 24px 18px; text-align: center; color: var(--text-mute); font-size: 0.84rem; }
 
 /* ── Zendesk panel ── */
 .tickets-panel {
@@ -417,25 +492,18 @@ body {
 .tickets-header {
   padding: 14px 18px;
   border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  display: flex; align-items: center; justify-content: space-between;
 }
 .tickets-header h3 { font-size: 0.9rem; font-weight: 600; }
 .ticket-count {
   font-size: 0.72rem; font-weight: 700;
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  padding: 2px 8px;
-  border-radius: 20px;
-  color: var(--text-dim);
+  background: var(--surface2); border: 1px solid var(--border);
+  padding: 2px 8px; border-radius: 20px; color: var(--text-dim);
 }
 .ticket-count.has-tickets { background: var(--blue-bg); color: var(--blue); border-color: transparent; }
 .ticket-list { padding: 4px 0; }
 .ticket-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+  display: flex; align-items: center; gap: 12px;
   padding: 10px 18px;
   border-bottom: 1px solid var(--border);
   font-size: 0.84rem;
@@ -465,11 +533,7 @@ body {
   overflow: hidden;
   margin-bottom: 20px;
 }
-.digest-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0;
-}
+.digest-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
 @media (max-width: 680px) { .digest-grid { grid-template-columns: 1fr; } }
 .digest-section {
   padding: 16px 18px;
@@ -481,40 +545,45 @@ body {
 .digest-section:last-child,
 .digest-section:nth-last-child(2):nth-child(odd) { border-bottom: none; }
 .digest-section.full:last-child { border-bottom: none; }
-.ds-label {
-  font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
-  letter-spacing: .07em; margin-bottom: 8px; color: var(--text-mute);
-}
+.ds-label { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; margin-bottom: 8px; color: var(--text-mute); }
 .ds-content { font-size: 0.84rem; color: var(--text-dim); line-height: 1.65; }
 .ds-content.empty { color: var(--text-mute); font-style: italic; }
 .ds-content ul { list-style: none; padding: 0; }
 .ds-content li { padding: 2px 0 2px 14px; position: relative; }
 .ds-content li::before { content: '›'; position: absolute; left: 0; color: var(--text-mute); }
-.ds-status { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .digest-header {
   padding: 14px 18px;
   border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: space-between;
-  gap: 10px;
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
 }
 .digest-header h3 { font-size: 0.9rem; font-weight: 600; }
 .digest-as-of { font-size: 0.75rem; color: var(--text-mute); }
-.no-digest {
-  padding: 20px 18px;
-  color: var(--text-mute); font-size: 0.84rem; font-style: italic;
-}
+.no-digest { padding: 20px 18px; color: var(--text-mute); font-size: 0.84rem; font-style: italic; }
 
-/* ── Fireflies link ── */
-.ff-link {
-  font-size: 0.75rem;
-  color: var(--text-mute);
-  text-decoration: none;
-  padding: 2px 6px;
-  border-radius: 4px;
-  border: 1px solid var(--border);
-  transition: all .15s;
+/* ── Risk reason banner ── */
+.risk-banner {
+  margin: 12px 18px 0;
+  padding: 8px 12px;
+  background: var(--red-bg);
+  border: 1px solid rgba(255,90,110,.2);
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+  color: var(--red);
+  display: flex; gap: 8px;
 }
-.ff-link:hover { color: var(--accent-lt); border-color: var(--accent); }
+.risk-banner.medium { background: var(--yellow-bg); border-color: rgba(240,165,0,.2); color: var(--yellow); }
+
+/* ── No-brief placeholder ── */
+.no-briefs {
+  background: var(--surface);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  padding: 36px;
+  text-align: center;
+  color: var(--text-mute);
+  margin-bottom: 20px;
+}
+.no-briefs p { font-size: 0.85rem; margin-top: 6px; }
 
 /* ── Error toast ── */
 .error-bar {
@@ -529,25 +598,14 @@ body {
 
 /* ── Quick links bar ── */
 .quick-links-bar {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin-bottom: 20px;
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 20px;
 }
 .ql-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 6px 12px;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border);
-  color: var(--text-dim);
-  text-decoration: none;
-  font-size: 0.8rem;
-  font-weight: 500;
-  transition: all .15s;
-  background: var(--surface);
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 6px 12px; border-radius: var(--radius-sm);
+  border: 1px solid var(--border); color: var(--text-dim);
+  text-decoration: none; font-size: 0.8rem; font-weight: 500;
+  transition: all .15s; background: var(--surface);
 }
 .ql-link:hover { color: var(--text); border-color: var(--border-hi); }
 .ql-link.wrike  { border-color: rgba(106,100,255,.3); }
@@ -555,21 +613,16 @@ body {
 .ql-link.zd    { border-color: rgba(0,212,170,.3); }
 .ql-link.zd:hover    { color: var(--teal); border-color: var(--teal); }
 .ql-link.notion { border-color: rgba(255,255,255,.15); }
+.ql-link.psa-internal { border-color: rgba(34,211,238,.3); }
+.ql-link.psa-internal:hover { color: var(--psa); border-color: var(--psa); }
 .ql-sep { flex: 1; }
 .tracker-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 14px;
-  border-radius: var(--radius-sm);
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 14px; border-radius: var(--radius-sm);
   border: 1px solid rgba(240,165,0,.4);
-  background: var(--yellow-bg);
-  color: var(--yellow);
-  font-size: 0.8rem;
-  font-weight: 600;
-  cursor: pointer;
-  text-decoration: none;
-  transition: all .15s;
+  background: var(--yellow-bg); color: var(--yellow);
+  font-size: 0.8rem; font-weight: 600;
+  cursor: pointer; text-decoration: none; transition: all .15s;
 }
 .tracker-btn:hover { border-color: var(--yellow); background: rgba(240,165,0,.15); }
 
@@ -582,149 +635,95 @@ body {
   overflow: hidden;
   margin-bottom: 20px;
 }
-.latest-call-panel.risk-high { border-left-color: var(--red); }
-.latest-call-panel.risk-medium { border-left-color: var(--yellow); }
+.latest-call-panel.risk-High, .latest-call-panel.risk-high { border-left-color: var(--red); }
+.latest-call-panel.risk-Medium, .latest-call-panel.risk-medium { border-left-color: var(--yellow); }
+.latest-call-panel.risk-Low, .latest-call-panel.risk-low { border-left-color: var(--teal); }
 .lc-header {
   padding: 12px 18px;
   border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 8px;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 8px;
 }
 .lc-title { font-size: 0.88rem; font-weight: 600; }
-.lc-meta { display: flex; align-items: center; gap: 10px; font-size: 0.78rem; color: var(--text-mute); }
-.lc-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 0;
-}
+.lc-meta { display: flex; align-items: center; gap: 10px; font-size: 0.78rem; color: var(--text-mute); flex-wrap: wrap; }
+.lc-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0; }
 @media (max-width: 700px) { .lc-grid { grid-template-columns: 1fr; } }
-.lc-col {
-  padding: 16px 18px;
-  border-right: 1px solid var(--border);
-}
+.lc-col { padding: 16px 18px; border-right: 1px solid var(--border); }
 .lc-col:last-child { border-right: none; }
+.lc-col.full-col { grid-column: 1 / -1; border-right: none; border-top: 1px solid var(--border); }
 .lc-col-label {
-  font-size: 0.68rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: .08em;
-  margin-bottom: 10px;
+  font-size: 0.68rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .08em; margin-bottom: 10px;
 }
 .lc-col-label.action  { color: var(--teal); }
 .lc-col-label.blocker { color: var(--red); }
 .lc-col-label.next    { color: var(--accent-lt); }
+.lc-col-label.summary { color: var(--psa); }
 .lc-items { list-style: none; padding: 0; }
 .lc-items li {
-  font-size: 0.83rem;
-  color: var(--text-dim);
-  line-height: 1.55;
-  padding: 3px 0 3px 14px;
-  position: relative;
+  font-size: 0.83rem; color: var(--text-dim); line-height: 1.55;
+  padding: 3px 0 3px 14px; position: relative;
   border-bottom: 1px solid var(--border);
 }
 .lc-items li:last-child { border-bottom: none; }
 .lc-items li::before { content: '›'; position: absolute; left: 0; color: var(--text-mute); }
 .lc-empty { font-size: 0.82rem; color: var(--text-mute); font-style: italic; padding: 4px 0; }
+
+/* ── Stale / warnings ── */
 .no-latest-call {
-  background: var(--surface);
-  border: 1px dashed var(--border);
-  border-radius: var(--radius);
-  padding: 28px;
-  text-align: center;
-  color: var(--text-mute);
-  font-size: 0.84rem;
-  margin-bottom: 20px;
+  background: var(--surface); border: 1px dashed var(--border);
+  border-radius: var(--radius); padding: 28px;
+  text-align: center; color: var(--text-mute); font-size: 0.84rem; margin-bottom: 20px;
 }
 .stale-call-alert, .match-warning {
   border-radius: var(--radius-sm);
-  padding: 12px 14px;
-  font-size: .82rem;
-  line-height: 1.45;
-  margin-bottom: 16px;
+  padding: 12px 14px; font-size: .82rem; line-height: 1.45; margin-bottom: 16px;
 }
 .stale-call-alert { border: 1px solid rgba(240,165,0,.38); background: var(--yellow-bg); color: var(--yellow); }
 .match-warning { border: 1px solid rgba(108,99,255,.35); background: rgba(108,99,255,.08); color: var(--accent-lt); }
+
+/* ── Action rollup ── */
 .action-rollup-panel {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  margin-bottom: 20px;
-  overflow: hidden;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); margin-bottom: 20px; overflow: hidden;
 }
 .rollup-header {
-  padding: 12px 18px;
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  align-items: center;
+  padding: 12px 18px; border-bottom: 1px solid var(--border);
+  display: flex; justify-content: space-between; gap: 10px; align-items: center;
 }
 .rollup-title { font-size: .86rem; font-weight: 700; }
 .rollup-subtitle { font-size: .72rem; color: var(--text-mute); }
 .rollup-list { list-style: none; margin: 0; padding: 0; }
 .rollup-item {
-  padding: 11px 18px;
-  border-bottom: 1px solid var(--border);
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 8px 14px;
+  padding: 11px 18px; border-bottom: 1px solid var(--border);
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px 14px;
 }
 .rollup-item:last-child { border-bottom: none; }
 .rollup-text { color: var(--text-dim); font-size: .84rem; line-height: 1.45; }
 .rollup-meta { color: var(--text-mute); font-size: .72rem; white-space: nowrap; }
 .owner-tag, .due-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  padding: 1px 6px;
-  border-radius: 999px;
-  margin-right: 5px;
-  font-size: .68rem;
-  font-weight: 700;
+  display: inline-flex; align-items: center; gap: 3px;
+  padding: 1px 6px; border-radius: 999px; margin-right: 5px;
+  font-size: .68rem; font-weight: 700;
 }
 .owner-tag { color: var(--teal); background: rgba(0,212,170,.09); border: 1px solid rgba(0,212,170,.25); }
 .due-tag { color: var(--yellow); background: rgba(240,165,0,.09); border: 1px solid rgba(240,165,0,.25); }
 
-/* ── Milestone timeline ── */
-.milestone-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 20px;
-}
+/* ── Billing milestone timeline ── */
+.milestone-row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
 .ms-item {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 8px 14px;
-  font-size: 0.78rem;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 8px 14px; font-size: 0.78rem;
 }
 .ms-label { color: var(--text-mute); font-size: 0.7rem; margin-bottom: 2px; }
-.ms-date  { color: var(--text); font-weight: 600; }
+.ms-date { color: var(--text); font-weight: 600; }
 .ms-date.past   { color: var(--teal); }
 .ms-date.future { color: var(--yellow); }
 .ms-date.overdue{ color: var(--red); }
-
-/* ── Section title ── */
-.section-title {
-  font-size: 0.72rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: .08em;
-  color: var(--text-mute);
-  margin: 28px 0 12px;
-  padding-bottom: 6px;
-  border-bottom: 1px solid var(--border);
-}
 </style>
-
 </head>
 <body>
 
-<!-- ── Header ── -->
 <header class="app-header">
   <div class="logo">
     <div class="logo-mark">A</div>
@@ -735,7 +734,6 @@ body {
   </nav>
 </header>
 
-<!-- ── Search bar ── -->
 <div class="search-bar">
   <div class="search-wrap">
     <span class="icon">⌕</span>
@@ -752,64 +750,115 @@ body {
   <span class="updated-at" id="updatedAt"></span>
 </div>
 
-<!-- ── Content ── -->
 <main class="main" id="main">
   <div class="empty-state" id="emptyState">
     <div class="icon">🗂️</div>
     <h2>Select a client to get started</h2>
-    <p>Search by name above to pull up their call history, action items, blockers, and open Zendesk tickets.</p>
+    <p>Search billing and PSA clients by name to pull up call history, interactions, action items, and open tickets.</p>
   </div>
 </main>
 
 <script>
-// ── State ────────────────────────────────────────────────────────────────────
+// ── State ─────────────────────────────────────────────────────────────────────
 let allClients  = [];
 let activeClient = null;
-let lastBriefData = null;
-
-// ── Snapshot-based data (GitHub Actions refreshes every 15 min) ─────────────
 let snapshot = null;
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function lobArr(c) {
+  if (Array.isArray(c.lob)) return c.lob;
+  return [c.lob || 'billing'];
+}
+function hasBilling(c) { return lobArr(c).includes('billing'); }
+function hasPsa(c)     { return lobArr(c).includes('psa'); }
+function isDual(c)     { return hasBilling(c) && hasPsa(c); }
+
+function lobBadges(c) {
+  const lobs = lobArr(c);
+  return lobs.map(l => {
+    const label = l === 'psa' ? 'PSA' : 'Billing';
+    return `<span class="lob-badge ${l}">${label}</span>`;
+  }).join('');
+}
 
 function statusGroup(s) {
   if (!s) return 'other';
   const l = s.toLowerCase();
-  if (l.includes('on track'))  return 'on-track';
+  if (l.includes('on track') || l === 'in progress') return 'on-track';
   if (l.includes('off track')) return 'off-track';
-  if (l === 'rts')     return 'rts';
-  if (l === 'on hold') return 'on-hold';
+  if (l.startsWith('rts'))    return 'rts';
+  if (l.includes('on hold')) return 'on-hold';
+  if (l.includes('cancel'))  return 'canceled';
+  if (l.includes('graduat')) return 'graduated';
   return 'other';
 }
 
-// ── API ───────────────────────────────────────────────────────────────────────
+function healthClass(h) {
+  if (h == null) return '';
+  return h >= 70 ? 'health-high' : h >= 40 ? 'health-mid' : 'health-low';
+}
+
+function psaHealthFlagClass(h) {
+  if (!h) return 'default';
+  const l = h.toLowerCase();
+  if (l.includes('at risk') || l.includes('off track')) return 'at-risk';
+  if (l.includes('on track') || l === 'healthy') return 'on-track';
+  if (l.includes('on hold')) return 'on-hold';
+  if (l.includes('rts')) return 'rts';
+  if (l.includes('watch')) return 'watching';
+  return 'default';
+}
+
+function sentimentClass(s) {
+  if (!s) return '';
+  const n = parseInt(s);
+  if (n <= 2) return 's1';
+  if (n === 3) return 's3';
+  if (n >= 4) return 's5';
+  return '';
+}
+
+// ── Data ──────────────────────────────────────────────────────────────────────
 async function fetchPortfolio() {
   const res = await fetch('data/portfolio.json?_=' + Date.now());
   if (!res.ok) throw new Error('Portfolio snapshot unavailable (' + res.status + '). Try refreshing.');
   snapshot = await res.json();
-  // Update the timestamp display
   if (snapshot.updatedAt) {
     const mins = Math.round((Date.now() - new Date(snapshot.updatedAt).getTime()) / 60000);
     const label = mins < 2 ? 'just now' : mins + 'm ago';
     document.getElementById('updatedAt').textContent = 'Data from ' + label + ' · refreshes every 15m';
   }
-  return (snapshot.clients || []).map(c => ({ ...c, statusGroup: statusGroup(c.status) }));
+  return snapshot.clients || [];
 }
 
-async function fetchBriefs(clientId, days) {
+async function fetchClientData(clientId, days) {
   if (!snapshot) throw new Error('Portfolio not loaded — please refresh.');
   const client = allClients.find(c => c.id === clientId);
-  const clientName = client?.name || null;
   const cutoff = new Date(Date.now() - days * 86400000).toISOString().split('T')[0];
+
+  // Billing briefs
   const allBriefs = snapshot.briefsByClientId?.[clientId] || [];
-  const briefs = allBriefs
-    .filter(b => !b.date || b.date >= cutoff)
-    .slice(0, 20);
-  const latestAny = allBriefs[0] || null;
-  const staleCall = latestAny && latestAny.date
-    ? Math.floor((Date.now() - new Date(latestAny.date + 'T00:00:00').getTime()) / 86400000)
+  const briefs = allBriefs.filter(b => !b.date || b.date >= cutoff).slice(0, 20);
+  const latestBilling = allBriefs[0] || null;
+  const staleCall = latestBilling?.date
+    ? Math.floor((Date.now() - new Date(latestBilling.date + 'T00:00:00').getTime()) / 86400000)
     : null;
-  const tickets = snapshot.ticketsByClientId?.[clientId] || [];
-  const digest  = snapshot.digestsByClientId?.[clientId] || null;
-  return { ok: true, clientName, briefs, allBriefs, latestAny, staleCall, tickets, digest };
+
+  // PSA briefs
+  const allPsaBriefs = snapshot.psaBriefsByClientId?.[clientId] || [];
+  const psaBriefs = allPsaBriefs.filter(b => !b.date || b.date >= cutoff).slice(0, 20);
+
+  // Interactions
+  const allInteractions = snapshot.interactionsByClientId?.[clientId] || [];
+  const interactions = allInteractions.filter(i => !i.date || i.date >= cutoff).slice(0, 25);
+
+  // Tickets (billing only)
+  const tickets = hasBilling(client) ? (snapshot.ticketsByClientId?.[clientId] || []) : [];
+
+  // Digest (billing only)
+  const digest = hasBilling(client) ? (snapshot.digestsByClientId?.[clientId] || null) : null;
+
+  return { briefs, allBriefs, psaBriefs, allPsaBriefs, interactions, tickets, digest, latestBilling, staleCall };
 }
 
 // ── Autocomplete ──────────────────────────────────────────────────────────────
@@ -819,13 +868,18 @@ let acSelectedIdx = -1;
 
 function renderAcList(items) {
   if (!items.length) { acList.classList.remove('open'); return; }
-  acList.innerHTML = items.map((c, i) => `
-    <div class="ac-item" data-id="${c.id}" data-name="${esc(c.name)}" data-idx="${i}">
-      <span class="ac-name">${esc(c.name)}</span>
-      <span class="ac-meta">${c.sa?.[0] || ''}</span>
-      <span class="badge risk-${(c.lastCall?.risk || 'unknown').toLowerCase()}">${(c.lastCall?.risk || '—').toLowerCase()}</span>
-    </div>
-  `).join('');
+  acList.innerHTML = items.map((c, i) => {
+    const lastCall = c.lastCall || c.lastPsaCall;
+    const riskBadge = lastCall?.risk
+      ? `<span class="badge risk-${lastCall.risk}">${lastCall.risk.toLowerCase()}</span>` : '';
+    return `
+      <div class="ac-item" data-id="${c.id}" data-name="${esc(c.name)}" data-idx="${i}">
+        <div class="ac-name">${esc(c.name)}</div>
+        ${lobBadges(c)}
+        <span class="ac-meta">${esc((c.sa||[])[0] || c.psaSa || '')}</span>
+        ${riskBadge}
+      </div>`;
+  }).join('');
   acList.classList.add('open');
   acSelectedIdx = -1;
 }
@@ -835,12 +889,10 @@ function filterClients(q) {
   const t = q.toLowerCase();
   return allClients
     .filter(c => c.name && c.name.toLowerCase().includes(t))
-    .slice(0, 10);
+    .slice(0, 12);
 }
 
-searchEl.addEventListener('input', () => {
-  renderAcList(filterClients(searchEl.value));
-});
+searchEl.addEventListener('input', () => renderAcList(filterClients(searchEl.value)));
 
 searchEl.addEventListener('keydown', e => {
   const items = acList.querySelectorAll('.ac-item');
@@ -870,7 +922,6 @@ document.addEventListener('click', e => {
   if (!e.target.closest('.search-wrap')) acList.classList.remove('open');
 });
 
-// ── Select client ─────────────────────────────────────────────────────────────
 function selectClient(id, name) {
   searchEl.value = name;
   acList.classList.remove('open');
@@ -879,11 +930,10 @@ function selectClient(id, name) {
 }
 
 async function loadClientView(id) {
-  const days = document.getElementById('daysSelect').value;
+  const days = +document.getElementById('daysSelect').value;
   showLoading();
   try {
-    const data = await fetchBriefs(id, days);
-    lastBriefData = data;
+    const data = await fetchClientData(id, days);
     renderClientView(activeClient, data);
     document.getElementById('updatedAt').textContent = 'Updated ' + new Date().toLocaleTimeString();
   } catch (err) {
@@ -894,207 +944,421 @@ async function loadClientView(id) {
 // ── Rendering ─────────────────────────────────────────────────────────────────
 function showLoading() {
   document.getElementById('main').innerHTML = `
-    <div class="loading">
-      <div class="spinner"></div>
-      <div>Loading client data…</div>
-    </div>`;
+    <div class="loading"><div class="spinner"></div><div>Loading client data…</div></div>`;
 }
 
 function showError(msg) {
-  document.getElementById('main').innerHTML = `
-    <div class="error-bar">⚠ ${esc(msg)}</div>`;
+  document.getElementById('main').innerHTML = `<div class="error-bar">⚠ ${esc(msg)}</div>`;
 }
 
 function renderClientView(client, data) {
-  const { briefs = [], allBriefs = [], tickets = [] } = data;
+  const { briefs = [], allBriefs = [], psaBriefs = [], interactions = [], tickets = [], digest } = data;
   const main = document.getElementById('main');
   main.innerHTML = '';
 
   // ── Client header ──
-  const health = client.health;
-  const healthClass = !health ? '' : health >= 70 ? 'health-high' : health >= 40 ? 'health-mid' : 'health-low';
-  const sg = client.statusGroup || 'other';
-  const team = [
-    ...(client.sa  || []).map(n => `SA: <strong>${esc(n)}</strong>`),
-    ...(client.pm  || []).map(n => `PM: <strong>${esc(n)}</strong>`),
-    ...(client.de  || []).map(n => `DE: <strong>${esc(n)}</strong>`),
-    ...(client.csa || []).map(n => `CSA: <strong>${esc(n)}</strong>`),
-  ].map(s => `<span class="meta-item">${s}</span>`).join('');
-  const daysActive = client.daysActive != null ? client.daysActive + 'd active' : '';
+  const isBilling = hasBilling(client);
+  const isPsa     = hasPsa(client);
+  const sg = isBilling ? (client.statusGroup || statusGroup(client.status)) : (client.psaStatusGroup || 'other');
+  const displayStatus = (isBilling && !isPsa) ? client.status : (isPsa ? client.psaStatus : client.status);
+
+  const teamParts = [
+    ...((client.sa  || []).map(n => `<span class="meta-item">SA: <strong>${esc(n)}</strong></span>`)),
+    ...((client.pm  || []).map(n => `<span class="meta-item">PM: <strong>${esc(n)}</strong></span>`)),
+    ...((client.de  || []).map(n => `<span class="meta-item">DE: <strong>${esc(n)}</strong></span>`)),
+    ...((client.csa || []).map(n => `<span class="meta-item">CSA: <strong>${esc(n)}</strong></span>`)),
+  ];
+  if (isPsa && client.psaSa && !teamParts.some(t => t.includes(client.psaSa))) {
+    teamParts.push(`<span class="meta-item">PSA SA: <strong>${esc(client.psaSa)}</strong></span>`);
+  }
+  const daysActive = (isBilling ? client.daysActive : client.psaDaysActive) || null;
+
+  // Stats
+  const stats = [];
+  if (isBilling && client.health != null) {
+    stats.push(`<div class="stat-pill ${healthClass(client.health)}"><div class="val">${client.health}</div><div class="lbl">Health</div></div>`);
+  }
+  if (isPsa && client.psaMilestonePercent != null) {
+    stats.push(`<div class="stat-pill"><div class="val" style="color:var(--teal)">${client.psaMilestonePercent}%</div><div class="lbl">Milestones</div></div>`);
+  }
+  if (isBilling) {
+    stats.push(`<div class="stat-pill"><div class="val">${briefs.length}</div><div class="lbl">Billing Calls</div></div>`);
+  }
+  if (isPsa) {
+    stats.push(`<div class="stat-pill"><div class="val">${psaBriefs.length}</div><div class="lbl">PSA Calls</div></div>`);
+    stats.push(`<div class="stat-pill"><div class="val">${interactions.length}</div><div class="lbl">Interactions</div></div>`);
+  }
+  if (isBilling) {
+    stats.push(`<div class="stat-pill"><div class="val">${tickets.length}</div><div class="lbl">Tickets</div></div>`);
+  }
 
   main.insertAdjacentHTML('beforeend', `
     <div class="client-header">
       <div>
-        <div class="client-name">${esc(client.name || data.clientName)}</div>
+        <div class="client-name">${esc(client.name)}</div>
+        <div class="client-lob-row">
+          ${lobBadges(client)}
+          ${client.psaLongTermRts ? `<span class="long-term-rts-flag">⏳ Long-Term RTS</span>` : ''}
+        </div>
         <div class="client-meta-row">
-          <span class="status-dot ${sg}">${esc(client.status || '—')}</span>
-          ${team}
-          ${daysActive ? `<span class="meta-item">${daysActive}</span>` : ''}
+          <span class="status-dot ${sg}">${esc(displayStatus || '—')}</span>
+          ${teamParts.join('')}
+          ${daysActive != null ? `<span class="meta-item">${daysActive}d active</span>` : ''}
         </div>
       </div>
-      <div class="client-stats">
-        ${health != null ? `<div class="stat-pill ${healthClass}"><div class="val">${health}</div><div class="lbl">Health</div></div>` : ''}
-        <div class="stat-pill"><div class="val">${briefs.length}</div><div class="lbl">Calls</div></div>
-        <div class="stat-pill"><div class="val">${tickets.length}</div><div class="lbl">Tickets</div></div>
-      </div>
+      <div class="client-stats">${stats.join('')}</div>
     </div>
   `);
 
-  // ── Quick links bar ──
+  // ── Quick links ──
+  const links = [];
+  if (client.wrikeUrl) links.push(`<a class="ql-link wrike" href="${esc(client.wrikeUrl)}" target="_blank">📊 Wrike</a>`);
+  if (isBilling) links.push(`<a class="ql-link zd" href="https://rev-io.zendesk.com/agent/organizations" target="_blank">🎫 Zendesk</a>`);
+  if (client.notionUrl && isBilling) links.push(`<a class="ql-link notion" href="${esc(client.notionUrl)}" target="_blank">📝 Notion</a>`);
+  if (isPsa && client.psaNotionUrl) links.push(`<a class="ql-link psa-internal" href="${esc(client.psaNotionUrl)}" target="_blank">🔷 PSA Notion</a>`);
+
   main.insertAdjacentHTML('beforeend', `
     <div class="quick-links-bar">
-      ${client.wrikeUrl ? `<a class="ql-link wrike" href="${esc(client.wrikeUrl)}" target="_blank">📊 Wrike</a>` : ''}
-      <a class="ql-link zd" href="https://rev-io.zendesk.com/agent/organizations" target="_blank">🎫 Zendesk</a>
-      ${client.notionUrl ? `<a class="ql-link notion" href="${esc(client.notionUrl)}" target="_blank">📝 Notion</a>` : ''}
+      ${links.join('')}
       <span class="ql-sep"></span>
-      <a class="tracker-btn" id="trackerBtn" href="#" target="_blank" onclick="openTracker(event)">▶ Open Tracker</a>
+      <a class="tracker-btn" href="#" target="_blank" onclick="openTracker(event)">▶ Open Tracker</a>
     </div>
   `);
 
-  // ── Milestone timeline ──
-  const today = new Date().toISOString().split('T')[0];
-  const milestones = [
-    { label: 'Kickoff',      date: client.koDate },
-    { label: 'Charter',      date: client.charterDate },
-    { label: 'Activation',   date: client.activationDate },
-    { label: '1st Bill Out', date: client.billOutDate },
-    { label: 'Graduation',   date: client.gradDate },
-  ].filter(m => m.date);
-  if (milestones.length) {
+  // ── PSA milestone bar ──
+  if (isPsa && (client.psaMilestonePercent != null || client.psaOnboardingHealth)) {
+    const pct = client.psaMilestonePercent ?? 0;
+    const health = client.psaOnboardingHealth || '';
+    const hCls = psaHealthFlagClass(health);
+    const barCls = hCls === 'at-risk' ? 'at-risk' : hCls === 'on-hold' ? 'on-hold' : hCls === 'rts' ? 'rts' : '';
+    const metaParts = [];
+    if (client.psaKoDate)   metaParts.push(`KO: ${fmtDate(client.psaKoDate)}`);
+    if (client.psaGradDate) metaParts.push(`Forecast Grad: ${fmtDate(client.psaGradDate)}`);
+    if (client.psaMrr)      metaParts.push(`MRR: $${client.psaMrr.toLocaleString()}`);
     main.insertAdjacentHTML('beforeend', `
-      <div class="milestone-row">
-        ${milestones.map(m => {
-          const cls = m.date <= today ? 'past' : 'future';
-          return `<div class="ms-item"><div class="ms-label">${m.label}</div><div class="ms-date ${cls}">${fmtDate(m.date)}</div></div>`;
-        }).join('')}
-      </div>`);
-  }
-
-  // ── Latest call summary (hero) ──
-  const latest = briefs[0];
-  if (latest) {
-    const riskCls = latest.risk === 'high' ? 'risk-high' : latest.risk === 'medium' ? 'risk-medium' : '';
-    const riskBadge = latest.risk ? `<span class="badge risk-${latest.risk.toLowerCase()}">${latest.risk.toLowerCase()}</span>` : '';
-    const typeBadge = latest.callType ? `<span class="badge type-${latest.callType}">${latest.callType}</span>` : '';
-    const ffLink = latest.firefliesId
-      ? `<a class="ff-link" href="https://app.fireflies.ai/view/${esc(latest.firefliesId)}" target="_blank">🎙 Transcript</a>` : '';
-    main.insertAdjacentHTML('beforeend', `
-      <div class="latest-call-panel ${riskCls}">
-        <div class="lc-header">
-          <div class="lc-title">Latest Call — ${esc(latest.title || '')}</div>
-          <div class="lc-meta">
-            ${latest.date ? fmtDate(latest.date) : ''}
-            ${latest.duration ? `· ${latest.duration} min` : ''}
-            ${latest.owner ? `· ${esc(latest.owner)}` : ''}
-            ${riskBadge}${typeBadge}${ffLink}
+      <div class="psa-milestone-bar">
+        <div class="psa-milestone-header">
+          <span class="psa-milestone-title">PSA Training Progress</span>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+            ${health ? `<span class="psa-health-flag ${hCls}">${esc(health)}</span>` : ''}
+            <span class="psa-milestone-pct">${pct}%</span>
           </div>
         </div>
-        <div class="lc-grid">
-          <div class="lc-col">
-            <div class="lc-col-label action">✔ Action Items</div>
-            ${bulletList(latest.actionItems, 'lc-items', 'lc-empty')}
-          </div>
-          <div class="lc-col">
-            <div class="lc-col-label blocker">⛔ Blockers</div>
-            ${bulletList(latest.blockers, 'lc-items', 'lc-empty')}
-          </div>
-          <div class="lc-col">
-            <div class="lc-col-label next">→ Next Steps</div>
-            ${bulletList(latest.nextSteps || latest.openQuestions, 'lc-items', 'lc-empty')}
-          </div>
+        <div class="psa-bar-track">
+          <div class="psa-bar-fill ${barCls}" style="width:${Math.min(pct,100)}%"></div>
         </div>
-      </div>`);
-  } else {
-    main.insertAdjacentHTML('beforeend', `<div class="no-latest-call">📭 No call briefs found for this client in the selected time window.</div>`);
-  }
-
-  renderCallActivityWarnings(main, data);
-  main.appendChild(renderActionRollup(allBriefs.length ? allBriefs : briefs));
-
-  // ── Zendesk tickets ──
-  main.insertAdjacentHTML('beforeend', `<div class="section-title">Zendesk Tickets</div>`);
-  const ticketCount = tickets.length;
-  main.insertAdjacentHTML('beforeend', `
-    <div class="tickets-panel">
-      <div class="tickets-header">
-        <h3>Open &amp; Pending Tickets</h3>
-        <span class="ticket-count ${ticketCount ? 'has-tickets' : ''}">${ticketCount} ticket${ticketCount !== 1 ? 's' : ''}</span>
+        ${metaParts.length ? `<div class="psa-milestone-meta">${metaParts.map(esc).join('<span style="color:var(--border-hi)">·</span>')}</div>` : ''}
       </div>
-      ${ticketCount ? `
-        <div class="ticket-list">
-          ${tickets.map(t => `
-            <div class="ticket-row">
-              <span class="ticket-id">#${t.id}</span>
-              <span class="ticket-subject"><a href="${esc(t.url)}" target="_blank">${esc(t.subject)}</a></span>
-              <span class="ticket-status ${t.status}">${t.status}</span>
-              <span class="ticket-date">${t.updated || t.created || ''}</span>
-            </div>
-          `).join('')}
-        </div>
-      ` : `<div class="no-tickets">No open or pending tickets found.</div>`}
-    </div>
-  `);
+    `);
+  }
 
-  // ── Call history ──
-  if (briefs.length > 0) {
-    main.insertAdjacentHTML('beforeend', `<div class="section-title">Call History</div>`);
+  // ── Billing milestone dates ──
+  if (isBilling) {
+    const today = new Date().toISOString().split('T')[0];
+    const milestones = [
+      { label: 'Kickoff',      date: client.koDate },
+      { label: 'Charter',      date: client.charterDate },
+      { label: 'Activation',   date: client.activationDate },
+      { label: '1st Bill Out', date: client.billOutDate },
+      { label: 'Graduation',   date: client.gradDate },
+    ].filter(m => m.date);
+    if (milestones.length) {
+      main.insertAdjacentHTML('beforeend', `
+        <div class="milestone-row">
+          ${milestones.map(m => {
+            const cls = m.date <= today ? 'past' : 'future';
+            return `<div class="ms-item"><div class="ms-label">${m.label}</div><div class="ms-date ${cls}">${fmtDate(m.date)}</div></div>`;
+          }).join('')}
+        </div>`);
+    }
+  }
+
+  // ── PSA: Latest call hero ──
+  if (isPsa) {
+    const latestPsa = psaBriefs[0];
+    if (latestPsa) {
+      const riskCls = latestPsa.risk ? 'risk-' + latestPsa.risk : '';
+      const riskBadge = latestPsa.risk ? `<span class="badge risk-${esc(latestPsa.risk)}">${esc(latestPsa.risk.toLowerCase())}</span>` : '';
+      const ffLink = latestPsa.firefliesUrl
+        ? `<a class="ff-link" href="${esc(latestPsa.firefliesUrl)}" target="_blank">🎙 Transcript</a>` : '';
+      main.insertAdjacentHTML('beforeend', `
+        <div class="latest-call-panel ${riskCls}">
+          <div class="lc-header">
+            <div class="lc-title">Latest PSA Call — ${esc(latestPsa.title || 'PSA Call')}</div>
+            <div class="lc-meta">
+              ${latestPsa.date ? fmtDate(latestPsa.date) : ''}
+              ${latestPsa.sa ? `· ${esc(latestPsa.sa)}` : ''}
+              ${riskBadge}${ffLink}
+            </div>
+          </div>
+          <div class="lc-grid">
+            <div class="lc-col">
+              <div class="lc-col-label action">✔ Action Items</div>
+              ${bulletList(latestPsa.actionItems, 'lc-items', 'lc-empty')}
+            </div>
+            <div class="lc-col">
+              <div class="lc-col-label blocker">⛔ Blockers</div>
+              ${bulletList(latestPsa.blockers, 'lc-items', 'lc-empty')}
+            </div>
+            <div class="lc-col">
+              <div class="lc-col-label next">→ Key Finding</div>
+              ${bulletList(latestPsa.keyFinding, 'lc-items', 'lc-empty')}
+            </div>
+            ${latestPsa.summary ? `
+            <div class="lc-col full-col">
+              <div class="lc-col-label summary">📋 Summary</div>
+              <div class="lc-empty">${esc(latestPsa.summary)}</div>
+            </div>` : ''}
+          </div>
+        </div>`);
+    } else {
+      main.insertAdjacentHTML('beforeend', `<div class="no-latest-call">📭 No PSA call briefs found in the selected time window.</div>`);
+    }
+  }
+
+  // ── Billing: Latest call hero ──
+  if (isBilling) {
+    const latest = briefs[0];
+    const sectionLabel = isDual(client) ? `<div class="section-title">Billing — Latest Call<span class="lob-tag billing">Billing</span></div>` : '';
+    if (isDual(client)) main.insertAdjacentHTML('beforeend', sectionLabel);
+    if (latest) {
+      const riskCls = latest.risk ? 'risk-' + latest.risk.toLowerCase() : '';
+      const riskBadge = latest.risk ? `<span class="badge risk-${latest.risk.toLowerCase()}">${latest.risk.toLowerCase()}</span>` : '';
+      const typeBadge = latest.callType ? `<span class="badge type-${latest.callType}">${latest.callType}</span>` : '';
+      const ffLink = latest.firefliesId
+        ? `<a class="ff-link" href="https://app.fireflies.ai/view/${esc(latest.firefliesId)}" target="_blank">🎙 Transcript</a>` : '';
+      main.insertAdjacentHTML('beforeend', `
+        <div class="latest-call-panel ${riskCls}">
+          <div class="lc-header">
+            <div class="lc-title">Latest Billing Call — ${esc(latest.title || '')}</div>
+            <div class="lc-meta">
+              ${latest.date ? fmtDate(latest.date) : ''}
+              ${latest.duration ? `· ${latest.duration} min` : ''}
+              ${latest.owner ? `· ${esc(latest.owner)}` : ''}
+              ${riskBadge}${typeBadge}${ffLink}
+            </div>
+          </div>
+          <div class="lc-grid">
+            <div class="lc-col">
+              <div class="lc-col-label action">✔ Action Items</div>
+              ${bulletList(latest.actionItems, 'lc-items', 'lc-empty')}
+            </div>
+            <div class="lc-col">
+              <div class="lc-col-label blocker">⛔ Blockers</div>
+              ${bulletList(latest.blockers, 'lc-items', 'lc-empty')}
+            </div>
+            <div class="lc-col">
+              <div class="lc-col-label next">→ Next Steps</div>
+              ${bulletList(latest.nextSteps || latest.openQuestions, 'lc-items', 'lc-empty')}
+            </div>
+          </div>
+        </div>`);
+    } else if (!isPsa) {
+      main.insertAdjacentHTML('beforeend', `<div class="no-latest-call">📭 No call briefs found in the selected time window.</div>`);
+    }
+    // stale warning
+    if (data.staleCall != null && data.staleCall >= 14) {
+      main.insertAdjacentHTML('beforeend', `
+        <div class="stale-call-alert">
+          ⚠ Last billing call was ${data.staleCall} days ago${data.latestBilling?.date ? ` (${fmtDate(data.latestBilling.date)})` : ''}.
+        </div>`);
+    }
+    // Action rollup (billing only)
+    main.appendChild(renderActionRollup(allBriefs.length ? allBriefs : briefs, isDual(client)));
+  }
+
+  // ── PSA interactions ──
+  if (isPsa) {
+    main.insertAdjacentHTML('beforeend', `
+      <div class="section-title">Client Interactions${isDual(client) ? '<span class="lob-tag psa">PSA</span>' : ''}</div>`);
+    main.insertAdjacentHTML('beforeend', renderInteractionsPanel(interactions));
+  }
+
+  // ── Zendesk tickets (billing only) ──
+  if (isBilling) {
+    main.insertAdjacentHTML('beforeend', `
+      <div class="section-title">Zendesk Tickets${isDual(client) ? '<span class="lob-tag billing">Billing</span>' : ''}</div>`);
+    const ticketCount = tickets.length;
+    main.insertAdjacentHTML('beforeend', `
+      <div class="tickets-panel">
+        <div class="tickets-header">
+          <h3>Open &amp; Pending Tickets</h3>
+          <span class="ticket-count ${ticketCount ? 'has-tickets' : ''}">${ticketCount} ticket${ticketCount !== 1 ? 's' : ''}</span>
+        </div>
+        ${ticketCount ? `
+          <div class="ticket-list">
+            ${tickets.map(t => `
+              <div class="ticket-row">
+                <span class="ticket-id">#${t.id}</span>
+                <span class="ticket-subject"><a href="${esc(t.url)}" target="_blank">${esc(t.subject)}</a></span>
+                <span class="ticket-status ${t.status}">${t.status}</span>
+                <span class="ticket-date">${t.updated || t.created || ''}</span>
+              </div>`).join('')}
+          </div>` : `<div class="no-tickets">No open or pending tickets found.</div>`}
+      </div>
+    `);
+  }
+
+  // ── PSA call history ──
+  if (isPsa && psaBriefs.length > 0) {
+    main.insertAdjacentHTML('beforeend', `
+      <div class="section-title">PSA Call History${isDual(client) ? '<span class="lob-tag psa">PSA</span>' : ''}</div>`);
     const listEl = document.createElement('div');
     listEl.className = 'briefs-list';
-    briefs.forEach(brief => listEl.appendChild(renderBriefCard(brief, false)));
+    psaBriefs.forEach(b => listEl.appendChild(renderPsaBriefCard(b)));
     main.appendChild(listEl);
   }
 
-  // ── Daily Digest ──
-  main.insertAdjacentHTML('beforeend', `<div class="section-title">Daily Digest</div>`);
-  main.appendChild(renderDigest(data.digest));
-}
-
-function bulletList(text, listCls, emptyCls) {
-  const lines = parseBullets(text);
-  if (!lines.length) return `<div class="${emptyCls}">—</div>`;
-  return `<ul class="${listCls}">${lines.map(l => `<li>${fmtLine(l)}</li>`).join('')}</ul>`;
-}
-
-function openTracker(e) {
-  if (!activeClient) { e.preventDefault(); return; }
-  const a = document.getElementById('trackerBtn');
-  a.href = 'tracker.html?client=' + encodeURIComponent(activeClient.id);
-}
-
-function renderCallActivityWarnings(main, data) {
-  const latestAny = data.latestAny;
-  const days = data.staleCall;
-  if (days != null && days >= 14) {
+  // ── Billing call history ──
+  if (isBilling && briefs.length > 0) {
     main.insertAdjacentHTML('beforeend', `
-      <div class="stale-call-alert">
-        ⚠ Last matched call was ${days} days ago${latestAny?.date ? ` (${fmtDate(latestAny.date)})` : ''}. Consider confirming recent activity or follow-up status.
-      </div>`);
+      <div class="section-title">Billing Call History${isDual(client) ? '<span class="lob-tag billing">Billing</span>' : ''}</div>`);
+    const listEl = document.createElement('div');
+    listEl.className = 'briefs-list';
+    briefs.forEach(b => listEl.appendChild(renderBriefCard(b, false)));
+    main.appendChild(listEl);
   }
-  const soft = (data.allBriefs || data.briefs || []).filter(b => b.match?.soft).slice(0, 3);
-  if (soft.length) {
+
+  // ── Daily Digest (billing only) ──
+  if (isBilling) {
     main.insertAdjacentHTML('beforeend', `
-      <div class="match-warning">
-        ⓘ Some calls were fuzzy-matched to this client: ${soft.map(b => esc(b.title || b.match?.matchedAs || 'Untitled')).join(', ')}. Verify if anything looks off.
-      </div>`);
+      <div class="section-title">Daily Digest${isDual(client) ? '<span class="lob-tag billing">Billing</span>' : ''}</div>`);
+    main.appendChild(renderDigest(digest));
   }
 }
 
-function renderActionRollup(briefs) {
+// ── Interactions panel ────────────────────────────────────────────────────────
+function renderInteractionsPanel(interactions) {
+  if (!interactions.length) {
+    return `<div class="interactions-panel"><div class="no-interactions">No interactions found in the selected time window.</div></div>`;
+  }
+  const rows = interactions.map(i => {
+    const sentCls = i.sentiment ? `s${parseInt(i.sentiment) || ''}` : '';
+    const sentLabel = i.sentiment ? `Sentiment ${i.sentiment}` : '';
+    const typeCls = (i.type || '').toLowerCase().replace(/\s+/g,'-');
+    return `
+      <div class="interaction-row">
+        <span class="int-date">${i.date ? fmtDate(i.date) : '—'}</span>
+        <div class="int-body">
+          <div class="int-title">${esc(i.title || i.type || 'Interaction')}</div>
+          ${i.outcome ? `<div class="int-outcome">${esc(i.outcome)}</div>` : ''}
+          <div class="int-meta">
+            ${i.type ? `<span class="int-type">${esc(i.type)}</span>` : ''}
+            ${sentLabel ? `<span class="int-sentiment ${sentimentClass(i.sentiment)}">${sentLabel}</span>` : ''}
+            ${i.owner ? `<span class="int-owner">${esc(i.owner)}</span>` : ''}
+            ${i.followUp ? `<span class="int-followup">Follow-up ${i.followUpDate ? fmtDate(i.followUpDate) : 'needed'}</span>` : ''}
+            ${i.isKO ? `<span class="badge type-kickoff" style="font-size:.65rem;padding:1px 5px">KO</span>` : ''}
+            ${i.isGrad ? `<span class="badge" style="background:var(--teal-bg,rgba(0,212,170,.1));color:var(--teal);font-size:.65rem;padding:1px 5px">Grad</span>` : ''}
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+
+  return `
+    <div class="interactions-panel">
+      <div class="interactions-header">
+        <h3>Client Interactions</h3>
+        <span class="ticket-count has-tickets">${interactions.length}</span>
+      </div>
+      ${rows}
+    </div>`;
+}
+
+// ── PSA brief card ────────────────────────────────────────────────────────────
+function renderPsaBriefCard(brief) {
+  const card = document.createElement('div');
+  card.className = 'brief-card';
+  const riskBadge = brief.risk ? `<span class="badge risk-${esc(brief.risk)}">${esc(brief.risk.toLowerCase())}</span>` : '';
+  const ffLink = brief.firefliesUrl
+    ? `<a class="ff-link" href="${esc(brief.firefliesUrl)}" target="_blank">🎙 Transcript</a>` : '';
+
+  card.innerHTML = `
+    <div class="brief-header">
+      <span class="brief-date">${brief.date ? fmtDate(brief.date) : '—'}</span>
+      <div class="brief-title-col">
+        <div class="brief-title">${esc(brief.title || 'PSA Call')}</div>
+        <div class="brief-badges">${riskBadge}</div>
+      </div>
+      <div class="brief-meta">
+        ${brief.sa ? `<span class="brief-owner">${esc(brief.sa)}</span>` : ''}
+        ${ffLink}
+      </div>
+      <span class="brief-chevron">▼</span>
+    </div>
+    <div class="brief-body">
+      <div class="brief-sections">
+        ${briefSection('✔ Action Items',   'action',   brief.actionItems)}
+        ${briefSection('⛔ Blockers',       'blocker',  brief.blockers)}
+        ${brief.keyFinding ? briefSection('🔍 Key Finding', 'takeaway', brief.keyFinding) : ''}
+        ${brief.summary    ? briefSection('📋 Summary',    'summary',   brief.summary, true) : ''}
+      </div>
+    </div>`;
+
+  card.querySelector('.brief-header').addEventListener('click', () => card.classList.toggle('open'));
+  return card;
+}
+
+// ── Billing brief card ────────────────────────────────────────────────────────
+function renderBriefCard(brief) {
+  const card = document.createElement('div');
+  card.className = 'brief-card';
+  const riskBadge  = brief.risk     ? `<span class="badge risk-${brief.risk.toLowerCase()}">${brief.risk.toLowerCase()}</span>` : '';
+  const typeBadge  = brief.callType ? `<span class="badge type-${brief.callType}">${brief.callType}</span>` : '';
+  const roleBadge  = brief.ownerRole? `<span class="badge role-${brief.ownerRole}">${brief.ownerRole}</span>` : '';
+  const riskBanner = (brief.risk === 'high' || brief.risk === 'medium') && brief.riskReason
+    ? `<div class="risk-banner ${brief.risk === 'medium' ? 'medium' : ''}">⚠ ${esc(brief.riskReason)}</div>` : '';
+  const ffLink = brief.firefliesId
+    ? `<a class="ff-link" href="https://app.fireflies.ai/view/${esc(brief.firefliesId)}" target="_blank">🎙 Transcript</a>` : '';
+
+  card.innerHTML = `
+    <div class="brief-header">
+      <span class="brief-date">${brief.date ? fmtDate(brief.date) : '—'}</span>
+      <div class="brief-title-col">
+        <div class="brief-title">${esc(brief.title || '')}</div>
+        <div class="brief-badges">${typeBadge}${riskBadge}${roleBadge}</div>
+      </div>
+      <div class="brief-meta">
+        ${brief.duration ? `<span class="brief-duration">${brief.duration} min</span>` : ''}
+        ${brief.owner    ? `<span class="brief-owner">${esc(brief.owner)}</span>` : ''}
+        ${ffLink}
+      </div>
+      <span class="brief-chevron">▼</span>
+    </div>
+    ${riskBanner ? `<div class="brief-risk-banner-wrap">${riskBanner}</div>` : ''}
+    <div class="brief-body">
+      <div class="brief-sections">
+        ${briefSection('✔ Action Items',   'action',   brief.actionItems)}
+        ${briefSection('⛔ Blockers',       'blocker',  brief.blockers)}
+        ${briefSection('→ Next Steps',      'question', brief.nextSteps)}
+        ${briefSection('? Open Questions', 'question', brief.openQuestions)}
+        ${briefSection('⚑ Red Flags',      'flag',     brief.redFlags)}
+        ${briefSection('↗ Key Takeaways',  'takeaway', brief.keyTakeaways, true)}
+        ${brief.configTopics ? briefSection('⚙ Config Topics', 'config', brief.configTopics, true) : ''}
+      </div>
+    </div>`;
+
+  card.querySelector('.brief-header').addEventListener('click', () => card.classList.toggle('open'));
+  return card;
+}
+
+// ── Action rollup ─────────────────────────────────────────────────────────────
+function renderActionRollup(briefs, labeled) {
   const el = document.createElement('div');
   el.className = 'action-rollup-panel';
   const actions = collectActions(briefs).slice(0, 12);
   if (!actions.length) {
     el.innerHTML = `
       <div class="rollup-header">
-        <div><div class="rollup-title">Open Action Roll-Up</div><div class="rollup-subtitle">No extracted action items found in recent calls.</div></div>
+        <div><div class="rollup-title">Open Action Roll-Up${labeled ? ' <span class="lob-tag billing" style="font-size:.65rem;padding:1px 6px;border-radius:20px;background:var(--billing-bg);color:var(--billing);font-weight:700">Billing</span>' : ''}</div>
+        <div class="rollup-subtitle">No extracted action items found in recent calls.</div></div>
       </div>`;
     return el;
   }
   el.innerHTML = `
     <div class="rollup-header">
       <div>
-        <div class="rollup-title">Open Action Roll-Up</div>
-        <div class="rollup-subtitle">Aggregated from the most recent ${Math.min(briefs.length, 20)} matched call brief${briefs.length === 1 ? '' : 's'}</div>
+        <div class="rollup-title">Open Action Roll-Up${labeled ? ' <span class="lob-tag billing" style="font-size:.65rem;padding:1px 6px;border-radius:20px;background:var(--billing-bg);color:var(--billing);font-weight:700">Billing</span>' : ''}</div>
+        <div class="rollup-subtitle">Aggregated from ${Math.min(briefs.length, 20)} billing call brief${briefs.length === 1 ? '' : 's'}</div>
       </div>
       <span class="ticket-count has-tickets">${actions.length} item${actions.length === 1 ? '' : 's'}</span>
     </div>
@@ -1127,24 +1391,19 @@ function parseActionMeta(line) {
   const bracketOwner = line.match(/^\[([^\]]{2,40})\]/);
   const leadingOwner = line.match(/^([A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)\s+(?:to|will|should|needs to)\b/);
   const due = line.match(/\b(?:by|before|due|on)\s+((?:end of day|EOD|today|tomorrow|next week|next month|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|\d{1,2}\/\d{1,2}(?:\/\d{2,4})?|\d{4}-\d{2}-\d{2}))/i);
-  return {
-    owner: bracketOwner?.[1] || leadingOwner?.[1] || null,
-    due: due?.[1] || null,
-  };
+  return { owner: bracketOwner?.[1] || leadingOwner?.[1] || null, due: due?.[1] || null };
 }
 
+// ── Daily Digest (billing) ────────────────────────────────────────────────────
 function renderDigest(digest) {
   const el = document.createElement('div');
   el.className = 'digest-panel';
-
   if (!digest) {
-    el.innerHTML = `<div class="no-digest">No digest available — digest is generated daily at 7:30 AM ET.</div>`;
+    el.innerHTML = `<div class="no-digest">No digest available — generated daily at 7:30 AM ET.</div>`;
     return el;
   }
-
-  const asOfMatch = digest.statusLine.match(/As of ([\d\-T: UTC]+)/);
+  const asOfMatch = digest.statusLine?.match(/As of ([\d\-T: UTC]+)/);
   const asOf = asOfMatch ? asOfMatch[1].trim() : '';
-
   const sections = [
     { label: 'Status',            items: renderDigestStatus(digest), always: true },
     { label: 'Team',              items: digest.team },
@@ -1161,24 +1420,17 @@ function renderDigest(digest) {
     </div>
     <div class="digest-grid">
       ${sections.map(s => digestSection(s.label, s.items, !!s.full)).join('')}
-    </div>
-  `;
+    </div>`;
   return el;
 }
 
 function renderDigestStatus(digest) {
   const lines = [];
-  // Extract status and health label from the status line
-  const statusMatch = digest.statusLine.match(/^([✅⚠🔴🟠🟡🟢]+\s*)(On Track|Off Track|At Risk|On Hold|RTS|Activated|Graduated)/i);
+  const statusMatch = digest.statusLine?.match(/^([✅⚠🔴🟠🟡🟢]+\s*)(On Track|Off Track|At Risk|On Hold|RTS|Activated|Graduated)/i);
   if (statusMatch) lines.push(statusMatch[0].trim());
   if (digest.health != null) {
     lines.push(`Health Score: ${digest.health}/100${digest.healthLabel ? ' — ' + digest.healthLabel : ''}`);
   }
-  // Also surface any score breakdown lines
-  const raw = digest.raw?.['_top'] || [];
-  raw.forEach(b => {
-    if (/project:|calls:|blockers:|recency:/i.test(b.text)) lines.push(b.text);
-  });
   return lines;
 }
 
@@ -1195,53 +1447,7 @@ function digestSection(label, items, fullWidth) {
     </div>`;
 }
 
-function renderBriefCard(brief, autoOpen) {
-  const card = document.createElement('div');
-  card.className = 'brief-card' + (autoOpen ? ' open' : '');
-
-  const riskBadge  = brief.risk    ? `<span class="badge risk-${brief.risk.toLowerCase()}">${brief.risk.toLowerCase()}</span>` : '';
-  const typeBadge  = brief.callType? `<span class="badge type-${brief.callType}">${brief.callType}</span>` : '';
-  const roleBadge  = brief.ownerRole ? `<span class="badge role-${brief.ownerRole}">${brief.ownerRole}</span>` : '';
-  const riskBanner = (brief.risk === 'high' || brief.risk === 'medium') && brief.riskReason
-    ? `<div class="risk-banner ${brief.risk === 'medium' ? 'medium' : ''}">⚠ ${esc(brief.riskReason)}</div>` : '';
-  const ffLink = brief.firefliesId
-    ? `<a class="ff-link" href="https://app.fireflies.ai/view/${esc(brief.firefliesId)}" target="_blank">🎙 Transcript</a>` : '';
-
-  card.innerHTML = `
-    <div class="brief-header">
-      <span class="brief-date">${brief.date ? fmtDate(brief.date) : '—'}</span>
-      <div class="brief-title-col">
-        <div class="brief-title">${esc(brief.title || '')}</div>
-        <div class="brief-badges">${typeBadge}${riskBadge}${roleBadge}</div>
-      </div>
-      <div class="brief-meta">
-        ${brief.duration ? `<span class="brief-duration">${brief.duration} min</span>` : ''}
-        ${brief.owner ? `<span class="brief-owner">${esc(brief.owner)}</span>` : ''}
-        ${ffLink}
-      </div>
-      <span class="brief-chevron">▼</span>
-    </div>
-    ${riskBanner ? `<div class="brief-risk-banner-wrap">${riskBanner}</div>` : ''}
-    <div class="brief-body">
-      <div class="brief-sections">
-        ${briefSection('✔ Action Items',   'action',   brief.actionItems)}
-        ${briefSection('⛔ Blockers',       'blocker',  brief.blockers)}
-        ${briefSection('→ Next Steps',      'question', brief.nextSteps)}
-        ${briefSection('? Open Questions', 'question', brief.openQuestions)}
-        ${briefSection('⚑ Red Flags',      'flag',     brief.redFlags)}
-        ${briefSection('↗ Key Takeaways',  'takeaway', brief.keyTakeaways, true)}
-        ${brief.configTopics ? briefSection('⚙ Config Topics', 'config', brief.configTopics, true) : ''}
-      </div>
-    </div>
-  `;
-
-  card.querySelector('.brief-header').addEventListener('click', () => {
-    card.classList.toggle('open');
-  });
-
-  return card;
-}
-
+// ── Shared brief helpers ──────────────────────────────────────────────────────
 function briefSection(label, cls, text, fullWidth) {
   const fwClass = fullWidth ? ' full-width' : '';
   const lines = parseBullets(text);
@@ -1255,28 +1461,36 @@ function briefSection(label, cls, text, fullWidth) {
     </div>`;
 }
 
+function bulletList(text, listCls, emptyCls) {
+  const lines = parseBullets(text);
+  if (!lines.length) return `<div class="${emptyCls}">—</div>`;
+  return `<ul class="${listCls}">${lines.map(l => `<li>${fmtLine(l)}</li>`).join('')}</ul>`;
+}
+
 function parseBullets(text) {
   if (!text) return [];
-  return text
-    .split('\n')
-    .map(l => l.replace(/^[•\-\*]\s*/, '').trim())
-    .filter(Boolean);
+  return text.split('\n').map(l => l.replace(/^[•\-\*]\s*/, '').trim()).filter(Boolean);
 }
 
 function fmtLine(line) {
-  // Highlight [Owner Name] tags
   return esc(line).replace(/\[([^\]]+)\]/g, '<span class="owner-tag">[$1]</span>');
 }
 
 function fmtDate(d) {
   if (!d) return '—';
-  const dt = new Date(d + 'T12:00:00');
+  const dt = new Date(d.length === 10 ? d + 'T12:00:00' : d);
   return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
 function esc(s) {
   if (!s) return '';
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function openTracker(e) {
+  if (!activeClient) { e.preventDefault(); return; }
+  const a = e.currentTarget;
+  a.href = 'tracker.html?client=' + encodeURIComponent(activeClient.id);
 }
 
 // ── Controls ──────────────────────────────────────────────────────────────────
