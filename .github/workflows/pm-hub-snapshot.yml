@@ -257,7 +257,9 @@ jobs:
 
             // ── 2. PSA clients ────────────────────────────────────────────────
             console.log('Fetching PSA clients…');
-            const psaPages = await notionQuery(DB_PSA_CLIENTS, null, null, REVAY_TOKEN);
+            const PSA_SKIP = ["Graduated","Canceled - Functionality","Canceled - Client Business","Canceled - Client Ghosted","Canceled - Sales Unable to KO","Canceled - Client Bandwidth"];
+          const psaFilter = { and: PSA_SKIP.map(s => ({ property:"Status", status:{ does_not_equal:s } })) };
+          const psaPages = await notionQuery(DB_PSA_CLIENTS, psaFilter, null, REVAY_TOKEN);
             console.log(`  ${psaPages.length} PSA client records`);
 
             const ACTIVE_PSA = new Set(['In Progress','On Hold','RTS - Client','RTS - Functionality','RTS - Competitor','RTS - Pricing']);
