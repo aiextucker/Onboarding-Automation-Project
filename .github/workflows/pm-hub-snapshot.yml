@@ -17,27 +17,36 @@ jobs:
       - name: Build portfolio snapshot
         env:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
-          ZD_AUTH: ${{ secrets.ZD_AUTH }}
+          REVAY_TOKEN:  ${{ secrets.REVAY_TOKEN }}
+          ZD_AUTH:      ${{ secrets.ZD_AUTH }}
         run: |
           node << 'SCRIPT'
           const fs = require('fs');
 
           const NOTION_TOKEN = process.env.NOTION_TOKEN;
+          const REVAY_TOKEN  = process.env.REVAY_TOKEN || NOTION_TOKEN;
           const ZD_AUTH      = process.env.ZD_AUTH || '';
           const ZD_BASE      = 'https://rev-io.zendesk.com/api/v2';
 
-          const NOTION_HDR = {
-            'Authorization': 'Bearer ' + NOTION_TOKEN,
+          const notionHdr = tok => ({
+            'Authorization': 'Bearer ' + tok,
             'Notion-Version': '2022-06-28',
             'Content-Type': 'application/json',
-          };
+          });
 
-          const DB_CLIENTS = '310a59b7-e7b2-806e-a78f-f37d70de8601';
-          const DB_BRIEFS  = '344a59b7-e7b2-806b-a4b7-fce85ed24358';
-          const DB_DIGESTS = '349a59b7-e7b2-80e8-a0c6-c0947c44f455';
+          // ── DB IDs ───────────────────────────────────────────────────────────
+          // Billing
+          const DB_BILLING_CLIENTS = '310a59b7-e7b2-806e-a78f-f37d70de8601';
+          const DB_BRIEFS           = '344a59b7-e7b2-806b-a4b7-fce85ed24358';
+          const DB_DIGESTS          = '349a59b7-e7b2-80e8-a0c6-c0947c44f455';
+          // PSA (Revay feeds — use REVAY_TOKEN)
+          const DB_PSA_CLIENTS      = 'dba0a0aac29e42d7ac7e968e0245f4c4';
+          const DB_PSA_CALLS        = '336a59b7-e7b2-812f-8011-fa4a47f348bd';
+          const DB_PSA_INTERACTIONS = '6246303e-1e51-408f-ad7e-85ad865d449d';
 
-          // ── Notion helpers ──────────────────────────────────────────────────
-          async function notionQuery(dbId, filter, sorts) {
+          // ── Notion helpers ───────────────────────────────────────────────────
+          async function notionQuery(dbId, filter, sorts, token) {
+            token = token || NOTION_TOKEN;
             let results = [], cursor;
             do {
               const body = { page_size: 100 };
@@ -45,7 +54,7 @@ jobs:
               if (sorts)  body.sorts  = sorts;
               if (cursor) body.start_cursor = cursor;
               const res = await fetch(`https://api.notion.com/v1/databases/${dbId}/query`, {
-                method: 'POST', headers: NOTION_HDR, body: JSON.stringify(body),
+                method: 'POST', headers: notionHdr(token), body: JSON.stringify(body),
               });
               const d = await res.json();
               if (!d.results) { console.error('Notion error:', JSON.stringify(d).slice(0,200)); break; }
@@ -56,42 +65,66 @@ jobs:
           }
 
           function nStr(p)  { if (!p) return null; if (p.type==='title') return p.title?.map(t=>t.plain_text).join('')||null; if (p.type==='rich_text') return p.rich_text?.map(t=>t.plain_text).join('')||null; if (p.type==='select') return p.select?.name||null; return null; }
-          function nDate(p) { return p?.date?.start || null; }
+          function nDate(p) { return p?.date?.start?.slice(0,10) || null; }
           function nNum(p)  { return p?.number ?? (p?.formula?.number ?? null); }
           function nPpl(p)  { return (p?.people||[]).map(x=>x.name).filter(Boolean); }
           function nStat(p) { return p?.status?.name || null; }
+          function nBool(p) { return p?.checkbox ?? null; }
+          function nPct(p)  {
+            // formula returning "56%" or rollup returning 0.555
+            if (!p) return null;
+            if (p.formula?.string) return parseInt(p.formula.string) || null;
+            if (p.rollup?.number != null) return Math.round(p.rollup.number * 100);
+            return null;
+          }
 
           function statusGroup(s) {
             if (!s) return 'other';
             const l = s.toLowerCase();
-            if (l.includes('on track'))  return 'on-track';
+            if (l.includes('on track') || l === 'in progress') return 'on-track';
             if (l.includes('off track')) return 'off-track';
-            if (l==='rts')     return 'rts';
-            if (l==='on hold') return 'on-hold';
+            if (l.startsWith('rts'))    return 'rts';
+            if (l.includes('on hold')) return 'on-hold';
+            if (l.includes('cancel'))  return 'canceled';
+            if (l.includes('graduat')) return 'graduated';
             return 'other';
           }
 
+          function psaStatusGroup(s) {
+            if (!s) return 'other';
+            const l = s.toLowerCase();
+            if (l === 'in progress')   return 'on-track';
+            if (l === 'at risk')       return 'off-track';
+            if (l.startsWith('rts'))   return 'rts';
+            if (l === 'on hold')       return 'on-hold';
+            if (l.includes('cancel'))  return 'canceled';
+            if (l.includes('graduat')) return 'graduated';
+            return 'other';
+          }
+
+          // ── Name matching ────────────────────────────────────────────────────
           const STOP = new Set(['the','and','for','inc','llc','ltd','corp','co','group','company',
             'services','solutions','tech','technology','technologies','telecom','communications',
             'telephone','voip','systems','network','data','global','digital','cloud','psa','mig',
             'migration','internal','bob','north','south','east','west','public','comm',
-            'rev','io','to','from','with','project','calls','call']);
+            'rev','io','to','from','with','project','calls','call','white','label']);
 
-          const BRIEF_ALIAS   = { 'Rhode Island Telephone': ['Rhode Island'], 'Public Telephone Company': ['PTCOA'] };
-          const BRIEF_EXCLUDE = new Set(['805 Voip','Third Generation of Pennsylvania','PSA Mig to Internal']);
-
-          function briefMatches(briefName, clientName) {
-            const b = briefName.toLowerCase(), c = clientName.toLowerCase();
-            if (b.includes(c) || c.includes(b)) return true;
-            const tok = s => s.split(/[\s\-\/,().]+/).filter(t => t.length>=3 && !STOP.has(t));
-            const cT = tok(c), bT = tok(b);
-            if (!cT.length || !bT.length) return false;
-            const [sh, lo] = cT.length<=bT.length ? [cT,bT] : [bT,cT];
-            return sh.filter(st=>lo.some(lt=>lt.includes(st)||st.includes(lt))).length / sh.length >= 0.5;
+          function tok(s) {
+            return s.toLowerCase().split(/[\s\-\/,().&+]+/).filter(t => t.length >= 3 && !STOP.has(t));
           }
 
-          // ── Zendesk helpers ─────────────────────────────────────────────────
-          // Stop words for ZD keyword extraction — skip generic terms
+          function nameMatch(a, b) {
+            const al = a.toLowerCase(), bl = b.toLowerCase();
+            if (al === bl) return true;
+            if (al.includes(bl) || bl.includes(al)) return true;
+            const at = tok(a), bt = tok(b);
+            if (!at.length || !bt.length) return false;
+            const [sh, lo] = at.length <= bt.length ? [at, bt] : [bt, at];
+            const hits = sh.filter(st => lo.some(lt => lt.includes(st) || st.includes(lt)));
+            return hits.length / sh.length >= 0.5;
+          }
+
+          // ── Zendesk helpers ──────────────────────────────────────────────────
           const ZD_STOP = new Set(['migration','to','rev','io','inc','llc','ltd','corp','co',
             'group','company','services','solutions','tech','technology','telecom','communications',
             'telephone','voip','systems','network','data','global','digital','cloud','psa','bob',
@@ -99,7 +132,6 @@ jobs:
             'and','for','the','reseller','ky','dba']);
 
           function zdKeyword(name) {
-            // First significant word (3+ chars, not a stop word)
             const words = name.toLowerCase().split(/[\s\-\/,().]+/);
             return words.find(w => w.length >= 3 && !ZD_STOP.has(w)) || words[0];
           }
@@ -117,7 +149,6 @@ jobs:
           async function fetchZdTicketsForClient(clientName) {
             if (!ZD_AUTH) return [];
             const kw = zdKeyword(clientName);
-            // status<solved = open + pending + new + hold in one query, no OR needed
             const query = `type:ticket status<solved organization:${kw}`;
             const d = await zdFetch(`/search.json?query=${encodeURIComponent(query)}&per_page=50&sort_by=updated_at&sort_order=desc`);
             if (!d || !d.results) return [];
@@ -134,28 +165,65 @@ jobs:
               }));
           }
 
-          // ── Main ────────────────────────────────────────────────────────────
+          // ── Digest helpers ───────────────────────────────────────────────────
+          async function fetchDigestBlocks(pageId) {
+            const res = await fetch(`https://api.notion.com/v1/blocks/${pageId}/children?page_size=100`, {
+              headers: notionHdr(NOTION_TOKEN)
+            });
+            const d = await res.json();
+            return d.results || [];
+          }
+
+          function parseDigestBlocks(blocks) {
+            const sections = {};
+            let curSection = '_top';
+            for (const b of blocks) {
+              const type = b.type;
+              const txt = (b[type]?.rich_text || b[type]?.text || []).map(t=>t.plain_text).join('').trim();
+              if (!txt) continue;
+              if (type === 'heading_2' || type === 'heading_3') {
+                curSection = txt.replace(/^[^a-zA-Z]+/, '').trim().toLowerCase();
+                sections[curSection] = sections[curSection] || [];
+              } else if (['callout','paragraph','bulleted_list_item','numbered_list_item'].includes(type)) {
+                sections[curSection] = sections[curSection] || [];
+                sections[curSection].push(txt);
+              }
+            }
+            let health = null, healthLabel = null, statusLine = null;
+            const topBlocks = sections['_top'] || [];
+            for (const line of topBlocks) {
+              if (!statusLine) statusLine = line;
+              const hm = line.match(/(\d+)\/100/);
+              if (hm) { health = parseInt(hm[1]); }
+              const lm = line.match(/(Healthy|Watching|At Risk|Critical)/i);
+              if (lm) healthLabel = lm[1];
+            }
+            return {
+              statusLine: statusLine || '',
+              health, healthLabel,
+              team:        sections['team'] || sections['👥 team'] || [],
+              timeline:    sections['timeline'] || sections['📅 timeline'] || [],
+              mrr:         sections['mrr'] || sections['💰 mrr'] || [],
+              recentCalls: sections['recent calls (7d)'] || sections['recent calls'] || [],
+              zdTickets:   sections['zendesk tickets'] || sections['zendesk'] || [],
+              teamsNotes:  sections['teams notes'] || sections['teams'] || [],
+              raw: sections,
+            };
+          }
+
+          // ── Main ─────────────────────────────────────────────────────────────
           (async () => {
-            console.log('Fetching clients…');
-            const EXCLUDED   = ['Graduated','Canceled','Completed'];
-            const clientFilter = { and: EXCLUDED.map(s => ({ property:'Status', status:{ does_not_equal:s } })) };
-            const clientPages = await notionQuery(DB_CLIENTS, clientFilter, [{ property:'Health Score', direction:'ascending' }]);
-            console.log(`  ${clientPages.length} clients`);
+            const cutoff90 = new Date(Date.now()-90*86400000).toISOString().split('T')[0];
 
-            console.log('Fetching briefs (90d)…');
-            const cutoff = new Date(Date.now()-90*86400000).toISOString().split('T')[0];
-            const briefPages = await notionQuery(DB_BRIEFS,
-              { property:'Call Date', date:{ on_or_after:cutoff } },
-              [{ property:'Call Date', direction:'descending' }]
-            );
-            console.log(`  ${briefPages.length} briefs`);
+            // ── 1. Billing clients ────────────────────────────────────────────
+            console.log('Fetching billing clients…');
+            const BILLING_SKIP = new Set(['Graduated','Canceled','Completed']);
+            const billingFilter = { and: [...BILLING_SKIP].map(s => ({ property:'Status', status:{ does_not_equal:s } })) };
+            const billingPages = await notionQuery(DB_BILLING_CLIENTS, billingFilter,
+              [{ property:'Health Score', direction:'ascending' }], NOTION_TOKEN);
+            console.log(`  ${billingPages.length} billing clients`);
 
-            console.log('Fetching digests…');
-            const digestPages = await notionQuery(DB_DIGESTS, null, [{ property:'Name', direction:'ascending' }]);
-            console.log(`  ${digestPages.length} digests`);
-
-            // Build client objects with full fields
-            const clients = clientPages.map(page => {
+            const billingClients = billingPages.map(page => {
               const pr = page.properties;
               const status  = nStat(pr['Status']);
               const wrikeId = nStr(pr['Wrike Project ID']);
@@ -164,6 +232,7 @@ jobs:
               return {
                 id:             page.id,
                 notionUrl:      `https://www.notion.so/${page.id.replace(/-/g,'')}`,
+                lob:            'billing',
                 name:           nStr(pr['Client Name']),
                 status,
                 statusGroup:    statusGroup(status),
@@ -186,8 +255,119 @@ jobs:
               };
             });
 
-            // Index briefs
-            const allBriefs = briefPages.map(page => {
+            // ── 2. PSA clients ────────────────────────────────────────────────
+            console.log('Fetching PSA clients…');
+            const psaPages = await notionQuery(DB_PSA_CLIENTS, null, null, REVAY_TOKEN);
+            console.log(`  ${psaPages.length} PSA client records`);
+
+            const ACTIVE_PSA = new Set(['In Progress','On Hold','RTS - Client','RTS - Functionality','RTS - Competitor','RTS - Pricing']);
+            const psaClients = psaPages.map(page => {
+              const pr = page.properties;
+              const status = nStat(pr['Status']);
+              const koDate = nDate(pr['KO Date (Manual)']) || nDate(pr['KO Date (System)']) || nDate(pr['Start/KO Date']);
+              const gradDate = nDate(pr['Forecasted Graduation Date']) || nDate(pr['Grad Date (Manual)']) || nDate(pr['Grad Date (System)']);
+              const milePct = nPct(pr['Milestones %']) || nPct(pr['% Milestones Complete']);
+              const health  = nStr(pr['Onboarding Health']) || null;
+              const existingBilling = nBool(pr['Existing Billing']);
+              const longTermRts = nBool(pr['Long-Term RTS']);
+              const interactionIds = (pr['💬 Client Interactions']?.relation || []).map(r => r.id);
+              return {
+                psaId:           page.id,
+                psaNotionUrl:    `https://www.notion.so/${page.id.replace(/-/g,'')}`,
+                name:            nStr(pr['Client']),
+                psaStatus:       status,
+                psaStatusGroup:  psaStatusGroup(status),
+                psaSa:           pr['Solutions Analyst']?.select?.name || null,
+                psaKoDate:       koDate,
+                psaGradDate:     gradDate,
+                psaDaysActive:   koDate ? Math.floor((Date.now()-new Date(koDate).getTime())/86400000) : null,
+                psaMrr:          nNum(pr['Fees (MRR)']) || nNum(pr['MRRC']),
+                psaMilestonePercent: milePct,
+                psaOnboardingHealth: health,
+                psaLongTermRts:  longTermRts,
+                existingBilling,
+                isActivePsa:     ACTIVE_PSA.has(status),
+                interactionIds,
+              };
+            });
+
+            // ── 3. Merge dual-LOB clients ─────────────────────────────────────
+            // PSA records with existingBilling=true → find matching billing client by name
+            const mergedBillingIds = new Set();
+            for (const psa of psaClients) {
+              if (!psa.existingBilling || !psa.name) continue;
+              const match = billingClients.find(b => b.name && nameMatch(b.name, psa.name));
+              if (match) {
+                match.lob        = ['billing','psa'];
+                match.psaId      = psa.psaId;
+                match.psaNotionUrl = psa.psaNotionUrl;
+                match.psaStatus  = psa.psaStatus;
+                match.psaStatusGroup = psa.psaStatusGroup;
+                match.psaSa      = psa.psaSa;
+                match.psaKoDate  = psa.psaKoDate;
+                match.psaGradDate = psa.psaGradDate;
+                match.psaDaysActive = psa.psaDaysActive;
+                match.psaMrr     = psa.psaMrr;
+                match.psaMilestonePercent = psa.psaMilestonePercent;
+                match.psaOnboardingHealth = psa.psaOnboardingHealth;
+                match.psaLongTermRts = psa.psaLongTermRts;
+                match.interactionIds = psa.interactionIds;
+                mergedBillingIds.add(psa.psaId);
+                console.log(`  Dual-LOB matched: ${psa.name} (billing: ${match.id.slice(0,8)}… / psa: ${psa.psaId.slice(0,8)}…)`);
+              }
+            }
+
+            // PSA-only clients (not already merged into billing)
+            const psaOnlyClients = psaClients
+              .filter(psa => !mergedBillingIds.has(psa.psaId) && psa.name)
+              .map(psa => ({
+                id:             psa.psaId,
+                notionUrl:      psa.psaNotionUrl,
+                lob:            'psa',
+                name:           psa.name,
+                status:         psa.psaStatus,
+                statusGroup:    psa.psaStatusGroup,
+                sa:             psa.psaSa ? [psa.psaSa] : [],
+                health:         null,
+                mrr:            psa.psaMrr,
+                koDate:         psa.psaKoDate,
+                gradDate:       psa.psaGradDate,
+                daysActive:     psa.psaDaysActive,
+                psaId:          psa.psaId,
+                psaNotionUrl:   psa.psaNotionUrl,
+                psaStatus:      psa.psaStatus,
+                psaStatusGroup: psa.psaStatusGroup,
+                psaSa:          psa.psaSa,
+                psaKoDate:      psa.psaKoDate,
+                psaGradDate:    psa.psaGradDate,
+                psaDaysActive:  psa.psaDaysActive,
+                psaMrr:         psa.psaMrr,
+                psaMilestonePercent: psa.psaMilestonePercent,
+                psaOnboardingHealth: psa.psaOnboardingHealth,
+                psaLongTermRts: psa.psaLongTermRts,
+                interactionIds: psa.interactionIds,
+              }));
+
+            const allClients = [...billingClients, ...psaOnlyClients];
+            console.log(`  Total: ${allClients.length} clients (${billingClients.length} billing, ${psaOnlyClients.length} PSA-only, ${[...mergedBillingIds].length} dual-LOB)`);
+
+            // Build psaId → client primary id map (for interaction/call keying)
+            const psaIdToClientId = {};
+            for (const c of allClients) {
+              if (c.psaId) psaIdToClientId[c.psaId] = c.id;
+            }
+
+            // ── 4. Billing call briefs ────────────────────────────────────────
+            console.log('Fetching billing call briefs (90d)…');
+            const briefPages = await notionQuery(DB_BRIEFS,
+              { property:'Call Date', date:{ on_or_after: cutoff90 } },
+              [{ property:'Call Date', direction:'descending' }], NOTION_TOKEN);
+            console.log(`  ${briefPages.length} billing briefs`);
+
+            const BRIEF_ALIAS   = { 'Rhode Island Telephone': ['Rhode Island'], 'Public Telephone Company': ['PTCOA'] };
+            const BRIEF_EXCLUDE = new Set(['805 Voip','Third Generation of Pennsylvania','PSA Mig to Internal']);
+
+            const allBillingBriefs = briefPages.map(page => {
               const pr = page.properties;
               return {
                 id:            page.id,
@@ -208,77 +388,113 @@ jobs:
               };
             });
 
-            // Match briefs to clients
             const briefsByClientId = {};
-            for (const client of clients) {
+            for (const client of billingClients) {
               if (!client.name) continue;
               const aliases = BRIEF_ALIAS[client.name];
-              briefsByClientId[client.id] = allBriefs.filter(b => {
+              briefsByClientId[client.id] = allBillingBriefs.filter(b => {
                 if (!b.title) return false;
                 if (BRIEF_EXCLUDE.has(client.name)) return false;
                 if (aliases) return aliases.some(a => b.title.toLowerCase().includes(a.toLowerCase()) || a.toLowerCase().includes(b.title.toLowerCase()));
-                return briefMatches(b.title, client.name);
+                return nameMatch(b.title, client.name);
               });
             }
 
-            // Attach lastCall to each client
-            for (const c of clients) {
+            // Attach lastCall to billing clients
+            for (const c of billingClients) {
               const cb = briefsByClientId[c.id];
               c.lastCall = cb?.length ? { date: cb[0].date, risk: cb[0].risk } : null;
             }
 
-            // Match digest to each client and fetch block content
-            async function fetchDigestBlocks(pageId) {
-              const res = await fetch(`https://api.notion.com/v1/blocks/${pageId}/children?page_size=100`, {
-                headers: NOTION_HDR
-              });
-              const d = await res.json();
-              return d.results || [];
+            // ── 5. PSA call briefs ────────────────────────────────────────────
+            console.log('Fetching PSA call briefs (90d)…');
+            const psaCallPages = await notionQuery(DB_PSA_CALLS,
+              { property:'Call Date', date:{ on_or_after: cutoff90 } },
+              [{ property:'Call Date', direction:'descending' }], NOTION_TOKEN);
+            console.log(`  ${psaCallPages.length} PSA call records`);
+
+            const allPsaBriefs = psaCallPages.map(page => {
+              const pr = page.properties;
+              const ffId = nStr(pr['Fireflies ID']);
+              return {
+                id:            page.id,
+                title:         nStr(pr['Client']) || 'PSA Call',
+                date:          nDate(pr['Call Date']),
+                sa:            pr['SA']?.select?.name || null,
+                risk:          pr['Risk Level']?.select?.name || null,
+                summary:       nStr(pr['Summary']),
+                actionItems:   nStr(pr['Action Items']),
+                blockers:      nStr(pr['Blockers']),
+                firefliesId:   ffId,
+                firefliesUrl:  ffId ? `https://app.fireflies.ai/view/${ffId}` : null,
+                keyFinding:    nStr(pr['Key Finding']),
+                psaTickets:    nStr(pr['PSA Tickets']),
+              };
+            });
+
+            // Match PSA calls to clients by client name (rich_text field)
+            const psaBriefsByClientId = {};
+            for (const client of allClients) {
+              if (!client.psaId || !client.name) continue;
+              const primaryId = client.id;
+              psaBriefsByClientId[primaryId] = allPsaBriefs.filter(b => b.title && nameMatch(b.title, client.name));
             }
 
-            function parseDigestBlocks(blocks) {
-              const sections = {};
-              let curSection = '_top';
-              for (const b of blocks) {
-                const type = b.type;
-                const txt = (b[type]?.rich_text || b[type]?.text || []).map(t=>t.plain_text).join('').trim();
-                if (!txt) continue;
-                if (type === 'heading_2' || type === 'heading_3') {
-                  curSection = txt.replace(/^[^a-zA-Z]+/, '').trim().toLowerCase();
-                  sections[curSection] = sections[curSection] || [];
-                } else if (type === 'callout' || type === 'paragraph') {
-                  sections[curSection] = sections[curSection] || [];
-                  sections[curSection].push(txt);
-                } else if (type === 'bulleted_list_item' || type === 'numbered_list_item') {
-                  sections[curSection] = sections[curSection] || [];
-                  sections[curSection].push(txt);
-                }
-              }
-              // Extract health from callout
-              let health = null, healthLabel = null, statusLine = null;
-              const topBlocks = sections['_top'] || [];
-              for (const line of topBlocks) {
-                if (!statusLine) statusLine = line;
-                const hm = line.match(/(\d+)\/100/);
-                if (hm) { health = parseInt(hm[1]); }
-                const lm = line.match(/(Healthy|Watching|At Risk|Critical)/i);
-                if (lm) healthLabel = lm[1];
-              }
-              return {
-                statusLine: statusLine || '',
-                health, healthLabel,
-                team:        sections['team'] || sections['👥 team'] || [],
-                timeline:    sections['timeline'] || sections['📅 timeline'] || [],
-                mrr:         sections['mrr'] || sections['💰 mrr'] || [],
-                recentCalls: sections['recent calls (7d)'] || sections['recent calls'] || [],
-                zdTickets:   sections['zendesk tickets'] || sections['zendesk'] || [],
-                teamsNotes:  sections['teams notes'] || sections['teams'] || [],
-                raw: sections,
-              };
+            // Attach lastPsaCall to PSA clients
+            for (const c of allClients) {
+              if (!c.psaId) continue;
+              const pb = psaBriefsByClientId[c.id];
+              c.lastPsaCall = pb?.length ? { date: pb[0].date, risk: pb[0].risk } : null;
             }
+
+            // Set lastCall for PSA-only clients
+            for (const c of psaOnlyClients) {
+              c.lastCall = c.lastPsaCall;
+            }
+
+            // ── 6. PSA interactions ───────────────────────────────────────────
+            console.log('Fetching PSA interactions (90d)…');
+            const interactionPages = await notionQuery(DB_PSA_INTERACTIONS,
+              { property:'Date', date:{ on_or_after: cutoff90 } },
+              [{ property:'Date', direction:'descending' }], REVAY_TOKEN);
+            console.log(`  ${interactionPages.length} interactions`);
+
+            // Group by PSA client page ID, then map to primary client ID
+            const interactionsByClientId = {};
+            for (const page of interactionPages) {
+              const pr = page.properties;
+              const clientRel = pr['🏢 Client']?.relation || [];
+              const dateRaw = pr['Date']?.date?.start;
+              const interaction = {
+                id:          page.id,
+                date:        dateRaw?.slice(0,10) || null,
+                type:        pr['Interaction Type']?.select?.name || null,
+                title:       nStr(pr['Interaction']),
+                outcome:     nStr(pr['Outcome']),
+                notes:       nStr(pr['Notes']),
+                owner:       pr['Owner']?.select?.name || null,
+                sentiment:   pr['Sentiment Score']?.select?.name || null,
+                followUp:    nBool(pr['Follow-up Needed']),
+                followUpDate: nDate(pr['Follow-up Date']),
+                isKO:        nBool(pr['IsKO']),
+                isGrad:      nBool(pr['IsGrad']),
+              };
+              for (const rel of clientRel) {
+                const primaryId = psaIdToClientId[rel.id] || rel.id;
+                interactionsByClientId[primaryId] = interactionsByClientId[primaryId] || [];
+                interactionsByClientId[primaryId].push(interaction);
+              }
+            }
+            console.log(`  Interactions matched to ${Object.keys(interactionsByClientId).length} clients`);
+
+            // ── 7. Billing digests ────────────────────────────────────────────
+            console.log('Fetching billing digests…');
+            const digestPages = await notionQuery(DB_DIGESTS, null,
+              [{ property:'Name', direction:'ascending' }], NOTION_TOKEN);
+            console.log(`  ${digestPages.length} digests`);
 
             const digestsByClientId = {};
-            for (const client of clients) {
+            for (const client of billingClients) {
               if (!client.name) continue;
               const firstWord = client.name.split(/\s+/)[0].toLowerCase();
               const match = digestPages.filter(p => (nStr(p.properties['Name'])||'').toLowerCase().includes(firstWord));
@@ -298,33 +514,38 @@ jobs:
             }
             console.log(`  Digests fetched: ${Object.keys(digestsByClientId).length}`);
 
-            // Zendesk — search by client keyword directly (no org-list pagination issues)
-            console.log('Fetching Zendesk tickets…');
+            // ── 8. Zendesk tickets (billing only) ────────────────────────────
+            console.log('Fetching Zendesk tickets for billing clients…');
             const ticketsByClientId = {};
+            const billingForZd = allClients.filter(c => c.lob === 'billing' || (Array.isArray(c.lob) && c.lob.includes('billing')));
             if (ZD_AUTH) {
-              for (const client of clients) {
+              for (const client of billingForZd) {
                 if (!client.name) continue;
                 const ts = await fetchZdTicketsForClient(client.name);
                 if (ts.length) {
                   ticketsByClientId[client.id] = ts;
-                  console.log(`  ${client.name}: ${ts.length} tickets (kw: ${zdKeyword(client.name)})`);
+                  console.log(`  ${client.name}: ${ts.length} tickets`);
                 }
               }
               const total = Object.values(ticketsByClientId).reduce((s,a)=>s+a.length,0);
               console.log(`  Total: ${Object.keys(ticketsByClientId).length} clients, ${total} tickets`);
             }
 
+            // ── 9. Write snapshot ─────────────────────────────────────────────
             const snapshot = {
               updatedAt: new Date().toISOString(),
-              clients,
+              clients: allClients,
               briefsByClientId,
+              psaBriefsByClientId,
+              interactionsByClientId,
               digestsByClientId,
               ticketsByClientId,
             };
 
             fs.mkdirSync('data', { recursive: true });
             fs.writeFileSync('data/portfolio.json', JSON.stringify(snapshot));
-            console.log('Snapshot written:', JSON.stringify(snapshot).length, 'bytes');
+            const bytes = JSON.stringify(snapshot).length;
+            console.log(`Snapshot written: ${bytes.toLocaleString()} bytes, ${allClients.length} clients`);
           })();
           SCRIPT
 
