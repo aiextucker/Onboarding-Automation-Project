@@ -349,6 +349,49 @@ body {
 .psa-sentiment.s-high { color: var(--green); }
 .psa-sentiment.s-mid  { color: var(--yellow); }
 .psa-sentiment.s-low  { color: var(--red); }
+.milestone-list {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+.milestone-list-header {
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 8px;
+}
+.milestone-list-header h3 { font-size: 0.9rem; font-weight: 600; }
+.milestone-row-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 18px;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.84rem;
+  transition: background .1s;
+}
+.milestone-row-item:last-child { border-bottom: none; }
+.milestone-row-item:hover { background: var(--surface2); }
+.ms-check {
+  width: 18px; height: 18px; flex-shrink: 0;
+  border-radius: 50%; border: 2px solid var(--border-hi);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.65rem;
+}
+.ms-check.completed { background: var(--teal); border-color: var(--teal); color: #fff; }
+.ms-check.in-progress { background: var(--yellow-bg); border-color: var(--yellow); color: var(--yellow); }
+.ms-check.overdue { background: var(--red-bg); border-color: var(--red); color: var(--red); }
+.ms-name { flex: 1; color: var(--text-dim); }
+.ms-name.completed { color: var(--text-mute); text-decoration: line-through; }
+.ms-name.overdue { color: var(--text); }
+.ms-status-badge {
+  font-size: 0.7rem; font-weight: 600; padding: 1px 7px; border-radius: 20px; white-space: nowrap;
+}
+.ms-status-badge.completed   { background: var(--green-bg); color: var(--teal); }
+.ms-status-badge.in-progress { background: var(--yellow-bg); color: var(--yellow); }
+.ms-status-badge.not-started { background: var(--surface3); color: var(--text-mute); }
+.ms-status-badge.overdue     { background: var(--red-bg); color: var(--red); }
+.ms-due { font-size: 0.72rem; color: var(--text-mute); white-space: nowrap; }
 .long-term-rts-flag {
   display: inline-flex; align-items: center; gap: 5px;
   background: var(--orange-bg); color: var(--orange);
@@ -886,7 +929,8 @@ async function fetchClientData(clientId, days) {
   // Digest (billing only)
   const digest = hasBilling(client) ? (snapshot.digestsByClientId?.[clientId] || null) : null;
 
-  return { briefs, allBriefs, psaBriefs, allPsaBriefs, interactions, tickets, psaTickets, digest, latestBilling, staleCall };
+  const psaMilestones = hasPsa(client) ? (snapshot.psaMilestonesByClientId?.[clientId] || []) : [];
+  return { briefs, allBriefs, psaBriefs, allPsaBriefs, interactions, tickets, psaTickets, psaMilestones, digest, latestBilling, staleCall };
 }
 
 // ── Autocomplete ──────────────────────────────────────────────────────────────
@@ -980,7 +1024,7 @@ function showError(msg) {
 }
 
 function renderClientView(client, data) {
-  const { briefs = [], allBriefs = [], psaBriefs = [], interactions = [], tickets = [], psaTickets = [], digest } = data;
+  const { briefs = [], allBriefs = [], psaBriefs = [], interactions = [], tickets = [], psaTickets = [], psaMilestones = [], digest } = data;
   const main = document.getElementById('main');
   main.innerHTML = '';
 
@@ -1059,11 +1103,13 @@ function renderClientView(client, data) {
   if (client.notionUrl && isBilling) links.push(`<a class="ql-link notion" href="${esc(client.notionUrl)}" target="_blank">📝 Notion</a>`);
   if (isPsa && client.psaNotionUrl) links.push(`<a class="ql-link psa-internal" href="${esc(client.psaNotionUrl)}" target="_blank">🔷 PSA Notion</a>`);
 
+  const trackerBtn = hasBilling(client) && !isPsa
+    ? `<a class="tracker-btn" href="#" target="_blank" onclick="openTracker(event)">▶ Open Tracker</a>` : '';
   main.insertAdjacentHTML('beforeend', `
     <div class="quick-links-bar">
       ${links.join('')}
       <span class="ql-sep"></span>
-      <a class="tracker-btn" href="#" target="_blank" onclick="openTracker(event)">▶ Open Tracker</a>
+      ${trackerBtn}
     </div>
   `);
 
@@ -1281,6 +1327,41 @@ function renderClientView(client, data) {
           <span class="ticket-count ${ptCount ? 'has-tickets' : ''}">${ptCount} ticket${ptCount !== 1 ? 's' : ''}</span>
         </div>
         ${ptCount ? '<div class="ticket-list">' + ptRows + '</div>' : '<div class="no-tickets">No open PSA tickets.</div>'}
+      </div>`);
+  }
+
+  // ── PSA milestones ──
+  if (isPsa && psaMilestones.length) {
+    main.insertAdjacentHTML('beforeend', `
+      <div class="section-title">Training Milestones${isDual(client) ? '<span class="lob-tag psa">PSA</span>' : ''}</div>`);
+    const completed = psaMilestones.filter(m => m.status === 'Completed').length;
+    const total = psaMilestones.length;
+    const overdue = psaMilestones.filter(m => m.isOverdue).length;
+    const rows = psaMilestones.map(m => {
+      const isComp = m.status === 'Completed';
+      const isIP   = m.status === 'In Progress';
+      const isOD   = m.isOverdue && !isComp;
+      const checkCls  = isComp ? 'completed' : isOD ? 'overdue' : isIP ? 'in-progress' : '';
+      const checkIcon = isComp ? '✓' : isOD ? '!' : isIP ? '…' : '';
+      const nameCls   = isComp ? 'completed' : isOD ? 'overdue' : '';
+      const badgeCls  = isComp ? 'completed' : isOD ? 'overdue' : isIP ? 'in-progress' : 'not-started';
+      const badgeTxt  = isOD ? 'Overdue' : m.status || '—';
+      return `
+        <div class="milestone-row-item">
+          <div class="ms-check ${checkCls}">${checkIcon}</div>
+          <span class="ms-name ${nameCls}">${esc(m.name || '—')}</span>
+          ${m.phase ? `<span style="font-size:0.7rem;color:var(--text-mute)">${esc(m.phase)}</span>` : ''}
+          <span class="ms-status-badge ${badgeCls}">${esc(badgeTxt)}</span>
+          ${m.due ? `<span class="ms-due">${fmtDate(m.due)}</span>` : ''}
+        </div>`;
+    }).join('');
+    main.insertAdjacentHTML('beforeend', `
+      <div class="milestone-list">
+        <div class="milestone-list-header">
+          <h3>Training Milestones</h3>
+          <span style="font-size:0.78rem;color:var(--text-mute)">${completed} / ${total} complete${overdue ? ` · <span style="color:var(--red)">${overdue} overdue</span>` : ''}</span>
+        </div>
+        ${rows}
       </div>`);
   }
 
