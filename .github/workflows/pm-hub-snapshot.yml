@@ -107,7 +107,8 @@ jobs:
             'services','solutions','tech','technology','technologies','telecom','communications',
             'telephone','voip','systems','network','data','global','digital','cloud','psa','mig',
             'migration','internal','bob','north','south','east','west','public','comm',
-            'rev','io','to','from','with','project','calls','call','white','label']);
+            'rev','io','to','from','with','project','calls','call','white','label',
+            'security','lock','alarm','surveillance','fire','safety','protection','monitoring']);
 
           function tok(s) {
             return s.toLowerCase().split(/[\s\-\/,().&+]+/).filter(t => t.length >= 3 && !STOP.has(t));
@@ -122,6 +123,24 @@ jobs:
             const [sh, lo] = at.length <= bt.length ? [at, bt] : [bt, at];
             const hits = sh.filter(st => lo.some(lt => lt.includes(st) || st.includes(lt)));
             return hits.length / sh.length >= 0.5;
+          }
+
+          // Stricter match for PSA brief-to-client matching — first significant token of each
+          // must cross-validate before falling back to overlap scoring.
+          function psaNameMatch(briefTitle, clientName) {
+            if (!briefTitle || !clientName) return false;
+            const a = briefTitle.toLowerCase().trim();
+            const b = clientName.toLowerCase().trim();
+            if (a === b) return true;
+            if (a.includes(b) || b.includes(a)) return true;
+            const at = tok(a), bt = tok(b);
+            if (!at.length || !bt.length) return false;
+            // First significant token of each side must appear in the other
+            if (!bt.some(bt0 => at[0].includes(bt0) || bt0.includes(at[0]))) return false;
+            if (!at.some(at0 => bt[0].includes(at0) || at0.includes(bt[0]))) return false;
+            const [sh, lo] = at.length <= bt.length ? [at, bt] : [bt, at];
+            const hits = sh.filter(st => lo.some(lt => lt.includes(st) || st.includes(lt))).length;
+            return hits / sh.length >= 0.6;
           }
 
           // ── Zendesk helpers ──────────────────────────────────────────────────
@@ -439,7 +458,7 @@ jobs:
             for (const client of allClients) {
               if (!client.psaId || !client.name) continue;
               const primaryId = client.id;
-              psaBriefsByClientId[primaryId] = allPsaBriefs.filter(b => b.title && nameMatch(b.title, client.name));
+              psaBriefsByClientId[primaryId] = allPsaBriefs.filter(b => b.title && psaNameMatch(b.title, client.name));
             }
 
             // Attach lastPsaCall to PSA clients
