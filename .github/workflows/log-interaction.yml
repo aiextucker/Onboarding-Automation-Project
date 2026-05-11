@@ -1,0 +1,60 @@
+name: Log PSA Interaction
+
+on:
+  repository_dispatch:
+    types: [log-interaction]
+
+jobs:
+  log:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write interaction to Notion
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+        run: |
+          node - <<'EOF'
+          const payload = ${{ toJSON(github.event.client_payload) }};
+          const token   = process.env.NOTION_TOKEN;
+
+          const INTERACTIONS_DB = '6246303e-1e51-408f-ad7e-85ad865d449d';
+
+          // Build title — use provided title or auto-generate
+          const title = (payload.title || '').trim() ||
+            `${payload.type || 'Interaction'} — ${payload.date || new Date().toISOString().slice(0,10)}`;
+
+          const properties = {
+            'Interaction': { title: [{ text: { content: title } }] },
+            'Date':        { date: { start: payload.date || new Date().toISOString().slice(0,10) } },
+          };
+
+          if (payload.type)    properties['Interaction Type'] = { select: { name: payload.type } };
+          if (payload.outcome) properties['Outcome']          = { select: { name: payload.outcome } };
+          if (payload.sentiment) properties['Sentiment Score'] = { select: { name: String(payload.sentiment) } };
+          if (payload.notes)   properties['Notes']            = { rich_text: [{ text: { content: payload.notes } }] };
+          if (payload.followUpNeeded) {
+            properties['Follow-up Needed'] = { checkbox: true };
+            if (payload.followUpDate) {
+              properties['Follow-up Date'] = { date: { start: payload.followUpDate } };
+            }
+          }
+          if (payload.psaId)   properties['🏢 Client'] = { relation: [{ id: payload.psaId }] };
+
+          const body = { parent: { database_id: INTERACTIONS_DB }, properties };
+
+          const res = await fetch('https://api.notion.com/v1/pages', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Notion-Version': '2022-06-28',
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(body),
+          });
+
+          const data = await res.json();
+          if (!res.ok) {
+            console.error('Notion API error:', res.status, JSON.stringify(data));
+            process.exit(1);
+          }
+          console.log('Interaction logged:', data.id, '—', title);
+          EOF

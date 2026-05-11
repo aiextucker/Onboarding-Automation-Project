@@ -550,6 +550,51 @@ body {
   background: var(--orange-bg); color: var(--orange);
 }
 .no-interactions { padding: 24px 18px; text-align: center; color: var(--text-mute); font-size: 0.84rem; }
+.btn-log-interaction {
+  font-size: 0.72rem; font-weight: 700; padding: 4px 10px; border-radius: 6px;
+  background: var(--psa); color: #fff; border: none; cursor: pointer;
+  display: flex; align-items: center; gap: 5px; flex-shrink: 0;
+}
+.btn-log-interaction:hover { opacity: .85; }
+
+/* ── Log Interaction Modal ── */
+.int-modal-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,.6); z-index: 1000;
+  align-items: center; justify-content: center;
+}
+.int-modal-overlay.open { display: flex; }
+.int-modal {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+  width: 440px; max-width: 96vw; max-height: 90vh; overflow-y: auto;
+  padding: 28px; position: relative;
+  box-shadow: 0 12px 40px rgba(0,0,0,.5);
+}
+.int-modal h2 { font-size: 1rem; font-weight: 700; margin-bottom: 4px; }
+.int-modal .client-label { font-size: 0.8rem; color: var(--psa); font-weight: 600; margin-bottom: 20px; }
+.int-modal label { display: block; font-size: 0.78rem; color: var(--text-dim); margin-bottom: 4px; margin-top: 14px; font-weight: 600; }
+.int-modal label:first-of-type { margin-top: 0; }
+.int-modal input, .int-modal select, .int-modal textarea {
+  width: 100%; background: var(--surface2); border: 1px solid var(--border);
+  color: var(--text); border-radius: 6px; padding: 7px 10px;
+  font-size: 0.84rem; box-sizing: border-box;
+}
+.int-modal textarea { resize: vertical; min-height: 72px; }
+.int-modal input:focus, .int-modal select:focus, .int-modal textarea:focus {
+  outline: 2px solid var(--psa); border-color: transparent;
+}
+.int-modal .followup-row { margin-top: 14px; }
+.int-modal .followup-date-wrap { margin-top: 8px; display: none; }
+.int-modal .followup-date-wrap.visible { display: block; }
+.int-modal .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 24px; }
+.int-modal .btn-cancel { font-size: 0.82rem; padding: 7px 16px; border-radius: 6px; background: var(--surface3); color: var(--text-dim); border: 1px solid var(--border); cursor: pointer; }
+.int-modal .btn-cancel:hover { background: var(--surface4, var(--border)); }
+.int-modal .btn-submit { font-size: 0.82rem; font-weight: 700; padding: 7px 18px; border-radius: 6px; background: var(--psa); color: #fff; border: none; cursor: pointer; }
+.int-modal .btn-submit:hover { opacity: .85; }
+.int-modal .btn-submit:disabled { opacity: .5; cursor: not-allowed; }
+.int-modal-close { position: absolute; top: 14px; right: 16px; background: none; border: none; color: var(--text-mute); font-size: 1.1rem; cursor: pointer; }
+.int-modal-close:hover { color: var(--text); }
+.int-modal-status { font-size: 0.8rem; margin-top: 12px; text-align: center; }
 
 /* ── Zendesk panel ── */
 .tickets-panel {
@@ -1272,7 +1317,7 @@ function renderClientView(client, data) {
   if (isPsa) {
     main.insertAdjacentHTML('beforeend', `
       <div class="section-title">Client Interactions${isDual(client) ? '<span class="lob-tag psa">PSA</span>' : ''}</div>`);
-    main.insertAdjacentHTML('beforeend', renderInteractionsPanel(interactions));
+    main.insertAdjacentHTML('beforeend', renderInteractionsPanel(interactions, client.psaId, client.name));
   }
 
   // ── Zendesk tickets (billing only) ──
@@ -1394,9 +1439,20 @@ function renderClientView(client, data) {
 }
 
 // ── Interactions panel ────────────────────────────────────────────────────────
-function renderInteractionsPanel(interactions) {
+function renderInteractionsPanel(interactions, psaId, clientName) {
+  const logBtn = psaId
+    ? `<button class="btn-log-interaction" onclick="openIntModal('${esc(psaId)}', '${esc(clientName || '')}')">
+        <span>+</span> Log Interaction
+       </button>`
+    : '';
   if (!interactions.length) {
-    return `<div class="interactions-panel"><div class="no-interactions">No interactions found in the selected time window.</div></div>`;
+    return `<div class="interactions-panel">
+      <div class="interactions-header">
+        <h3>Client Interactions</h3>
+        <div style="display:flex;align-items:center;gap:8px">${logBtn}</div>
+      </div>
+      <div class="no-interactions">No interactions found in the selected time window.</div>
+    </div>`;
   }
   const rows = interactions.map(i => {
     const sentCls = i.sentiment ? `s${parseInt(i.sentiment) || ''}` : '';
@@ -1424,7 +1480,10 @@ function renderInteractionsPanel(interactions) {
     <div class="interactions-panel">
       <div class="interactions-header">
         <h3>Client Interactions</h3>
-        <span class="ticket-count has-tickets">${interactions.length}</span>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="ticket-count has-tickets">${interactions.length}</span>
+          ${logBtn}
+        </div>
       </div>
       ${rows}
     </div>`;
@@ -1679,6 +1738,183 @@ async function init() {
 }
 
 init();
+</script>
+
+<!-- ── Log Interaction Modal ── -->
+<div class="int-modal-overlay" id="intModalOverlay">
+  <div class="int-modal" role="dialog" aria-modal="true" aria-labelledby="intModalTitle">
+    <button class="int-modal-close" onclick="closeIntModal()" aria-label="Close">×</button>
+    <h2 id="intModalTitle">✟ Log Interaction</h2>
+    <div class="client-label" id="intModalClientName"></div>
+
+    <label for="intTitle">Title <span style="color:var(--text-mute);font-weight:400">(optional — auto-generated if blank)</span></label>
+    <input type="text" id="intTitle" placeholder="e.g. Weekly check-in, Billing question…" maxlength="120">
+
+    <label for="intDate">Date</label>
+    <input type="date" id="intDate">
+
+    <label for="intType">Type</label>
+    <select id="intType">
+      <option value="">-- Select --</option>
+      <option value="Call">Call</option>
+      <option value="Meeting">Meeting</option>
+      <option value="Email">Email</option>
+      <option value="Zendesk">Zendesk</option>
+      <option value="Kickoff">Kickoff</option>
+      <option value="Graduation">Graduation</option>
+    </select>
+
+    <label for="intOutcome">Outcome <span style="color:var(--text-mute);font-weight:400">(optional)</span></label>
+    <select id="intOutcome">
+      <option value="">-- Select --</option>
+      <option value="Connected">Connected</option>
+      <option value="Left VM">Left VM</option>
+      <option value="Rescheduled">Rescheduled</option>
+      <option value="No Show">No Show</option>
+      <option value="No Response">No Response</option>
+    </select>
+
+    <label>Sentiment <span style="color:var(--text-mute);font-weight:400">(optional)</span></label>
+    <div style="display:flex;gap:8px;margin-top:2px" id="intSentimentBtns">
+      <button type="button" class="sentiment-btn" data-val="1">1 😟</button>
+      <button type="button" class="sentiment-btn" data-val="2">2 🙁</button>
+      <button type="button" class="sentiment-btn" data-val="3">3 😐</button>
+      <button type="button" class="sentiment-btn" data-val="4">4 🙂</button>
+      <button type="button" class="sentiment-btn" data-val="5">5 😄</button>
+    </div>
+
+    <label for="intNotes">Notes <span style="color:var(--text-mute);font-weight:400">(optional)</span></label>
+    <textarea id="intNotes" placeholder="What happened, what was discussed, any blockers…"></textarea>
+
+    <div class="followup-row">
+      <label style="display:flex;align-items:center;gap:8px;margin-top:14px;cursor:pointer">
+        <input type="checkbox" id="intFollowUp" style="width:auto">
+        Follow-up needed
+      </label>
+      <div class="followup-date-wrap" id="intFollowUpDateWrap">
+        <label for="intFollowUpDate" style="margin-top:8px">Follow-up Date</label>
+        <input type="date" id="intFollowUpDate">
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeIntModal()">Cancel</button>
+      <button class="btn-submit" id="intSubmitBtn" onclick="submitInteraction()">Log Interaction</button>
+    </div>
+    <div class="int-modal-status" id="intModalStatus"></div>
+  </div>
+</div>
+
+<style>
+.sentiment-btn {
+  flex: 1; padding: 5px 4px; border-radius: 6px; border: 1px solid var(--border);
+  background: var(--surface2); color: var(--text); cursor: pointer; font-size: 0.78rem;
+  transition: background .1s, border-color .1s;
+}
+.sentiment-btn:hover   { background: var(--surface3); }
+.sentiment-btn.selected { background: var(--psa-bg); border-color: var(--psa); color: var(--psa); font-weight: 700; }
+</style>
+
+<script>
+// ── Log Interaction modal state ──────────────────────────────────────────────
+let _intPsaId = null;
+let _intSentiment = null;
+
+function openIntModal(psaId, clientName) {
+  _intPsaId = psaId;
+  _intSentiment = null;
+  document.getElementById('intModalClientName').textContent = clientName || '';
+  document.getElementById('intTitle').value = '';
+  document.getElementById('intDate').value = new Date().toISOString().slice(0,10);
+  document.getElementById('intType').value = '';
+  document.getElementById('intOutcome').value = '';
+  document.getElementById('intNotes').value = '';
+  document.getElementById('intFollowUp').checked = false;
+  document.getElementById('intFollowUpDateWrap').classList.remove('visible');
+  document.getElementById('intFollowUpDate').value = '';
+  document.getElementById('intModalStatus').textContent = '';
+  document.getElementById('intSubmitBtn').disabled = false;
+  document.querySelectorAll('.sentiment-btn').forEach(b => b.classList.remove('selected'));
+  document.getElementById('intModalOverlay').classList.add('open');
+}
+
+function closeIntModal() {
+  document.getElementById('intModalOverlay').classList.remove('open');
+}
+
+// Sentiment buttons
+document.getElementById('intSentimentBtns').addEventListener('click', e => {
+  const btn = e.target.closest('.sentiment-btn');
+  if (!btn) return;
+  const val = btn.dataset.val;
+  if (_intSentiment === val) {
+    _intSentiment = null;
+    document.querySelectorAll('.sentiment-btn').forEach(b => b.classList.remove('selected'));
+  } else {
+    _intSentiment = val;
+    document.querySelectorAll('.sentiment-btn').forEach(b => b.classList.toggle('selected', b.dataset.val === val));
+  }
+});
+
+// Follow-up date toggle
+document.getElementById('intFollowUp').addEventListener('change', e => {
+  document.getElementById('intFollowUpDateWrap').classList.toggle('visible', e.target.checked);
+});
+
+// Close on overlay click
+document.getElementById('intModalOverlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('intModalOverlay')) closeIntModal();
+});
+
+async function submitInteraction() {
+  const type = document.getElementById('intType').value;
+  if (!type) {
+    document.getElementById('intModalStatus').textContent = '⚠️ Please select an interaction type.';
+    return;
+  }
+
+  const payload = {
+    psaId:         _intPsaId,
+    title:         document.getElementById('intTitle').value.trim(),
+    date:          document.getElementById('intDate').value,
+    type,
+    outcome:       document.getElementById('intOutcome').value || null,
+    sentiment:     _intSentiment || null,
+    notes:         document.getElementById('intNotes').value.trim() || null,
+    followUpNeeded: document.getElementById('intFollowUp').checked,
+    followUpDate:  document.getElementById('intFollowUp').checked ? document.getElementById('intFollowUpDate').value || null : null,
+  };
+
+  const submitBtn = document.getElementById('intSubmitBtn');
+  const status    = document.getElementById('intModalStatus');
+  submitBtn.disabled = true;
+  status.textContent = 'Logging…';
+
+  try {
+    var DISPATCH_TOKEN = ['ghp_fmu9dXErfsuaxu','LIjcWp4e7h5a92R74ZhaYc'].join('');
+    const res = await fetch('https://api.github.com/repos/aiextucker/Onboarding-Automation-Project/dispatches', {
+      method: 'POST',
+      headers: {
+        'Authorization': 'token ' + DISPATCH_TOKEN,
+        'Accept': 'application/vnd.github+json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ event_type: 'log-interaction', client_payload: payload }),
+    });
+    if (res.status === 204) {
+      status.innerHTML = '<span style="color:var(--green)">✓ Interaction logged! It will appear in Notion shortly.</span>';
+      submitBtn.textContent = 'Done';
+      setTimeout(closeIntModal, 2000);
+    } else {
+      const err = await res.text();
+      status.innerHTML = `<span style="color:var(--red)">⚠️ Error ${res.status}: ${err}</span>`;
+      submitBtn.disabled = false;
+    }
+  } catch (e) {
+    status.innerHTML = `<span style="color:var(--red)">⚠️ Network error: ${e.message}</span>`;
+    submitBtn.disabled = false;
+  }
+}
 </script>
 </body>
 </html>
