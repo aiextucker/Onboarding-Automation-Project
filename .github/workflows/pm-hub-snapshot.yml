@@ -110,12 +110,22 @@ jobs:
             'rev','io','to','from','with','project','calls','call','white','label',
             'security','lock','alarm','surveillance','fire','safety','protection','monitoring']);
 
+          // Normalize unicode punctuation so curly/smart quotes match straight ones
+          function norm(s) {
+            return s
+              .replace(/[\u2018\u2019\u201a\u201b\u0060\u00b4]/g, "'")
+              .replace(/[\u201c\u201d\u201e\u201f]/g, '"')
+              .replace(/\u2013|\u2014/g, '-');
+          }
+
           function tok(s) {
-            return s.toLowerCase().split(/[\s\-\/,().&+]+/).filter(t => t.length >= 3 && !STOP.has(t));
+            return norm(s).toLowerCase()
+              .split(/[\s\-\/,().&+'"\u2019]+/)
+              .filter(t => t.length >= 3 && !STOP.has(t));
           }
 
           function nameMatch(a, b) {
-            const al = a.toLowerCase(), bl = b.toLowerCase();
+            const al = norm(a).toLowerCase(), bl = norm(b).toLowerCase();
             if (al === bl) return true;
             if (al.includes(bl) || bl.includes(al)) return true;
             const at = tok(a), bt = tok(b);
@@ -127,21 +137,27 @@ jobs:
 
           // Stricter match for PSA brief-to-client matching — first significant token of each
           // must cross-validate before falling back to overlap scoring.
+          // Falls back gracefully when STOP words consume all tokens (e.g. "A&B Security").
           function psaNameMatch(briefTitle, clientName) {
             if (!briefTitle || !clientName) return false;
-            const a = briefTitle.toLowerCase().trim();
-            const b = clientName.toLowerCase().trim();
+            const a = norm(briefTitle).toLowerCase().trim();
+            const b = norm(clientName).toLowerCase().trim();
             if (a === b) return true;
             if (a.includes(b) || b.includes(a)) return true;
             const at = tok(a), bt = tok(b);
-            if (!at.length || !bt.length) return false;
-            // First significant token of each side must appear in the other
+            const aFirst = a.split(/[\s\-\/,().&+'"\u2019]+/).find(t => t.length >= 2) || '';
+            const bFirst = b.split(/[\s\-\/,().&+'"\u2019]+/).find(t => t.length >= 2) || '';
+            if (!at.length || !bt.length) {
+              return aFirst.length >= 2 && bFirst.length >= 2 &&
+                     (aFirst.includes(bFirst) || bFirst.includes(aFirst));
+            }
             if (!bt.some(bt0 => at[0].includes(bt0) || bt0.includes(at[0]))) return false;
             if (!at.some(at0 => bt[0].includes(at0) || at0.includes(bt[0]))) return false;
             const [sh, lo] = at.length <= bt.length ? [at, bt] : [bt, at];
             const hits = sh.filter(st => lo.some(lt => lt.includes(st) || st.includes(lt))).length;
             return hits / sh.length >= 0.6;
           }
+
 
           // ── Zendesk helpers ──────────────────────────────────────────────────
           const ZD_STOP = new Set(['migration','to','rev','io','inc','llc','ltd','corp','co',
