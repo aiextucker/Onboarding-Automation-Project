@@ -345,6 +345,32 @@
     .tag-orange  { background: var(--orange-soft);    color: var(--orange);    border: 1px solid rgba(232,98,58,0.25); }
     .tag-warn    { background: rgba(245,197,66,0.1);  color: #f5c542;          border: 1px solid rgba(245,197,66,0.2); }
 
+    /* ─── N/A toggle ─────────────────────────── */
+    .na-btn {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 4px;
+      padding: 3px 8px;
+      cursor: pointer;
+      transition: all 0.15s;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .na-btn:hover { border-color: var(--text-muted); color: var(--text-muted); }
+    .na-btn.active {
+      background: rgba(139,164,192,0.15);
+      border-color: var(--text-muted);
+      color: var(--text-muted);
+    }
+    .criterion.is-na .criterion-title { opacity: 0.4; text-decoration: line-through; }
+    .criterion.is-na .criterion-desc  { opacity: 0.3; }
+    .criterion.is-na .criterion-check { opacity: 0.25; pointer-events: none; }
+
     .criterion-example {
       display: flex;
       align-items: center;
@@ -747,19 +773,21 @@
       <div class="section-header">
         <div class="section-icon">🔗</div>
         <span class="section-title">7. Integrations</span>
-        <span class="section-badge">Required</span>
+        <span class="section-badge" style="background:rgba(35,153,181,0.12);color:var(--turquoise);border-color:rgba(35,153,181,0.25)">If Applicable</span>
       </div>
       <div class="section-body">
-        <div class="criterion">
+        <div class="criterion" id="int-qbo">
           <div class="criterion-check" onclick="toggleCheck(this)"></div>
+          <button class="na-btn" onclick="toggleNA('int-qbo')">N/A</button>
           <div class="criterion-content">
             <div class="criterion-title">QuickBooks Online (QBO) integration connected and error-free</div>
             <div class="criterion-desc">QBO sync is enabled <strong>and</strong> the error log is clean — no failed sync events. Activation alone is not sufficient; confirm the integration is actively passing data without errors.</div>
             <div class="tags"><span class="tag tag-orange">Config</span><span class="tag tag-warn">Verify Logs</span></div>
           </div>
         </div>
-        <div class="criterion">
+        <div class="criterion" id="int-cal">
           <div class="criterion-check" onclick="toggleCheck(this)"></div>
+          <button class="na-btn" onclick="toggleNA('int-cal')">N/A</button>
           <div class="criterion-content">
             <div class="criterion-title">Calendar sync connected and confirmed</div>
             <div class="criterion-desc">Calendar integration (e.g. Google Calendar, Microsoft 365) is active and syncing correctly. Required for any client using dispatch. Verify at least one technician's calendar is linked and reflecting PSA schedule.</div>
@@ -814,29 +842,42 @@
 
 <script>
   const TOTAL = 16;
+  const NA_IDS = ['int-qbo', 'int-cal'];
 
   function toggleCheck(el) {
     el.classList.toggle('checked');
     updateProgress();
   }
 
+  function toggleNA(id) {
+    const row = document.getElementById(id);
+    const btn = row.querySelector('.na-btn');
+    const isNow = row.classList.toggle('is-na');
+    btn.classList.toggle('active', isNow);
+    // uncheck the checkbox if marking N/A
+    if (isNow) row.querySelector('.criterion-check').classList.remove('checked');
+    updateProgress();
+  }
+
   function updateProgress() {
-    const checked = document.querySelectorAll('.criterion-check.checked').length;
-    const pct = Math.round((checked / TOTAL) * 100);
+    const checked  = document.querySelectorAll('.criterion-check.checked').length;
+    const naCount  = NA_IDS.filter(id => document.getElementById(id)?.classList.contains('is-na')).length;
+    const satisfied = checked + naCount;
+    const pct = Math.round((satisfied / TOTAL) * 100);
     document.getElementById('progressFill').style.width = pct + '%';
-    document.getElementById('progressCount').textContent = checked + ' of ' + TOTAL + ' criteria met';
+    document.getElementById('progressCount').textContent = satisfied + ' of ' + TOTAL + ' criteria met';
 
     const dot  = document.getElementById('statusDot');
     const text = document.getElementById('statusText');
     const btn  = document.getElementById('graduateBtn');
 
-    if (checked === TOTAL) {
+    if (satisfied === TOTAL) {
       dot.classList.add('ready');
       text.textContent = '✓ All criteria met — client is ready to graduate';
       btn.disabled = false;
     } else {
       dot.classList.remove('ready');
-      text.textContent = checked + ' of 16 criteria met — not ready to graduate';
+      text.textContent = satisfied + ' of 16 criteria met — not ready to graduate';
       btn.disabled = true;
     }
   }
