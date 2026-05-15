@@ -43,10 +43,11 @@ hr { border:0; border-top:1px solid var(--border); margin:28px 0; }
 </ul>
 <hr>
 <h2>2. Standard SA Readout</h2>
-<blockquote>“<code>[Client]</code> is forecast for <code>[graduation date]</code>. Confidence is <code>[High / Medium / Low]</code>. They are <code>[percent]%</code> complete.”</blockquote>
-<blockquote>“Completed: <code>[phase/milestone list]</code>. Next: <code>[next milestone]</code>. Blocked by: <code>[none / blocker]</code>.”</blockquote>
-<blockquote>“Recommendation: <code>[keep date / move date / RTS / on hold / pre-cancel / escalate]</code>.”</blockquote>
-<blockquote>“Owner/action: <code>[owner]</code> will <code>[action]</code> by <code>[date]</code>.”</blockquote>
+<blockquote>“<code>[Client]</code> is forecast for <code>[graduation date]</code>. Confidence is <code>[High / Medium / Low]</code>. Blocker status: <code>[No blockers / Blocked by X]</code>.”</blockquote>
+<p>If no blocker:</p>
+<blockquote>“No blockers. Recommendation: keep the forecast date.”</blockquote>
+<p>If blocked:</p>
+<blockquote>“Blocked by <code>[blocker]</code>. Owner: <code>[owner]</code>. Clear path: <code>[action/workaround/escalation]</code>. Needed by <code>[date]</code>. Recommendation: <code>[keep date / move date / RTS / on hold / pre-cancel / escalate]</code>.”</blockquote>
 <h3>Fields</h3>
 <ul>
 <li>Client:</li>
@@ -55,9 +56,7 @@ hr { border:0; border-top:1px solid var(--border); margin:28px 0; }
 <li>Status: <code>[Active / On Hold / RTS / Pre-cancel / Graduating / Graduated]</code></li>
 <li>Forecast graduation date:</li>
 <li>Confidence: <code>[High / Medium / Low]</code></li>
-<li>Percent complete:</li>
-<li>Completed phases:</li>
-<li>Next phase:</li>
+<li>Blocker status: <code>[None / Blocked]</code></li>
 <li>Blocker:</li>
 <li>Owner:</li>
 <li>Due date:</li>
@@ -66,11 +65,11 @@ hr { border:0; border-top:1px solid var(--border); margin:28px 0; }
 <hr>
 <h2>3. Confidence Language</h2>
 <h3>High</h3>
-<blockquote>“High confidence. The date is good. Remaining work is <code>[work]</code>, scheduled for <code>[date]</code>.”</blockquote>
+<blockquote>“High confidence. No blocker. Date is good.”</blockquote>
 <h3>Medium</h3>
-<blockquote>“Medium confidence. Holding the forecast for now, dependent on <code>[dependency]</code> by <code>[date]</code>. If that misses, move to <code>[new date]</code>.”</blockquote>
+<blockquote>“Medium confidence. Blocker is owned and expected to clear by <code>[date]</code>. If it misses, move to <code>[new date]</code>.”</blockquote>
 <h3>Low</h3>
-<blockquote>“Low confidence. <code>[date]</code> is not credible unless <code>[specific thing]</code> happens by <code>[date]</code>. Recommendation: <code>[move date / RTS / escalate]</code>.”</blockquote>
+<blockquote>“Low confidence. Forecast is not credible unless <code>[blocker]</code> clears by <code>[date]</code>. Recommendation: <code>[move date / RTS / escalate]</code>.”</blockquote>
 <hr>
 <h2>4. Blocker Language</h2>
 <h3>Product / Engineering</h3>
@@ -82,7 +81,7 @@ hr { border:0; border-top:1px solid var(--border); margin:28px 0; }
 <h3>Data / Import</h3>
 <blockquote>“Blocked by data/import. Missing: <code>[data/API key/template field]</code>. Owner: <code>[owner]</code>. ETA: <code>[date]</code>. Forecast impact: <code>[none / at risk / move date]</code>.”</blockquote>
 <h3>Training / Validation</h3>
-<blockquote>“Configuration is mostly complete. Remaining item: <code>[walkthrough/testing/Q&amp;A]</code>. Client action needed: <code>[action]</code>. Confidence: <code>[level]</code>.”</blockquote>
+<blockquote>“Blocked by final validation/training. Remaining item: <code>[walkthrough/testing/Q&amp;A]</code>. Client action needed: <code>[action]</code>. Confidence: <code>[level]</code>.”</blockquote>
 <hr>
 <h2>5. RTS / On-Hold</h2>
 <blockquote>“<code>[Client]</code> is <code>[On Hold / RTS]</code> because <code>[reason]</code>. Sales rep: <code>[rep]</code>. Last activity: <code>[date]</code>. Re-engagement owner: <code>[owner]</code>. If not cleared by <code>[date]</code>, recommendation: <code>[pre-cancel / cancel / keep RTS with reason]</code>.”</blockquote>
@@ -96,25 +95,15 @@ hr { border:0; border-top:1px solid var(--border); margin:28px 0; }
 <hr>
 <h2>6. Month-End Date Check</h2>
 <blockquote>“This is forecast for <code>[month-end date]</code>. Is that the real graduation date or a placeholder?”</blockquote>
-<p>Required dates:</p>
-<ul>
-<li>Final training:</li>
-<li>Final configuration:</li>
-<li>Client validation:</li>
-<li>Support handoff:</li>
-<li>Graduation:</li>
-</ul>
 <p>If placeholder:</p>
 <blockquote>“Replace with a real date or mark confidence low.”</blockquote>
 <hr>
 <h2>7. Facilitator Prompts</h2>
 <ul>
-<li>“Percent complete?”</li>
-<li>“What phases are done?”</li>
-<li>“What is next?”</li>
-<li>“What is blocking graduation?”</li>
+<li>“Any blocker?”</li>
 <li>“Who owns it?”</li>
 <li>“By what date?”</li>
+<li>“Does it threaten the forecast?”</li>
 <li>“Is this forecast date real?”</li>
 <li>“Does Sales need to re-engage?”</li>
 <li>“Stay active, RTS, or pre-cancel?”</li>
@@ -122,14 +111,14 @@ hr { border:0; border-top:1px solid var(--border); margin:28px 0; }
 </ul>
 <hr>
 <h2>8. Example Updates</h2>
-<h3>On Track</h3>
-<blockquote>“Prestige is forecast for May 28. Confidence high. 90% complete: billing, products, and ticketing are done. Final walkthrough is May 22. No blockers. Keep the date. Halle owns the walkthrough.”</blockquote>
-<h3>At Risk</h3>
-<blockquote>“Quick Copper is forecast for May 31. Confidence medium-low. Blocked by 403 permission errors when techs create contacts. Mark owns client follow-up; Ray/Engineering owns root cause. If unresolved by May 20, move to June.”</blockquote>
+<h3>No Blocker</h3>
+<blockquote>“Prestige is forecast for May 28. Confidence high. No blockers. Recommendation: keep the date.”</blockquote>
+<h3>Blocked</h3>
+<blockquote>“Quick Copper is forecast for May 31. Confidence medium-low. Blocked by 403 permission errors when techs create contacts. Owner: Ray/Engineering. Needed by May 20. If unresolved, move to June.”</blockquote>
 <h3>RTS</h3>
-<blockquote>“Atlantic is not forecastable. Client keeps pushing meetings because the acquisition dependency is not ready. Sales rep: <code>[rep]</code>. Recommendation: RTS. If no movement in two weeks, pre-cancel.”</blockquote>
+<blockquote>“Atlantic is not forecastable. Blocked by client timing tied to an acquisition. Sales rep: <code>[rep]</code>. Recommendation: RTS. If no movement in two weeks, pre-cancel.”</blockquote>
 <h3>Workaround</h3>
-<blockquote>“VanRan is blocked by subcontractor access. Workaround is one portal user plus tagging, with no added billing while Product works the correct model. Halle owns client communication; Ray owns permission guidance. Confidence medium until accepted.”</blockquote>
+<blockquote>“VanRan is forecast for <code>[date]</code>. Confidence medium. Blocked by subcontractor access. Workaround is one portal user plus tagging. Halle owns client communication; Ray owns permission guidance. If accepted, keep date.”</blockquote>
 <hr>
 <h2>9. Closeout</h2>
 <ul>
