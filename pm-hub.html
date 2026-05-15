@@ -1096,7 +1096,7 @@ function showError(msg) {
 }
 
 function renderClientView(client, data) {
-  const { briefs = [], allBriefs = [], psaBriefs = [], interactions = [], tickets = [], psaTickets = [], psaMilestones = [], digest } = data;
+  const { briefs = [], allBriefs = [], psaBriefs = [], allPsaBriefs = [], interactions = [], tickets = [], psaTickets = [], psaMilestones = [], digest } = data;
   const main = document.getElementById('main');
   main.innerHTML = '';
 
