@@ -1219,98 +1219,22 @@ function renderClientView(client, data) {
     }
   }
 
-  // ── PSA: Latest call hero ──
-  if (isPsa) {
-    const latestPsa = psaBriefs[0];
-    if (latestPsa) {
-      const riskCls = latestPsa.risk ? 'risk-' + latestPsa.risk : '';
-      const riskBadge = latestPsa.risk ? `<span class="badge risk-${esc(latestPsa.risk)}">${esc(latestPsa.risk.toLowerCase())}</span>` : '';
-      const ffLink = latestPsa.firefliesUrl
-        ? `<a class="ff-link" href="${esc(latestPsa.firefliesUrl)}" target="_blank">🎙 Transcript</a>` : '';
-      main.insertAdjacentHTML('beforeend', `
-        <div class="latest-call-panel ${riskCls}">
-          <div class="lc-header">
-            <div class="lc-title">Latest PSA Call — ${esc(latestPsa.title || 'PSA Call')}</div>
-            <div class="lc-meta">
-              ${latestPsa.date ? fmtDate(latestPsa.date) : ''}
-              ${latestPsa.sa ? `· ${esc(latestPsa.sa)}` : ''}
-              ${riskBadge}${ffLink}
-            </div>
-          </div>
-          <div class="lc-grid">
-            <div class="lc-col">
-              <div class="lc-col-label action">✔ Action Items</div>
-              ${bulletList(latestPsa.actionItems, 'lc-items', 'lc-empty')}
-            </div>
-            <div class="lc-col">
-              <div class="lc-col-label blocker">⛔ Blockers</div>
-              ${bulletList(latestPsa.blockers, 'lc-items', 'lc-empty')}
-            </div>
-            <div class="lc-col">
-              <div class="lc-col-label next">→ Key Finding</div>
-              ${bulletList(latestPsa.keyFinding, 'lc-items', 'lc-empty')}
-            </div>
-            ${latestPsa.summary ? `
-            <div class="lc-col full-col">
-              <div class="lc-col-label summary">📋 Summary</div>
-              <div class="lc-empty">${esc(latestPsa.summary)}</div>
-            </div>` : ''}
-          </div>
-        </div>`);
-    } else {
-      main.insertAdjacentHTML('beforeend', `<div class="no-latest-call">📭 No PSA call briefs found in the selected time window.</div>`);
-    }
+  // ── Daily Digest (billing only): keep the current client snapshot at the top ──
+  if (isBilling) {
+    main.insertAdjacentHTML('beforeend', `
+      <div class="section-title">Daily Digest${isDual(client) ? '<span class="lob-tag billing">Billing</span>' : ''}</div>`);
+    main.appendChild(renderDigest(digest));
+    main.appendChild(renderActionRollup(allBriefs.length ? allBriefs : briefs, isDual(client)));
   }
 
-  // ── Billing: Latest call hero ──
+  // ── Billing stale warning ──
   if (isBilling) {
-    const latest = briefs[0];
-    const sectionLabel = isDual(client) ? `<div class="section-title">Billing — Latest Call<span class="lob-tag billing">Billing</span></div>` : '';
-    if (isDual(client)) main.insertAdjacentHTML('beforeend', sectionLabel);
-    if (latest) {
-      const riskCls = latest.risk ? 'risk-' + latest.risk.toLowerCase() : '';
-      const riskBadge = latest.risk ? `<span class="badge risk-${latest.risk.toLowerCase()}">${latest.risk.toLowerCase()}</span>` : '';
-      const typeBadge = latest.callType ? `<span class="badge type-${latest.callType}">${latest.callType}</span>` : '';
-      const ffLink = latest.firefliesId
-        ? `<a class="ff-link" href="https://app.fireflies.ai/view/${esc(latest.firefliesId)}" target="_blank">🎙 Transcript</a>` : '';
-      main.insertAdjacentHTML('beforeend', `
-        <div class="latest-call-panel ${riskCls}">
-          <div class="lc-header">
-            <div class="lc-title">Latest Billing Call — ${esc(latest.title || '')}</div>
-            <div class="lc-meta">
-              ${latest.date ? fmtDate(latest.date) : ''}
-              ${latest.duration ? `· ${latest.duration} min` : ''}
-              ${latest.owner ? `· ${esc(latest.owner)}` : ''}
-              ${riskBadge}${typeBadge}${ffLink}
-            </div>
-          </div>
-          <div class="lc-grid">
-            <div class="lc-col">
-              <div class="lc-col-label action">✔ Action Items</div>
-              ${bulletList(latest.actionItems, 'lc-items', 'lc-empty')}
-            </div>
-            <div class="lc-col">
-              <div class="lc-col-label blocker">⛔ Blockers</div>
-              ${bulletList(latest.blockers, 'lc-items', 'lc-empty')}
-            </div>
-            <div class="lc-col">
-              <div class="lc-col-label next">→ Next Steps</div>
-              ${bulletList(latest.nextSteps || latest.openQuestions, 'lc-items', 'lc-empty')}
-            </div>
-          </div>
-        </div>`);
-    } else if (!isPsa) {
-      main.insertAdjacentHTML('beforeend', `<div class="no-latest-call">📭 No call briefs found in the selected time window.</div>`);
-    }
-    // stale warning
     if (data.staleCall != null && data.staleCall >= 14) {
       main.insertAdjacentHTML('beforeend', `
         <div class="stale-call-alert">
           ⚠ Last billing call was ${data.staleCall} days ago${data.latestBilling?.date ? ` (${fmtDate(data.latestBilling.date)})` : ''}.
         </div>`);
     }
-    // Action rollup (billing only)
-    main.appendChild(renderActionRollup(allBriefs.length ? allBriefs : briefs, isDual(client)));
   }
 
   // ── PSA interactions ──
@@ -1416,8 +1340,10 @@ function renderClientView(client, data) {
       <div class="section-title">PSA Call History${isDual(client) ? '<span class="lob-tag psa">PSA</span>' : ''}</div>`);
     const listEl = document.createElement('div');
     listEl.className = 'briefs-list';
-    psaBriefs.forEach(b => listEl.appendChild(renderPsaBriefCard(b)));
+    psaBriefs.forEach((b, idx) => listEl.appendChild(renderPsaBriefCard(b, idx === 0)));
     main.appendChild(listEl);
+  } else if (isPsa) {
+    main.insertAdjacentHTML('beforeend', `<div class="no-latest-call">📭 No PSA call briefs found in the selected time window.</div>`);
   }
 
   // ── Billing call history ──
@@ -1426,15 +1352,10 @@ function renderClientView(client, data) {
       <div class="section-title">Billing Call History${isDual(client) ? '<span class="lob-tag billing">Billing</span>' : ''}</div>`);
     const listEl = document.createElement('div');
     listEl.className = 'briefs-list';
-    briefs.forEach(b => listEl.appendChild(renderBriefCard(b, false)));
+    briefs.forEach((b, idx) => listEl.appendChild(renderBriefCard(b, idx === 0)));
     main.appendChild(listEl);
-  }
-
-  // ── Daily Digest (billing only) ──
-  if (isBilling) {
-    main.insertAdjacentHTML('beforeend', `
-      <div class="section-title">Daily Digest${isDual(client) ? '<span class="lob-tag billing">Billing</span>' : ''}</div>`);
-    main.appendChild(renderDigest(digest));
+  } else if (isBilling && !isPsa) {
+    main.insertAdjacentHTML('beforeend', `<div class="no-latest-call">📭 No call briefs found in the selected time window.</div>`);
   }
 }
 
@@ -1490,10 +1411,11 @@ function renderInteractionsPanel(interactions, psaId, clientName) {
 }
 
 // ── PSA brief card ────────────────────────────────────────────────────────────
-function renderPsaBriefCard(brief) {
+function renderPsaBriefCard(brief, isLatest = false) {
   const card = document.createElement('div');
-  card.className = 'brief-card';
+  card.className = 'brief-card' + (isLatest ? ' open' : '');
   const riskBadge = brief.risk ? `<span class="badge risk-${esc(brief.risk)}">${esc(brief.risk.toLowerCase())}</span>` : '';
+  const latestBadge = isLatest ? '<span class="badge" style="background:rgba(108,99,255,.12);color:var(--accent)">latest</span>' : '';
   const ffLink = brief.firefliesUrl
     ? `<a class="ff-link" href="${esc(brief.firefliesUrl)}" target="_blank">🎙 Transcript</a>` : '';
 
@@ -1502,7 +1424,7 @@ function renderPsaBriefCard(brief) {
       <span class="brief-date">${brief.date ? fmtDate(brief.date) : '—'}</span>
       <div class="brief-title-col">
         <div class="brief-title">${esc(brief.title || 'PSA Call')}</div>
-        <div class="brief-badges">${riskBadge}</div>
+        <div class="brief-badges">${latestBadge}${riskBadge}</div>
       </div>
       <div class="brief-meta">
         ${brief.sa ? `<span class="brief-owner">${esc(brief.sa)}</span>` : ''}
@@ -1524,12 +1446,13 @@ function renderPsaBriefCard(brief) {
 }
 
 // ── Billing brief card ────────────────────────────────────────────────────────
-function renderBriefCard(brief) {
+function renderBriefCard(brief, isLatest = false) {
   const card = document.createElement('div');
-  card.className = 'brief-card';
+  card.className = 'brief-card' + (isLatest ? ' open' : '');
   const riskBadge  = brief.risk     ? `<span class="badge risk-${brief.risk.toLowerCase()}">${brief.risk.toLowerCase()}</span>` : '';
   const typeBadge  = brief.callType ? `<span class="badge type-${brief.callType}">${brief.callType}</span>` : '';
   const roleBadge  = brief.ownerRole? `<span class="badge role-${brief.ownerRole}">${brief.ownerRole}</span>` : '';
+  const latestBadge = isLatest ? '<span class="badge" style="background:rgba(108,99,255,.12);color:var(--accent)">latest</span>' : '';
   const riskBanner = (brief.risk === 'high' || brief.risk === 'medium') && brief.riskReason
     ? `<div class="risk-banner ${brief.risk === 'medium' ? 'medium' : ''}">⚠ ${esc(brief.riskReason)}</div>` : '';
   const ffLink = brief.firefliesId
@@ -1540,7 +1463,7 @@ function renderBriefCard(brief) {
       <span class="brief-date">${brief.date ? fmtDate(brief.date) : '—'}</span>
       <div class="brief-title-col">
         <div class="brief-title">${esc(brief.title || '')}</div>
-        <div class="brief-badges">${typeBadge}${riskBadge}${roleBadge}</div>
+        <div class="brief-badges">${latestBadge}${typeBadge}${riskBadge}${roleBadge}</div>
       </div>
       <div class="brief-meta">
         ${brief.duration ? `<span class="brief-duration">${brief.duration} min</span>` : ''}
