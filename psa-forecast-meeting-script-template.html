@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PSA Weekly Forecast Call — SA Script Template</title>
+<style>
+:root { --bg:#0f1117; --panel:#171a23; --text:#e8eaf0; --muted:#9aa3b2; --border:#2a2f3a; --accent:#6c63ff; --green:#00d4aa; --yellow:#f6c85f; }
+* { box-sizing:border-box; }
+body { margin:0; font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif; background: radial-gradient(circle at top left, rgba(108,99,255,.16), transparent 35%), var(--bg); color:var(--text); line-height:1.6; }
+.container { max-width: 980px; margin: 0 auto; padding: 48px 22px 80px; }
+.card { background: rgba(23,26,35,.94); border:1px solid var(--border); border-radius:22px; padding: 34px; box-shadow:0 24px 70px rgba(0,0,0,.35); }
+h1 { font-size: clamp(2rem, 5vw, 3.4rem); line-height:1.05; margin:0 0 14px; letter-spacing:-.04em; }
+h2 { margin: 42px 0 12px; padding-top: 20px; border-top:1px solid var(--border); color:#fff; font-size:1.35rem; }
+h3 { margin: 28px 0 10px; color:var(--green); font-size:1.02rem; text-transform:uppercase; letter-spacing:.06em; }
+p, li { color: #d7dbe5; }
+ul { padding-left: 22px; }
+li { margin: 6px 0; }
+blockquote { margin: 14px 0; padding: 14px 18px; border-left:4px solid var(--accent); background: rgba(108,99,255,.1); border-radius: 0 12px 12px 0; color:#fff; font-weight:600; }
+code { background:#0b0d12; color:#c7c3ff; border:1px solid var(--border); border-radius:6px; padding:2px 5px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+hr { border:0; border-top:1px solid var(--border); margin:30px 0; }
+.meta { color: var(--muted); margin-bottom:26px; }
+.badge { display:inline-block; border:1px solid rgba(0,212,170,.35); color:var(--green); background:rgba(0,212,170,.08); padding:5px 10px; border-radius:999px; font-size:.78rem; font-weight:700; text-transform:uppercase; letter-spacing:.05em; margin-bottom:16px; }
+.print { position:fixed; right:18px; bottom:18px; background:var(--accent); color:white; border:0; border-radius:999px; padding:12px 16px; font-weight:700; cursor:pointer; box-shadow:0 12px 30px rgba(0,0,0,.35); }
+@media print { body { background:white; color:#111; } .card { box-shadow:none; border:0; padding:0; } .print { display:none; } p,li,blockquote,h1,h2,h3 { color:#111; } blockquote { background:#f3f4f6; } }
+</style>
+</head>
+<body>
+<button class="print" onclick="window.print()">Print / Save PDF</button>
+<main class="container">
+  <div class="badge">PSA Forecast Operations</div>
+  <section class="card">
+    <h1>PSA Weekly Forecast Call — SA Script Template</h1>
+<p>_Source transcript: Fireflies <code>PSA Web Weekly Forecast</code> (<code>01KQTXD30093B662PCRNX0JGPG</code>), 2026-05-12._</p>
+<h2>What the transcript says the script needs to solve</h2>
+<p>The call was too anecdotal and inconsistent across SAs. Evan specifically asked for a formalized script so every SA update sounds the same, moves quickly, and gives leadership an objective read on where each project actually stands.</p>
+<p>Key requirements from the transcript:</p>
+<ul>
+<li>Start with movement from last week: graduations, RTS, on-hold movement, active count.</li>
+<li>Make updates objective: checklist/phases complete, percent complete, what is done, what is next, what is blocked.</li>
+<li>Avoid rambling client-by-client narratives.</li>
+<li>Force a specific forecast date, especially for month-end forecasts.</li>
+<li>If blocked, name the blocker, owner, and strategy to clear it.</li>
+<li>Make sales/accountability visible, especially for RTS, on-hold, cancellations, and expectation mismatches.</li>
+<li>Keep client interactions current; stale activity creates false risk signals.</li>
+<li>Handle RTS/on-hold with discipline: if Sales cannot re-engage quickly, move toward pre-cancel/cancel.</li>
+</ul>
+<hr>
+<h2>1. Facilitator Opening — 2 minutes</h2>
+<blockquote>“Today we’re going to run this as an objective forecast review. We’ll start with movement since last week, then each SA will use the same format: forecast date, percent complete, completed phases, next phase, blockers, owner, and confidence. If the update does not change the forecast, say that clearly. If the forecast is at risk, name the decision or escalation needed before we move on.”</blockquote>
+<h3>Roll-up metrics to open with</h3>
+<ul>
+<li>Active onboarding count: <code>[count]</code></li>
+<li>On hold count: <code>[count]</code></li>
+<li>RTS count: <code>[count]</code></li>
+<li>Graduated since last forecast: <code>[count / clients / MRR]</code></li>
+<li>Moved to RTS since last forecast: <code>[count / clients / MRR]</code></li>
+<li>Coming out of RTS / re-engaged by Sales: <code>[count / clients]</code></li>
+<li>Month forecast target: <code>[target]</code></li>
+<li>Currently credible for this month: <code>[count]</code></li>
+<li>Forecasts sitting on last day of month: <code>[count]</code></li>
+</ul>
+<blockquote>“The key question today is not ‘what happened?’ It is: what will actually graduate, what is slipping, and what needs help?”</blockquote>
+<hr>
+<h2>2. Standard SA Readout — 60–90 seconds per client</h2>
+<h3>Required wording</h3>
+<blockquote>“<code>[Client]</code> is forecast for <code>[graduation date]</code>. Confidence is <code>[High / Medium / Low]</code>. They are <code>[percent]%</code> complete based on <code>[completed milestones/phases]</code>.”</blockquote>
+<blockquote>“Completed: <code>[phase/milestone list]</code>. Next: <code>[next milestone]</code>. Blocked by: <code>[none / blocker]</code>.”</blockquote>
+<blockquote>“My recommendation is <code>[keep date / move date / RTS / on hold / pre-cancel / escalate]</code>.”</blockquote>
+<blockquote>“Owner and next action: <code>[owner]</code> will <code>[action]</code> by <code>[date]</code>.”</blockquote>
+<h3>Required fields</h3>
+<ul>
+<li>Client:</li>
+<li>SA:</li>
+<li>Sales rep:</li>
+<li>Current status: <code>[Active / On Hold / RTS / Pre-cancel / Graduating / Graduated]</code></li>
+<li>Forecast graduation date:</li>
+<li>Confidence: <code>[High / Medium / Low]</code></li>
+<li>Percent complete:</li>
+<li>Completed phases:</li>
+<li>Next phase:</li>
+<li>Blocker:</li>
+<li>Blocker category:</li>
+<li>Owner:</li>
+<li>Due date:</li>
+<li>Recommendation:</li>
+</ul>
+<hr>
+<h2>3. Forecast Confidence Language</h2>
+<h3>High confidence</h3>
+<p>Use when the client is engaged, the next meeting is scheduled, blockers are minor/owned, and graduation criteria are mostly complete.</p>
+<blockquote>“High confidence. The forecast date is still good. Remaining work is <code>[specific remaining work]</code>, and it is scheduled for <code>[date]</code>.”</blockquote>
+<h3>Medium confidence</h3>
+<p>Use when the client can still graduate, but there is a known dependency.</p>
+<blockquote>“Medium confidence. I’m holding the forecast for now, but it depends on <code>[dependency]</code> being resolved by <code>[date]</code>. If that misses, I recommend moving the forecast to <code>[new date]</code>.”</blockquote>
+<h3>Low confidence</h3>
+<p>Use when the forecast date is mostly aspirational, the client is not engaged, or the blocker has no firm resolution path.</p>
+<blockquote>“Low confidence. I do not think <code>[date]</code> is credible unless <code>[specific thing]</code> happens by <code>[date]</code>. My recommendation is <code>[move to new date / RTS / escalate]</code>.”</blockquote>
+<hr>
+<h2>4. Blocker Categories and Script Language</h2>
+<h3>Product / engineering blocker</h3>
+<p>Examples from transcript: PO/work-performed token gaps, user group assignment notifications, Quick Copper 403 permissions, workflow/editor issues.</p>
+<blockquote>“This is blocked by a product/engineering issue: <code>[issue]</code>. Owner is <code>[person/team]</code>. Client impact is <code>[impact]</code>. Strategy to clear is <code>[ticket/escalation/workaround]</code>. Needed by <code>[date]</code> to protect the forecast.”</blockquote>
+<h3>Client engagement blocker</h3>
+<p>Examples: no-shows, low activity, pushing meetings, unresponsive clients.</p>
+<blockquote>“This is blocked by client engagement. Last meaningful contact was <code>[date]</code>. We have attempted <code>[attempts]</code>. Sales rep is <code>[rep]</code>. Recommendation is <code>[keep active with next meeting / move to RTS / pre-cancel]</code>.”</blockquote>
+<h3>Sales expectation / contract blocker</h3>
+<p>Examples: Red Gap contract confusion, trial/non-payment, client thought PSA was included.</p>
+<blockquote>“This is a Sales/expectation issue. Client understanding is <code>[what they believe]</code>; contract/payment reality is <code>[actual state]</code>. Sales owner is <code>[rep]</code>. Recommendation is <code>[Sales re-engage / RTS / pre-cancel]</code> by <code>[date]</code>.”</blockquote>
+<h3>Data/import blocker</h3>
+<p>Examples: TigerPaw API keys, missing product fields, bulk tool gaps.</p>
+<blockquote>“This is blocked by data/import readiness. Missing item is <code>[data/API/key/template field]</code>. Owner is <code>[client/data team/SA]</code>. ETA is <code>[date]</code>. Forecast impact is <code>[none / at risk / move date]</code>.”</blockquote>
+<h3>Process/training blocker</h3>
+<p>Examples: client wants more internal testing before support handoff; final walkthrough/Q&amp;A pending.</p>
+<blockquote>“Training/configuration is mostly complete. Remaining item is <code>[walkthrough/testing/Q&amp;A]</code>. Client needs <code>[specific session/action]</code> before graduation. Forecast confidence is <code>[level]</code>.”</blockquote>
+<hr>
+<h2>5. RTS / On-Hold Discipline</h2>
+<p>Use this when a client is stalled, on hold, or ready-to-schedule but not engaging.</p>
+<h3>On hold / RTS readout</h3>
+<blockquote>“<code>[Client]</code> is currently <code>[On Hold / RTS]</code> because <code>[reason]</code>. Sales rep is <code>[rep]</code>. Last client activity was <code>[date]</code>. Re-engagement owner is <code>[owner]</code>. If not cleared by <code>[date]</code>, recommendation is <code>[pre-cancel / cancel / keep RTS with reason]</code>.”</blockquote>
+<h3>Suggested operating rule from transcript</h3>
+<ul>
+<li>Sales gets roughly <strong>2–3 weeks</strong> to clear RTS/on-hold re-engagement.</li>
+<li>If not cleared, move to <strong>pre-cancel</strong>.</li>
+<li>If still not cleared after the pre-cancel window, proceed to cancellation.</li>
+</ul>
+<h3>Script</h3>
+<blockquote>“This has exceeded the re-engagement window. Unless Sales confirms movement by <code>[date]</code>, I recommend moving to pre-cancel.”</blockquote>
+<hr>
+<h2>6. Month-End Forecast Pressure Check</h2>
+<p>Use this when many clients are forecast on the last day of the month.</p>
+<blockquote>“This forecast is currently sitting on <code>[month-end date]</code>. Is that a real graduation date or a placeholder?”</blockquote>
+<p>If real:</p>
+<blockquote>“What exact work happens between now and then, and on what dates?”</blockquote>
+<p>If placeholder:</p>
+<blockquote>“Let’s replace it with a real date or mark confidence low.”</blockquote>
+<p>Required answer:</p>
+<ul>
+<li>Final training date:</li>
+<li>Final configuration date:</li>
+<li>Client validation date:</li>
+<li>Support handoff date:</li>
+<li>Graduation date:</li>
+</ul>
+<hr>
+<h2>7. Facilitator Prompts</h2>
+<p>Use these to keep the meeting tight.</p>
+<ul>
+<li>“What percent complete are they, based on milestones?”</li>
+<li>“What phases are done?”</li>
+<li>“What is next?”</li>
+<li>“What is blocking graduation?”</li>
+<li>“What is the strategy to clear that blocker?”</li>
+<li>“Who owns it?”</li>
+<li>“By what date?”</li>
+<li>“Is the forecast date real or a placeholder?”</li>
+<li>“Does Sales need to re-engage?”</li>
+<li>“Should this stay active, move to RTS, or move to pre-cancel?”</li>
+<li>“Has the latest client interaction been logged?”</li>
+</ul>
+<hr>
+<h2>8. Example Update Formats</h2>
+<h3>Clean / on-track client</h3>
+<blockquote>“Prestige is forecast for May 28. Confidence is high. They are 90% complete: billing, products, and ticketing are done. Final walkthrough and Q&amp;A are scheduled for May 22. No blockers. Recommendation is to keep the date. Halle owns the walkthrough and will confirm graduation readiness after that call.”</blockquote>
+<h3>At-risk client</h3>
+<blockquote>“Quick Copper is forecast for May 31. Confidence is medium-low. They are blocked by 403 permission errors when techs create contacts. Mark owns the client follow-up; Ray/engineering owns root-cause tracing. If we do not resolve permissions by May 20, I recommend moving graduation into June.”</blockquote>
+<h3>RTS candidate</h3>
+<blockquote>“Atlantic is not forecastable right now. The client keeps pushing meetings because their acquisition dependency is not ready. Sales rep is <code>[rep]</code>. Recommendation is RTS and Sales re-engagement. If no movement in two weeks, move to pre-cancel.”</blockquote>
+<h3>Product workaround client</h3>
+<blockquote>“VanRan is blocked by subcontractor access needs. Current workaround is one portal user plus tagging, with no extra billing for those technicians while Product works the correct model. Halle owns client communication; Ray owns the permission/template recommendation. Confidence is medium until the client accepts the workaround.”</blockquote>
+<hr>
+<h2>9. Closing Script — 3 minutes</h2>
+<blockquote>“Before we close, let’s confirm: which dates changed, which clients are no longer credible for this month, which blockers need escalation, and which clients need Sales re-engagement.”</blockquote>
+<h3>Closeout checklist</h3>
+<ul>
+<li>Forecast date changes captured.</li>
+<li>RTS/on-hold/pre-cancel decisions captured.</li>
+<li>Blockers have owner + due date.</li>
+<li>Sales rep visible for RTS/on-hold/cancel-risk clients.</li>
+<li>Client interactions updated for stale accounts.</li>
+<li>Product/engineering escalations assigned.</li>
+<li>Month-end placeholders converted to real dates or low confidence.</li>
+</ul>
+<blockquote>“The output of this meeting should be a believable forecast, not a narrated dashboard.”</blockquote>
+  </section>
+</main>
+</body>
+</html>
