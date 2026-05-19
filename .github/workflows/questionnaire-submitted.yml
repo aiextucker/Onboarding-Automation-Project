@@ -1,0 +1,92 @@
+name: PSA Questionnaire Submitted
+
+on:
+  repository_dispatch:
+    types: [questionnaire-submitted]
+
+jobs:
+  save:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write questionnaire submission to Notion
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_DB_ID: "350a59b7-e7b2-8145-aca9-d536b00c13a3"
+        run: |
+          node - <<'EOF'
+          const payload = ${{ toJSON(github.event.client_payload) }};
+          const token = process.env.NOTION_TOKEN;
+          const dbId = process.env.NOTION_DB_ID;
+          const notionVersion = '2022-06-28';
+
+          if (!token) throw new Error('Missing NOTION_TOKEN secret');
+
+          const submissionId = String(payload.submissionId || payload.clientSlug || payload.notionPageId || `dispatch-${Date.now()}`);
+          const submittedData = payload.submittedData || payload.answers || payload;
+          const clientName = String(payload.clientName || submittedData.company || submittedData.clientName || submittedData.accountName || 'Unknown Client');
+          const submittedAt = String(payload.submittedAt || submittedData.submittedAt || new Date().toISOString());
+
+          function chunks(str, size = 1900) {
+            const out = [];
+            for (let i = 0; i < str.length; i += size) out.push({ text: { content: str.slice(i, i + size) } });
+            return out.length ? out : [{ text: { content: '' } }];
+          }
+
+          async function notion(endpoint, { method = 'GET', body } = {}) {
+            for (let attempt = 1; attempt <= 3; attempt++) {
+              const res = await fetch(`https://api.notion.com/v1${endpoint}`, {
+                method,
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                  'Notion-Version': notionVersion,
+                  'Content-Type': 'application/json',
+                },
+                body: body ? JSON.stringify(body) : undefined,
+              });
+              const data = await res.json().catch(() => ({}));
+              if (res.ok && data.object !== 'error') return data;
+              const retryable = res.status === 429 || res.status >= 500;
+              if (!retryable || attempt === 3) {
+                console.error('Notion API error:', res.status, JSON.stringify(data));
+                process.exit(1);
+              }
+              const waitMs = Number(res.headers.get('retry-after') || 0) * 1000 || attempt * 2000;
+              await new Promise(resolve => setTimeout(resolve, waitMs));
+            }
+          }
+
+          async function findExistingPage() {
+            if (payload.notionPageId) return { id: payload.notionPageId };
+            const data = await notion(`/databases/${dbId}/query`, {
+              method: 'POST',
+              body: {
+                page_size: 1,
+                filter: { property: 'Token', title: { equals: submissionId } },
+              },
+            });
+            return data.results?.[0] || null;
+          }
+
+          const submittedJson = JSON.stringify(submittedData, null, 2);
+          const properties = {
+            'Token': { title: [{ text: { content: submissionId } }] },
+            'Client Name': { rich_text: [{ text: { content: clientName.slice(0, 1900) } }] },
+            'Status': { select: { name: 'Submitted' } },
+            'Submitted At': { date: { start: submittedAt } },
+            'Submitted Data': { rich_text: chunks(submittedJson) },
+            'SA Notified': { checkbox: false },
+          };
+          if (submittedData.email) properties['Client Email'] = { email: String(submittedData.email).slice(0, 200) };
+
+          const existing = await findExistingPage();
+          if (existing) {
+            await notion(`/pages/${existing.id}`, { method: 'PATCH', body: { properties } });
+            console.log('Updated questionnaire submission:', existing.id, clientName);
+          } else {
+            const created = await notion('/pages', {
+              method: 'POST',
+              body: { parent: { database_id: dbId }, properties },
+            });
+            console.log('Created questionnaire submission:', created.id, clientName);
+          }
+          EOF

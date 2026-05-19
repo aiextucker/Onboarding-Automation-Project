@@ -2326,8 +2326,34 @@ renderUserTable();
 
   // ── Wrap approveConfig to dispatch to GitHub Actions on SA approval ─────────
   var _origApprove = approveConfig;
-  approveConfig = function() {
-    _origApprove();
+  function showSubmissionProblem(err, payload) {
+    console.error('[submit failed]', err);
+    var existing = document.getElementById('submit-error-panel');
+    if (existing) existing.remove();
+    var panel = document.createElement('div');
+    panel.id = 'submit-error-panel';
+    panel.style.cssText = 'position:fixed;inset:20px;z-index:99999;overflow:auto;background:#111827;color:#f9fafb;border:2px solid #f87171;border-radius:16px;box-shadow:0 24px 80px rgba(0,0,0,.45);padding:24px;font-family:Inter,system-ui,sans-serif;';
+    panel.innerHTML = '<h2 style="margin:0 0 8px;color:#fca5a5;">Submission did not save</h2>' +
+      '<p style="max-width:820px;line-height:1.5;">Your answers are still on this page. Please do not close this tab. Retry submission, or copy the backup below and send it to your Rev.io SA.</p>' +
+      '<p style="color:#d1d5db;font-size:13px;">Technical detail: ' + String(err && err.message || err || 'unknown error').replace(/[<>&]/g, function(c){ return ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]); }) + '</p>' +
+      '<div style="display:flex;gap:12px;flex-wrap:wrap;margin:16px 0;">' +
+      '<button id="retry-submit" style="background:#6c63ff;color:white;border:0;border-radius:10px;padding:12px 16px;font-weight:700;cursor:pointer;">Retry submission</button>' +
+      '<button id="copy-submit-json" style="background:#00d4aa;color:#06131f;border:0;border-radius:10px;padding:12px 16px;font-weight:700;cursor:pointer;">Copy backup answers</button>' +
+      '<button id="close-submit-error" style="background:#374151;color:white;border:0;border-radius:10px;padding:12px 16px;font-weight:700;cursor:pointer;">Return to form</button>' +
+      '</div>' +
+      '<textarea id="submit-json-backup" readonly style="width:100%;min-height:260px;background:#0b1020;color:#e5e7eb;border:1px solid #374151;border-radius:10px;padding:12px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;">' +
+      JSON.stringify(payload, null, 2).replace(/[<>&]/g, function(c){ return ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]); }) + '</textarea>';
+    document.body.appendChild(panel);
+    document.getElementById('retry-submit').onclick = function(){ panel.remove(); approveConfig(); };
+    document.getElementById('close-submit-error').onclick = function(){ panel.remove(); };
+    document.getElementById('copy-submit-json').onclick = async function(){
+      var txt = document.getElementById('submit-json-backup').value;
+      try { await navigator.clipboard.writeText(txt); this.textContent = 'Copied ✓'; }
+      catch (_) { document.getElementById('submit-json-backup').select(); }
+    };
+  }
+
+  approveConfig = async function() {
     syncUsersFromTable();
     var answers = {
       billingCycle:  state.billingCycle,
@@ -2352,32 +2378,41 @@ renderUserTable();
     };
     var clientName   = answers.company || 'Unknown';
     var submissionId = _submissionId || ('q-' + Date.now().toString(36));
+    var dispatchPayload = {
+      submissionId: submissionId,
+      clientName:   clientName,
+      submittedAt:  answers.submittedAt,
+      answers:      answers,
+    };
 
-    fetch('https://api.github.com/repos/' + GITHUB_REPO + '/dispatches', {
-      method: 'POST',
-      headers: {
-        'Authorization': 'token ' + GITHUB_DISPATCH_TOKEN,
-        'Accept':        'application/vnd.github.v3+json',
-        'Content-Type':  'application/json',
-      },
-      body: JSON.stringify({
-        event_type: 'questionnaire-submitted',
-        client_payload: {
-          submissionId: submissionId,
-          clientName:   clientName,
-          submittedAt:  answers.submittedAt,
-          answers:      answers,
+    var btn = document.querySelector('button[onclick="approveConfig()"]');
+    var oldText = btn ? btn.textContent : '';
+    if (btn) { btn.disabled = true; btn.textContent = 'Saving…'; }
+
+    try {
+      var res = await fetch('https://api.github.com/repos/' + GITHUB_REPO + '/dispatches', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'token ' + GITHUB_DISPATCH_TOKEN,
+          'Accept':        'application/vnd.github.v3+json',
+          'Content-Type':  'application/json',
         },
-      }),
-    })
-    .then(function(r) {
-      if (r.status === 204) {
-        console.log('[submit] Dispatched to GitHub Actions ✓');
-      } else {
-        r.text().then(function(t) { console.error('[submit] Dispatch failed:', r.status, t); });
+        body: JSON.stringify({
+          event_type: 'questionnaire-submitted',
+          client_payload: dispatchPayload,
+        }),
+      });
+      if (res.status !== 204) {
+        var text = await res.text();
+        throw new Error('Submission handoff failed: HTTP ' + res.status + ' ' + text.slice(0, 300));
       }
-    })
-    .catch(function(err) { console.error('[submit error]', err); });
+      console.log('[submit] Dispatched to GitHub Actions ✓');
+      _origApprove();
+    } catch (err) {
+      showSubmissionProblem(err, dispatchPayload);
+    } finally {
+      if (btn) { btn.disabled = false; btn.textContent = oldText || 'Submit'; }
+    }
   };
 
   // ── Boot ────────────────────────────────────────────────────────────────────
