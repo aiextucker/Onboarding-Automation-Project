@@ -322,6 +322,37 @@ body {
 .psa-bar-fill.on-hold { background: var(--text-mute); }
 .psa-bar-fill.rts     { background: var(--orange); }
 .psa-milestone-meta { margin-top: 8px; font-size: 0.75rem; color: var(--text-mute); display: flex; gap: 16px; flex-wrap: wrap; }
+.psa-critical-path {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+.psa-critical-path-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+}
+.psa-critical-path-title { font-weight: 700; color: var(--text); }
+.psa-critical-path-pct { font-weight: 800; color: var(--green); }
+.psa-critical-path-pct.warn { color: var(--yellow); }
+.psa-critical-path-pct.risk { color: var(--red); }
+.psa-critical-path-list { font-size: 0.74rem; color: var(--text-mute); line-height: 1.5; }
+.critical-badge {
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: var(--orange-bg);
+  color: var(--orange);
+  white-space: nowrap;
+}
 .psa-health-drivers {
   margin-top: 12px;
   padding: 9px 12px;
@@ -1127,6 +1158,11 @@ function renderClientView(client, data) {
     const overdueWarn = client.psaOverdueMilestones > 0 ? ` style="color:var(--red)"` : '';
     stats.push(`<div class="stat-pill"><div class="val"${overdueWarn} style="color:${client.psaOverdueMilestones > 0 ? 'var(--red)' : 'var(--teal)'}">${msLabel}</div><div class="lbl">Milestones${client.psaTotalMilestones ? ' / ' + client.psaTotalMilestones : ''}</div></div>`);
   }
+  if (isPsa && client.psaCriticalMilestonePercent != null) {
+    const cp = client.psaCriticalMilestonePercent;
+    const cpColor = cp >= 80 ? 'var(--green)' : cp >= 50 ? 'var(--yellow)' : 'var(--red)';
+    stats.push(`<div class="stat-pill"><div class="val" style="color:${cpColor}">${cp}%</div><div class="lbl">Critical Path</div></div>`);
+  }
   if (isPsa && client.psaDaysSinceContact != null) {
     const dCls = client.psaDaysSinceContact >= 14 ? 'health-low' : client.psaDaysSinceContact >= 7 ? 'health-mid' : 'health-high';
     stats.push(`<div class="stat-pill ${dCls}"><div class="val">${client.psaDaysSinceContact}</div><div class="lbl">Days Since Contact</div></div>`);
@@ -1205,6 +1241,24 @@ function renderClientView(client, data) {
     // Stale contact warning
     const staleHtml = (client.psaDaysSinceContact != null && client.psaDaysSinceContact >= 14)
       ? `<div class="psa-stale-warning">⏱ Last contact ${client.psaDaysSinceContact} days ago — engagement may be at risk.</div>` : '';
+    const cpPct = client.psaCriticalMilestonePercent;
+    const cpTotal = client.psaCriticalMilestonesTotal || 0;
+    const cpComplete = client.psaCriticalMilestonesComplete || 0;
+    const cpMissing = client.psaCriticalMilestonesMissing || [];
+    const cpIncomplete = client.psaCriticalMilestonesIncomplete || [];
+    const cpPctCls = cpPct >= 80 ? '' : cpPct >= 50 ? 'warn' : 'risk';
+    const cpDetails = [...cpIncomplete, ...cpMissing.map(m => `${m} (missing)`)].slice(0, 5);
+    const criticalHtml = cpPct != null ? `
+      <div class="psa-critical-path">
+        <div class="psa-critical-path-header">
+          <span class="psa-critical-path-title">Critical Path</span>
+          <span class="psa-critical-path-pct ${cpPctCls}">${cpPct}% <span style="font-size:0.76rem;color:var(--text-mute);font-weight:500">/ ${cpComplete} of ${cpTotal}</span></span>
+        </div>
+        <div class="psa-bar-track" style="height:6px">
+          <div class="psa-bar-fill ${cpPct < 50 ? 'at-risk' : ''}" style="width:${Math.min(cpPct,100)}%"></div>
+        </div>
+        ${cpDetails.length ? `<div class="psa-critical-path-list">Remaining: ${cpDetails.map(esc).join('<span style="color:var(--border-hi)"> · </span>')}${(cpIncomplete.length + cpMissing.length) > 5 ? '…' : ''}</div>` : `<div class="psa-critical-path-list" style="color:var(--green)">All critical path milestones complete.</div>`}
+      </div>` : '';
     main.insertAdjacentHTML('beforeend', `
       <div class="psa-milestone-bar">
         <div class="psa-milestone-header">
@@ -1218,6 +1272,7 @@ function renderClientView(client, data) {
         <div class="psa-bar-track">
           <div class="psa-bar-fill ${barCls}" style="width:${Math.min(pct,100)}%"></div>
         </div>
+        ${criticalHtml}
         ${metaParts.length ? `<div class="psa-milestone-meta">${metaParts.map(p => esc(p)).join('<span style="color:var(--border-hi)"> · </span>')}</div>` : ''}
         ${hdHtml}
         ${staleHtml}
@@ -1333,10 +1388,16 @@ function renderClientView(client, data) {
     const completed = psaMilestones.filter(m => m.status === 'Completed').length;
     const total = psaMilestones.length;
     const overdue = psaMilestones.filter(m => m.isOverdue).length;
+    const criticalKeys = new Set((snapshot.psaCriticalMilestones || []).map(m => (m.key || '').toLowerCase()).filter(Boolean));
+    const msKey = name => {
+      const key = String(name || '').toLowerCase().replace(/^\d+\.\s*/, '').replace(/&/g, ' and ').replace(/[^a-z0-9]+/g, ' ').trim();
+      return key === 'ado ticket turn on billing' ? 'turn on billing' : key;
+    };
     const rows = psaMilestones.map(m => {
       const isComp = m.status === 'Completed';
       const isIP   = m.status === 'In Progress';
       const isOD   = m.isOverdue && !isComp;
+      const isCritical = criticalKeys.has(msKey(m.name));
       const checkCls  = isComp ? 'completed' : isOD ? 'overdue' : isIP ? 'in-progress' : '';
       const checkIcon = isComp ? '✓' : isOD ? '!' : isIP ? '…' : '';
       const nameCls   = isComp ? 'completed' : isOD ? 'overdue' : '';
@@ -1346,6 +1407,7 @@ function renderClientView(client, data) {
         <div class="milestone-row-item">
           <div class="ms-check ${checkCls}">${checkIcon}</div>
           <span class="ms-name ${nameCls}">${esc(m.name || '—')}</span>
+          ${isCritical ? '<span class="critical-badge">Critical</span>' : ''}
           ${m.phase ? `<span style="font-size:0.7rem;color:var(--text-mute)">${esc(m.phase)}</span>` : ''}
           <span class="ms-status-badge ${badgeCls}">${esc(badgeTxt)}</span>
           ${m.due ? `<span class="ms-due">${fmtDate(m.due)}</span>` : ''}
