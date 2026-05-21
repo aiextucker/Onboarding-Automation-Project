@@ -250,6 +250,7 @@
     }
 
     .callout p { margin: 0; }
+    .callout strong { display: block; margin-bottom: 4px; }
 
     .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
     .grid-4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
@@ -319,6 +320,17 @@
       background: #fff;
     }
 
+    .acknowledgment {
+      margin-top: 24px;
+      padding: 18px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, rgba(29,55,86,0.05), rgba(35,153,181,0.06));
+      border: 1px solid var(--border);
+    }
+
+    .acknowledgment h3 { margin: 0 0 8px; color: var(--prussian); font-size: 1.02rem; }
+    .acknowledgment p { margin: 0; color: var(--muted); }
+
     .signature-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -369,14 +381,211 @@
     }
 
     @media print {
-      body { background: white; }
-      .hero { box-shadow: none; }
-      .toc, .button { display: none !important; }
-      main { padding: 20px 0; }
+      @page { size: Letter; margin: 0.35in; }
+
+      * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+
+      html, body {
+        background: white !important;
+        font-size: 8pt;
+        line-height: 1.34;
+      }
+
+      .wrap { max-width: none; padding: 0; }
+
+      .hero {
+        box-shadow: none;
+        padding: 0.22in 0.28in 0.24in;
+        margin: 0 0 0.12in;
+      }
+
+      .hero::after { height: 2px; }
+
+      .topbar { margin-bottom: 0.16in; }
+      .brand img { width: 0.95in; }
+
+      .button, .toc { display: none !important; }
+
+      .eyebrow {
+        margin-bottom: 0.04in;
+        font-size: 6.8pt;
+        letter-spacing: 0.12em;
+      }
+
+      h1 {
+        font-size: 22pt;
+        line-height: 1.02;
+        max-width: none;
+      }
+
+      .lead {
+        max-width: none;
+        margin-top: 0.08in;
+        font-size: 8.2pt;
+        line-height: 1.4;
+      }
+
+      .hero-cards {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.08in;
+        margin-top: 0.14in;
+      }
+
+      .hero-card {
+        padding: 0.08in;
+        border-radius: 0.06in;
+      }
+
+      .hero-card strong { font-size: 7.8pt; margin-bottom: 0.02in; }
+      .hero-card p { font-size: 7.2pt; line-height: 1.32; }
+
+      main { padding: 0; }
       .layout { display: block; }
-      .section { break-inside: avoid; box-shadow: none; border-color: #ccc; margin-bottom: 18px; }
-      footer { color: #333; background: white; border-top: 1px solid #ccc; }
-      footer p { color: #333; }
+      .content { display: block; }
+      .section { margin-bottom: 0.09in; }
+
+      .section {
+        padding: 0.11in 0.13in;
+        border-radius: 0.07in;
+        box-shadow: none;
+        border-color: #D8DDE4;
+        background: #fff;
+        break-inside: auto;
+      }
+
+      .section h2 {
+        font-size: 11.5pt;
+        margin-bottom: 0.03in;
+        letter-spacing: 0.01em;
+      }
+
+      .section-intro {
+        font-size: 7.8pt;
+        margin-bottom: 0.08in;
+      }
+
+      p { margin-top: 0; margin-bottom: 0.05in; }
+      ul { padding-left: 0.12in; }
+      li { margin: 0.025in 0; }
+
+      .grid-2 { grid-template-columns: repeat(2, 1fr); gap: 0.08in; }
+      .grid-4 { grid-template-columns: repeat(4, 1fr); gap: 0.07in; }
+
+      .info-card, .priority-card, .training-card {
+        padding: 0.08in;
+        border-radius: 0.06in;
+        box-shadow: none;
+        break-inside: avoid;
+      }
+
+      .info-card h3, .priority-card h3, .training-card h3 {
+        font-size: 8.2pt;
+        margin-bottom: 0.04in;
+        letter-spacing: 0.01em;
+      }
+
+      .info-card p, .priority-card p, .training-card p,
+      .info-card li, .priority-card li, .training-card li {
+        font-size: 7.15pt;
+        line-height: 1.28;
+      }
+
+      .callout {
+        grid-template-columns: 0.28in 1fr;
+        gap: 0.07in;
+        margin-top: 0.08in;
+        padding: 0.08in;
+        border-radius: 0.06in;
+      }
+
+      .icon {
+        width: 0.28in;
+        height: 0.28in;
+        border-radius: 0.06in;
+        font-size: 8pt;
+      }
+
+      .callout p { font-size: 7.4pt; line-height: 1.3; }
+      .callout strong { display: block; margin-bottom: 0.025in; }
+
+      .priority-card { padding-top: 0.38in; }
+      .rank {
+        top: 0.08in;
+        left: 0.08in;
+        width: 0.22in;
+        height: 0.22in;
+        font-size: 7pt;
+      }
+
+      .acknowledgment {
+        margin-top: 0.08in;
+        padding: 0.08in;
+        border-radius: 0.06in;
+        break-inside: avoid;
+      }
+
+      .acknowledgment h3 {
+        font-size: 8.2pt;
+        margin-bottom: 0.03in;
+      }
+
+      .acknowledgment p {
+        font-size: 7.15pt;
+        line-height: 1.28;
+      }
+
+      .signature-grid {
+        gap: 0.16in;
+        margin-top: 0.08in;
+      }
+
+      .field {
+        min-height: 0.36in;
+        padding-top: 0.05in;
+        font-size: 6.8pt;
+      }
+
+      #activation { break-before: page; page-break-before: always; break-inside: avoid; page-break-inside: avoid; }
+      #activation .grid-2, #activation .training-card { break-inside: avoid; }
+
+      #checklist { break-before: auto; }
+
+      .checklist {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0 0.18in;
+        margin-top: 0.08in;
+      }
+
+      .checklist li {
+        grid-template-columns: 0.18in 1fr;
+        gap: 0.05in;
+        padding: 0.045in 0;
+        font-size: 7.7pt;
+        line-height: 1.25;
+      }
+
+      .box {
+        width: 0.14in;
+        height: 0.14in;
+        border-radius: 0.025in;
+        margin-top: 0.01in;
+      }
+
+      .footer-note {
+        margin-top: 0.12in;
+        padding: 0.1in;
+        border-radius: 0.06in;
+        font-size: 7.6pt;
+      }
+
+      footer {
+        margin: 0.14in -0.35in -0.35in;
+        padding: 0.12in 0.35in;
+        font-size: 7pt;
+        break-inside: avoid;
+      }
+
+      footer p { margin: 0.015in 0; }
     }
   </style>
 </head>
@@ -474,6 +683,7 @@
                 <li>Company logo in .JPG or .PNG format; 183 × 110 recommended.</li>
                 <li>Documentation of billing rules: cycle dates, late/termination fees, delivery methods, collections, etc.</li>
                 <li>End-customer support contact info — email and phone — for Rev.io to reference and route inquiries to.</li>
+                <li>Sample quote template and sample invoice.</li>
               </ul>
             </article>
           </div>
@@ -528,9 +738,13 @@
               <p>You “drive” configuration of additional settings to build confidence. Rev.io University, product documentation, and training videos are available throughout.</p>
             </article>
           </div>
-          <div class="signature-grid" aria-label="Signature fields">
-            <div class="field">Signature</div>
-            <div class="field">Date</div>
+          <div class="acknowledgment">
+            <h3>Client Acknowledgment</h3>
+            <p>By signing below, you acknowledge the project expectations, Phase I deliverables, and onboarding checklist items outlined in this guide.</p>
+            <div class="signature-grid" aria-label="Signature fields">
+              <div class="field">Signature</div>
+              <div class="field">Date</div>
+            </div>
           </div>
         </section>
 
