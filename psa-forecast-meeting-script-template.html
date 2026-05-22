@@ -194,7 +194,7 @@ body {
   </div>
   <div class="hero-badges">
     <div class="hero-badge"><span>📋</span> PSA: 7 Sections</div>
-    <div class="hero-badge"><span>💳</span> Billing: 3 Sections</div>
+    <div class="hero-badge"><span>💳</span> Billing: 4 Sections</div>
     <div class="hero-badge"><span>🤖</span> Auto-Generated</div>
     <div class="hero-badge"><span>📐</span> All Logic Defined</div>
   </div>
@@ -438,15 +438,16 @@ body {
 
 <div class="section">
   <div class="section-label">Billing Forecast Script</div>
-  <div class="section-title">3 Sections — What Each One Contains</div>
+  <div class="section-title">4 Sections — What Each One Contains</div>
   <div class="section-divider"></div>
 </div>
 
 <div class="principle-box">
   <div class="pl">Key Difference vs PSA</div>
-  <div class="pt">Billing uses an explicit Confidence field — no auto-inference</div>
+  <div class="pt">Billing separates activation from graduation</div>
   <div class="pb">
-    PSA auto-infers Confidence from the presence or absence of a blocker. <strong>Billing does not.</strong> The Confidence field on each Billing client must be set explicitly to High, Medium, or Low. If it is blank, it defaults to <span class="chip chip-blank">Low (blank)</span> — which means the client only appears in Best Case. Fill the field before using Billing scenario numbers in a commit conversation.<br><br>
+    PSA forecast discussions center on <strong>graduation</strong>. Billing forecast discussions have two tracks: <strong>Phase One activation</strong> and <strong>Phase Two graduation/completion</strong>. Phase One activation is the revenue-recognition event for Billing MRR. Billing graduation is later completion hygiene and should not be blended into the same forecast count as activation.<br><br>
+    Billing also uses an explicit Confidence field — no PSA-style auto-inference. The Confidence field on each Billing client must be set explicitly to High, Medium, or Low. If it is blank, it defaults to <span class="chip chip-blank">Low (blank)</span> — which means the client only appears in Best Case. Fill the field before using Billing scenario numbers in a commit conversation.<br><br>
     Billing scripts are available to <strong>PMs and SAs only.</strong> DEs are excluded.
   </div>
 </div>
@@ -497,10 +498,10 @@ body {
   <p>Billing clients follow one of two tracks, determined automatically:</p>
   <div class="logic-box">
     <div class="logic-label">Track Determination</div>
-    If the client has an <strong>Activation Date</strong> set → <strong>Graduation track</strong> — uses <code>Current Graduation Date</code> (or falls back to Forecasted Graduation Date)<br>
-    If no Activation Date → <strong>Activation track</strong> — uses <code>Forecasted Graduation Date</code>
+    If no <strong>Activation Date</strong> exists → <strong>Phase One Activation track</strong> — uses <code>Current Forecast Date</code> / forecast activation date<br>
+    If the client has an <strong>Activation Date</strong> set → <strong>Phase Two Graduation track</strong> — uses <code>Current Graduation Date</code> for completion/graduation
   </div>
-  <p style="margin-top:12px;">The track label appears in each client line in §2: <em>"Activation forecast for…"</em> or <em>"Graduation forecast for…"</em>.</p>
+  <p style="margin-top:12px;">The script now separates these into different sections. Activation is the primary Billing forecast number tied to MRR recognition. Graduation/completion is a secondary Phase Two readout.</p>
 </div>
 
 <!-- Billing §1 -->
@@ -516,11 +517,13 @@ body {
       <tr><td class="field-name">Active Billing count</td><td>Clients in Active status for this owner / MRR</td></tr>
       <tr><td class="field-name">On hold count</td><td>Clients in On Hold status / MRR</td></tr>
       <tr><td class="field-name">RTS count</td><td>Clients in any RTS status / MRR</td></tr>
-      <tr><td class="field-name">Forecasted activations/graduations</td><td>Clients with a forecast date in the current month (Activation or Graduation track) — count / MRR</td></tr>
-      <tr><td class="field-name">Activated this month</td><td>Graduated clients with an Activation Date in the current month</td></tr>
-      <tr><td class="field-name">Graduated this month</td><td>Graduated clients with an Actual Graduation Date in the current month</td></tr>
+      <tr><td class="field-name">Phase One activation forecast</td><td>Pre-activation clients forecasted to activate this month. Uses recognized MRR and is the primary Billing forecast number.</td></tr>
+      <tr><td class="field-name">Phase Two graduation forecast</td><td>Already-activated clients forecasted to graduate/complete this month. This is completion posture, not first MRR recognition.</td></tr>
+      <tr><td class="field-name">Activated this month</td><td>Clients with Activation Date in the current month; shown with recognized MRR</td></tr>
+      <tr><td class="field-name">Graduated this month</td><td>Clients with Actual Graduation Date in the current month</td></tr>
       <tr><td class="field-name">Confidence populated</td><td>X/Y active Billing clients with Confidence set. Names of missing clients listed if ≤12.</td></tr>
-      <tr><td class="field-name">Worst / Most Likely / Best case</td><td>Scenario bucket counts/MRR for forecasted clients in the current month</td></tr>
+      <tr><td class="field-name">Activation scenarios</td><td>Worst / Most Likely / Best Case for Phase One activations, using recognized MRR</td></tr>
+      <tr><td class="field-name">Graduation scenarios</td><td>Worst / Most Likely / Best Case for Phase Two graduation/completion, shown separately</td></tr>
       <tr><td class="field-name">Blank Confidence warning</td><td>Appears if any forecasted client has blank Confidence — states how many are Best Case only</td></tr>
     </tbody>
   </table>
@@ -530,29 +533,48 @@ body {
 <div class="script-section" style="--section-color:#38bdf8;">
   <div class="script-section-header">
     <span class="script-section-num">§ 2</span>
-    <span class="script-section-name">Forecasted Billing Clients</span>
+    <span class="script-section-name">Phase One Activation Forecast</span>
   </div>
-  <p>One line per Billing client forecasted in the current month, sorted by forecast date then name.</p>
+  <p>One line per pre-activation Billing client forecasted to activate in the current month, sorted by forecasted activation date then name.</p>
   <table class="field-table">
     <thead><tr><th>Field</th><th>Notes</th></tr></thead>
     <tbody>
       <tr><td class="field-name">Client name</td><td>Notion client name</td></tr>
-      <tr><td class="field-name">Track</td><td>Activation or Graduation — auto-determined from Activation Date field</td></tr>
-      <tr><td class="field-name">Forecast date</td><td>Current Graduation Date (if activated) or Forecasted Graduation Date</td></tr>
-      <tr><td class="field-name">MRR</td><td>MRR / Unit (MRRU)</td></tr>
+      <tr><td class="field-name">Forecast date</td><td>Forecasted activation date from Current Forecast Date / forecast activation date</td></tr>
+      <tr><td class="field-name">Recognized MRR</td><td>Billing MRR recognized at activation. Platform Fee is not blended into this Phase One number.</td></tr>
       <tr><td class="field-name">Status</td><td>Notion status field; "Unknown" if blank</td></tr>
       <tr><td class="field-name">Confidence</td><td>Explicit field value; blank shows as <code>Low (blank)</code></td></tr>
       <tr><td class="field-name">Blocker status</td><td>Blocker field; "No blockers listed" if empty</td></tr>
     </tbody>
   </table>
-  <div class="verbatim">- Acme Corp: Activation forecast for May 15 at $1,800. Status: Active. Confidence: High. Blocker status: No blockers listed.
-- Beta LLC: Graduation forecast for May 30 at $3,200. Status: Active. Confidence: Low (blank). Blocker status: No blockers listed.</div>
+  <div class="verbatim">- Acme Corp: forecasted activation on May 15 with $1,800 recognized MRR. Status: Active. Confidence: High. Blocker status: No blockers listed.</div>
 </div>
 
 <!-- Billing §3 -->
-<div class="script-section" style="--section-color:#ffa94d;">
+<div class="script-section" style="--section-color:#38bdf8;">
   <div class="script-section-header">
     <span class="script-section-num">§ 3</span>
+    <span class="script-section-name">Phase Two Graduation / Completion Forecast</span>
+  </div>
+  <p>One line per already-activated Billing client forecasted to graduate or complete in the current month.</p>
+  <table class="field-table">
+    <thead><tr><th>Field</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td class="field-name">Client name</td><td>Notion client name</td></tr>
+      <tr><td class="field-name">Forecast date</td><td>Current Graduation Date for activated Billing clients</td></tr>
+      <tr><td class="field-name">MRR context</td><td>Total MRR context only; activation already drove the recognition event</td></tr>
+      <tr><td class="field-name">Status</td><td>Notion status field; "Unknown" if blank</td></tr>
+      <tr><td class="field-name">Confidence</td><td>Explicit field value; blank shows as <code>Low (blank)</code></td></tr>
+      <tr><td class="field-name">Blocker status</td><td>Blocker field; "No blockers listed" if empty</td></tr>
+    </tbody>
+  </table>
+  <div class="verbatim">- Beta LLC: already activated; forecasted graduation/completion on May 30 at $3,200 total MRR context. Status: Active. Confidence: Low (blank). Blocker status: No blockers listed.</div>
+</div>
+
+<!-- Billing §4 -->
+<div class="script-section" style="--section-color:#ffa94d;">
+  <div class="script-section-header">
+    <span class="script-section-num">§ 4</span>
     <span class="script-section-name">Data Needed Before Reliable Scenario Reporting</span>
   </div>
   <p>This section appears at the bottom of every Billing script. It tells the reader whether Confidence data is complete.</p>
@@ -589,8 +611,9 @@ body {
       <tr><td class="field-name">Pull-In Opportunity</td><td>A client forecasted for next month with Most Likely or better confidence who could be accelerated to close the current month if a current client slips.</td></tr>
       <tr><td class="field-name">Not Kicked Off</td><td>A client with no Kickoff Date set in Notion but with a forecast date in the current month. These should be validated — almost always a data gap or placeholder date.</td></tr>
       <tr><td class="field-name">Milestone progress</td><td>Shown as <code>required X; overall Y</code>. Required = critical-path milestones only. Overall = all milestones. Scored: Completed = 1 pt, In Progress = ⅓ pt, all other = 0.</td></tr>
-      <tr><td class="field-name">Activation track (Billing)</td><td>Client has no Activation Date yet. Forecast date = Forecasted Graduation Date. Moving toward first activation.</td></tr>
-      <tr><td class="field-name">Graduation track (Billing)</td><td>Client is already activated. Forecast date = Current Graduation Date (or Forecasted Graduation Date as fallback). Moving toward final graduation.</td></tr>
+      <tr><td class="field-name">Phase One Activation track (Billing)</td><td>Client has no Activation Date yet. Forecast date = Current Forecast Date / forecast activation date. This is the primary Billing forecast because MRR is recognized at activation.</td></tr>
+      <tr><td class="field-name">Phase Two Graduation track (Billing)</td><td>Client is already activated. Forecast date = Current Graduation Date. This is a completion/graduation forecast, not the first MRR recognition event.</td></tr>
+      <tr><td class="field-name">Recognized MRR (Billing)</td><td>MRR counted at activation for Phase One Billing forecast discussions. Platform Fee is kept separate from the activation-recognition number.</td></tr>
       <tr><td class="field-name">RTS</td><td>Return to Sales — client engagement has stalled and Sales must re-engage before onboarding can resume. Excluded from Worst Case and Most Likely forecasts until movement is confirmed.</td></tr>
       <tr><td class="field-name">On Hold</td><td>Onboarding paused at client request or internal decision. Needs a confirmed re-engagement path or escalation to RTS / pre-cancel.</td></tr>
       <tr><td class="field-name">Overall PSA Script</td><td>A combined readout across all PSA Solutions Analysts. Same 7-section structure. Goal = sum of all individual SA goals. Available via the Generate Overall Script button in Team Overview.</td></tr>
@@ -618,7 +641,8 @@ body {
     <li>"Stay active, RTS, or pre-cancel?"</li>
     <li>"Is the last interaction logged?"</li>
     <li>"Is Confidence populated in Notion?" (Billing)</li>
-    <li>"Which scenario are we committing to?" (Billing)</li>
+    <li>"Which activation scenario are we committing to?" (Billing)</li>
+    <li>"Which graduation/completion items are separate Phase Two follow-through?" (Billing)</li>
   </ul>
 </div>
 
@@ -634,7 +658,8 @@ body {
     <li>RTS / On Hold / pre-cancel decisions reflected in status</li>
     <li>Blockers updated with owner and due date</li>
     <li>Confidence field set for any clients where it was discussed</li>
-    <li>Billing Confidence populated for any missing clients surfaced in §3</li>
+    <li>Billing Confidence populated for any missing clients surfaced in §4</li>
+    <li>Billing activation forecast separated from Billing graduation/completion forecast</li>
     <li>Month-end placeholder dates replaced with real dates or marked Low confidence</li>
     <li>Kickoff dates added for any clients surfaced in §6 (Not Kicked Off)</li>
     <li>Client interactions logged for any stale accounts flagged in §7</li>
@@ -745,7 +770,7 @@ Month: May 2026
     <span class="script-section-num">Example</span>
     <span class="script-section-name">Billing Script — Sam T., May 2026</span>
   </div>
-  <p>Sam has 3 Billing clients forecasted in May: one High on the Graduation track, one Medium on the Activation track, and one with no Confidence set (blank = Low). §3 surfaces the missing Confidence as a data action item.</p>
+  <p>Sam has 2 Phase One Billing activations forecasted in May and 1 Phase Two graduation/completion item. The activation readout is the primary Billing forecast because that is where MRR is recognized. The graduation readout stays separate so completion work does not inflate the activation commit.</p>
 </div>
 
 <div class="verbatim" style="margin-top:0; border-top:none; border-radius:0 0 var(--radius) var(--radius); font-size:12px; line-height:1.8;"># Billing Forecast Call — Sam T.
@@ -755,20 +780,24 @@ Month: May 2026
 - I have 5 active Billing clients representing $11,400 MRR.
 - I have 1 Billing client on hold representing $2,200 MRR.
 - I have zero Billing clients in RTS.
-- For May 2026, I have 3 Billing clients forecasted for activation or graduation representing $7,600 MRR.
-- So far this month, 1 client has activated representing $3,100 MRR: Harbor Digital.
+- For May 2026, my Phase One activation forecast is 2 clients representing $4,600 recognized MRR. This is the Billing forecast number tied to MRR recognition.
+- I also have 1 activated Billing client forecasted for Phase Two graduation/completion representing $3,100 MRR. This is completion hygiene, not first MRR recognition.
+- So far this month, 1 client has activated representing $3,100 recognized MRR: Harbor Digital.
 - So far this month, zero clients have graduated.
 - Confidence is populated for 4 of 5 active Billing clients.
 - I still need Billing Confidence populated for 1 client: Northgate Services.
-- My scenario range is 1 client in Worst Case representing $3,100 MRR, 2 clients in Most Likely representing $5,900 MRR, and 3 clients in Best Case representing $7,600 MRR.
-- 1 forecasted Billing client has blank Confidence. Blank is treated as Low, so that client is included in Best Case only.
+- Activation scenario range: zero clients in Worst Case, 1 client in Most Likely representing $2,800 recognized MRR, and 2 clients in Best Case representing $4,600 recognized MRR.
+- Graduation scenario range: 1 client in Worst Case representing $3,100 MRR, 1 client in Most Likely representing $3,100 MRR, and 1 client in Best Case representing $3,100 MRR.
+- 1 forecasted activation client has blank Confidence. Blank is treated as Low, so that client is included in Best Case only.
 
-## 2. Forecasted Billing Clients
-- Harbor Digital: Graduation forecast for May 16 at $3,100. Status: Active. Confidence: High. Blocker status: No blockers listed.
-- Westside Networks: Activation forecast for May 23 at $2,800. Status: Active. Confidence: Medium. Blocker status: Blocked by outstanding contract amendment — Legal, ETA May 20.
-- Northgate Services: Activation forecast for May 30 at $1,800. Status: Active. Confidence: Low (blank). Blocker status: No blockers listed.
+## 2. Phase One Activation Forecast
+- Westside Networks: forecasted activation on May 23 with $2,800 recognized MRR. Status: Active. Confidence: Medium. Blocker status: Blocked by outstanding contract amendment — Legal, ETA May 20.
+- Northgate Services: forecasted activation on May 30 with $1,800 recognized MRR. Status: Active. Confidence: Low (blank). Blocker status: No blockers listed.
 
-## 3. Data Needed Before Reliable Scenario Reporting
+## 3. Phase Two Graduation / Completion Forecast
+- Harbor Digital: already activated; forecasted graduation/completion on May 16 at $3,100 total MRR context. Status: Active. Confidence: High. Blocker status: No blockers listed.
+
+## 4. Data Needed Before Reliable Scenario Reporting
 - PM/SA action: fill Billing Confidence as High, Medium, or Low for the missing clients above.
   - Missing: Northgate Services
 - Until Confidence is populated, scenario buckets are directional only and should not be treated as final forecast commitments.</div>
@@ -782,20 +811,20 @@ Month: May 2026
 
 <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:14px; margin-bottom:40px;">
   <div class="script-section" style="--section-color:#00d4aa; margin-bottom:0;">
-    <div class="script-section-header"><span class="script-section-num">§1</span><span class="script-section-name">Worst Case = 1, Most Likely = 2</span></div>
-    <p>Harbor Digital is the only explicit High — that's the floor. Westside bumps Most Likely to 2. Northgate is blank so it's in Best Case only. The warning in §1 surfaces this so it can't be missed in the call.</p>
+    <div class="script-section-header"><span class="script-section-num">§1</span><span class="script-section-name">Activation is the primary commit</span></div>
+    <p>Westside and Northgate are the Phase One activation forecast. That is the forecast number tied to recognized Billing MRR. Harbor is kept separate because it already activated.</p>
   </div>
   <div class="script-section" style="--section-color:#38bdf8; margin-bottom:0;">
-    <div class="script-section-header"><span class="script-section-num">§2</span><span class="script-section-name">Two tracks in one readout</span></div>
-    <p>Harbor Digital already has an Activation Date, so it's on the Graduation track. Westside and Northgate don't yet — they're on the Activation track. The label appears inline so the caller knows what stage each client is at.</p>
+    <div class="script-section-header"><span class="script-section-num">§2</span><span class="script-section-name">Activation scenarios are separate</span></div>
+    <p>Worst Case is zero because neither activation is High. Westside is Medium, so it lands in Most Likely. Northgate is blank, so it is Best Case only until Confidence is populated.</p>
   </div>
   <div class="script-section" style="--section-color:#ffa94d; margin-bottom:0;">
-    <div class="script-section-header"><span class="script-section-num">§3</span><span class="script-section-name">§3 is a standing action item</span></div>
-    <p>Northgate has no Confidence set. The script calls it out by name. Sam (or their PM) needs to set it in Notion before the next sync — otherwise Northgate stays out of Worst Case and Most Likely regardless of how close they are.</p>
+    <div class="script-section-header"><span class="script-section-num">§3</span><span class="script-section-name">Graduation is Phase Two</span></div>
+    <p>Harbor Digital is already activated, so its May item is graduation/completion. It matters operationally, but it should not inflate the Phase One activation commit or recognized MRR forecast.</p>
   </div>
   <div class="script-section" style="--section-color:#6c63ff; margin-bottom:0;">
-    <div class="script-section-header"><span class="script-section-num">Key</span><span class="script-section-name">Westside's blocker is a commit risk</span></div>
-    <p>Medium confidence + contract blocker with a Legal ETA of May 20. If that slips, Westside drops to Low and Most Likely falls back to 1. The facilitator should ask: is Legal tracking this? Is the ETA firm?</p>
+    <div class="script-section-header"><span class="script-section-num">§4</span><span class="script-section-name">Northgate is a data action item</span></div>
+    <p>Northgate has no Confidence set. The script calls it out by name. Sam or the PM needs to set it in Notion before the next sync, or it stays Best Case only.</p>
   </div>
 </div>
 
