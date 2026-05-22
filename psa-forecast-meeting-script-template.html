@@ -221,6 +221,7 @@ body {
   <a href="#psa" class="lob-tab active">📋 PSA Script</a>
   <a href="#billing" class="lob-tab">💳 Billing Script</a>
   <a href="#defs" class="lob-tab">📖 Definitions</a>
+  <a href="#examples" class="lob-tab">🎬 Examples</a>
 </nav>
 
 <!-- ============================== PSA ============================== -->
@@ -642,6 +643,168 @@ body {
 </div>
 
 </div><!-- end #defs -->
+
+<!-- ============================== EXAMPLES ============================== -->
+<div id="examples">
+
+<div class="section">
+  <div class="section-label">Example Flows</div>
+  <div class="section-title">🎬 What a Real Script Looks Like</div>
+  <div class="section-divider"></div>
+  <p style="font-size:14px; color:var(--text-dim); margin-bottom:6px;">All client names, people, and numbers below are fictional. These show exactly how a generated script reads in the forecast call window — both PSA and Billing.</p>
+</div>
+
+<!-- PSA EXAMPLE -->
+<div class="script-section" style="--section-color:#6c63ff; margin-bottom:0;">
+  <div class="script-section-header">
+    <span class="script-section-num">Example</span>
+    <span class="script-section-name">PSA Script — Jordan M., May 2026</span>
+  </div>
+  <p>Jordan has 4 clients in view: one clean High, one blocked Medium, one On Hold edging toward RTS, and one Low with no kickoff date. Here's the full generated script.</p>
+</div>
+
+<div class="verbatim" style="margin-top:0; border-top:none; border-radius:0 0 var(--radius) var(--radius); font-size:12px; line-height:1.8;"># PSA Forecast Call — Jordan M.
+Month: May 2026
+
+## 1. Graduation Forecast Roll-Up
+- Active onboarding count: 6 / $14,200
+- On hold count: 1 / $1,800
+- RTS count: 0 / $0
+- Graduated this month: 1 — Prestige Managed Services ($2,100)
+- Original monthly graduation commitment: 3
+- Current date-driven graduation forecast: 4 / $9,400
+- Worst case forecast: 1 / $2,500
+- Most likely forecast: 2 / $5,700
+- Best case forecast: 4 / $9,400
+- Delta vs original commitment: worst -2, most likely -1, best +1
+- Tigerpaw migrations in forecast: 1 — Quick Copper Technologies
+- Forecasts sitting on last day of month: 1 — Coastal Systems (May 31)
+- Movement since prior snapshot: -1 client / -$1,800 MRR vs last week
+  - Into RTS: 0
+  - Out of RTS: 0
+  - Into On Hold: 1 — Atlantic MSP Group
+  - Back from On Hold: 0
+
+## 2. Worst Case — Firmest Commitments
+- Greenfield Technology is forecast for May 22 at $2,500. Milestone progress: required 9/10; overall 14/16. Confidence is High. Blocker status: No blockers. Recommendation: Keep forecast date.
+
+## 3. Most Likely Additions
+- Quick Copper Technologies is forecast for May 29 at $3,200. Milestone progress: required 6/10; overall 10/16. Confidence is Medium. Blocker status: Blocked by 403 permission errors when technicians create contacts — Ray/Engineering, ETA May 24. Recommendation: Keep date only if blocker has owner + due date.
+
+## 4. Best Case / Outside Shots
+- Summit Fiber Co is forecast for May 27 at $1,900. Milestone progress: required 3/10; overall 5/16. Confidence is Low. Blocker status: No blockers. Recommendation: Validate date; move if no clear path this week.
+- Coastal Systems is forecast for May 31 at $1,800. Milestone progress: required 2/10; overall 4/16. Confidence is Low. Blocker status: No blockers. Recommendation: Validate date; move if no clear path this week.
+
+## 5. Replacement / Pull-In Opportunities (June)
+- Ridgeline Partners is forecast for Jun 12 at $2,800. Milestone progress: required 8/10; overall 11/16. Confidence is High. Blocker status: No blockers. Recommendation: Only pull in if required milestones and client data are ready.
+- Blue Mesa IT is forecast for Jun 18 at $2,100. Milestone progress: required 5/10; overall 9/16. Confidence is Medium. Blocker status: No blockers. Recommendation: Only pull in if required milestones and client data are ready.
+
+## 6. Not Kicked Off But Forecasted This Month
+- Coastal Systems is forecast for May 31 but has no kickoff date set. Milestone progress: required 2/10; overall 4/16. Recommendation: Validate kickoff status before counting in the committed forecast.
+
+## 7. Product / Process Blockers / Follow-Ups
+- Quick Copper Technologies. Blocked by 403 permission errors when technicians create contacts — Ray/Engineering, ETA May 24. Milestone progress: required 6/10; overall 10/16. Sales rep: Marcus T. Days since last interaction: 4. Recommendation: Keep date only if blocker has owner + due date.
+- Atlantic MSP Group. Status: On Hold — client paused due to internal acquisition. Milestone progress: required 4/10; overall 7/16. Sales rep: Dana W. Days since last interaction: 12. Recommendation: Confirm re-engagement path or move toward RTS/pre-cancel if no movement.
+- Summit Fiber Co. Confidence is Low. Milestone progress: required 3/10; overall 5/16. Sales rep: Marcus T. Days since last interaction: 6. Recommendation: Validate date; move if no clear path this week.
+- Coastal Systems. Confidence is Low. No kickoff date. Milestone progress: required 2/10; overall 4/16. Sales rep: Dana W. Days since last interaction: 9. Recommendation: Validate date; move if no clear path this week.</div>
+
+<!-- PSA ANNOTATIONS -->
+<div class="section" style="margin-top:32px;">
+  <div class="section-label">Reading the PSA Example</div>
+  <div class="section-title">What to notice</div>
+  <div class="section-divider"></div>
+</div>
+
+<div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:14px; margin-bottom:32px;">
+  <div class="script-section" style="--section-color:#00d4aa; margin-bottom:0;">
+    <div class="script-section-header"><span class="script-section-num">§1</span><span class="script-section-name">Roll-Up tells the story upfront</span></div>
+    <p>Jordan is 1 below Most Likely and 2 below Worst Case vs her commitment of 3. The movement note shows Atlantic MSP just moved to On Hold — that's why the delta shifted this week. Coastal Systems sitting on May 31 is flagged as a probable placeholder.</p>
+  </div>
+  <div class="script-section" style="--section-color:#00d4aa; margin-bottom:0;">
+    <div class="script-section-header"><span class="script-section-num">§2</span><span class="script-section-name">Only Greenfield is a clean commit</span></div>
+    <p>One client, High confidence, no blocker, 9/10 required milestones done. This is the only number Jordan can stand behind unconditionally this month. Worst Case = 1.</p>
+  </div>
+  <div class="script-section" style="--section-color:#ffa94d; margin-bottom:0;">
+    <div class="script-section-header"><span class="script-section-num">§3</span><span class="script-section-name">Quick Copper is the swing client</span></div>
+    <p>Medium confidence because it has a blocker — 403 errors, owned by Ray/Engineering, due May 24. If that clears, Most Likely goes to 2. The facilitator should ask: does Ray have this tracked? Is the ETA real?</p>
+  </div>
+  <div class="script-section" style="--section-color:#7b7f9e; margin-bottom:0;">
+    <div class="script-section-header"><span class="script-section-num">§4</span><span class="script-section-name">Summit and Coastal are not commitments</span></div>
+    <p>Both Low confidence — Summit has weak milestone progress, Coastal has no kickoff date. They appear in Best Case only. Coastal is also called out in §6 (no KO date) and §7 (follow-up needed).</p>
+  </div>
+  <div class="script-section" style="--section-color:#a78bfa; margin-bottom:0;">
+    <div class="script-section-header"><span class="script-section-num">§5</span><span class="script-section-name">Two June clients could pull in</span></div>
+    <p>Ridgeline is 8/10 required milestones done and High confidence — a realistic pull-in if Quick Copper slips. Blue Mesa is Medium. Neither is a commitment yet.</p>
+  </div>
+  <div class="script-section" style="--section-color:#ffa94d; margin-bottom:0;">
+    <div class="script-section-header"><span class="script-section-num">§7</span><span class="script-section-name">Atlantic is the risk to watch</span></div>
+    <p>12 days since last interaction, On Hold, Sales rep Dana W. hasn't moved it. Recommendation: confirm re-engagement path or start moving toward RTS. This should be an action item out of the call.</p>
+  </div>
+</div>
+
+<!-- BILLING EXAMPLE -->
+<div class="script-section" style="--section-color:#6c63ff; margin-bottom:0;">
+  <div class="script-section-header">
+    <span class="script-section-num">Example</span>
+    <span class="script-section-name">Billing Script — Sam T., May 2026</span>
+  </div>
+  <p>Sam has 3 Billing clients forecasted in May: one High on the Graduation track, one Medium on the Activation track, and one with no Confidence set (blank = Low). §3 surfaces the missing Confidence as a data action item.</p>
+</div>
+
+<div class="verbatim" style="margin-top:0; border-top:none; border-radius:0 0 var(--radius) var(--radius); font-size:12px; line-height:1.8;"># Billing Forecast Call — Sam T.
+Month: May 2026
+
+## 1. Billing Forecast Roll-Up
+- Active Billing count: 5 / $11,400
+- On hold count: 1 / $2,200
+- RTS count: 0 / $0
+- Forecasted activations/graduations this month: 3 / $7,600
+- Activated this month: 1 / $3,100 — Harbor Digital
+- Graduated this month: 0 / $0
+- Confidence populated: 4/5 active Billing clients
+  - Missing Confidence: Northgate Services
+- Worst case forecast: 1 / $3,100
+- Most likely forecast: 2 / $5,900
+- Best case forecast: 3 / $7,600
+- ⚠️ 1 forecasted client has blank Confidence (treated as Low) — Northgate Services appears in Best Case only.
+
+## 2. Forecasted Billing Clients
+- Harbor Digital: Graduation forecast for May 16 at $3,100. Status: Active. Confidence: High. Blocker status: No blockers listed.
+- Westside Networks: Activation forecast for May 23 at $2,800. Status: Active. Confidence: Medium. Blocker status: Blocked by outstanding contract amendment — Legal, ETA May 20.
+- Northgate Services: Activation forecast for May 30 at $1,800. Status: Active. Confidence: Low (blank). Blocker status: No blockers listed.
+
+## 3. Data Needed Before Reliable Scenario Reporting
+- PM/SA action: fill Billing Confidence as High, Medium, or Low for the missing clients above.
+  - Missing: Northgate Services
+- Until Confidence is populated, scenario buckets are directional only and should not be treated as final forecast commitments.</div>
+
+<!-- BILLING ANNOTATIONS -->
+<div class="section" style="margin-top:32px;">
+  <div class="section-label">Reading the Billing Example</div>
+  <div class="section-title">What to notice</div>
+  <div class="section-divider"></div>
+</div>
+
+<div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:14px; margin-bottom:40px;">
+  <div class="script-section" style="--section-color:#00d4aa; margin-bottom:0;">
+    <div class="script-section-header"><span class="script-section-num">§1</span><span class="script-section-name">Worst Case = 1, Most Likely = 2</span></div>
+    <p>Harbor Digital is the only explicit High — that's the floor. Westside bumps Most Likely to 2. Northgate is blank so it's in Best Case only. The warning in §1 surfaces this so it can't be missed in the call.</p>
+  </div>
+  <div class="script-section" style="--section-color:#38bdf8; margin-bottom:0;">
+    <div class="script-section-header"><span class="script-section-num">§2</span><span class="script-section-name">Two tracks in one readout</span></div>
+    <p>Harbor Digital already has an Activation Date, so it's on the Graduation track. Westside and Northgate don't yet — they're on the Activation track. The label appears inline so the caller knows what stage each client is at.</p>
+  </div>
+  <div class="script-section" style="--section-color:#ffa94d; margin-bottom:0;">
+    <div class="script-section-header"><span class="script-section-num">§3</span><span class="script-section-name">§3 is a standing action item</span></div>
+    <p>Northgate has no Confidence set. The script calls it out by name. Sam (or their PM) needs to set it in Notion before the next sync — otherwise Northgate stays out of Worst Case and Most Likely regardless of how close they are.</p>
+  </div>
+  <div class="script-section" style="--section-color:#6c63ff; margin-bottom:0;">
+    <div class="script-section-header"><span class="script-section-num">Key</span><span class="script-section-name">Westside's blocker is a commit risk</span></div>
+    <p>Medium confidence + contract blocker with a Legal ETA of May 20. If that slips, Westside drops to Low and Most Likely falls back to 1. The facilitator should ask: is Legal tracking this? Is the ETA firm?</p>
+  </div>
+</div>
+
+</div><!-- end #examples -->
 
 </div><!-- .content -->
 
