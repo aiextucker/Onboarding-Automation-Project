@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Activation PSA Forecast Methodology — Rev.io</title>
+  <title>Activation Forecast Methodology — PSA &amp; Billing — Rev.io</title>
   <style>
     :root {
       --bg: #0f1117;
@@ -197,6 +197,104 @@
       border-radius: 2px; margin: 12px 0 22px;
     }
 
+    /* LOB TAB NAV */
+    .lob-tabs {
+      display: flex; gap: 8px; margin: 36px 0 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .lob-tab {
+      font-size: 13px; font-weight: 700;
+      padding: 8px 20px;
+      border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+      cursor: pointer; text-decoration: none;
+      border: 1px solid transparent;
+      border-bottom: none;
+      color: var(--muted);
+      transition: color .15s, background .15s;
+    }
+    .lob-tab:hover { color: var(--text); background: rgba(255,255,255,0.04); }
+    .lob-tab.active { color: var(--accent2); background: var(--surface); border-color: var(--border); }
+
+    /* SCENARIO BUCKETS (Billing) */
+    .scenario-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 16px;
+      margin-top: 8px;
+    }
+    .scenario-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      position: relative; overflow: hidden;
+      display: flex; flex-direction: column; gap: 14px;
+    }
+    .scenario-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+      background: var(--scenario-color, var(--accent));
+      border-radius: var(--radius) var(--radius) 0 0;
+    }
+    .scenario-header { display: flex; align-items: center; gap: 12px; }
+    .scenario-badge {
+      font-size: 12px; font-weight: 800;
+      padding: 4px 12px; border-radius: 20px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--scenario-color, var(--accent));
+      color: var(--scenario-color, var(--accent));
+      white-space: nowrap;
+    }
+    .scenario-name { font-size: 16px; font-weight: 800; color: #fff; }
+    .scenario-def {
+      font-size: 13px; color: var(--text-dim); font-style: italic;
+      border-left: 3px solid var(--scenario-color, var(--accent));
+      padding-left: 12px; line-height: 1.6;
+    }
+    .scenario-chips { display: flex; flex-wrap: wrap; gap: 7px; }
+    .confidence-chip {
+      font-size: 12px; font-weight: 700;
+      padding: 4px 12px; border-radius: 12px;
+      border: 1px solid; white-space: nowrap;
+    }
+    .chip-high { color: #00d4aa; border-color: rgba(0,212,170,0.5); background: rgba(0,212,170,0.08); }
+    .chip-medium { color: #ffa94d; border-color: rgba(255,169,77,0.5); background: rgba(255,169,77,0.08); }
+    .chip-low { color: #7b7f9e; border-color: rgba(123,127,158,0.5); background: rgba(123,127,158,0.08); }
+    .chip-blank { color: #555b75; border-color: rgba(85,91,117,0.4); background: rgba(85,91,117,0.06); font-style: italic; }
+
+    /* MILESTONE SCORING */
+    .milestone-scoring-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 12px;
+      margin-top: 8px;
+    }
+    .ms-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 18px 20px;
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .ms-status { font-size: 13px; font-weight: 700; color: #fff; }
+    .ms-score {
+      font-size: 24px; font-weight: 900;
+      color: var(--ms-color, var(--accent2));
+      line-height: 1;
+    }
+    .ms-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+    /* WARNING BANNER */
+    .warn-banner {
+      background: rgba(255,169,77,0.07);
+      border: 1px solid rgba(255,169,77,0.3);
+      border-radius: var(--radius-sm);
+      padding: 14px 18px;
+      font-size: 13px; color: var(--warn);
+      display: flex; align-items: flex-start; gap: 10px;
+      margin-top: 20px;
+    }
+    .warn-banner strong { color: #fff; }
+
     /* FORECAST STRUCTURE TABLE */
     .structure-table {
       width: 100%;
@@ -306,14 +404,14 @@
 
 <!-- HERO -->
 <div class="hero">
-  <div class="hero-eyebrow">Rev.io PSA Onboarding · Operations</div>
+  <div class="hero-eyebrow">Rev.io Onboarding · Operations</div>
   <h1>Activation <span>Forecast Methodology</span></h1>
   <div class="hero-sub">
-    Gated, readiness-based forecasting — not linear progress. Commit, Upside, and Pipeline tiers with defined criteria, confidence bands, and governance rules.
+    How PSA and Billing onboarding forecasts are built, structured, and scored — gated readiness for PSA, Confidence-driven scenario buckets for Billing.
   </div>
   <div class="hero-badges">
-    <div class="hero-badge"><span>🎯</span> Gated by Readiness</div>
-    <div class="hero-badge"><span>📋</span> 3-Tier Structure</div>
+    <div class="hero-badge"><span>📋</span> PSA: Gated by Readiness</div>
+    <div class="hero-badge"><span>💳</span> Billing: Scenario Buckets</div>
     <div class="hero-badge"><span>🔒</span> No-Exceptions Rule</div>
     <div class="hero-badge"><span>🔄</span> Weekly Revalidation</div>
   </div>
@@ -322,6 +420,15 @@
 <div class="content">
 
   <a class="back-link" href="index.html">← Back to Intelligence Hub</a>
+
+  <!-- LOB NAV -->
+  <nav class="lob-tabs">
+    <a href="#psa" class="lob-tab active">📋 PSA Onboarding</a>
+    <a href="#billing" class="lob-tab">💳 Billing Onboarding</a>
+  </nav>
+
+  <!-- ===== PSA SECTION ===== -->
+  <div id="psa">
 
   <!-- CORE PRINCIPLE -->
   <div class="principle-banner">
@@ -538,10 +645,166 @@
     </div>
   </div>
 
+  <!-- MILESTONE SCORING -->
+  <div class="section">
+    <div class="section-label">PSA — Script Logic</div>
+    <div class="section-title">📐 Milestone Scoring</div>
+    <div class="section-divider"></div>
+    <p style="font-size:14px; color:var(--text-dim); margin-bottom:20px;">
+      Forecast confidence scores in the PSA forecast script are derived from milestone completion. Each milestone contributes a fractional point based on its current status.
+    </p>
+    <div class="milestone-scoring-grid">
+      <div class="ms-card" style="--ms-color:#00d4aa;">
+        <div class="ms-status">✅ Completed</div>
+        <div class="ms-score">1.0 pt</div>
+        <div class="ms-desc">Full credit. Milestone is done.</div>
+      </div>
+      <div class="ms-card" style="--ms-color:#ffa94d;">
+        <div class="ms-status">🔄 In Progress</div>
+        <div class="ms-score">⅓ pt</div>
+        <div class="ms-desc">Partial credit. Work is actively underway.</div>
+      </div>
+      <div class="ms-card" style="--ms-color:#7b7f9e;">
+        <div class="ms-status">All other statuses</div>
+        <div class="ms-score">0 pt</div>
+        <div class="ms-desc">No credit. Not started, blocked, on hold, or deferred.</div>
+      </div>
+    </div>
+    <div class="warn-banner">
+      <span>⚠️</span>
+      <div><strong>Action needed:</strong> SA/PM team should know that milestone status directly affects the confidence score in their forecast scripts. Keeping milestones current matters — In Progress is worth 1/3 of a Completed milestone.</div>
+    </div>
+  </div>
+
+  </div><!-- end #psa -->
+
+  <!-- ===== BILLING SECTION ===== -->
+  <div id="billing">
+
+  <div style="margin-top:48px;">
+    <div class="section-label">Billing Onboarding</div>
+    <div class="section-title">💳 Billing Forecast — How It Works</div>
+    <div class="section-divider"></div>
+    <div class="principle-banner" style="margin-top:0;">
+      <div class="principle-label">Core Principle</div>
+      <div class="principle-title">Billing uses Confidence — not milestone gating</div>
+      <div class="principle-body">
+        Billing onboarding doesn’t have the same milestone structure as PSA. Instead, PMs and SAs assign a <strong>Confidence</strong> level (High / Medium / Low) to each active client in Notion. That field drives the scenario buckets in the forecast script.
+        <ul class="principle-bullets">
+          <li>Confidence is set per-client by the PM/SA owner — not auto-calculated</li>
+          <li>DEs are excluded from Billing forecast scripts; PMs and SAs only</li>
+          <li>Blank Confidence is treated as Low for bucket purposes</li>
+          <li>Until Confidence is populated for all active clients, scenario buckets are directional only — not final commitments</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- BILLING SCENARIO BUCKETS -->
+  <div class="section" style="margin-top:32px;">
+    <div class="section-label">Billing — Script Logic</div>
+    <div class="section-title">📊 Scenario Buckets</div>
+    <div class="section-divider"></div>
+    <p style="font-size:14px; color:var(--text-dim); margin-bottom:20px;">
+      The Billing forecast script generates three scenarios. Each is a cumulative superset of the one above it — Worst Case is the floor, Best Case is the ceiling.
+    </p>
+    <div class="scenario-grid">
+
+      <div class="scenario-card" style="--scenario-color:#00d4aa;">
+        <div class="scenario-header"><div class="scenario-badge">Worst Case</div></div>
+        <div class="scenario-name">Firmest Commitments</div>
+        <div class="scenario-def">Only clients where the PM/SA has explicitly set Confidence = High.</div>
+        <div><div class="tier-section-title">Includes</div><div class="scenario-chips"><span class="confidence-chip chip-high">High</span></div></div>
+        <div><div class="tier-section-title">Excludes</div><div class="scenario-chips"><span class="confidence-chip chip-medium">Medium</span> <span class="confidence-chip chip-low">Low</span> <span class="confidence-chip chip-blank">blank</span></div></div>
+        <div style="font-size:12px; color:var(--muted);">Use this in a must-land scenario.</div>
+      </div>
+
+      <div class="scenario-card" style="--scenario-color:#ffa94d;">
+        <div class="scenario-header"><div class="scenario-badge">Most Likely</div></div>
+        <div class="scenario-name">Realistic Forecast</div>
+        <div class="scenario-def">High-confidence clients plus those with a reasonable shot — Confidence = High or Medium.</div>
+        <div><div class="tier-section-title">Includes</div><div class="scenario-chips"><span class="confidence-chip chip-high">High</span> <span class="confidence-chip chip-medium">Medium</span></div></div>
+        <div><div class="tier-section-title">Excludes</div><div class="scenario-chips"><span class="confidence-chip chip-low">Low</span> <span class="confidence-chip chip-blank">blank</span></div></div>
+        <div style="font-size:12px; color:var(--muted);">Primary number for standard forecast calls.</div>
+      </div>
+
+      <div class="scenario-card" style="--scenario-color:#7b7f9e;">
+        <div class="scenario-header"><div class="scenario-badge">Best Case</div></div>
+        <div class="scenario-name">Outside Shots</div>
+        <div class="scenario-def">Everything — all active clients regardless of Confidence, including blank (treated as Low).</div>
+        <div><div class="tier-section-title">Includes</div><div class="scenario-chips"><span class="confidence-chip chip-high">High</span> <span class="confidence-chip chip-medium">Medium</span> <span class="confidence-chip chip-low">Low</span> <span class="confidence-chip chip-blank">blank (= Low)</span></div></div>
+        <div style="font-size:12px; color:var(--muted);">Ceiling only. Not a commit. Useful for capacity planning.</div>
+      </div>
+
+    </div>
+
+    <div style="background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; margin-top:28px;">
+      <table class="structure-table">
+        <thead><tr><th>Scenario</th><th>Confidence Included</th><th>Blank Confidence</th><th>Use For</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="tier-chip" style="color:#00d4aa;border-color:#00d4aa;">Worst Case</span></td>
+            <td><span class="confidence-chip chip-high" style="font-size:11px;">High</span></td>
+            <td style="color:var(--danger);">Excluded</td>
+            <td style="color:var(--text-dim);">Floor / must-land number</td>
+          </tr>
+          <tr>
+            <td><span class="tier-chip" style="color:#ffa94d;border-color:#ffa94d;">Most Likely</span></td>
+            <td><span class="confidence-chip chip-high" style="font-size:11px;">High</span> <span class="confidence-chip chip-medium" style="font-size:11px;">Medium</span></td>
+            <td style="color:var(--danger);">Excluded</td>
+            <td style="color:var(--text-dim);">Standard forecast call number</td>
+          </tr>
+          <tr>
+            <td><span class="tier-chip" style="color:#7b7f9e;border-color:#7b7f9e;">Best Case</span></td>
+            <td><span class="confidence-chip chip-high" style="font-size:11px;">High</span> <span class="confidence-chip chip-medium" style="font-size:11px;">Medium</span> <span class="confidence-chip chip-low" style="font-size:11px;">Low</span></td>
+            <td style="color:#00d4aa;">Included (as Low)</td>
+            <td style="color:var(--text-dim);">Ceiling / capacity planning only</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="warn-banner">
+      <span>⚠️</span>
+      <div><strong>Until Billing Confidence is populated for all active clients,</strong> scenario buckets are directional only. Blank Confidence defaults to Best Case only — those clients won’t appear in Worst Case or Most Likely. Fill the field before using these numbers in a commit conversation.</div>
+    </div>
+  </div>
+
+  <!-- BILLING GOVERNANCE -->
+  <div class="section">
+    <div class="section-label">Billing — Process</div>
+    <div class="section-title">🔒 Billing Forecast Governance</div>
+    <div class="section-divider"></div>
+    <div class="governance-grid">
+      <div class="gov-card">
+        <div class="gov-icon">🙋</div>
+        <div class="gov-title">PM/SA Owners Only</div>
+        <div class="gov-desc">DEs are excluded. Confidence is set by the PM or SA assigned to each client.</div>
+      </div>
+      <div class="gov-card">
+        <div class="gov-icon">📝</div>
+        <div class="gov-title">Confidence in Notion</div>
+        <div class="gov-desc">The Confidence field lives on each Billing client record in Notion. High, Medium, or Low — no other values count.</div>
+      </div>
+      <div class="gov-card">
+        <div class="gov-icon">🔄</div>
+        <div class="gov-title">Keep It Current</div>
+        <div class="gov-desc">Review Confidence at each forecast cycle. A stale High is worse than an honest Low.</div>
+      </div>
+      <div class="gov-card">
+        <div class="gov-icon">🚫</div>
+        <div class="gov-title">Blank = Low</div>
+        <div class="gov-desc">Missing Confidence is treated as Low in all scripts. It will only appear in Best Case. Fill the field.</div>
+      </div>
+    </div>
+  </div>
+
+  </div><!-- end #billing -->
+
   <!-- LESSONS LEARNED -->
   <div class="section">
     <div class="section-label">Continuous Improvement</div>
-    <div class="section-title">💡 Key Improvements — Jan–Feb 2026</div>
+    <div class="section-title">💡 Key Improvements — 2026</div>
     <div class="section-divider"></div>
     <div class="lessons-card">
       <div class="lessons-label">Lessons Learned</div>
@@ -573,7 +836,7 @@
 </div>
 
 <div class="footer">
-  ⚡ Rev.io Intelligence Stack · Activation PSA Forecast Methodology · March 2026
+  ⚡ Rev.io Intelligence Stack · Activation Forecast Methodology (PSA &amp; Billing) · Updated May 2026
 </div>
 
 </body>
