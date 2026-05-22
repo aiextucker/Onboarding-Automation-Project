@@ -3,134 +3,653 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PSA Weekly Forecast Call — SA Script Template</title>
+<title>Forecast Call Script Reference — PSA &amp; Billing — Rev.io</title>
 <style>
-:root { --bg:#0f1117; --panel:#171a23; --text:#e8eaf0; --muted:#9aa3b2; --border:#2a2f3a; --accent:#6c63ff; --green:#00d4aa; }
-* { box-sizing:border-box; }
-body { margin:0; font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif; background: radial-gradient(circle at top left, rgba(108,99,255,.16), transparent 35%), var(--bg); color:var(--text); line-height:1.55; }
-.container { max-width: 940px; margin: 0 auto; padding: 44px 22px 80px; }
-.card { background: rgba(23,26,35,.94); border:1px solid var(--border); border-radius:22px; padding: 34px; box-shadow:0 24px 70px rgba(0,0,0,.35); }
-h1 { font-size: clamp(2rem, 5vw, 3.2rem); line-height:1.05; margin:0 0 18px; letter-spacing:-.04em; }
-h2 { margin: 36px 0 12px; padding-top: 18px; border-top:1px solid var(--border); color:#fff; font-size:1.3rem; }
-h3 { margin: 24px 0 10px; color:var(--green); font-size:.98rem; text-transform:uppercase; letter-spacing:.06em; }
-p, li { color: #d7dbe5; }
-ul { padding-left: 22px; } li { margin: 5px 0; }
-blockquote { margin: 12px 0; padding: 13px 17px; border-left:4px solid var(--accent); background: rgba(108,99,255,.1); border-radius: 0 12px 12px 0; color:#fff; font-weight:600; }
-code { background:#0b0d12; color:#c7c3ff; border:1px solid var(--border); border-radius:6px; padding:2px 5px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
-hr { border:0; border-top:1px solid var(--border); margin:28px 0; }
-.badge { display:inline-block; border:1px solid rgba(0,212,170,.35); color:var(--green); background:rgba(0,212,170,.08); padding:5px 10px; border-radius:999px; font-size:.78rem; font-weight:700; text-transform:uppercase; letter-spacing:.05em; margin-bottom:16px; }
-.print { position:fixed; right:18px; bottom:18px; background:var(--accent); color:white; border:0; border-radius:999px; padding:12px 16px; font-weight:700; cursor:pointer; box-shadow:0 12px 30px rgba(0,0,0,.35); }
-@media print { body { background:white; color:#111; } .card { box-shadow:none; border:0; padding:0; } .print { display:none; } p,li,blockquote,h1,h2,h3 { color:#111; } blockquote { background:#f3f4f6; } }
+:root {
+  --bg: #0f1117;
+  --surface: #1a1d27;
+  --surface2: #21253a;
+  --accent: #6c63ff;
+  --green: #00d4aa;
+  --amber: #ffa94d;
+  --sky: #38bdf8;
+  --violet: #a78bfa;
+  --danger: #ff6b6b;
+  --muted: #7b7f9e;
+  --text: #e8eaf6;
+  --text-dim: #b0b4cc;
+  --border: rgba(255,255,255,0.07);
+  --radius: 14px;
+  --radius-sm: 8px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+/* HERO */
+.hero {
+  background: linear-gradient(135deg, #0d1520 0%, #0f1f35 50%, #0f1117 100%);
+  border-bottom: 1px solid var(--border);
+  padding: 56px 24px 46px;
+  text-align: center;
+}
+.hero-eyebrow { font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--green); margin-bottom: 14px; }
+.hero h1 { font-size: clamp(22px, 5vw, 36px); font-weight: 800; line-height: 1.15; letter-spacing: -0.5px; margin-bottom: 12px; }
+.hero h1 span { color: var(--green); }
+.hero-sub { font-size: clamp(13px, 2.5vw, 15px); color: var(--text-dim); max-width: 640px; margin: 0 auto 28px; }
+.hero-badges { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+.hero-badge { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 7px 16px; font-size: 13px; font-weight: 600; }
+.hero-badge span { color: var(--green); margin-right: 6px; }
+
+/* LAYOUT */
+.content { max-width: 960px; margin: 0 auto; padding: 0 20px 80px; }
+
+/* LOB TABS */
+.lob-tabs { display: flex; gap: 8px; margin: 32px 0 0; border-bottom: 1px solid var(--border); }
+.lob-tab { font-size: 13px; font-weight: 700; padding: 8px 20px; border-radius: var(--radius-sm) var(--radius-sm) 0 0; text-decoration: none; border: 1px solid transparent; border-bottom: none; color: var(--muted); transition: color .15s, background .15s; }
+.lob-tab:hover { color: var(--text); background: rgba(255,255,255,0.04); }
+.lob-tab.active { color: var(--green); background: var(--surface); border-color: var(--border); }
+
+/* SECTION */
+.section { margin-top: 40px; }
+.section-label { font-size: 11px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: var(--accent); margin-bottom: 6px; }
+.section-title { font-size: clamp(16px, 3vw, 20px); font-weight: 700; margin-bottom: 4px; }
+.section-divider { width: 40px; height: 3px; background: linear-gradient(90deg, var(--accent), var(--green)); border-radius: 2px; margin: 10px 0 20px; }
+
+/* SCRIPT SECTION CARDS */
+.script-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px 28px;
+  margin-bottom: 16px;
+  position: relative;
+  overflow: hidden;
+}
+.script-section::before {
+  content: '';
+  position: absolute; top: 0; left: 0; bottom: 0; width: 4px;
+  background: var(--section-color, var(--accent));
+}
+.script-section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+.script-section-num {
+  font-size: 11px; font-weight: 800; padding: 3px 10px; border-radius: 12px;
+  background: rgba(255,255,255,0.06); border: 1px solid var(--section-color, var(--accent));
+  color: var(--section-color, var(--accent)); white-space: nowrap;
+}
+.script-section-name { font-size: 15px; font-weight: 700; color: #fff; }
+.script-section p { font-size: 13px; color: var(--text-dim); line-height: 1.7; margin-bottom: 10px; }
+.script-section p:last-child { margin-bottom: 0; }
+.script-section strong { color: var(--text); }
+
+/* FIELD TABLE */
+.field-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 12px; }
+.field-table th { text-align: left; padding: 8px 14px; background: var(--surface2); color: var(--muted); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid var(--border); }
+.field-table td { padding: 10px 14px; border-bottom: 1px solid var(--border); color: var(--text-dim); vertical-align: top; }
+.field-table tr:last-child td { border-bottom: none; }
+.field-table tr:hover td { background: rgba(255,255,255,0.02); }
+.field-table .field-name { color: var(--text); font-weight: 600; white-space: nowrap; }
+.field-table code { background: #0b0d12; color: #c7c3ff; border: 1px solid var(--border); border-radius: 4px; padding: 1px 5px; font-size: 11px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+
+/* LOGIC BOX */
+.logic-box {
+  background: rgba(108,99,255,0.07);
+  border: 1px solid rgba(108,99,255,0.25);
+  border-radius: var(--radius-sm);
+  padding: 14px 18px;
+  font-size: 13px;
+  color: var(--text-dim);
+  margin-top: 14px;
+}
+.logic-box .logic-label { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--accent); margin-bottom: 6px; }
+.logic-box code { background: #0b0d12; color: #c7c3ff; border: 1px solid var(--border); border-radius: 4px; padding: 1px 5px; font-size: 11px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+
+/* VERBATIM */
+.verbatim {
+  background: #0b0d12;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px 18px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  color: #c7c3ff;
+  line-height: 1.7;
+  margin-top: 12px;
+  white-space: pre-wrap;
+}
+
+/* CONFIDENCE CHIPS */
+.chip { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 9px; border-radius: 10px; border: 1px solid; white-space: nowrap; margin: 2px 3px 2px 0; }
+.chip-high { color: #00d4aa; border-color: rgba(0,212,170,0.45); background: rgba(0,212,170,0.08); }
+.chip-medium { color: #ffa94d; border-color: rgba(255,169,77,0.45); background: rgba(255,169,77,0.08); }
+.chip-low { color: #7b7f9e; border-color: rgba(123,127,158,0.45); background: rgba(123,127,158,0.08); }
+.chip-blank { color: #555b75; border-color: rgba(85,91,117,0.4); background: rgba(85,91,117,0.06); font-style: italic; }
+
+/* RECOMMENDATION TABLE */
+.rec-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+.rec-card { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px 16px; }
+.rec-card .rec-condition { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 6px; }
+.rec-card .rec-text { font-size: 13px; color: var(--text-dim); line-height: 1.55; }
+.rec-card .rec-text strong { color: var(--text); }
+
+/* SCENARIO TABLE */
+.scenario-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 14px; }
+.scenario-table th { text-align: left; padding: 8px 14px; background: var(--surface2); color: var(--muted); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid var(--border); }
+.scenario-table td { padding: 11px 14px; border-bottom: 1px solid var(--border); color: var(--text-dim); vertical-align: top; }
+.scenario-table tr:last-child td { border-bottom: none; }
+
+/* WARN BANNER */
+.warn-banner { background: rgba(255,169,77,0.07); border: 1px solid rgba(255,169,77,0.28); border-radius: var(--radius-sm); padding: 12px 16px; font-size: 13px; color: var(--amber); display: flex; gap: 10px; margin-top: 16px; }
+.warn-banner strong { color: #fff; }
+
+/* PRINCIPLE BOX */
+.principle-box {
+  background: linear-gradient(135deg, rgba(108,99,255,0.1), rgba(0,212,170,0.06));
+  border: 1px solid rgba(108,99,255,0.28);
+  border-radius: var(--radius);
+  padding: 22px 26px;
+  position: relative; overflow: hidden;
+  margin-bottom: 24px;
+}
+.principle-box::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--accent), var(--green)); }
+.principle-box .pl { font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); margin-bottom: 6px; }
+.principle-box .pt { font-size: 16px; font-weight: 800; color: #fff; margin-bottom: 8px; }
+.principle-box .pb { font-size: 13px; color: var(--text-dim); line-height: 1.7; }
+.principle-box .pb strong { color: var(--text); }
+
+/* BACK LINK */
+.back-link { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: 13px; text-decoration: none; margin: 24px 0 0; transition: color .15s; }
+.back-link:hover { color: var(--green); }
+
+/* FOOTER */
+.footer { text-align: center; color: var(--muted); font-size: 12px; padding: 28px 20px 36px; border-top: 1px solid var(--border); margin-top: 60px; }
+
+/* PRINT */
+.print-btn { position: fixed; right: 18px; bottom: 18px; background: var(--accent); color: white; border: 0; border-radius: 999px; padding: 11px 16px; font-weight: 700; cursor: pointer; box-shadow: 0 12px 30px rgba(0,0,0,.35); font-size: 13px; }
+
+@media (max-width: 640px) {
+  .hero { padding: 36px 18px 32px; }
+  .content { padding: 0 14px 60px; }
+  .rec-grid { grid-template-columns: 1fr; }
+  .script-section { padding: 18px 18px; }
+}
+@media print { body { background: white; color: #111; } .print-btn { display: none; } .hero { background: #f8f9fa; border: none; } .hero h1, .hero h1 span, .hero-eyebrow, .hero-sub, .section-title, .section-label, .script-section-name { color: #111; } .script-section { background: #f8f9fa; border: 1px solid #ddd; } .verbatim { background: #f0f0f0; color: #222; } }
 </style>
 </head>
 <body>
-<button class="print" onclick="window.print()">Print / Save PDF</button>
-<main class="container">
-  <div class="badge">PSA Forecast Operations</div>
-  <section class="card">
-    <h1>PSA Weekly Forecast Call — SA Script Template</h1>
-<h2>1. Roll-Up</h2>
-<ul>
-<li>Active onboarding count: <code>[count]</code></li>
-<li>On hold count: <code>[count]</code></li>
-<li>RTS count: <code>[count]</code></li>
-<li>Graduated since last forecast: <code>[count / clients / MRR]</code></li>
-<li>Moved to RTS since last forecast: <code>[count / clients / MRR]</code></li>
-<li>Coming out of RTS / re-engaged by Sales: <code>[count / clients]</code></li>
-<li>Month forecast target: <code>[target]</code></li>
-<li>Currently credible for this month: <code>[count]</code></li>
-<li>Forecasts sitting on last day of month: <code>[count]</code></li>
-</ul>
-<hr>
-<h2>2. Standard SA Readout</h2>
-<blockquote>“<code>[Client]</code> is forecast for <code>[graduation date]</code>. Confidence is <code>[High / Medium / Low]</code>. Blocker status: <code>[No blockers / Blocked by X]</code>.”</blockquote>
-<p>If no blocker:</p>
-<blockquote>“No blockers. Recommendation: keep the forecast date.”</blockquote>
-<p>If blocked:</p>
-<blockquote>“Blocked by <code>[blocker]</code>. Owner: <code>[owner]</code>. Clear path: <code>[action/workaround/escalation]</code>. Needed by <code>[date]</code>. Recommendation: <code>[keep date / move date / RTS / on hold / pre-cancel / escalate]</code>.”</blockquote>
-<h3>Fields</h3>
-<ul>
-<li>Client:</li>
-<li>SA:</li>
-<li>Sales rep:</li>
-<li>Status: <code>[Active / On Hold / RTS / Pre-cancel / Graduating / Graduated]</code></li>
-<li>Forecast graduation date:</li>
-<li>Confidence: <code>[High / Medium / Low]</code></li>
-<li>Blocker status: <code>[None / Blocked]</code></li>
-<li>Blocker:</li>
-<li>Owner:</li>
-<li>Due date:</li>
-<li>Recommendation:</li>
-</ul>
-<hr>
-<h2>3. Confidence Language</h2>
-<h3>High</h3>
-<blockquote>“High confidence. No blocker. Date is good.”</blockquote>
-<h3>Medium</h3>
-<blockquote>“Medium confidence. Blocker is owned and expected to clear by <code>[date]</code>. If it misses, move to <code>[new date]</code>.”</blockquote>
-<h3>Low</h3>
-<blockquote>“Low confidence. Forecast is not credible unless <code>[blocker]</code> clears by <code>[date]</code>. Recommendation: <code>[move date / RTS / escalate]</code>.”</blockquote>
-<hr>
-<h2>4. Blocker Language</h2>
-<h3>Product / Engineering</h3>
-<blockquote>“Blocked by <code>[issue]</code>. Owner: <code>[person/team]</code>. Client impact: <code>[impact]</code>. Clear path: <code>[ticket/escalation/workaround]</code>. Needed by <code>[date]</code>.”</blockquote>
-<h3>Client Engagement</h3>
-<blockquote>“Blocked by engagement. Last meaningful contact: <code>[date]</code>. Attempts: <code>[attempts]</code>. Sales rep: <code>[rep]</code>. Recommendation: <code>[next meeting / RTS / pre-cancel]</code>.”</blockquote>
-<h3>Sales / Contract / Expectations</h3>
-<blockquote>“Sales/expectation issue. Client believes <code>[client expectation]</code>; actual state is <code>[contract/payment/product reality]</code>. Sales owner: <code>[rep]</code>. Recommendation: <code>[re-engage / RTS / pre-cancel]</code> by <code>[date]</code>.”</blockquote>
-<h3>Data / Import</h3>
-<blockquote>“Blocked by data/import. Missing: <code>[data/API key/template field]</code>. Owner: <code>[owner]</code>. ETA: <code>[date]</code>. Forecast impact: <code>[none / at risk / move date]</code>.”</blockquote>
-<h3>Training / Validation</h3>
-<blockquote>“Blocked by final validation/training. Remaining item: <code>[walkthrough/testing/Q&amp;A]</code>. Client action needed: <code>[action]</code>. Confidence: <code>[level]</code>.”</blockquote>
-<hr>
-<h2>5. RTS / On-Hold</h2>
-<blockquote>“<code>[Client]</code> is <code>[On Hold / RTS]</code> because <code>[reason]</code>. Sales rep: <code>[rep]</code>. Last activity: <code>[date]</code>. Re-engagement owner: <code>[owner]</code>. If not cleared by <code>[date]</code>, recommendation: <code>[pre-cancel / cancel / keep RTS with reason]</code>.”</blockquote>
-<h3>Operating Rule</h3>
-<ul>
-<li>Sales has roughly <strong>2–3 weeks</strong> to re-engage RTS/on-hold clients.</li>
-<li>If not cleared, move to <strong>pre-cancel</strong>.</li>
-<li>If still not cleared after pre-cancel, proceed to cancellation.</li>
-</ul>
-<blockquote>“This has exceeded the re-engagement window. Unless Sales confirms movement by <code>[date]</code>, recommend pre-cancel.”</blockquote>
-<hr>
-<h2>6. Month-End Date Check</h2>
-<blockquote>“This is forecast for <code>[month-end date]</code>. Is that the real graduation date or a placeholder?”</blockquote>
-<p>If placeholder:</p>
-<blockquote>“Replace with a real date or mark confidence low.”</blockquote>
-<hr>
-<h2>7. Facilitator Prompts</h2>
-<ul>
-<li>“Any blocker?”</li>
-<li>“Who owns it?”</li>
-<li>“By what date?”</li>
-<li>“Does it threaten the forecast?”</li>
-<li>“Is this forecast date real?”</li>
-<li>“Does Sales need to re-engage?”</li>
-<li>“Stay active, RTS, or pre-cancel?”</li>
-<li>“Has the latest client interaction been logged?”</li>
-</ul>
-<hr>
-<h2>8. Example Updates</h2>
-<h3>No Blocker</h3>
-<blockquote>“Prestige is forecast for May 28. Confidence high. No blockers. Recommendation: keep the date.”</blockquote>
-<h3>Blocked</h3>
-<blockquote>“Quick Copper is forecast for May 31. Confidence medium-low. Blocked by 403 permission errors when techs create contacts. Owner: Ray/Engineering. Needed by May 20. If unresolved, move to June.”</blockquote>
-<h3>RTS</h3>
-<blockquote>“Atlantic is not forecastable. Blocked by client timing tied to an acquisition. Sales rep: <code>[rep]</code>. Recommendation: RTS. If no movement in two weeks, pre-cancel.”</blockquote>
-<h3>Workaround</h3>
-<blockquote>“VanRan is forecast for <code>[date]</code>. Confidence medium. Blocked by subcontractor access. Workaround is one portal user plus tagging. Halle owns client communication; Ray owns permission guidance. If accepted, keep date.”</blockquote>
-<hr>
-<h2>9. Closeout</h2>
-<ul>
-<li>Forecast date changes captured.</li>
-<li>RTS/on-hold/pre-cancel decisions captured.</li>
-<li>Blockers have owner + due date.</li>
-<li>Sales rep visible for RTS/on-hold/cancel-risk clients.</li>
-<li>Client interactions updated for stale accounts.</li>
-<li>Product/engineering escalations assigned.</li>
-<li>Month-end placeholders converted to real dates or low confidence.</li>
-</ul>
-  </section>
-</main>
+
+<button class="print-btn" onclick="window.print()">Print / PDF</button>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-eyebrow">Rev.io Onboarding · Operations</div>
+  <h1>Forecast Call <span>Script Reference</span></h1>
+  <div class="hero-sub">
+    Complete field definitions, logic rules, and section-by-section reference for the PSA and Billing forecast scripts generated in the SLT Dashboard Team Overview.
+  </div>
+  <div class="hero-badges">
+    <div class="hero-badge"><span>📋</span> PSA: 7 Sections</div>
+    <div class="hero-badge"><span>💳</span> Billing: 3 Sections</div>
+    <div class="hero-badge"><span>🤖</span> Auto-Generated</div>
+    <div class="hero-badge"><span>📐</span> All Logic Defined</div>
+  </div>
+</div>
+
+<div class="content">
+
+<a class="back-link" href="index.html">← Back to Intelligence Hub</a>
+
+<!-- HOW SCRIPTS ARE GENERATED -->
+<div class="section" style="margin-top:28px;">
+  <div class="principle-box">
+    <div class="pl">How It Works</div>
+    <div class="pt">Scripts are generated live from Notion data — not filled in manually</div>
+    <div class="pb">
+      Click <strong>PSA Script</strong> or <strong>Billing Script</strong> on any Team Overview card in the SLT Dashboard. The script is built from the current Notion sync: forecast dates, statuses, blockers, Confidence, milestone progress, owner goals, and historical snapshots. Copy the output and read it directly in the forecast call.<br><br>
+      <strong>Source fields:</strong> Notion PSA Onboarding Clients (PSA) · Notion Billing Onboarding Clients (Billing) · Owner Goals on the Forecast database · Prior-week snapshots for movement deltas.
+    </div>
+  </div>
+</div>
+
+<!-- LOB TABS -->
+<nav class="lob-tabs">
+  <a href="#psa" class="lob-tab active">📋 PSA Script</a>
+  <a href="#billing" class="lob-tab">💳 Billing Script</a>
+  <a href="#defs" class="lob-tab">📖 Definitions</a>
+</nav>
+
+<!-- ============================== PSA ============================== -->
+<div id="psa">
+
+<div class="section">
+  <div class="section-label">PSA Forecast Script</div>
+  <div class="section-title">7 Sections — What Each One Contains</div>
+  <div class="section-divider"></div>
+</div>
+
+<!-- PSA §1 -->
+<div class="script-section" style="--section-color:#00d4aa;">
+  <div class="script-section-header">
+    <span class="script-section-num">§ 1</span>
+    <span class="script-section-name">Graduation Forecast Roll-Up</span>
+  </div>
+  <p>The opening summary block. Every line is auto-populated from current Notion data. Read it verbatim to open the SA's readout.</p>
+
+  <table class="field-table">
+    <thead><tr><th>Field</th><th>What It Shows</th><th>Source</th></tr></thead>
+    <tbody>
+      <tr><td class="field-name">Active onboarding count</td><td>Clients in Active status for this SA / MRR total</td><td>Notion status</td></tr>
+      <tr><td class="field-name">On hold count</td><td>Clients in On Hold status for this SA / MRR total</td><td>Notion status</td></tr>
+      <tr><td class="field-name">RTS count</td><td>Clients in any RTS status for this SA / MRR total</td><td>Notion status</td></tr>
+      <tr><td class="field-name">Graduated this month</td><td>Clients with an Actual Graduation Date in the selected month; names listed inline</td><td>Actual Graduation Date field</td></tr>
+      <tr><td class="field-name">Original monthly graduation commitment</td><td>The goal number set in Notion for this SA / month. Shows "Not set" if missing.</td><td>Forecast DB owner goals</td></tr>
+      <tr><td class="field-name">Current date-driven graduation forecast</td><td>All clients whose Forecasted Graduation Date falls in the selected month (regardless of confidence)</td><td>Forecasted Graduation Date</td></tr>
+      <tr><td class="field-name">Worst case forecast</td><td>High-confidence clients only — see scenario logic below</td><td>Confidence field + blocker logic</td></tr>
+      <tr><td class="field-name">Most likely forecast</td><td>High + Medium confidence clients</td><td>Confidence field + blocker logic</td></tr>
+      <tr><td class="field-name">Best case forecast</td><td>All non-canceled clients in the month</td><td>Status / Confidence field</td></tr>
+      <tr><td class="field-name">Delta vs original commitment</td><td>Worst / Most Likely / Best count minus the original commitment goal. <code>+2</code> = 2 above goal.</td><td>Calculated</td></tr>
+      <tr><td class="field-name">Tigerpaw migrations</td><td>Clients with Existing Tigerpaw = Yes in the forecast; names listed inline</td><td>Existing Tigerpaw field</td></tr>
+      <tr><td class="field-name">Forecasts sitting on last day of month</td><td>Clients whose forecast date = the last calendar day of the month (common placeholder sign)</td><td>Forecasted Graduation Date</td></tr>
+      <tr><td class="field-name">Movement since prior snapshot</td><td>Delta in client count and MRR vs. the previous snapshot for this month. Includes: Into RTS, Out of RTS, Into On Hold, Back from On Hold — with counts and names.</td><td>Forecast history snapshots</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- PSA Confidence Logic -->
+<div class="script-section" style="--section-color:#6c63ff;">
+  <div class="script-section-header">
+    <span class="script-section-num">Logic</span>
+    <span class="script-section-name">PSA Confidence — How It's Determined</span>
+  </div>
+  <p>The Confidence shown in the script is <strong>not always the raw Notion field value.</strong> The script applies an auto-inference rule when the field is blank:</p>
+  <div class="logic-box">
+    <div class="logic-label">Auto-Inference Rule</div>
+    If <strong>Confidence field is blank</strong> AND <strong>no blocker is set</strong> → treated as <span class="chip chip-high">High</span><br>
+    If <strong>Confidence field is blank</strong> AND <strong>a blocker exists</strong> → treated as <span class="chip chip-medium">Medium</span><br>
+    If <strong>Confidence field has an explicit value</strong> → that value is used as-is
+  </div>
+  <p style="margin-top:14px;">This means a client can appear as High Confidence without the field being explicitly set — it is inferred from the absence of a blocker. To override, set the Confidence field explicitly in Notion.</p>
+
+  <table class="scenario-table" style="margin-top:18px;">
+    <thead><tr><th>Scenario Bucket</th><th>PSA Confidence Included</th><th>Meaning</th></tr></thead>
+    <tbody>
+      <tr>
+        <td style="color:#00d4aa; font-weight:700;">Worst Case</td>
+        <td><span class="chip chip-high">High</span></td>
+        <td style="color:var(--text-dim);">Firmest commitments only — no blocker, or blocker is explicitly resolved</td>
+      </tr>
+      <tr>
+        <td style="color:#ffa94d; font-weight:700;">Most Likely</td>
+        <td><span class="chip chip-high">High</span> <span class="chip chip-medium">Medium</span></td>
+        <td style="color:var(--text-dim);">Primary forecast number — realistic range</td>
+      </tr>
+      <tr>
+        <td style="color:#7b7f9e; font-weight:700;">Best Case</td>
+        <td><span class="chip chip-high">High</span> <span class="chip chip-medium">Medium</span> <span class="chip chip-low">Low</span></td>
+        <td style="color:var(--text-dim);">All non-canceled clients in the month — ceiling, not a commit</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- PSA Milestone Scoring -->
+<div class="script-section" style="--section-color:#38bdf8;">
+  <div class="script-section-header">
+    <span class="script-section-num">Logic</span>
+    <span class="script-section-name">Milestone Progress — How It's Shown</span>
+  </div>
+  <p>Every client line in §2–§4 includes a milestone progress summary: <code>Milestone progress: required X; overall Y</code>. The <strong>required</strong> figure covers critical-path milestones; <strong>overall</strong> covers all milestones. These pull from the Notion milestone snapshot.</p>
+  <p>Milestone completion contributes to the milestone progress percentage shown on the dashboard. The scoring weights each milestone by status:</p>
+  <div class="logic-box">
+    <div class="logic-label">Milestone Scoring</div>
+    <strong>Completed</strong> = 1.0 point — full credit<br>
+    <strong>In Progress</strong> = ⅓ point — partial credit<br>
+    <strong>All other statuses</strong> (Not Started, On Hold, Blocked, Deferred) = 0 points
+  </div>
+  <p style="margin-top:12px;">Keeping milestone statuses current in Notion directly affects the progress percentage shown in scripts and on the dashboard. An In Progress milestone is worth one-third of a Completed one.</p>
+</div>
+
+<!-- PSA §2 -->
+<div class="script-section" style="--section-color:#00d4aa;">
+  <div class="script-section-header">
+    <span class="script-section-num">§ 2</span>
+    <span class="script-section-name">Worst Case — Firmest Commitments</span>
+  </div>
+  <p>Lists every client whose inferred/explicit Confidence = <span class="chip chip-high">High</span> and whose Forecasted Graduation Date falls in the selected month. These are the clients the SA can stand behind unconditionally.</p>
+  <p>Each client line includes:</p>
+  <table class="field-table">
+    <thead><tr><th>Field</th><th>Source</th></tr></thead>
+    <tbody>
+      <tr><td class="field-name">Client name</td><td>Notion client name</td></tr>
+      <tr><td class="field-name">Forecast date</td><td>Forecasted Graduation Date</td></tr>
+      <tr><td class="field-name">MRR</td><td>MRR / Unit (MRRU)</td></tr>
+      <tr><td class="field-name">Milestone progress</td><td>required X; overall Y — see Logic above</td></tr>
+      <tr><td class="field-name">Confidence</td><td>Inferred or explicit — see Confidence Logic above</td></tr>
+      <tr><td class="field-name">Blocker status</td><td>Blocker field; "No blockers" if empty</td></tr>
+      <tr><td class="field-name">Recommendation</td><td>Auto-generated — see Recommendation Logic below</td></tr>
+    </tbody>
+  </table>
+  <div class="verbatim">- Acme Corp is forecast for May 28 at $2,500. Milestone progress: required 8/10; overall 12/15. Confidence is High. Blocker status: No blockers. Recommendation: Keep forecast date.</div>
+</div>
+
+<!-- PSA §3 -->
+<div class="script-section" style="--section-color:#ffa94d;">
+  <div class="script-section-header">
+    <span class="script-section-num">§ 3</span>
+    <span class="script-section-name">Most Likely Additions</span>
+  </div>
+  <p>Clients with inferred/explicit Confidence = <span class="chip chip-medium">Medium</span> who are <em>not</em> already in the Worst Case section. Same per-client format as §2. These are realistic additions that need a blocker cleared or a date to hold.</p>
+</div>
+
+<!-- PSA §4 -->
+<div class="script-section" style="--section-color:#7b7f9e;">
+  <div class="script-section-header">
+    <span class="script-section-num">§ 4</span>
+    <span class="script-section-name">Best Case / Outside Shots</span>
+  </div>
+  <p>Clients with Confidence = <span class="chip chip-low">Low</span> who are not in §2 or §3. These are acknowledged but not counted as commitments. Same per-client format as §2–§3.</p>
+</div>
+
+<!-- PSA §5 -->
+<div class="script-section" style="--section-color:#a78bfa;">
+  <div class="script-section-header">
+    <span class="script-section-num">§ 5</span>
+    <span class="script-section-name">Replacement / Pull-In Opportunities</span>
+  </div>
+  <p>Up to 5 clients whose Forecasted Graduation Date falls in the <em>next calendar month</em> and whose Confidence is Most Likely or better (High or Medium). These are candidates to accelerate if a current-month client slips.</p>
+  <p>Each line includes: current forecast date, MRR, milestone progress, blocker status, and a standard recommendation: <em>"only pull in if required milestones and client data are ready."</em></p>
+</div>
+
+<!-- PSA §6 -->
+<div class="script-section" style="--section-color:#38bdf8;">
+  <div class="script-section-header">
+    <span class="script-section-num">§ 6</span>
+    <span class="script-section-name">Not Kicked Off But Forecasted This Month</span>
+  </div>
+  <p>Clients who have a Forecasted Graduation Date in the selected month but <strong>no Kickoff Date set</strong> in Notion. These should be validated before being counted in any committed number — a graduation date without a kickoff date is almost always a placeholder.</p>
+  <p>Each line includes: client name, forecast date, milestone progress, and a fixed recommendation: <em>"validate kickoff status before counting in the committed forecast."</em></p>
+</div>
+
+<!-- PSA §7 -->
+<div class="script-section" style="--section-color:#ffa94d;">
+  <div class="script-section-header">
+    <span class="script-section-num">§ 7</span>
+    <span class="script-section-name">Product / Process Blockers / Follow-Ups</span>
+  </div>
+  <p>A catch-all attention list that aggregates three groups:</p>
+  <ul style="font-size:13px; color:var(--text-dim); padding-left:20px; margin-bottom:14px;">
+    <li>Any client in the month's forecast who has a <strong>blocker set</strong></li>
+    <li>Any client whose Confidence is not High (including auto-inferred Medium/Low)</li>
+    <li>All On Hold and RTS clients for this SA (regardless of forecast date)</li>
+  </ul>
+  <p>Each client line includes: blocker or status reason, milestone progress, Sales rep, days since last interaction, and recommendation. Sorted by forecast date then name.</p>
+
+  <div class="logic-box" style="margin-top:12px;">
+    <div class="logic-label">Recommendation Logic — Auto-Generated</div>
+    <table style="width:100%; border-collapse:collapse; font-size:12px;">
+      <tr style="border-bottom:1px solid rgba(255,255,255,0.07);">
+        <td style="padding:5px 10px 5px 0; color:var(--muted); width:42%;">Status contains RTS</td>
+        <td style="padding:5px 0; color:var(--text-dim);">Sales re-engagement required; keep out of worst/most-likely forecast until movement is confirmed.</td>
+      </tr>
+      <tr style="border-bottom:1px solid rgba(255,255,255,0.07);">
+        <td style="padding:5px 10px 5px 0; color:var(--muted);">Status contains On Hold</td>
+        <td style="padding:5px 0; color:var(--text-dim);">Confirm re-engagement path or move toward RTS/pre-cancel if no movement.</td>
+      </tr>
+      <tr style="border-bottom:1px solid rgba(255,255,255,0.07);">
+        <td style="padding:5px 10px 5px 0; color:var(--muted);">Blocked + Confidence Low</td>
+        <td style="padding:5px 0; color:var(--text-dim);">Move date unless blocker clears immediately.</td>
+      </tr>
+      <tr style="border-bottom:1px solid rgba(255,255,255,0.07);">
+        <td style="padding:5px 10px 5px 0; color:var(--muted);">Blocked + Confidence High or Medium</td>
+        <td style="padding:5px 0; color:var(--text-dim);">Keep date only if blocker has owner + due date.</td>
+      </tr>
+      <tr style="border-bottom:1px solid rgba(255,255,255,0.07);">
+        <td style="padding:5px 10px 5px 0; color:var(--muted);">Confidence Low, no blocker</td>
+        <td style="padding:5px 0; color:var(--text-dim);">Validate date; move if no clear path this week.</td>
+      </tr>
+      <tr>
+        <td style="padding:5px 10px 5px 0; color:var(--muted);">No blocker, not RTS/Hold, not Low</td>
+        <td style="padding:5px 0; color:var(--text-dim);">Keep forecast date.</td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+<!-- Overall Script -->
+<div class="script-section" style="--section-color:#6c63ff;">
+  <div class="script-section-header">
+    <span class="script-section-num">Overall</span>
+    <span class="script-section-name">Overall PSA Forecast Script</span>
+  </div>
+  <p>Generated from the <strong>Generate Overall Script</strong> button in the SA section header on Team Overview. Aggregates all PSA Solutions Analysts into one combined readout — same 7-section structure, with the total goal set to the sum of all individual SA goals. Prior-snapshot movement uses the combined portfolio.</p>
+  <p>Month selector appears at the top of the modal to switch between forecast months (same months that have owner goals set in Notion).</p>
+</div>
+
+</div><!-- end #psa -->
+
+<!-- ============================== BILLING ============================== -->
+<div id="billing">
+
+<div class="section">
+  <div class="section-label">Billing Forecast Script</div>
+  <div class="section-title">3 Sections — What Each One Contains</div>
+  <div class="section-divider"></div>
+</div>
+
+<div class="principle-box">
+  <div class="pl">Key Difference vs PSA</div>
+  <div class="pt">Billing uses an explicit Confidence field — no auto-inference</div>
+  <div class="pb">
+    PSA auto-infers Confidence from the presence or absence of a blocker. <strong>Billing does not.</strong> The Confidence field on each Billing client must be set explicitly to High, Medium, or Low. If it is blank, it defaults to <span class="chip chip-blank">Low (blank)</span> — which means the client only appears in Best Case. Fill the field before using Billing scenario numbers in a commit conversation.<br><br>
+    Billing scripts are available to <strong>PMs and SAs only.</strong> DEs are excluded.
+  </div>
+</div>
+
+<!-- Billing Confidence Logic -->
+<div class="script-section" style="--section-color:#6c63ff;">
+  <div class="script-section-header">
+    <span class="script-section-num">Logic</span>
+    <span class="script-section-name">Billing Confidence — Scenario Bucket Rules</span>
+  </div>
+
+  <table class="scenario-table">
+    <thead><tr><th>Scenario</th><th>Confidence Values Included</th><th>Blank Confidence</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr>
+        <td style="color:#00d4aa; font-weight:700;">Worst Case</td>
+        <td><span class="chip chip-high">High</span></td>
+        <td style="color:var(--danger);">Excluded</td>
+        <td style="color:var(--text-dim);">Floor / must-land number</td>
+      </tr>
+      <tr>
+        <td style="color:#ffa94d; font-weight:700;">Most Likely</td>
+        <td><span class="chip chip-high">High</span> <span class="chip chip-medium">Medium</span></td>
+        <td style="color:var(--danger);">Excluded</td>
+        <td style="color:var(--text-dim);">Primary forecast call number</td>
+      </tr>
+      <tr>
+        <td style="color:#7b7f9e; font-weight:700;">Best Case</td>
+        <td><span class="chip chip-high">High</span> <span class="chip chip-medium">Medium</span> <span class="chip chip-low">Low</span></td>
+        <td style="color:#00d4aa;">Included — treated as Low</td>
+        <td style="color:var(--text-dim);">Ceiling / capacity planning only</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="warn-banner">
+    <span>⚠️</span>
+    <div><strong>Until Billing Confidence is populated for all active clients,</strong> scenario buckets are directional only. Clients without a Confidence value appear in Best Case only — not in Worst Case or Most Likely. The script surfaces a count of missing Confidence records in §1 and §3.</div>
+  </div>
+</div>
+
+<!-- Billing Track Logic -->
+<div class="script-section" style="--section-color:#00d4aa;">
+  <div class="script-section-header">
+    <span class="script-section-num">Logic</span>
+    <span class="script-section-name">Activation vs Graduation Track</span>
+  </div>
+  <p>Billing clients follow one of two tracks, determined automatically:</p>
+  <div class="logic-box">
+    <div class="logic-label">Track Determination</div>
+    If the client has an <strong>Activation Date</strong> set → <strong>Graduation track</strong> — uses <code>Current Graduation Date</code> (or falls back to Forecasted Graduation Date)<br>
+    If no Activation Date → <strong>Activation track</strong> — uses <code>Forecasted Graduation Date</code>
+  </div>
+  <p style="margin-top:12px;">The track label appears in each client line in §2: <em>"Activation forecast for…"</em> or <em>"Graduation forecast for…"</em>.</p>
+</div>
+
+<!-- Billing §1 -->
+<div class="script-section" style="--section-color:#00d4aa;">
+  <div class="script-section-header">
+    <span class="script-section-num">§ 1</span>
+    <span class="script-section-name">Billing Forecast Roll-Up</span>
+  </div>
+  <p>Opening summary for the Billing readout. Always generated for the current calendar month.</p>
+  <table class="field-table">
+    <thead><tr><th>Field</th><th>What It Shows</th></tr></thead>
+    <tbody>
+      <tr><td class="field-name">Active Billing count</td><td>Clients in Active status for this owner / MRR</td></tr>
+      <tr><td class="field-name">On hold count</td><td>Clients in On Hold status / MRR</td></tr>
+      <tr><td class="field-name">RTS count</td><td>Clients in any RTS status / MRR</td></tr>
+      <tr><td class="field-name">Forecasted activations/graduations</td><td>Clients with a forecast date in the current month (Activation or Graduation track) — count / MRR</td></tr>
+      <tr><td class="field-name">Activated this month</td><td>Graduated clients with an Activation Date in the current month</td></tr>
+      <tr><td class="field-name">Graduated this month</td><td>Graduated clients with an Actual Graduation Date in the current month</td></tr>
+      <tr><td class="field-name">Confidence populated</td><td>X/Y active Billing clients with Confidence set. Names of missing clients listed if ≤12.</td></tr>
+      <tr><td class="field-name">Worst / Most Likely / Best case</td><td>Scenario bucket counts/MRR for forecasted clients in the current month</td></tr>
+      <tr><td class="field-name">Blank Confidence warning</td><td>Appears if any forecasted client has blank Confidence — states how many are Best Case only</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Billing §2 -->
+<div class="script-section" style="--section-color:#38bdf8;">
+  <div class="script-section-header">
+    <span class="script-section-num">§ 2</span>
+    <span class="script-section-name">Forecasted Billing Clients</span>
+  </div>
+  <p>One line per Billing client forecasted in the current month, sorted by forecast date then name.</p>
+  <table class="field-table">
+    <thead><tr><th>Field</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td class="field-name">Client name</td><td>Notion client name</td></tr>
+      <tr><td class="field-name">Track</td><td>Activation or Graduation — auto-determined from Activation Date field</td></tr>
+      <tr><td class="field-name">Forecast date</td><td>Current Graduation Date (if activated) or Forecasted Graduation Date</td></tr>
+      <tr><td class="field-name">MRR</td><td>MRR / Unit (MRRU)</td></tr>
+      <tr><td class="field-name">Status</td><td>Notion status field; "Unknown" if blank</td></tr>
+      <tr><td class="field-name">Confidence</td><td>Explicit field value; blank shows as <code>Low (blank)</code></td></tr>
+      <tr><td class="field-name">Blocker status</td><td>Blocker field; "No blockers listed" if empty</td></tr>
+    </tbody>
+  </table>
+  <div class="verbatim">- Acme Corp: Activation forecast for May 15 at $1,800. Status: Active. Confidence: High. Blocker status: No blockers listed.
+- Beta LLC: Graduation forecast for May 30 at $3,200. Status: Active. Confidence: Low (blank). Blocker status: No blockers listed.</div>
+</div>
+
+<!-- Billing §3 -->
+<div class="script-section" style="--section-color:#ffa94d;">
+  <div class="script-section-header">
+    <span class="script-section-num">§ 3</span>
+    <span class="script-section-name">Data Needed Before Reliable Scenario Reporting</span>
+  </div>
+  <p>This section appears at the bottom of every Billing script. It tells the reader whether Confidence data is complete.</p>
+  <p><strong>If all active clients have Confidence set:</strong> <em>"Billing Confidence is populated for all active Billing clients in this owner view."</em></p>
+  <p><strong>If any are missing:</strong> Two action lines appear — a PM/SA action item to fill Confidence, and a warning that scenario buckets are directional only until populated.</p>
+</div>
+
+</div><!-- end #billing -->
+
+<!-- ============================== DEFINITIONS ============================== -->
+<div id="defs">
+
+<div class="section">
+  <div class="section-label">Reference</div>
+  <div class="section-title">📖 Definitions</div>
+  <div class="section-divider"></div>
+</div>
+
+<div class="script-section" style="--section-color:#6c63ff;">
+  <div class="script-section-header">
+    <span class="script-section-num">Terms</span>
+    <span class="script-section-name">All Key Terms Used in Scripts</span>
+  </div>
+  <table class="field-table">
+    <thead><tr><th>Term</th><th>Definition</th></tr></thead>
+    <tbody>
+      <tr><td class="field-name">Worst Case</td><td>Only clients where Confidence = High (PSA: auto-inferred or explicit; Billing: explicit only). The floor — numbers you can commit to unconditionally.</td></tr>
+      <tr><td class="field-name">Most Likely</td><td>Worst Case clients + Medium Confidence clients. The primary forecast call number — realistic, not heroic.</td></tr>
+      <tr><td class="field-name">Best Case</td><td>All non-canceled clients in the forecast period. The ceiling — includes every outside shot. Not a commit.</td></tr>
+      <tr><td class="field-name">Confidence (PSA)</td><td>High / Medium / Low. Auto-inferred if blank: blank + no blocker = High; blank + blocker = Medium. Override by setting the field explicitly in Notion.</td></tr>
+      <tr><td class="field-name">Confidence (Billing)</td><td>High / Medium / Low — explicit only. Blank defaults to Low for bucketing. Set in the Notion Billing Onboarding Clients database.</td></tr>
+      <tr><td class="field-name">Delta vs original commitment</td><td>Current scenario count minus the original monthly graduation commitment set in Notion. Positive = above commitment, negative = below.</td></tr>
+      <tr><td class="field-name">Movement since prior snapshot</td><td>Change in client count and MRR for this month's forecast vs. the previous snapshot capture. Includes Into RTS, Out of RTS, Into On Hold, Back from On Hold.</td></tr>
+      <tr><td class="field-name">Pull-In Opportunity</td><td>A client forecasted for next month with Most Likely or better confidence who could be accelerated to close the current month if a current client slips.</td></tr>
+      <tr><td class="field-name">Not Kicked Off</td><td>A client with no Kickoff Date set in Notion but with a forecast date in the current month. These should be validated — almost always a data gap or placeholder date.</td></tr>
+      <tr><td class="field-name">Milestone progress</td><td>Shown as <code>required X; overall Y</code>. Required = critical-path milestones only. Overall = all milestones. Scored: Completed = 1 pt, In Progress = ⅓ pt, all other = 0.</td></tr>
+      <tr><td class="field-name">Activation track (Billing)</td><td>Client has no Activation Date yet. Forecast date = Forecasted Graduation Date. Moving toward first activation.</td></tr>
+      <tr><td class="field-name">Graduation track (Billing)</td><td>Client is already activated. Forecast date = Current Graduation Date (or Forecasted Graduation Date as fallback). Moving toward final graduation.</td></tr>
+      <tr><td class="field-name">RTS</td><td>Return to Sales — client engagement has stalled and Sales must re-engage before onboarding can resume. Excluded from Worst Case and Most Likely forecasts until movement is confirmed.</td></tr>
+      <tr><td class="field-name">On Hold</td><td>Onboarding paused at client request or internal decision. Needs a confirmed re-engagement path or escalation to RTS / pre-cancel.</td></tr>
+      <tr><td class="field-name">Overall PSA Script</td><td>A combined readout across all PSA Solutions Analysts. Same 7-section structure. Goal = sum of all individual SA goals. Available via the Generate Overall Script button in Team Overview.</td></tr>
+      <tr><td class="field-name">Plain-Language Script (meeting readout)</td><td>A reformatted version of the raw script designed to be read verbatim in the forecast call — headings become spoken transitions, bullets become complete sentences.</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- FACILITATOR PROMPTS -->
+<div class="script-section" style="--section-color:#a78bfa; margin-top:16px;">
+  <div class="script-section-header">
+    <span class="script-section-num">Guide</span>
+    <span class="script-section-name">Facilitator Prompts</span>
+  </div>
+  <p>Use these during the call to keep readouts honest and blockers actionable:</p>
+  <ul style="font-size:13px; color:var(--text-dim); padding-left:20px; display:grid; grid-template-columns:1fr 1fr; gap:4px 24px; margin-top:8px;">
+    <li>"Any blocker?"</li>
+    <li>"Who owns it?"</li>
+    <li>"By what date does it need to clear?"</li>
+    <li>"Does it threaten the forecast date?"</li>
+    <li>"Is this forecast date real or a placeholder?"</li>
+    <li>"Is the Confidence field accurate?"</li>
+    <li>"Has a kickoff happened yet?"</li>
+    <li>"Does Sales need to re-engage?"</li>
+    <li>"Stay active, RTS, or pre-cancel?"</li>
+    <li>"Is the last interaction logged?"</li>
+    <li>"Is Confidence populated in Notion?" (Billing)</li>
+    <li>"Which scenario are we committing to?" (Billing)</li>
+  </ul>
+</div>
+
+<!-- CLOSEOUT CHECKLIST -->
+<div class="script-section" style="--section-color:#00d4aa; margin-top:16px;">
+  <div class="script-section-header">
+    <span class="script-section-num">Close</span>
+    <span class="script-section-name">Post-Call Closeout Checklist</span>
+  </div>
+  <p>Before the next sync, confirm these are updated in Notion:</p>
+  <ul style="font-size:13px; color:var(--text-dim); padding-left:20px; margin-top:8px;">
+    <li>Forecast date changes captured for any clients that moved</li>
+    <li>RTS / On Hold / pre-cancel decisions reflected in status</li>
+    <li>Blockers updated with owner and due date</li>
+    <li>Confidence field set for any clients where it was discussed</li>
+    <li>Billing Confidence populated for any missing clients surfaced in §3</li>
+    <li>Month-end placeholder dates replaced with real dates or marked Low confidence</li>
+    <li>Kickoff dates added for any clients surfaced in §6 (Not Kicked Off)</li>
+    <li>Client interactions logged for any stale accounts flagged in §7</li>
+    <li>Milestone statuses updated so progress reflects actual state</li>
+  </ul>
+</div>
+
+</div><!-- end #defs -->
+
+</div><!-- .content -->
+
+<div class="footer">
+  ⚡ Rev.io Intelligence Stack · Forecast Call Script Reference (PSA &amp; Billing) · Updated May 2026
+  &nbsp;·&nbsp;
+  <a href="forecast-methodology.html" style="color:var(--muted); text-decoration:none;">↗ Forecast Methodology</a>
+</div>
+
 </body>
 </html>
