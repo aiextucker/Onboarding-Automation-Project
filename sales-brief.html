@@ -1474,6 +1474,23 @@
 
   // ── Questionnaire Pre-fill Export ──────────────────────────────────
   function openQuestionnaire() {
+    function fieldByLabel(labelText) {
+      const labels = document.querySelectorAll('label');
+      for (const l of labels) {
+        if (l.textContent.trim().startsWith(labelText)) return l.closest('.field');
+      }
+      return null;
+    }
+    function valueByLabel(labelText) {
+      const field = fieldByLabel(labelText);
+      const el = field ? field.querySelector('select, input[type="text"], input[type="email"], textarea') : null;
+      return el ? el.value.trim() : '';
+    }
+    function radioValue(name) {
+      const el = document.querySelector('input[name="' + name + '"]:checked');
+      return el ? el.value : '';
+    }
+
     // Collect company info
     const company   = (document.getElementById('sb-company') || {}).value || '';
     const contact   = (document.getElementById('sb-contact') || {}).value || '';
@@ -1500,6 +1517,10 @@
     // Inventory
     const inventoryEl  = document.querySelector('input[name="inventory"]:checked');
 
+    const sureTaxMap = { existing: 'existing', new: 'new', exempt: 'not-needed', tbd: 'unsure' };
+    const invoiceMap = { yes: 'continue', no: 'new' };
+    const smsMap = { yes: 'yes', no: 'no', later: 'unsure' };
+
     const data = {
       company,
       contact,
@@ -1509,6 +1530,15 @@
       cycleDates,
       arrears:    arrearsEl    ? arrearsEl.value    : '',
       multiProfile: multiProfEl ? multiProfEl.value : '',
+      priorPsa: valueByLabel('Current / Prior PSA') || valueByLabel('If Other'),
+      accountingSoftware: valueByLabel('Accounting Software'),
+      rmmTool: valueByLabel('RMM Tool'),
+      paymentProcessor: valueByLabel('Current Payment Processor'),
+      sureTaxStatus: sureTaxMap[radioValue('suretax')] || '',
+      invoiceContinuity: invoiceMap[radioValue('invoice_cont')] || '',
+      businessHours: valueByLabel('Business Hours'),
+      holidayCalendar: valueByLabel('Holiday Calendar'),
+      smsEnabled: smsMap[radioValue('sms')] || '',
       inventory:  inventoryEl  ? inventoryEl.value  : '',
       _source: 'sales-brief',
       _ts: new Date().toISOString()

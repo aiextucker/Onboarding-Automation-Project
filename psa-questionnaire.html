@@ -1135,7 +1135,7 @@
       </div>
       <div class="step-node" data-step="4" onclick="goToStep(4)" style="cursor:pointer;">
         <div class="step-dot"><span>4</span></div>
-        <div class="step-label">Inventory</div>
+        <div class="step-label">Setup</div>
       </div>
       <div class="step-node" data-step="5" onclick="goToStep(5)" style="cursor:pointer;">
         <div class="step-dot"><span>5</span></div>
@@ -1420,12 +1420,122 @@
   </div>
 
   <!-- ══════════════════════════════════════════════════════════
-       STEP 4 — Inventory
+       STEP 4 — Operational Setup
   ══════════════════════════════════════════════════════════ -->
   <div class="wizard-step" id="step4">
     <div class="step-card">
-      <div class="step-title">Inventory Management</div>
-      <div class="step-subtitle">Let us know if your team tracks parts and equipment in the field.</div>
+      <div class="step-title">Operational Setup</div>
+      <div class="step-subtitle">Confirm the systems and operating details your SA needs before kickoff.</div>
+
+      <div class="section-title">Current Systems</div>
+
+      <div class="form-group" id="q-prior-psa">
+        <div class="form-label">Current or Prior PSA <span class="req">*</span></div>
+        <input class="form-input" id="priorPsa" type="text" placeholder="e.g. ConnectWise, Autotask, Halo, spreadsheets">
+        <div class="error-msg" id="err-priorPsa">Please enter your current or prior PSA system.</div>
+      </div>
+
+      <div class="form-group" id="q-accounting-software">
+        <div class="form-label">Accounting Software <span class="req">*</span></div>
+        <select class="form-input" id="accountingSoftware">
+          <option value="">Select one...</option>
+          <option>QuickBooks Online</option>
+          <option>QuickBooks Desktop</option>
+          <option>Sage Intacct</option>
+          <option>NetSuite</option>
+          <option>Xero</option>
+          <option>Other</option>
+          <option>None / not sure</option>
+        </select>
+        <div class="error-msg" id="err-accountingSoftware">Please select your accounting software.</div>
+      </div>
+
+      <div class="form-group" id="q-rmm-tool">
+        <div class="form-label">RMM Tool <span class="req">*</span></div>
+        <input class="form-input" id="rmmTool" type="text" placeholder="e.g. NinjaOne, Datto RMM, Kaseya, ConnectWise Automate, none">
+        <div class="error-msg" id="err-rmmTool">Please enter your RMM tool or type None.</div>
+      </div>
+
+      <div class="form-group" id="q-payment-processor">
+        <div class="form-label">Payment Processor <span class="req">*</span></div>
+        <input class="form-input" id="paymentProcessor" type="text" placeholder="e.g. Rev.io Payments, Stripe, Authorize.net, none">
+        <div class="error-msg" id="err-paymentProcessor">Please enter your payment processor or type None.</div>
+      </div>
+
+      <hr class="form-divider">
+
+      <div class="section-title">Billing &amp; Tax Details</div>
+
+      <div class="form-group" id="q-suretax">
+        <div class="form-label">SureTax Account Status <span class="req">*</span></div>
+        <div class="radio-group" id="sureTaxGroup">
+          <label class="radio-option" onclick="selectRadio(this, 'sureTaxStatus', 'existing')">
+            <input type="radio" name="sureTaxStatus" value="existing"> Existing SureTax account
+          </label>
+          <label class="radio-option" onclick="selectRadio(this, 'sureTaxStatus', 'new')">
+            <input type="radio" name="sureTaxStatus" value="new"> Need a new SureTax account
+          </label>
+          <label class="radio-option" onclick="selectRadio(this, 'sureTaxStatus', 'not-needed')">
+            <input type="radio" name="sureTaxStatus" value="not-needed"> Not needed / tax exempt
+          </label>
+          <label class="radio-option" onclick="selectRadio(this, 'sureTaxStatus', 'unsure')">
+            <input type="radio" name="sureTaxStatus" value="unsure"> Not sure
+          </label>
+        </div>
+        <div class="error-msg" id="err-sureTaxStatus">Please select a SureTax account status.</div>
+      </div>
+
+      <div class="form-group" id="q-invoice-continuity">
+        <div class="form-label">Invoice Number Continuity <span class="req">*</span></div>
+        <div class="radio-group" id="invoiceContinuityGroup">
+          <label class="radio-option" onclick="selectRadio(this, 'invoiceContinuity', 'continue')">
+            <input type="radio" name="invoiceContinuity" value="continue"> Continue existing invoice sequence
+          </label>
+          <label class="radio-option" onclick="selectRadio(this, 'invoiceContinuity', 'new')">
+            <input type="radio" name="invoiceContinuity" value="new"> Start a new Rev.io sequence
+          </label>
+          <label class="radio-option" onclick="selectRadio(this, 'invoiceContinuity', 'unsure')">
+            <input type="radio" name="invoiceContinuity" value="unsure"> Not sure
+          </label>
+        </div>
+        <div class="error-msg" id="err-invoiceContinuity">Please select an invoice number preference.</div>
+      </div>
+
+      <hr class="form-divider">
+
+      <div class="section-title">Scheduling &amp; Communication</div>
+
+      <div class="form-group" id="q-business-hours">
+        <div class="form-label">Business Hours <span class="req">*</span></div>
+        <textarea class="form-input" id="businessHours" rows="2" placeholder="e.g. Monday-Friday, 8 AM-5 PM local time"></textarea>
+        <div class="error-msg" id="err-businessHours">Please enter your normal business hours.</div>
+      </div>
+
+      <div class="form-group" id="q-holiday-calendar">
+        <div class="form-label">Holiday Calendar <span class="req">*</span></div>
+        <input class="form-input" id="holidayCalendar" type="text" placeholder="e.g. US Federal holidays, company-specific calendar, none">
+        <div class="error-msg" id="err-holidayCalendar">Please enter your holiday calendar or type None.</div>
+      </div>
+
+      <div class="form-group" id="q-sms">
+        <div class="form-label">SMS / Text Messaging <span class="req">*</span></div>
+        <div class="radio-group inline" id="smsGroup">
+          <label class="radio-option" style="flex:1;" onclick="selectRadio(this, 'smsEnabled', 'yes')">
+            <input type="radio" name="smsEnabled" value="yes"> Yes
+          </label>
+          <label class="radio-option" style="flex:1;" onclick="selectRadio(this, 'smsEnabled', 'no')">
+            <input type="radio" name="smsEnabled" value="no"> No
+          </label>
+          <label class="radio-option" style="flex:1;" onclick="selectRadio(this, 'smsEnabled', 'unsure')">
+            <input type="radio" name="smsEnabled" value="unsure"> Not sure
+          </label>
+        </div>
+        <div class="error-msg" id="err-smsEnabled">Please select whether you plan to use SMS.</div>
+      </div>
+
+      <hr class="form-divider">
+
+      <div class="section-title">Inventory Management</div>
 
       <div class="form-group" id="q-inventory">
         <div class="form-label">Inventory Tracking <span class="req">*</span></div>
@@ -1491,6 +1601,20 @@
         </div>
       </div>
 
+      <!-- Operational Setup Card -->
+      <div class="preview-section">
+        <div class="section-title">Operational Setup</div>
+        <div class="preview-card">
+          <div class="preview-card-header">
+            <div class="card-icon">⚙️</div>
+            <div class="preview-card-title">Kickoff Readiness</div>
+          </div>
+          <div class="preview-card-body" id="previewOperations">
+            <!-- filled by JS -->
+          </div>
+        </div>
+      </div>
+
       <!-- Users Card -->
       <div class="preview-section">
         <div class="section-title">Users</div>
@@ -1537,7 +1661,7 @@
       </div>
 
       <div style="margin-top:12px;">
-        <button class="btn btn-ghost" onclick="goToStep(4)">← Back to Inventory</button>
+        <button class="btn btn-ghost" onclick="goToStep(4)">← Back to Setup</button>
       </div>
     </div>
   </div>
@@ -1581,6 +1705,15 @@ const state = {
   logoFileName: null,
   logoDataUrl: null,
   multiProfile: null,
+  priorPsa: '',
+  accountingSoftware: '',
+  rmmTool: '',
+  paymentProcessor: '',
+  sureTaxStatus: null,
+  invoiceContinuity: null,
+  businessHours: '',
+  holidayCalendar: '',
+  smsEnabled: null,
   inventory: null,
   users: [
     { name: 'Sarah Mitchell', email: 'sarah@acmetelecom.com', role: 'Admin',         fromSales: true },
@@ -1607,6 +1740,7 @@ function updateProgress(step) {
 function goToStep(n) {
   // Sync state from current step before leaving
   if (currentStep === 3) syncUsersFromTable();
+  if (currentStep === 4) syncOperationalFields();
   // Build preview whenever entering step 5
   if (n === 5) buildPreview();
   document.querySelectorAll('.wizard-step').forEach(el => el.classList.remove('active'));
@@ -1920,6 +2054,25 @@ function validateStep(step) {
   }
 
   if (step === 4) {
+    syncOperationalFields();
+    if (!state.priorPsa.trim())           { showErr('err-priorPsa', true); valid = false; }
+    else showErr('err-priorPsa', false);
+    if (!state.accountingSoftware)        { showErr('err-accountingSoftware', true); valid = false; }
+    else showErr('err-accountingSoftware', false);
+    if (!state.rmmTool.trim())            { showErr('err-rmmTool', true); valid = false; }
+    else showErr('err-rmmTool', false);
+    if (!state.paymentProcessor.trim())   { showErr('err-paymentProcessor', true); valid = false; }
+    else showErr('err-paymentProcessor', false);
+    if (!state.sureTaxStatus)             { showErr('err-sureTaxStatus', true); valid = false; }
+    else showErr('err-sureTaxStatus', false);
+    if (!state.invoiceContinuity)         { showErr('err-invoiceContinuity', true); valid = false; }
+    else showErr('err-invoiceContinuity', false);
+    if (!state.businessHours.trim())      { showErr('err-businessHours', true); valid = false; }
+    else showErr('err-businessHours', false);
+    if (!state.holidayCalendar.trim())    { showErr('err-holidayCalendar', true); valid = false; }
+    else showErr('err-holidayCalendar', false);
+    if (!state.smsEnabled)                { showErr('err-smsEnabled', true); valid = false; }
+    else showErr('err-smsEnabled', false);
     if (!state.inventory) { showErr('err-inventory', true); valid = false; }
     else showErr('err-inventory', false);
   }
@@ -1996,10 +2149,20 @@ function escHtml(str) {
   return (str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
+function syncOperationalFields() {
+  state.priorPsa = (document.getElementById('priorPsa') || {}).value || '';
+  state.accountingSoftware = (document.getElementById('accountingSoftware') || {}).value || '';
+  state.rmmTool = (document.getElementById('rmmTool') || {}).value || '';
+  state.paymentProcessor = (document.getElementById('paymentProcessor') || {}).value || '';
+  state.businessHours = (document.getElementById('businessHours') || {}).value || '';
+  state.holidayCalendar = (document.getElementById('holidayCalendar') || {}).value || '';
+}
+
 /* ══════════════════════════════════════════════════════════════
    Preview Builder
 ══════════════════════════════════════════════════════════════ */
 function buildPreview() {
+  syncOperationalFields();
   // ── Billing ──────────────────────────────────────────
   const cycleLabel = state.billingCycle === 'cycle' ? 'Cycle-based' :
                      state.billingCycle === 'anniversary' ? 'Anniversary' : '—';
@@ -2056,6 +2219,64 @@ function buildPreview() {
     </div>
   `;
   document.getElementById('previewBilling').innerHTML = billingHTML;
+
+  // ── Operational setup ────────────────────────────────
+  const sureTaxLabel = {
+    existing: 'Existing SureTax account',
+    new: 'Needs new SureTax account',
+    'not-needed': 'Not needed / tax exempt',
+    unsure: 'Not sure'
+  }[state.sureTaxStatus] || '—';
+  const invoiceLabel = {
+    continue: 'Continue existing sequence',
+    new: 'Start new Rev.io sequence',
+    unsure: 'Not sure'
+  }[state.invoiceContinuity] || '—';
+  const smsLabel = {
+    yes: 'Yes',
+    no: 'No',
+    unsure: 'Not sure'
+  }[state.smsEnabled] || '—';
+
+  const operationsHTML = `
+    <div class="preview-row">
+      <span class="preview-key">Current / Prior PSA</span>
+      <span class="preview-val">${escHtml(state.priorPsa || '—')}</span>
+    </div>
+    <div class="preview-row">
+      <span class="preview-key">Accounting Software</span>
+      <span class="preview-val">${escHtml(state.accountingSoftware || '—')}</span>
+    </div>
+    <div class="preview-row">
+      <span class="preview-key">RMM Tool</span>
+      <span class="preview-val">${escHtml(state.rmmTool || '—')}</span>
+    </div>
+    <div class="preview-row">
+      <span class="preview-key">Payment Processor</span>
+      <span class="preview-val">${escHtml(state.paymentProcessor || '—')}</span>
+    </div>
+    <div class="preview-row">
+      <span class="preview-key">SureTax</span>
+      <span class="preview-val">${escHtml(sureTaxLabel)}</span>
+    </div>
+    <div class="preview-row">
+      <span class="preview-key">Invoice Numbers</span>
+      <span class="preview-val">${escHtml(invoiceLabel)}</span>
+    </div>
+    <div class="preview-row">
+      <span class="preview-key">Business Hours</span>
+      <span class="preview-val">${escHtml(state.businessHours || '—')}</span>
+    </div>
+    <div class="preview-row">
+      <span class="preview-key">Holiday Calendar</span>
+      <span class="preview-val">${escHtml(state.holidayCalendar || '—')}</span>
+    </div>
+    <div class="preview-row">
+      <span class="preview-key">SMS</span>
+      <span class="preview-val">${escHtml(smsLabel)}</span>
+    </div>
+  `;
+  document.getElementById('previewOperations').innerHTML = operationsHTML;
 
   // ── Users ─────────────────────────────────────────────
   syncUsersFromTable();
@@ -2118,6 +2339,16 @@ function approveConfig() {
   if (!state.lateFees)                                         errors.push('Late fees');
   if (state.lateFees === 'yes' && !state.lateFeeAmount)        errors.push('Late fee amount');
   if (!state.multiProfile)                                     errors.push('Multiple billing profiles');
+  syncOperationalFields();
+  if (!state.priorPsa.trim())                                  errors.push('Current or prior PSA');
+  if (!state.accountingSoftware)                               errors.push('Accounting software');
+  if (!state.rmmTool.trim())                                   errors.push('RMM tool');
+  if (!state.paymentProcessor.trim())                          errors.push('Payment processor');
+  if (!state.sureTaxStatus)                                    errors.push('SureTax account status');
+  if (!state.invoiceContinuity)                                errors.push('Invoice number continuity');
+  if (!state.businessHours.trim())                             errors.push('Business hours');
+  if (!state.holidayCalendar.trim())                           errors.push('Holiday calendar');
+  if (!state.smsEnabled)                                       errors.push('SMS / text messaging');
   if (!state.inventory)                                        errors.push('Inventory tracking');
   syncUsersFromTable();
   if (state.users.length === 0)                                errors.push('At least one user');
@@ -2174,6 +2405,9 @@ function resetWizard() {
     gracePeriod: null, graceDays: '', lateFees: null,
     lateFeeType: null, lateFeeAmount: '',
     logoFileName: null, logoDataUrl: null, multiProfile: null,
+    priorPsa: '', accountingSoftware: '', rmmTool: '', paymentProcessor: '',
+    sureTaxStatus: null, invoiceContinuity: null, businessHours: '',
+    holidayCalendar: '', smsEnabled: null,
     inventory: null,
     users: [
       { name: 'Sarah Mitchell', email: 'sarah@acmetelecom.com', role: 'Admin',         fromSales: true },
@@ -2269,6 +2503,35 @@ renderUserTable();
       if (el) { el.checked = true; el.dispatchEvent(new Event('change')); }
     }
 
+    // ── Step 4: Operational setup ──
+    const textPrefills = [
+      ['priorPsa', 'priorPsa'],
+      ['accountingSoftware', 'accountingSoftware'],
+      ['rmmTool', 'rmmTool'],
+      ['paymentProcessor', 'paymentProcessor'],
+      ['businessHours', 'businessHours'],
+      ['holidayCalendar', 'holidayCalendar']
+    ];
+    textPrefills.forEach(function(pair) {
+      const key = pair[0], id = pair[1];
+      if (data[key]) {
+        state[key] = data[key];
+        const el = document.getElementById(id);
+        if (el) el.value = data[key];
+      }
+    });
+
+    ['sureTaxStatus', 'invoiceContinuity', 'smsEnabled'].forEach(function(key) {
+      if (!data[key]) return;
+      state[key] = data[key];
+      const el = document.querySelector('input[name="' + key + '"][value="' + data[key] + '"]');
+      if (el) {
+        el.checked = true;
+        const opt = el.closest('.radio-option');
+        if (opt) opt.classList.add('selected');
+      }
+    });
+
     // ── Step 4: Inventory ──
     if (data.inventory) {
       // Sales Brief: 'yes' → 'yes', 'later'/'no' → 'none'
@@ -2355,6 +2618,41 @@ renderUserTable();
 
   approveConfig = async function() {
     syncUsersFromTable();
+    syncOperationalFields();
+    state.graceDays = (document.getElementById('graceDays') || {}).value || state.graceDays;
+    state.lateFeeAmount = (document.getElementById('lateFeeAmount') || {}).value || state.lateFeeAmount;
+    state.saNotes = (document.getElementById('saNotes') || {}).value || '';
+
+    var errors = [];
+    if (!state.billingCycle) errors.push('Billing cycle type');
+    if (state.billingCycle === 'cycle' && !state.cycleDates.length) errors.push('Billing cycle date(s)');
+    if (!state.arrears) errors.push('Bill in arrears');
+    if (!state.gracePeriod) errors.push('Grace period');
+    if (state.gracePeriod === 'yes' && !state.graceDays) errors.push('Grace period days');
+    if (!state.lateFees) errors.push('Late fees');
+    if (state.lateFees === 'yes' && !state.lateFeeAmount) errors.push('Late fee amount');
+    if (!state.multiProfile) errors.push('Multiple billing profiles');
+    if (!state.priorPsa.trim()) errors.push('Current or prior PSA');
+    if (!state.accountingSoftware) errors.push('Accounting software');
+    if (!state.rmmTool.trim()) errors.push('RMM tool');
+    if (!state.paymentProcessor.trim()) errors.push('Payment processor');
+    if (!state.sureTaxStatus) errors.push('SureTax account status');
+    if (!state.invoiceContinuity) errors.push('Invoice number continuity');
+    if (!state.businessHours.trim()) errors.push('Business hours');
+    if (!state.holidayCalendar.trim()) errors.push('Holiday calendar');
+    if (!state.smsEnabled) errors.push('SMS / text messaging');
+    if (!state.inventory) errors.push('Inventory tracking');
+    if (state.users.length === 0) errors.push('At least one user');
+
+    if (errors.length > 0) {
+      var msg = document.getElementById('approve-errors');
+      if (msg) {
+        msg.style.display = 'block';
+        msg.innerHTML = '⚠️ Please complete the following before submitting:<br>• ' + errors.join('<br>• ');
+      }
+      return;
+    }
+
     var answers = {
       billingCycle:  state.billingCycle,
       cycleDates:    state.cycleDates,
@@ -2365,6 +2663,15 @@ renderUserTable();
       lateFeeType:   state.lateFeeType,
       lateFeeAmount: state.lateFeeAmount,
       multiProfile:  state.multiProfile,
+      priorPsa:      state.priorPsa,
+      accountingSoftware: state.accountingSoftware,
+      rmmTool:       state.rmmTool,
+      paymentProcessor: state.paymentProcessor,
+      sureTaxStatus: state.sureTaxStatus,
+      invoiceContinuity: state.invoiceContinuity,
+      businessHours: state.businessHours,
+      holidayCalendar: state.holidayCalendar,
+      smsEnabled:    state.smsEnabled,
       inventory:     state.inventory,
       users:         state.users,
       saNotes:       state.saNotes,
