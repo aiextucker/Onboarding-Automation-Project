@@ -575,5 +575,27 @@ jobs:
           git config user.name  "Alfred"
           git config user.email "alfred@rev.io"
           git add data/portfolio.json
-          git diff --cached --quiet && echo "No changes" || git commit -m "PM Hub snapshot $(date -u +%H:%MZ)"
+          if git diff --cached --quiet; then
+            echo "No changes"
+            exit 0
+          fi
+
+          commit_msg="PM Hub snapshot $(date -u +%H:%MZ)"
+          git commit -m "$commit_msg"
+
+          if git push; then
+            exit 0
+          fi
+
+          echo "Push rejected because main moved; retrying on latest origin/main"
+          cp data/portfolio.json /tmp/portfolio.json
+          git fetch origin main
+          git reset --hard origin/main
+          cp /tmp/portfolio.json data/portfolio.json
+          git add data/portfolio.json
+          if git diff --cached --quiet; then
+            echo "Snapshot already current after refresh"
+            exit 0
+          fi
+          git commit -m "$commit_msg"
           git push
