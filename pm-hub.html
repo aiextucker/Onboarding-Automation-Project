@@ -1949,6 +1949,13 @@ document.getElementById('intModalOverlay').addEventListener('click', e => {
 });
 
 async function submitInteraction() {
+  const INTERACTION_API_ENDPOINT = '';
+  if (!INTERACTION_API_ENDPOINT) {
+    document.getElementById('intModalStatus').innerHTML =
+      '<span style="color:var(--yellow)">Interaction logging is temporarily disabled while the secure server-side submit path is being wired.</span>';
+    return;
+  }
+
   const type = document.getElementById('intType').value;
   if (!type) {
     document.getElementById('intModalStatus').textContent = '⚠️ Please select an interaction type.';
@@ -1973,17 +1980,14 @@ async function submitInteraction() {
   status.textContent = 'Logging…';
 
   try {
-    var DISPATCH_TOKEN = ['ghp_fmu9dXErfsuaxu','LIjcWp4e7h5a92R74ZhaYc'].join('');
-    const res = await fetch('https://api.github.com/repos/aiextucker/Onboarding-Automation-Project/dispatches', {
+    const res = await fetch(INTERACTION_API_ENDPOINT, {
       method: 'POST',
       headers: {
-        'Authorization': 'token ' + DISPATCH_TOKEN,
-        'Accept': 'application/vnd.github+json',
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ event_type: 'log-interaction', client_payload: payload }),
+      body: JSON.stringify(payload),
     });
-    if (res.status === 204) {
+    if (res.ok) {
       status.innerHTML = '<span style="color:var(--green)">✓ Interaction logged! It will appear in Notion shortly.</span>';
       submitBtn.textContent = 'Done';
       setTimeout(closeIntModal, 2000);
