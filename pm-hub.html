@@ -2032,12 +2032,7 @@ document.getElementById('intModalOverlay').addEventListener('click', e => {
 });
 
 async function submitInteraction() {
-  const INTERACTION_API_ENDPOINT = '';
-  if (!INTERACTION_API_ENDPOINT) {
-    document.getElementById('intModalStatus').innerHTML =
-      '<span style="color:var(--yellow)">Interaction logging is temporarily disabled while the secure server-side submit path is being wired.</span>';
-    return;
-  }
+  const INTERACTION_API_ENDPOINT = '/api/pm-hub/interactions';
 
   const type = document.getElementById('intType').value;
   if (!type) {
@@ -2047,6 +2042,7 @@ async function submitInteraction() {
 
   const payload = {
     psaId:         _intPsaId,
+    clientName:    document.getElementById('intModalClientName').textContent.trim(),
     title:         document.getElementById('intTitle').value.trim(),
     date:          document.getElementById('intDate').value,
     type,

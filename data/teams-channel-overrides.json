@@ -1,0 +1,21 @@
+{
+  "teamId": "d29698dd-ac76-4d06-909e-e2bdd1c4e84b",
+  "teamName": "PSA Client Launch Team",
+  "overrides": {
+    "BankTec South": {
+      "channelId": "19:d136c93b6455455696d653233fb4bef8@thread.tacv2",
+      "displayName": "Web - Bank Tec South",
+      "source": "Alex provided Teams channel URL on 2026-05-29"
+    },
+    "Guardian Advanced Solutions": {
+      "channelId": "19:c22f084193b04b0c9ec0c4a4d61464de@thread.tacv2",
+      "displayName": "Web - Guardian Advanced Solutions",
+      "source": "Graph lookup from confirmed Web-prefix fallback on 2026-05-29"
+    },
+    "Minutemen Security Systems": {
+      "channelId": "19:cbbb48ff34324632815d7d175c359a56@thread.tacv2",
+      "displayName": "Web - Minuteman Security Systems",
+      "source": "Alex provided Teams channel URL on 2026-05-29"
+    }
+  }
+}
