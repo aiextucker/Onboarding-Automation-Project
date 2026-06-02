@@ -211,7 +211,6 @@ jobs:
             const properties = {
               Interaction: { title: [{ text: { content: title } }] },
               Date: { date: { start: data.date } },
-              'Client Name': { rich_text: propText(data.clientName, 200) },
               '🏢 Client': { relation: [{ id: data.psaId }] },
             };
             if (data.type) properties['Interaction Type'] = { select: { name: data.type } };
