@@ -923,6 +923,48 @@ body {
 .owner-tag { color: var(--teal); background: rgba(0,212,170,.09); border: 1px solid rgba(0,212,170,.25); }
 .due-tag { color: var(--yellow); background: rgba(240,165,0,.09); border: 1px solid rgba(240,165,0,.25); }
 
+/* ── Work snapshot ── */
+.work-snapshot-panel {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); margin-bottom: 20px; overflow: hidden;
+}
+.work-snapshot-header {
+  padding: 13px 18px; border-bottom: 1px solid var(--border);
+  display: flex; justify-content: space-between; gap: 12px; align-items: flex-start;
+}
+.work-snapshot-title { font-size: .88rem; font-weight: 700; }
+.work-snapshot-subtitle { font-size: .72rem; color: var(--text-mute); margin-top: 3px; }
+.work-snapshot-grid {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0; border-top: 1px solid rgba(255,255,255,.02);
+}
+.work-snapshot-col {
+  min-width: 0; padding: 14px 16px 16px;
+  border-right: 1px solid var(--border);
+}
+.work-snapshot-col:last-child { border-right: none; }
+.work-snapshot-col h4 {
+  margin: 0 0 9px; font-size: .72rem; text-transform: uppercase;
+  letter-spacing: .04em; color: var(--text-mute);
+}
+.work-snapshot-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.work-snapshot-list li {
+  color: var(--text-dim); font-size: .8rem; line-height: 1.4;
+  padding-left: 11px; position: relative;
+}
+.work-snapshot-list li::before {
+  content: ''; width: 4px; height: 4px; border-radius: 50%;
+  background: var(--teal); position: absolute; left: 0; top: .62em;
+}
+.work-snapshot-list.risk li::before { background: var(--red); }
+.work-snapshot-list.follow li::before { background: var(--yellow); }
+.work-snapshot-empty { color: var(--text-mute); font-size: .8rem; line-height: 1.4; }
+@media (max-width: 820px) {
+  .work-snapshot-grid { grid-template-columns: 1fr; }
+  .work-snapshot-col { border-right: none; border-bottom: 1px solid var(--border); }
+  .work-snapshot-col:last-child { border-bottom: none; }
+}
+
 /* ── Billing milestone timeline ── */
 .milestone-row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
 .ms-item {
@@ -1293,6 +1335,8 @@ function renderClientView(client, data) {
   if (isPsa) {
     main.insertAdjacentHTML('beforeend', renderPsaOpsSummary(client, showCriticalPath));
   }
+
+  main.insertAdjacentHTML('beforeend', renderWorkSnapshot(client, data));
 
   // ── PSA milestone bar ──
   if (isPsa && (client.psaMilestonePercent != null || client.psaOnboardingHealth)) {
@@ -1706,6 +1750,137 @@ function collectActions(briefs) {
     }
   }
   return out;
+}
+
+function renderWorkSnapshot(client, data = {}) {
+  const sourceBriefs = [
+    ...(data.allBriefs?.length ? data.allBriefs : data.briefs || []),
+    ...(data.allPsaBriefs?.length ? data.allPsaBriefs : data.psaBriefs || []),
+  ];
+  const interactions = data.interactions || [];
+  const tickets = [
+    ...(data.tickets || []).map(t => ({ ...t, source: 'Zendesk' })),
+    ...(data.psaTickets || []).map(t => ({ ...t, source: 'PSA' })),
+  ];
+  const actions = uniqueWorkItems([
+    ...collectActions(sourceBriefs).map(a => ({
+      text: a.text,
+      owner: a.owner || a.ownerName,
+      date: a.date,
+      due: a.due,
+    })),
+    ...sourceBriefs.flatMap(b => parseBullets(b.nextSteps).map(text => ({
+      text,
+      owner: b.owner || b.sa,
+      date: b.date,
+      type: 'Next step',
+    }))),
+  ]).slice(0, 6);
+
+  const blockers = uniqueWorkItems([
+    ...sourceBriefs.flatMap(b => [
+      ...parseBullets(b.blockers).map(text => ({ text, owner: b.owner || b.sa, date: b.date, type: 'Blocker' })),
+      ...parseBullets(b.redFlags).map(text => ({ text, owner: b.owner || b.sa, date: b.date, type: 'Red flag' })),
+      ...(b.riskReason ? [{ text: b.riskReason, owner: b.owner || b.sa, date: b.date, type: 'Risk' }] : []),
+    ]),
+    ...tickets
+      .filter(t => t.priority === 'High' || /new|open|pending/i.test(t.status || ''))
+      .map(t => ({
+        text: `${t.source} ticket: ${t.subject || t.description || t.id || 'open item'}`,
+        owner: t.tech || null,
+        date: t.updated || t.created || null,
+        type: t.priority === 'High' ? 'High priority' : t.status,
+      })),
+  ]).slice(0, 6);
+
+  const followUps = uniqueWorkItems([
+    ...interactions
+      .filter(i => i.followUp || i.followUpDate)
+      .map(i => ({
+        text: i.outcome || i.notes || i.title || i.type || 'Follow-up needed',
+        owner: i.owner,
+        date: i.date,
+        due: i.followUpDate,
+        type: 'Interaction',
+      })),
+    ...sourceBriefs.flatMap(b => parseBullets(b.openQuestions).map(text => ({
+      text,
+      owner: b.owner || b.sa,
+      date: b.date,
+      type: 'Open question',
+    }))),
+  ]).slice(0, 6);
+
+  const lastHeard = latestDated([
+    ...sourceBriefs.map(b => b.date),
+    ...interactions.map(i => i.date),
+  ]);
+  const staleDays = lastHeard ? Math.floor((Date.now() - new Date(lastHeard + 'T00:00:00').getTime()) / 86400000) : null;
+  const subtitleParts = [
+    lastHeard ? `Last heard ${fmtDate(lastHeard)}${staleDays != null ? ` (${staleDays}d ago)` : ''}` : 'No dated contact in this view',
+    `${actions.length} open`,
+    `${blockers.length} risk/blocker`,
+    `${followUps.length} follow-up`,
+  ];
+  const hasSignal = actions.length || blockers.length || followUps.length;
+  return `
+    <div class="work-snapshot-panel">
+      <div class="work-snapshot-header">
+        <div>
+          <div class="work-snapshot-title">Work Snapshot</div>
+          <div class="work-snapshot-subtitle">${subtitleParts.map(esc).join(' · ')}</div>
+        </div>
+        ${hasSignal ? `<span class="ticket-count has-tickets">${actions.length + blockers.length + followUps.length} signal${actions.length + blockers.length + followUps.length === 1 ? '' : 's'}</span>` : '<span class="ticket-count">clear</span>'}
+      </div>
+      <div class="work-snapshot-grid">
+        ${workSnapshotColumn('Open Actions', actions, 'No extracted open actions.')}
+        ${workSnapshotColumn('Blockers & Risks', blockers, 'No extracted blockers or active high-risk tickets.', 'risk')}
+        ${workSnapshotColumn('Follow-Ups', followUps, 'No follow-up flags or open questions.', 'follow')}
+      </div>
+    </div>`;
+}
+
+function workSnapshotColumn(label, items, emptyText, cls = '') {
+  if (!items.length) {
+    return `<div class="work-snapshot-col"><h4>${esc(label)}</h4><div class="work-snapshot-empty">${esc(emptyText)}</div></div>`;
+  }
+  return `
+    <div class="work-snapshot-col">
+      <h4>${esc(label)}</h4>
+      <ul class="work-snapshot-list ${esc(cls)}">
+        ${items.map(item => `<li>${workItemLine(item)}</li>`).join('')}
+      </ul>
+    </div>`;
+}
+
+function workItemLine(item) {
+  const bits = [];
+  if (item.owner) bits.push(`<span class="owner-tag">${esc(item.owner)}</span>`);
+  if (item.due) bits.push(`<span class="due-tag">due ${esc(item.due)}</span>`);
+  if (item.type) bits.push(`<span class="due-tag">${esc(item.type)}</span>`);
+  return `${bits.join('')}${fmtLine(item.text)}${item.date ? ` <span class="rollup-meta">${fmtDate(item.date)}</span>` : ''}`;
+}
+
+function uniqueWorkItems(items) {
+  const seen = new Set();
+  const out = [];
+  for (const item of items || []) {
+    const text = String(item?.text || '').replace(/^•\s*/, '').trim();
+    const key = text.toLowerCase();
+    if (!text || seen.has(key)) continue;
+    seen.add(key);
+    out.push({ ...item, text });
+  }
+  return out;
+}
+
+function latestDated(values) {
+  return (values || [])
+    .filter(Boolean)
+    .map(v => String(v).slice(0, 10))
+    .filter(v => /^\d{4}-\d{2}-\d{2}$/.test(v))
+    .sort()
+    .pop() || null;
 }
 
 function parseActionMeta(line) {
