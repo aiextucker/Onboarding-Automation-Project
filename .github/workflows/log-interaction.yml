@@ -22,7 +22,8 @@ jobs:
           node - <<'EOF'
           const fs = require('fs');
 
-          const payload = ${{ toJSON(github.event.client_payload) }};
+          const dispatchPayload = ${{ toJSON(github.event.client_payload) }};
+          const payload = dispatchPayload.interaction || dispatchPayload;
           const INTERACTIONS_DB = '6246303e-1e51-408f-ad7e-85ad865d449d';
           const OVERRIDES_FILE = 'data/teams-channel-overrides.json';
 
