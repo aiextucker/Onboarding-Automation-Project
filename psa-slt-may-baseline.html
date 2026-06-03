@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PSA Onboarding May Baseline - SLT One-Pager</title>
+  <style>
+    :root {
+      --ink: #1f2937;
+      --muted: #5b6676;
+      --line: #d7dde5;
+      --soft: #f4f7fa;
+      --accent: #0f766e;
+      --accent-dark: #115e59;
+      --warn: #b45309;
+      --paper: #ffffff;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: #edf1f5;
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.5;
+    }
+
+    main {
+      width: min(1120px, calc(100% - 32px));
+      margin: 32px auto;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: 0 16px 45px rgba(31, 41, 55, 0.08);
+      overflow: hidden;
+    }
+
+    header {
+      padding: 34px 40px 28px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--accent-dark);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 34px;
+      line-height: 1.12;
+      letter-spacing: 0;
+    }
+
+    .meta {
+      margin: 14px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    section {
+      padding: 28px 40px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    section:last-child {
+      border-bottom: 0;
+    }
+
+    h2 {
+      margin: 0 0 14px;
+      font-size: 21px;
+      letter-spacing: 0;
+    }
+
+    p {
+      margin: 0 0 14px;
+      max-width: 980px;
+    }
+
+    p:last-child {
+      margin-bottom: 0;
+    }
+
+    .readout {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      margin-top: 22px;
+    }
+
+    .metric {
+      padding: 18px;
+      background: #ffffff;
+      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      min-height: 116px;
+    }
+
+    .metric:nth-child(4n) {
+      border-right: 0;
+    }
+
+    .metric:nth-last-child(-n + 4) {
+      border-bottom: 0;
+    }
+
+    .metric strong {
+      display: block;
+      font-size: 30px;
+      line-height: 1.1;
+      color: var(--accent-dark);
+      letter-spacing: 0;
+    }
+
+    .metric span {
+      display: block;
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 14px;
+      font-size: 14px;
+    }
+
+    th,
+    td {
+      padding: 11px 12px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      color: #344054;
+      background: var(--soft);
+      font-weight: 700;
+    }
+
+    td.num,
+    th.num {
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .callout {
+      margin-top: 18px;
+      padding: 16px 18px;
+      border-left: 4px solid var(--accent);
+      background: #eef7f5;
+      color: #134e4a;
+      border-radius: 4px;
+    }
+
+    .warning {
+      border-left-color: var(--warn);
+      background: #fff7ed;
+      color: #7c2d12;
+    }
+
+    ol,
+    ul {
+      margin: 12px 0 0;
+      padding-left: 22px;
+    }
+
+    li + li {
+      margin-top: 8px;
+    }
+
+    footer {
+      padding: 22px 40px 30px;
+      color: var(--muted);
+      font-size: 13px;
+      background: #f8fafc;
+    }
+
+    @media (max-width: 860px) {
+      main {
+        width: min(100% - 20px, 1120px);
+        margin: 10px auto;
+      }
+
+      header,
+      section,
+      footer {
+        padding-left: 20px;
+        padding-right: 20px;
+      }
+
+      h1 {
+        font-size: 28px;
+      }
+
+      .readout {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .metric:nth-child(2n) {
+        border-right: 0;
+      }
+
+      .metric:nth-last-child(-n + 4) {
+        border-bottom: 1px solid var(--line);
+      }
+
+      .metric:nth-last-child(-n + 2) {
+        border-bottom: 0;
+      }
+
+      .table-wrap {
+        overflow-x: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <p class="eyebrow">May 2026 Baseline</p>
+      <h1>PSA Onboarding SLT One-Pager</h1>
+      <p class="meta">Generated 2026-06-03 13:55 UTC from live Notion records and PM Hub May snapshots.</p>
+    </header>
+
+    <section>
+      <h2>Executive Readout</h2>
+      <p>PSA onboarding graduated 12 clients in May, representing $6,890 MRR, but the active portfolio still shows meaningful conversion drag: 49 PSA rows are currently at-risk, RTS, or on hold, and 23 PSA forecast dates pushed later during May. The strongest inferred bottleneck is data migration / integration work, not general scheduling noise.</p>
+      <p>The operating baseline is now clear enough for SLT discussion: completed PSA onboardings are taking a median 105 days from kickoff to graduation, while active forecasted clients are currently planned at a median 55 days from kickoff to forecasted graduation. That gap suggests current forecasts may still understate delivery time unless the active cohort is materially cleaner than the historical graduated cohort.</p>
+
+      <div class="readout" aria-label="Key PSA baseline metrics">
+        <div class="metric"><strong>12</strong><span>May PSA graduations</span></div>
+        <div class="metric"><strong>$6,890</strong><span>May graduated MRR</span></div>
+        <div class="metric"><strong>49</strong><span>Current at-risk / RTS / hold rows</span></div>
+        <div class="metric"><strong>$29,120</strong><span>MRR currently at risk / RTS / hold</span></div>
+        <div class="metric"><strong>23</strong><span>PSA forecasts pushed later in May</span></div>
+        <div class="metric"><strong>$28,391</strong><span>MRR tied to pushed PSA forecasts</span></div>
+        <div class="metric"><strong>105d</strong><span>Median kickoff to actual graduation</span></div>
+        <div class="metric"><strong>55d</strong><span>Median kickoff to forecasted graduation</span></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>May PSA Metrics</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Metric</th><th class="num">Value</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>PSA records scanned</td><td class="num">209</td></tr>
+            <tr><td>Active PSA rows</td><td class="num">68</td></tr>
+            <tr><td>Active RTS / hold rows</td><td class="num">27</td></tr>
+            <tr><td>May PSA graduations</td><td class="num">12</td></tr>
+            <tr><td>May graduated MRR</td><td class="num">$6,890</td></tr>
+            <tr><td>Current PSA at-risk / RTS / hold rows</td><td class="num">49</td></tr>
+            <tr><td>At-risk / RTS / hold MRR</td><td class="num">$29,120</td></tr>
+            <tr><td>PSA forecast movements detected in May</td><td class="num">27</td></tr>
+            <tr><td>PSA forecasts pushed later</td><td class="num">23</td></tr>
+            <tr><td>PSA forecasts pulled earlier</td><td class="num">4</td></tr>
+            <tr><td>MRR tied to pushed PSA forecasts</td><td class="num">$28,391</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>Duration Baseline</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>PSA Duration</th>
+              <th class="num">Count</th>
+              <th class="num">Median</th>
+              <th class="num">P75</th>
+              <th class="num">Average</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Sold to kickoff</td><td class="num">191</td><td class="num">9d</td><td class="num">15d</td><td class="num">25d</td></tr>
+            <tr><td>Kickoff to forecasted graduation</td><td class="num">38</td><td class="num">55d</td><td class="num">80d</td><td class="num">72d</td></tr>
+            <tr><td>Kickoff to actual graduation</td><td class="num">58</td><td class="num">105d</td><td class="num">155d</td><td class="num">117d</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout">Graduated Date rule: PSA realized-live is counted only from the PSA actual graduation date. Blank actual graduation dates remain missing and are not backfilled from forecast/manual/system dates.</div>
+    </section>
+
+    <section>
+      <h2>Forecast Push Reasons</h2>
+      <p>Push reasons are inferred from PM Hub snapshots, blockers, call risk reasons, status text, and ticket subjects. They should be treated as directional until owner-validated.</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Primary inferred reason</th><th class="num">PSA pushes</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Data migration / integration</td><td class="num">14</td></tr>
+            <tr><td>Billing / payments / portal</td><td class="num">5</td></tr>
+            <tr><td>Training / adoption</td><td class="num">2</td></tr>
+            <tr><td>Client readiness / bandwidth</td><td class="num">1</td></tr>
+            <tr><td>Unclassified</td><td class="num">1</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>Largest PSA Forecast Pushes</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Client</th>
+              <th>Forecast moved</th>
+              <th class="num">Delta</th>
+              <th>Primary inferred reason</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>MAPS Security</td><td>2026-05-15 to 2026-07-16</td><td class="num">62d</td><td>Training / adoption</td></tr>
+            <tr><td>Front Row AV</td><td>2026-05-22 to 2026-06-26</td><td class="num">35d</td><td>Data migration / integration</td></tr>
+            <tr><td>Frontline Security</td><td>2026-05-22 to 2026-06-25</td><td class="num">34d</td><td>Data migration / integration</td></tr>
+            <tr><td>DMC Systems</td><td>2026-05-22 to 2026-06-19</td><td class="num">28d</td><td>Data migration / integration</td></tr>
+            <tr><td>Minutemen Security Systems</td><td>2026-05-29 to 2026-06-25</td><td class="num">27d</td><td>Billing / payments / portal</td></tr>
+            <tr><td>Fire Team Security, Inc.</td><td>2026-05-29 to 2026-06-24</td><td class="num">26d</td><td>Data migration / integration</td></tr>
+            <tr><td>Silent Knight Security</td><td>2026-05-29 to 2026-06-23</td><td class="num">25d</td><td>Data migration / integration</td></tr>
+            <tr><td>C1st Technologies</td><td>2026-05-29 to 2026-06-23</td><td class="num">25d</td><td>Data migration / integration</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>SLT Takeaway</h2>
+      <p>The PSA conversion issue appears to be less about kickoff timing and more about post-kickoff execution drag. Sold-to-kickoff is relatively tight at a 9-day median, but kickoff-to-graduation stretches to a 105-day median for completed clients. Forecasts are moving later during the month, and the reason mix points to migration/integration readiness as the biggest actionable constraint.</p>
+    </section>
+
+    <section>
+      <h2>Recommended Action</h2>
+      <ol>
+        <li>Owner-validate the top 10-15 May PSA pushes before final attribution.</li>
+        <li>Separate migration/integration pushes into subtypes: third-party dependency, client data readiness, internal data engineering queue, product/API limitation, and billing/payment setup dependency.</li>
+        <li>Add a monthly SLT forecast-health footnote: count of pushed PSA forecasts, MRR moved later, and top confirmed push reason.</li>
+        <li>Treat active PSA forecasts as risk-adjusted until the 55-day forecast median converges toward the 105-day actual graduation median or the active cohort has a confirmed reason to outperform history.</li>
+      </ol>
+    </section>
+
+    <section>
+      <h2>Data Notes</h2>
+      <ul>
+        <li>Retrieval status: Notion PSA, Billing, and Payments queries all returned HTTP 200.</li>
+        <li>PM Hub May snapshots read: 20.</li>
+        <li>Notion API does not expose page history, so forecast movement is measured from PM Hub daily snapshots.</li>
+        <li>Push reasons remain inferred unless validated by a source owner or manually reviewed Notion page history.</li>
+        <li>Realized-live definition is PSA actual graduation date only; missing actual dates are not backfilled.</li>
+      </ul>
+    </section>
+
+    <footer>
+      Source files: reports/may-baseline-analysis-2026-06-03T13-55-33-366Z.json and PM Hub May daily snapshots.
+    </footer>
+  </main>
+</body>
+</html>
