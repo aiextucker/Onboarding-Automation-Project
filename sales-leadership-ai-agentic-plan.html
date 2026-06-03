@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sales Leadership AI and Agentic PSA Plan</title>
+  <style>
+    :root {
+      --ink: #202936;
+      --muted: #5f6b7a;
+      --line: #d9e0e8;
+      --soft: #f5f8fb;
+      --paper: #ffffff;
+      --teal: #0f766e;
+      --teal-dark: #115e59;
+      --blue: #1d4ed8;
+      --amber: #b45309;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: #eef2f6;
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.5;
+    }
+
+    main {
+      width: min(1120px, calc(100% - 32px));
+      margin: 32px auto;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: 0 16px 45px rgba(32, 41, 54, 0.08);
+      overflow: hidden;
+    }
+
+    header {
+      padding: 34px 40px 28px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--teal-dark);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 34px;
+      line-height: 1.12;
+      letter-spacing: 0;
+    }
+
+    .meta {
+      margin: 14px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    section {
+      padding: 28px 40px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    section:last-child {
+      border-bottom: 0;
+    }
+
+    h2 {
+      margin: 0 0 14px;
+      font-size: 21px;
+      letter-spacing: 0;
+    }
+
+    h3 {
+      margin: 0 0 8px;
+      font-size: 17px;
+      letter-spacing: 0;
+    }
+
+    p {
+      margin: 0 0 14px;
+      max-width: 980px;
+    }
+
+    p:last-child {
+      margin-bottom: 0;
+    }
+
+    ul,
+    ol {
+      margin: 12px 0 0;
+      padding-left: 22px;
+    }
+
+    li + li {
+      margin-top: 8px;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      margin-top: 22px;
+    }
+
+    .metric {
+      padding: 18px;
+      background: #ffffff;
+      border-right: 1px solid var(--line);
+      min-height: 118px;
+    }
+
+    .metric:last-child {
+      border-right: 0;
+    }
+
+    .metric strong {
+      display: block;
+      font-size: 30px;
+      line-height: 1.1;
+      color: var(--teal-dark);
+      letter-spacing: 0;
+    }
+
+    .metric span {
+      display: block;
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .callout {
+      margin-top: 18px;
+      padding: 16px 18px;
+      border-left: 4px solid var(--teal);
+      background: #eef7f5;
+      color: #134e4a;
+      border-radius: 4px;
+    }
+
+    .warning {
+      border-left-color: var(--amber);
+      background: #fff7ed;
+      color: #7c2d12;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #ffffff;
+      padding: 18px;
+    }
+
+    .card p {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .label {
+      display: inline-block;
+      margin-bottom: 10px;
+      color: var(--blue);
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0;
+    }
+
+    .timeline {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    footer {
+      padding: 22px 40px 30px;
+      color: var(--muted);
+      font-size: 13px;
+      background: #f8fafc;
+    }
+
+    @media (max-width: 860px) {
+      main {
+        width: min(100% - 20px, 1120px);
+        margin: 10px auto;
+      }
+
+      header,
+      section,
+      footer {
+        padding-left: 20px;
+        padding-right: 20px;
+      }
+
+      h1 {
+        font-size: 28px;
+      }
+
+      .summary-grid,
+      .two-col,
+      .timeline {
+        grid-template-columns: 1fr;
+      }
+
+      .metric {
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .metric:last-child {
+        border-bottom: 0;
+      }
+    }
+
+    @media print {
+      body {
+        background: #ffffff;
+      }
+
+      main {
+        width: 100%;
+        margin: 0;
+        border: 0;
+        box-shadow: none;
+      }
+
+      section {
+        break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <p class="eyebrow">Sales Leadership Prep</p>
+      <h1>AI and Agentic PSA Enablement Plan</h1>
+      <p class="meta">Generated June 3, 2026 from Notion meeting context, recent Evan strategy conversations, May baseline reports, and Council Round 1 analysis.</p>
+    </header>
+
+    <section>
+      <h2>Meeting Objective</h2>
+      <p>Align Sales leadership on how Rev.io should use AI and agentic PSA capabilities to sell a premium outcome, improve deal quality, reduce onboarding drag, and create a tighter feedback loop from Sales promises through onboarding reality.</p>
+      <div class="callout">
+        <strong>Executive narrative:</strong> the point is not just to add AI to the pitch. The opportunity is to reposition Rev.io PSA as an agentic operating system for growing service businesses, while giving Sales better tools to qualify readiness, set expectations, and hand off implementation-critical context before kickoff.
+      </div>
+
+      <div class="summary-grid">
+        <div class="metric">
+          <strong>9d</strong>
+          <span>May PSA median from sold to kickoff. Kickoff speed is not the obvious first-order bottleneck.</span>
+        </div>
+        <div class="metric">
+          <strong>105d</strong>
+          <span>Median kickoff-to-actual PSA graduation using actual Graduated Date only.</span>
+        </div>
+        <div class="metric">
+          <strong>23</strong>
+          <span>May PSA forecasts pushed later, representing $28,391 MRR in pushed forecasts.</span>
+        </div>
+        <div class="metric">
+          <strong>14/23</strong>
+          <span>Inferred pushes tied to data migration or integration. Needs owner validation before final attribution.</span>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Sales Leadership Talking Points</h2>
+      <div class="two-col">
+        <div class="card">
+          <span class="label">Positioning</span>
+          <h3>Sell outcomes, not feature parity</h3>
+          <p>Rev.io PSA should not be framed as a cheaper or newer Tigerpaw alternative. The stronger story is an agentic PSA for operators who need to scale with less administrative drag.</p>
+        </div>
+        <div class="card">
+          <span class="label">Readiness</span>
+          <h3>Qualify implementation commitment earlier</h3>
+          <p>The $500 minimum created some "try it out" behavior. A premium motion needs a cleaner readiness bar: time, data access, owner attention, and change-management commitment.</p>
+        </div>
+        <div class="card">
+          <span class="label">Handoff</span>
+          <h3>Use AI to structure discovery</h3>
+          <p>Sales calls already contain the signals onboarding needs: prior PSA, accounting system, RMM, users, dispatch model, payment processor, invoice sequence, SureTax, migration risks, and commitments made.</p>
+        </div>
+        <div class="card">
+          <span class="label">Demo</span>
+          <h3>Make Revvy match the premium claim</h3>
+          <p>Revvy demos need approved paths that work consistently and show agentic action, not generic chat. The demo should map to each prospect's actual operating pain.</p>
+        </div>
+      </div>
+      <div class="callout">
+        <strong>Close the loop:</strong> Onboarding should feed Sales a monthly issue/risk digest covering common blockers, product gaps, expectation mismatches, and deals that should have been scoped differently.
+      </div>
+    </section>
+
+    <section>
+      <h2>Concrete AI / Agentic Plays</h2>
+      <div class="two-col">
+        <div class="card">
+          <span class="label">Play 1</span>
+          <h3>AI Sales Brief Generator</h3>
+          <p>Generate a Sales-to-Onboarding brief from Salesforce, Fireflies or meeting transcripts, and known client records.</p>
+          <ul>
+            <li>Core 8 readiness</li>
+            <li>Sold modules and commitments</li>
+            <li>Integration, migration, and setup risks</li>
+            <li>Missing answers and recommended follow-up questions</li>
+          </ul>
+        </div>
+        <div class="card">
+          <span class="label">Play 2</span>
+          <h3>Deal Readiness Score</h3>
+          <p>Score readiness before closed-won or immediately after close using Core 8 completeness, migration complexity, client owner engagement, role clarity, and Revvy fit.</p>
+        </div>
+        <div class="card">
+          <span class="label">Play 3</span>
+          <h3>Revvy Use-Case Mapper</h3>
+          <p>Identify 3-5 Revvy workflows for each opportunity, then capture those promised use cases so onboarding can reinforce them.</p>
+        </div>
+        <div class="card">
+          <span class="label">Play 4</span>
+          <h3>Push-Reason Feedback Loop</h3>
+          <p>Use monthly baseline analysis to show why deals slip after kickoff, then update qualification, discovery, demo language, and expectations.</p>
+        </div>
+        <div class="card">
+          <span class="label">Play 5</span>
+          <h3>Competitive Intelligence Agent</h3>
+          <p>Benchmark against Halo and other platforms with validated battlecards: where Rev.io wins, where claims need Product help, and what migration/integration story is credible.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Specific Leadership Asks</h2>
+      <ol>
+        <li>Agree that Revvy and agentic PSA are primary PSA positioning, not a bolt-on.</li>
+        <li>Approve a required Sales-to-Onboarding AI brief before kickoff.</li>
+        <li>Confirm the minimum discovery fields Sales must capture or validate.</li>
+        <li>Add readiness and risk review to the first 30 days after close, especially for low-readiness deals.</li>
+        <li>Commit to a monthly review of onboarding push reasons and expectation mismatches.</li>
+        <li>Sponsor competitive benchmarking, especially against Halo.</li>
+        <li>Align pricing and minimums with buyer commitment and premium positioning.</li>
+      </ol>
+    </section>
+
+    <section>
+      <h2>30 / 60 / 90 Plan</h2>
+      <div class="timeline">
+        <div class="card">
+          <span class="label">Next 30 Days</span>
+          <ul>
+            <li>Finalize Sales Brief v1 as the canonical handoff artifact.</li>
+            <li>Define required Salesforce fields for Core 8 readiness and Revvy use cases.</li>
+            <li>Pilot AI Sales Briefs for June closed-won PSA deals.</li>
+            <li>Owner-validate top May PSA push reasons.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <span class="label">31-60 Days</span>
+          <ul>
+            <li>Add readiness scoring and missing-field alerts.</li>
+            <li>Run Sales + Onboarding weekly review on low-readiness deals.</li>
+            <li>Build a Revvy demo use-case library by buyer persona and vertical.</li>
+            <li>Create competitive battlecards from validated benchmarking.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <span class="label">61-90 Days</span>
+          <ul>
+            <li>Tie readiness score to forecast confidence and onboarding staffing.</li>
+            <li>Use Revvy during onboarding so customers build usage habit before graduation.</li>
+            <li>Feed outcomes back into Sales coaching.</li>
+            <li>Move toward assisted pre-configuration once the API path is approved and tested.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Recommended Meeting Flow</h2>
+      <ol>
+        <li>Open with the strategic reset: premium, agentic PSA, committed buyers.</li>
+        <li>Show the operating evidence: kickoff is fast; post-kickoff conversion is the drag.</li>
+        <li>Explain where AI helps Sales: discovery, qualification, Revvy-specific demos, and handoff.</li>
+        <li>Ask for operating commitments: required fields, brief validation, readiness review, and push-reason review.</li>
+        <li>Close with the June pilot: AI Sales Brief + Deal Readiness Score + Revvy Use-Case Mapper.</li>
+      </ol>
+    </section>
+
+    <section>
+      <h2>Watchouts</h2>
+      <div class="callout warning">
+        <ul>
+          <li>Do not overclaim that AI pre-config alone will fix onboarding duration. The product and UX bottleneck is real.</li>
+          <li>Do not use inferred push reasons as final accountability metrics until owner-validated.</li>
+          <li>Do not let Revvy become a demo-only story. Sales promises must carry through onboarding and value realization.</li>
+          <li>Do not raise minimums without tightening buyer-readiness qualification.</li>
+        </ul>
+      </div>
+    </section>
+
+    <footer>
+      Sources: Notion meeting 374a59b7-e7b2-80a0-810d-cbc8a3bb6823 HTTP 200; Evan conversation 36fa59b7-e7b2-807f-bb16-d75cf3800ff6 HTTP 200; May baseline reports generated June 3, 2026; Council Round 1 reports.
+    </footer>
+  </main>
+</body>
+</html>
