@@ -127,26 +127,19 @@ function htmlEscape(value) {
   }[ch]));
 }
 
-function statusLabel(item) {
-  if (item.notApplicable) return 'N/A';
-  return item.checked ? 'Met' : 'Not met';
-}
-
-function criteriaRows(data) {
-  const rows = [];
-  let currentSection = '';
+function sectionSummary(data) {
+  const sections = new Map();
   for (const item of data.criteria) {
-    if (item.section && item.section !== currentSection) {
-      currentSection = item.section;
-      rows.push(`<br><b>${htmlEscape(currentSection)}</b>`);
-    }
-    const details = [];
-    if (item.exampleLabel || item.exampleValue) {
-      details.push(`${item.exampleLabel || 'Example'}: ${item.exampleValue || 'Not provided'}`);
-    }
-    rows.push(`${htmlEscape(statusLabel(item))} - ${htmlEscape(item.title || 'Untitled criterion')}${details.length ? `<br><i>${htmlEscape(details.join(' | ')).slice(0, 800)}</i>` : ''}`);
+    const section = item.section || 'Checklist';
+    if (!sections.has(section)) sections.set(section, { total: 0, satisfied: 0 });
+    const stats = sections.get(section);
+    stats.total += 1;
+    if (item.checked || item.notApplicable) stats.satisfied += 1;
   }
-  return rows;
+  return Array.from(sections.entries()).map(([section, stats]) => {
+    const label = stats.satisfied === stats.total ? 'Complete' : `${stats.satisfied}/${stats.total} complete`;
+    return `${htmlEscape(section)}: ${htmlEscape(label)}`;
+  }).join('<br>');
 }
 
 function teamsMessage(data) {
@@ -158,9 +151,9 @@ function teamsMessage(data) {
     `<b>CS handoff owner:</b> ${htmlEscape(data.csHandoffOwner || 'Not provided')}`,
   ];
   if (data.notes) rows.push(`<b>Notes:</b> ${htmlEscape(data.notes.slice(0, 900))}`);
-  rows.push('<br><b>Checklist</b>');
-  rows.push(...criteriaRows(data));
-  if (data.sourceUrl) rows.push(`<br><a href="${htmlEscape(data.sourceUrl)}">Checklist source</a>`);
+  const sections = sectionSummary(data);
+  if (sections) rows.push(`<br><b>Section rollup</b><br>${sections}`);
+  if (data.sourceUrl) rows.push(`<br><a href="${htmlEscape(data.sourceUrl)}">Open completed checklist</a>`);
   return rows.join('<br>').slice(0, 26000);
 }
 
@@ -183,6 +176,16 @@ async function postTeamsMessage(token, data) {
 
 async function main() {
   const data = validatePayload(readPayload());
+  if (String(process.env.PSA_GRADUATIONS_DRY_RUN || '').toLowerCase() === 'true') {
+    console.log(JSON.stringify({
+      channel: CHANNEL_NAME,
+      body: {
+        contentType: 'html',
+        content: teamsMessage(data),
+      },
+    }, null, 2));
+    return;
+  }
   const token = await getGraphToken();
   await postTeamsMessage(token, data);
 }
