@@ -257,12 +257,10 @@ async function uploadPdf(token, data, pdf) {
 
 function teamsMessage(data, file) {
   const rows = [
-    '<b>PSA graduation checklist submitted</b>',
-    `<b>Client:</b> ${htmlEscape(data.clientName)}`,
+    `<b>${htmlEscape(data.clientName)}</b>`,
     `<b>SA:</b> ${htmlEscape(data.saName || 'Not provided')}`,
     `<b>Graduation date:</b> ${htmlEscape(data.graduationDate || 'Not provided')}`,
     `<b>CS handoff owner:</b> ${htmlEscape(data.csHandoffOwner || 'Not provided')}`,
-    `<b>Completion:</b> ${htmlEscape(`${data.completion.satisfied || 0} of ${data.completion.total || data.criteria.length} criteria met`)}`,
   ];
   if (data.notes) rows.push(`<b>Notes:</b> ${htmlEscape(data.notes.slice(0, 900))}`);
   rows.push(`<a href="${htmlEscape(file.driveItem.webUrl || '')}">${htmlEscape(file.fileName)}</a>`);
