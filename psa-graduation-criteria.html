@@ -404,6 +404,10 @@
     .criterion-example input:focus { border-color: var(--turquoise); }
     .criterion-example input::placeholder { color: var(--text-dim); }
 
+    .print-value {
+      display: none;
+    }
+
     /* ─── Sign-Off ─────────────────────────────── */
     .signoff-card {
       background: var(--prussian-lite);
@@ -532,7 +536,93 @@
     .btn-secondary:hover { color: var(--text); border-color: rgba(255,255,255,0.3); }
 
     @media print {
+      body {
+        background: #fff;
+        color: #111827;
+        font-size: 12px;
+      }
+
+      .page-header,
+      .intro-card,
+      .progress-bar-wrap,
+      .section-header,
+      .section-body,
+      .signoff-card {
+        background: #fff !important;
+        color: #111827 !important;
+        border-color: #d6dce5 !important;
+        box-shadow: none !important;
+      }
+
+      .page-header {
+        padding: 24px 0 18px;
+      }
+
+      .content {
+        padding: 24px 0;
+      }
+
+      .container {
+        max-width: none;
+        padding: 0 18px;
+      }
+
+      h1,
+      .section-title,
+      .criterion-title,
+      .signoff-title,
+      .meta-value,
+      .intro-card strong {
+        color: #111827 !important;
+      }
+
+      .subtitle,
+      .meta-label,
+      .intro-card p,
+      .criterion-desc,
+      .criterion-example label,
+      .signoff-field label,
+      .status-text {
+        color: #374151 !important;
+      }
+
+      .criterion,
+      .section,
+      .signoff-card {
+        break-inside: avoid;
+        page-break-inside: avoid;
+      }
+
       .status-bar { display: none; }
+
+      input {
+        display: none !important;
+      }
+
+      .print-value {
+        display: block;
+        width: 100%;
+        min-height: 28px;
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+        word-break: break-word;
+        color: #111827;
+        background: #f8fafc;
+        border: 1px solid #cbd5e1;
+        border-radius: 5px;
+        padding: 6px 9px;
+        font: inherit;
+        line-height: 1.45;
+      }
+
+      .criterion-example,
+      .signoff-field {
+        align-items: flex-start;
+      }
+
+      .signoff-grid {
+        grid-template-columns: 1fr 1fr;
+      }
     }
   </style>
 </head>
@@ -843,6 +933,7 @@
 <script>
   const TOTAL = 16;
   const NA_IDS = ['int-qbo', 'int-cal'];
+  const printValueClass = 'print-value';
 
   function toggleCheck(el) {
     el.classList.toggle('checked');
@@ -881,6 +972,29 @@
       btn.disabled = true;
     }
   }
+
+  function syncPrintValues() {
+    document.querySelectorAll('input').forEach((input) => {
+      let printValue = input.nextElementSibling;
+      if (!printValue || !printValue.classList.contains(printValueClass)) {
+        printValue = document.createElement('div');
+        printValue.className = printValueClass;
+        input.insertAdjacentElement('afterend', printValue);
+      }
+
+      const value = input.value.trim();
+      printValue.textContent = value;
+      printValue.classList.toggle('is-empty', !value);
+    });
+  }
+
+  document.querySelectorAll('input').forEach((input) => {
+    input.addEventListener('input', syncPrintValues);
+    input.addEventListener('change', syncPrintValues);
+  });
+
+  window.addEventListener('beforeprint', syncPrintValues);
+  syncPrintValues();
 </script>
 
 </body>
