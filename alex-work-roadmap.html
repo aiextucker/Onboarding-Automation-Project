@@ -1,0 +1,829 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Alex Work Roadmap</title>
+  <style>
+    :root {
+      --ink: #202327;
+      --muted: #65717f;
+      --line: #d9dee5;
+      --panel: #ffffff;
+      --bg: #f5f7fa;
+      --blue: #1f6feb;
+      --green: #1f8f5f;
+      --orange: #c77800;
+      --red: #c93c37;
+      --purple: #7657d6;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.45;
+    }
+    header {
+      padding: 28px 32px 16px;
+      border-bottom: 1px solid var(--line);
+      background: #fff;
+    }
+    .eyebrow { color: var(--muted); font-size: 13px; font-weight: 700; text-transform: uppercase; }
+    h1 { margin: 6px 0 6px; font-size: clamp(28px, 4vw, 42px); line-height: 1.05; letter-spacing: 0; }
+    header p { max-width: 980px; margin: 0; color: var(--muted); }
+    main { padding: 24px 32px 40px; max-width: 1480px; margin: 0 auto; }
+    .stats { display: grid; grid-template-columns: repeat(6, minmax(120px, 1fr)); gap: 12px; margin-bottom: 20px; }
+    .stat, .group, .dependency, .script {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: 0 1px 2px rgba(14, 23, 36, 0.04);
+    }
+    .stat { padding: 14px; min-height: 88px; }
+    .stat span { color: var(--muted); font-size: 12px; font-weight: 700; text-transform: uppercase; }
+    .stat strong { display: block; margin-top: 8px; font-size: 28px; }
+    .layout { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 18px; align-items: start; }
+    .groups { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    .group { padding: 16px; min-width: 0; }
+    .group-head { display: flex; justify-content: space-between; gap: 16px; align-items: flex-start; }
+    .group h2 { margin: 0; font-size: 18px; }
+    .group p { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
+    .group-head strong { font-size: 24px; }
+    .meter { height: 8px; margin: 14px 0; background: #edf0f4; border-radius: 999px; overflow: hidden; }
+    .meter span { display: block; height: 100%; background: linear-gradient(90deg, var(--blue), var(--green)); }
+    .task-list { display: grid; gap: 8px; }
+    .task {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+      padding: 10px;
+      border: 1px solid #edf0f4;
+      border-radius: 6px;
+      background: #fbfcfe;
+    }
+    .task a { color: var(--ink); font-weight: 700; text-decoration: none; overflow-wrap: anywhere; }
+    .task small { display: block; color: var(--muted); margin-top: 3px; }
+    .badges { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 5px; align-content: start; }
+    .badge { padding: 3px 7px; border-radius: 999px; font-size: 11px; font-weight: 700; border: 1px solid var(--line); background: #fff; white-space: nowrap; }
+    .status-Blocked, .status-On-Hold { color: var(--red); border-color: #efb5b1; background: #fff4f3; }
+    .status-In-Progress { color: var(--blue); border-color: #b5cdf5; background: #f2f6ff; }
+    .status-Done { color: var(--green); border-color: #b8dfcc; background: #f2fbf6; }
+    aside { display: grid; gap: 16px; }
+    .dependency, .script { padding: 16px; }
+    .dependency h2, .script h2 { margin: 0 0 12px; font-size: 18px; }
+    .dep-item { border-top: 1px solid #edf0f4; padding: 10px 0; }
+    .dep-item:first-of-type { border-top: 0; padding-top: 0; }
+    .dep-item strong { display: block; font-size: 14px; }
+    .dep-item span { color: var(--muted); font-size: 12px; }
+    .script ol { margin: 0; padding-left: 20px; color: var(--muted); }
+    .script li { margin: 8px 0; }
+    footer { padding: 0 32px 28px; color: var(--muted); font-size: 12px; max-width: 1480px; margin: 0 auto; }
+    @media (max-width: 1100px) {
+      .stats { grid-template-columns: repeat(3, minmax(120px, 1fr)); }
+      .layout { grid-template-columns: 1fr; }
+      .groups { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 640px) {
+      header, main, footer { padding-left: 16px; padding-right: 16px; }
+      .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .task { grid-template-columns: 1fr; }
+      .badges { justify-content: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="eyebrow">Alex Tucker Roadmap</div>
+    <h1>Automation work, capacity, and dependencies</h1>
+    <p>Generated from the live Notion Tasks Tracker. Workstream completion is computed from related Notion task status, weighted by effort level.</p>
+  </header>
+  <main>
+    <section class="stats">
+      <div class="stat"><span>Visible Tasks</span><strong>41</strong></div>
+      <div class="stat"><span>Active</span><strong>25</strong></div>
+      <div class="stat"><span>Done</span><strong>16</strong></div>
+      <div class="stat"><span>Blocked / Hold</span><strong>5</strong></div>
+      <div class="stat"><span>Now</span><strong>3</strong></div>
+      <div class="stat"><span>Next</span><strong>15</strong></div>
+    </section>
+    <section class="layout">
+      <div class="groups">
+    <section class="group">
+      <div class="group-head">
+        <div>
+          <h2>Onboarding Automation</h2>
+          <p>8 active / 15 visible tasks</p>
+        </div>
+        <strong>37%</strong>
+      </div>
+      <div class="meter"><span style="width:37%"></span></div>
+      <div class="task-list">
+        
+    <article class="task">
+      <div>
+        <a href="https://app.notion.com/p/Auto-config-persistence-security-design-368a59b7e7b281cd9729cd2c72b687fc">Auto-config persistence/security design</a>
+        <small>Design durable state for delayed questionnaire/instance flow without token exposure.</small>
+      </div>
+      <div class="badges">
+        <span class="badge status-Blocked">Blocked</span>
+        <span class="badge">Waiting</span>
+        <span class="badge">High</span>
+        <span class="badge">Medium</span>
+      </div>
+    </article>
+  
+    <article class="task">
+      <div>
+        <a href="https://app.notion.com/p/PSA-Automation-Testing-358a59b7e7b280c687c7c14b95817a3e">PSA Automation Testing</a>
+        <small>2026-05-29: Dependency clarified as ARTED. ARTED is rolling out changes next Tuesday (2026-06-02), so PSA demo pre-config remains parked until then. No PSA writes have been performed. Follow-up on/after 2026-06-02 using the no-write preview report reports/psa-config-preview-apex-systems-group-ii-2026-05-29T16-27-02-304Z.md.</small>
+      </div>
+      <div class="badges">
+        <span class="badge status-Blocked">Blocked</span>
+        <span class="badge">Waiting</span>
+        <span class="badge">High</span>
+        <span class="badge">No effort</span>
+      </div>
+    </article>
+  
+    <article class="task">
+      <div>
+        <a href="https://app.notion.com/p/PSA-Demo-Pre-Configuration-Initial-Configs-with-ARTED-360a59b7e7b281f19bece3256f5046b5">PSA Demo Pre-Configuration — Initial Configs with ARTED</a>
+        <small>2026-05-29: Dependency clarified as ARTED. ARTED is rolling out changes next Tuesday (2026-06-02), so PSA demo pre-config remains parked until then. No PSA writes have been performed. Follow-up on/after 2026-06-02 using the no-write preview report reports/psa-config-preview-apex-systems-group-ii-2026-05-29T16-27-02-304Z.md.</small>
+      </div>
+      <div class="badges">
+        <span class="badge status-Blocked">Blocked</span>
+        <span class="badge">Waiting</span>
+        <span class="badge">High</span>
+        <span class="badge">No effort</span>
+      </div>
+    </article>
+  
+    <article class="task">
+      <div>
+        <a href="https://app.notion.com/p/PM-Hub-Phase-2-PSA-client-view-improvements-368a59b7e7b281f69cdbc0fbd3cea83d">PM Hub Phase 2 — PSA client view improvements</a>
+        <small>Move PSA progress up top and add operational fields when PM Hub work resumes.</small>
+      </div>
+      <div class="badges">
+        <span class="badge status-On-Hold">On Hold</span>
+        <span class="badge">Waiting</span>
+        <span class="badge">Medium</span>
+        <span class="badge">Large</span>
+      </div>
+    </article>
+  
+    <article class="task">
+      <div>
+        <a href="https://app.notion.com/p/Billing-tracker-cleanup-368a59b7e7b281f6ad68d9af38ec8806">Billing tracker cleanup</a>
+        <small>Clean billing tracker notes/components/questionnaire links.</small>
+      </div>
+      <div class="badges">
+        <span class="badge status-Not-Started">Not Started</span>
+        <span class="badge">Next</span>
+        <span class="badge">Medium</span>
+        <span class="badge">Medium</span>
+      </div>
+    </article>
+  
+    <article class="task">
+      <div>
+        <a href="https://app.notion.com/p/Phase-3-Rev-io-PSA-API-Config-Application-35ea59b7e7b281179c2ec698c0b4ef7a">Phase 3 — Rev.io PSA API Config Application</a>
+        <small>Blocked pending ARTED return (week of 2026-05-19). PSA demo access token in hand (expires 2026-05-21). Login automation via playwright-chromium + MFA email polling fully working. Ready to begin initial configs on psademo.psarev.io next week.</small>
+      </div>
+      <div class="badges">
+        <span class="badge status-Not-Started">Not Started</span>
+        <span class="badge">Next</span>
+        <span class="badge">Medium</span>
+        <span class="badge">No effort</span>
+      </div>
+    </article>
+  
+    <article class="task">
+      <div>
+        <a href="https://app.notion.com/p/PSA-client-facing-tracker-and-PDF-export-368a59b7e7b281c1a76dcacda9194ea7">PSA client-facing tracker and PDF export</a>
+        <small>Build PSA client-facing project tracker and purpose-built PDF export.</small>
+      </div>
+      <div class="badges">
+        <span class="badge status-Not-Started">Not Started</span>
+        <span class="badge">Next</span>
+        <span class="badge">Medium</span>
+        <span class="badge">Large</span>
+      </div>
+    </article>
+  
+    <article class="task">
+      <div>
+        <a href="https://app.notion.com/p/Questionnaire-Save-and-Resume-localStorage-35ea59b7e7b2816bab2ff583d81f6102">Questionnaire — Save-and-Resume (localStorage)</a>
+        <small>If a client closes the tab mid-way, they lose all progress. Add localStorage persistence so answers are saved as they go and restored on reload. Should also handle the pre-filled data not being overwritten on restore.</small>
+      </div>
+      <div class="badges">
+        <span class="badge status-Not-Started">Not Started</span>
+        <span class="badge">Next</span>
+        <span class="badge">Medium</span>
+        <span class="badge">No effort</span>
+      </div>
+    </article>
+  
+    <article class="task">
+      <div>
+        <a href="https://app.notion.com/p/Post-Submission-Auto-Create-Notion-PSA-Client-Record-35ea59b7e7b28108bc28f5ab972c145a">Post-Submission — Auto-Create Notion PSA Client Record</a>
+        <small>Implemented and pushed in revio-automations commit 5425834. Questionnaire submissions now upsert the raw submission, then create/update the matching PSA Clients record by exact Client name, storing billing/operational answers in Setup Snapshots and adding PSA Client links to the review card. Verified with node --check and workflow YAML parse; no live dispatch test run to avoid creating a fake client/email.</small>
+      </div>
+      <div class="badges">
+        <span class="badge status-Done">Done</span>
+        <span class="badge">Done</span>
+        <span class="badge">High</span>
+        <span class="badge">No effort</span>
+      </div>
+    </article>
+  
+    <article class="task">
+      <div>
+        <a href="https://app.notion.com/p/Update-forecast-script-explainer-page-for-Billing-and-scenario-buckets-368a59b7e7b281d38e68c98374673e24">Update forecast script explainer page for Billing and scenario buckets</a>
+        <small>Completed 2026-05-22. Billing forecast scripts and standalone reference page now document PSA vs Billing behavior, Billing activation vs graduation tracks, scenario buckets, and blank Billing Confidence = Low. Relevant commits: Rev-io/slt-forecasts 5865581; Onboarding-Automation-Project 81039a0.</small>
+      </div>
+      <div class="badges">
+        <span class="badge status-Done">Done</span>
+        <span class="badge">Done</span>
+        <span class="badge">High</span>
+        <span class="badge">Medium</span>
+      </div>
+    </article>
+  
+    <article class="task">
+      <div>
+        <a href="https://app.notion.com/p/Document-current-auto-config-limitation-368a59b7e7b281b9811ee6df3a743c61">Document current auto-config limitation</a>
+        <small>Closed 2026-05-29: documented current auto-config limitation in docs/auto-config-current-limitation.md. Core statement: no client has completed automated PSA configuration without manual intervention; current workflow is questionnaire-driven config preview and assisted PSA setup until end-to-end write path is tested and explicitly approved.</small>
+      </div>
+      <div class="badges">
+        <span class="badge status-Done">Done</span>
+        <span class="badge">Done</span>
+        <span class="badge">Medium</span>
+        <span class="badge">Small</span>
+      </div>
+    </article>
+  
+    <article class="task">
+      <div>
+        <a href="https://app.notion.com/p/PSA-Guidebook-34ba59b7e7b2809fae7ddfb38ed658ce">PSA Guidebook</a>
+        <small>Closed 2026-05-29: PSA client guidebook work was completed and regenerated on 2026-05-14. Live PDF: https://aiextucker.github.io/Onboarding-Automation-Project/psa-onboarding-client-guide.pdf. Graduation criteria page also deployed at https://aiextucker.github.io/Onboarding-Automation-Project/psa-graduation-criteria.html.</small>
+      </div>
+      <div class="badges">
+        <span class="badge status-Done">Done</span>
+        <span class="badge">Done</span>
+        <span class="badge">Medium</span>
+        <span class="badge">No effort</span>
+      </div>
+    </article>
+  
+    <article class="task">
+      <div>
+        <a href="https://app.notion.com/p/Questionnaire-Duplicate-Submission-Guard-35ea59b7e7b281e7b1e3dc92b8855ab0">Questionnaire — Duplicate Submission Guard</a>
+        <small>Closed 2026-05-29: added server-side duplicate submission guard in aiextucker/revio-automations .github/scripts/handle-questionnaire-submission.js. The handler now checks the questionnaire Token before writes and skips Notion updates, PSA Client upsert, Teams card, and confirmation email when the submission has already reached Submitted, Approved, Changes Requested, or SA Notified. Verified with node --check and a live duplicate-path no-write test against token demo-apex-2026-05-04.</small>
+      </div>
+      <div class="badges">
+        <span class="badge status-Done">Done</span>
+        <span class="badge">Done</span>
+        <span class="badge">Medium</span>
+        <span class="badge">No effort</span>
+      </div>
+    </article>
+  
+    <article class="task">
+      <div>
+        <a href="https://app.notion.com/p/Post-Submission-Client-Confirmation-Email-Message-35ea59b7e7b281579cc9d098f706b8f2">Post-Submission — Client Confirmation Email/Message</a>
+        <small>Implemented and pushed in revio-automations commit 5425834 as part of the submission workflow refactor. The workflow now sends the client confirmation email when an email is present; the prior broken inline heredoc/email block was replaced with a checked-in Node script. Verified with node --check and workflow YAML parse; no live dispatch test run to avoid emailing a test client.</small>
+      </div>
+      <div class="badges">
+        <span class="badge status-Done">Done</span>
+        <span class="badge">Done</span>
+        <span class="badge">Low</span>
+        <span class="badge">No effort</span>
+      </div>
+    </article>
+  
+    <article class="task">
+      <div>
+        <a href="https://app.notion.com/p/Questionnaire-Enforce-Expiry-Date-35ea59b7e7b2810b9afbeabae37561e9">Questionnaire — Enforce Expiry Date</a>
+        <small>Expires At is stored in Notion but the generated questionnaire HTML never checks it — an expired link still works. On load, check expiry and show a friendly expired message if past date.</small>
+      </div>
+      <div class="badges">
+        <span class="badge status-Done">Done</span>
+        <span class="badge">Done</span>
+        <span class="badge">Low</span>
+        <span class="badge">No effort</span>
+      </div>
+    </article>
+  
+      </div>
+    </section>
+  
+    <section class="group">
+      <div class="group-head">
+        <div>
+          <h2>PM Hub / Portfolio</h2>
+          <p>5 active / 5 visible tasks</p>
+        </div>
+        <strong>19%</strong>
+      </div>
+      <div class="meter"><span style="width:19%"></span></div>
+      <div class="task-list">
+        
+    <article class="task">
+      <div>
+        <a href="https://app.notion.com/p/PM-Hub-Robust-Call-Action-Summary-Enhancements-358a59b7e7b281dd86a6e37331051408">PM Hub — Robust Call Action Summary Enhancements</a>
+        <small>Implementation started 2026-05-06. PM Hub now has action roll-up across matched calls, stale-call warnings, fuzzy-match warnings, Fireflies transcript links from snapshot data, and Next Steps UI support. Call Briefs DB now has a Next Steps field and future Fireflies extractions will populate it.</small>
+      </div>
+      <div class="badges">
+        <span class="badge status-In-Progress">In Progress</span>
+        <span class="badge">Now</span>
+        <span class="badge">High</span>
+        <span class="badge">Medium</span>
+      </div>
+    </article>
+  
+    <article class="task">
+      <div>
+        <a href="https://app.notion.com/p/PM-Hub-Editable-Tracker-PDF-Export-Enhancements-352a59b7e7b281e5a1b0d18011f313ee">PM Hub — Editable Tracker / PDF Export Enhancements</a>
+        <small>Renamed 2026-05-06. This is no longer a PowerPoint-generation task. Current direction is a PM Hub tracker page with PDF export plus future editable/patch-layer enhancements.</small>
+      </div>
+      <div class="badges">
+        <span class="badge status-In-Progress">In Progress</span>
+        <span class="badge">Now</span>
+        <span class="badge">Medium</span>
+        <span class="badge">Large</span>
+      </div>
+    </article>
+  
+    <article class="task">
+      <div>
+        <a href="https://app.notion.com/p/Fireflies-summaries-into-editable-interactions-368a59b7e7b281f3a46ff91801835749">Fireflies summaries into editable interactions</a>
+        <small>Queue Fireflies summaries as editable interaction records.</small>
+      </div>
+      <div class="badges">
+        <span class="badge status-Not-Started">Not Started</span>
+        <span class="badge">Next</span>
+        <span class="badge">Medium</span>
+        <span class="badge">Large</span>
+      </div>
+    </article>
+  
+    <article class="task">
+      <div>
+        <a href="https://app.notion.com/p/PM-Hub-DE-Filtered-View-352a59b7e7b2819695b4c93bb69b4aa4">PM Hub — DE Filtered View</a>
+        <small>Filter hub to &quot;DE mode&quot; showing: DE-specific data requests, comparative updates needed per client, which clients are unblocked and ready for DE work. User selects their role to filter. No auth-based personalization initially.</small>
+      </div>
+      <div class="badges">
+        <span class="badge status-Not-Started">Not Started</span>
+        <span class="badge">Next</span>
+        <span class="badge">Medium</span>
+        <span class="badge">Medium</span>
+      </div>
+    </article>
+  
+    <article class="task">
+      <div>
+        <a href="https://app.notion.com/p/PM-Hub-Weekly-Team-Roll-Up-Summary-352a59b7e7b281bd98c6cf820ec361c4">PM Hub — Weekly Team Roll-Up Summary</a>
+        <small>Weekly summary across all active projects. Covers: what's done vs. at-risk, progress vs. prior week, big action items. Pulls from Teams channels, Zendesk, call notes, Wrike tasks. Team-wide view, not just per-client.</small>
+      </div>
+      <div class="badges">
+        <span class="badge status-Not-Started">Not Started</span>
+        <span class="badge">Next</span>
+        <span class="badge">Medium</span>
+        <span class="badge">Large</span>
+      </div>
+    </article>
+  
+      </div>
+    </section>
+  
+    <section class="group">
+      <div class="group-head">
+        <div>
+          <h2>Forecast &amp; SLT Reporting</h2>
+          <p>3 active / 4 visible tasks</p>
+        </div>
+        <strong>20%</strong>
+      </div>
+      <div class="meter"><span style="width:20%"></span></div>
+      <div class="task-list">
+        
+    <article class="task">
+      <div>
+        <a href="https://app.notion.com/p/Create-Interaction-Teams-Sync-358a59b7e7b280bd96f0f550679944dc">Create Interaction Teams Sync</a>
+        <small>Scoped 2026-05-29: PM Hub browser-side GitHub PAT dispatch was removed/disabled pending a secure server-side interaction submit path. Added dry-run Teams channel resolver and manual overrides for Minutemen Security Systems, BankTec South, and Guardian Advanced Solutions. Resolver verified Graph access to PSA Client Launch Team (261 channels) and sends no Teams posts. Next gate: implement secure submit endpoint/GitHub-secret workflow, then wire Teams post only after Notion write succeeds and channel confidence is high; ambiguous/no-match channels must skip auto-post.</small>
+      </div>
+      <div class="badges">
+        <span class="badge status-In-Progress">In Progress</span>
+        <span class="badge">Now</span>
+        <span class="badge">Low</span>
+        <span class="badge">No effort</span>
+      </div>
+    </article>
+  
+    <article class="task">
+      <div>
+        <a href="https://app.notion.com/p/Pull-PSA-Duration-Data-358a59b7e7b280cda072ede54e153303">Pull PSA Duration Data</a>
+        <small>2026-05-29: Alex intentionally deferred this until after end of day / end of month so May data can close before pulling PSA duration baselines. Do not treat as ignored; resume after May close with Notion PSA cohort pull and duration distribution report.</small>
+      </div>
+      <div class="badges">
+        <span class="badge status-Not-Started">Not Started</span>
+        <span class="badge">Next</span>
+        <span class="badge">Medium</span>
+        <span class="badge">No effort</span>
+      </div>
+    </article>
+  
+    <article class="task">
+      <div>
+        <a href="https://app.notion.com/p/Revise-health-score-model-for-Billing-and-PSA-clients-368a59b7e7b28166a4c3ecba3f97b5dc">Revise health score model for Billing and PSA clients</a>
+        <small>Backlog item to redesign health scoring/health formulas for both Billing and PSA clients before re-surfacing them in SLT reporting.</small>
+      </div>
+      <div class="badges">
+        <span class="badge status-Not-Started">Not Started</span>
+        <span class="badge">Next</span>
+        <span class="badge">Medium</span>
+        <span class="badge">Large</span>
+      </div>
+    </article>
+  
+    <article class="task">
+      <div>
+        <a href="https://app.notion.com/p/Populate-Billing-Confidence-for-active-Billing-clients-368a59b7e7b281929d68de6f4d7f88fd">Populate Billing Confidence for active Billing clients</a>
+        <small>Closed 2026-05-29. Alfred cleaned the source data, excluded RTS/on-hold rows from the actionable ask, and handed the remaining 6 client Confidence values to PMs for update before next week. No further Alfred action pending unless follow-up audit still shows blanks.</small>
+      </div>
+      <div class="badges">
+        <span class="badge status-Done">Done</span>
+        <span class="badge">Done</span>
+        <span class="badge">High</span>
+        <span class="badge">Small</span>
+      </div>
+    </article>
+  
+      </div>
+    </section>
+  
+    <section class="group">
+      <div class="group-head">
+        <div>
+          <h2>Sales / GTM Automation</h2>
+          <p>1 active / 6 visible tasks</p>
+        </div>
+        <strong>82%</strong>
+      </div>
+      <div class="meter"><span style="width:82%"></span></div>
+      <div class="task-list">
+        
+    <article class="task">
+      <div>
+        <a href="https://app.notion.com/p/Pre-Config-Fireflies-Extraction-for-Sales-Calls-35ea59b7e7b281309024d233c188bfd1">Pre-Config — Fireflies Extraction for Sales Calls</a>
+        <small>When generating a questionnaire, search Fireflies for any sales call transcripts and extract: prior PSA, accounting software, RMM tool, payment processor, key contacts, pain points, commitments. Pre-fill questionnaire fields where confident; flag gaps for SA. Currently no extraction logic exists.</small>
+      </div>
+      <div class="badges">
+        <span class="badge status-Not-Started">Not Started</span>
+        <span class="badge">Next</span>
+        <span class="badge">Medium</span>
+        <span class="badge">No effort</span>
+      </div>
+    </article>
+  
+    <article class="task">
+      <div>
+        <a href="https://app.notion.com/p/Questionnaire-Add-Missing-Kickoff-Fields-35ea59b7e7b281d3b063e60e49ee2c4b">Questionnaire — Add Missing Kickoff Fields</a>
+        <small>Completed 2026-05-28. Added required Step 4 operational kickoff fields to psa-questionnaire.html: current/prior PSA, accounting software, RMM tool, payment processor, SureTax status, invoice continuity, business hours, holiday calendar, and SMS. Added review-preview rendering, pre-dispatch validation, submission payload fields, and Sales Brief hash prefill export. Deployed to GitHub Pages via Onboarding-Automation-Project commit bb7fea1.</small>
+      </div>
+      <div class="badges">
+        <span class="badge status-Done">Done</span>
+        <span class="badge">Done</span>
+        <span class="badge">High</span>
+        <span class="badge">No effort</span>
+      </div>
+    </article>
+  
+    <article class="task">
+      <div>
+        <a href="https://app.notion.com/p/RTS-notification-workflow-dry-run-detector-and-guard-368a59b7e7b28145ba03f532de1da4e6">RTS notification workflow — dry-run detector and guard</a>
+        <small>Dry-run detector and duplicate guard built in scripts/rts-communications.js. Reads PM Hub portfolio snapshot, classifies RTS / On Hold / Long-Term RTS candidates, writes timestamped Markdown reports under reports/, initializes data/rts-notification-state.json, and blocks Teams posting unless RTS_POST_APPROVED, RTS_COPY_APPROVED, and RTS_TIMING_APPROVED are all true. Latest validation: 29 active candidates from 2026-05-22 snapshot; no Teams posts sent.</small>
+      </div>
+      <div class="badges">
+        <span class="badge status-Done">Done</span>
+        <span class="badge">Done</span>
+        <span class="badge">High</span>
+        <span class="badge">Medium</span>
+      </div>
+    </article>
+  
+    <article class="task">
+      <div>
+        <a href="https://app.notion.com/p/RTS-workflow-Teams-channel-access-and-copy-approval-368a59b7e7b28161a649ee58e1148d5f">RTS workflow — Teams channel access and copy approval</a>
+        <small>2026-05-29: Closed as report-only/manual-ready. Added scripts/rts-workflow-report.js and baseline state data/rts-workflow-state.json. Baseline report reports/rts-workflow-report-2026-05-29T16-55-49-368Z.md scanned 205 PSA clients via Notion HTTP 200 and found 33 RTS/on-hold/long-term RTS rows: 14 pre-cancel, 5 initial RTS, 14 monitor-only. Follow-up report reports/rts-workflow-report-2026-05-29T16-56-47-741Z.md returned 0 new/materially changed notice candidates, confirming repeat suppression. No Teams posts were sent; external send/schedule remains approval-gated.</small>
+      </div>
+      <div class="badges">
+        <span class="badge status-Done">Done</span>
+        <span class="badge">Done</span>
+        <span class="badge">High</span>
+        <span class="badge">Small</span>
+      </div>
+    </article>
+  
+    <article class="task">
+      <div>
+        <a href="https://app.notion.com/p/RTS-timing-policy-and-pre-cancel-template-368a59b7e7b281989100dfd2a263171f">RTS timing policy and pre-cancel template</a>
+        <small>2026-05-29: Closed as report-only/manual-ready. Added scripts/rts-workflow-report.js and baseline state data/rts-workflow-state.json. Baseline report reports/rts-workflow-report-2026-05-29T16-55-49-368Z.md scanned 205 PSA clients via Notion HTTP 200 and found 33 RTS/on-hold/long-term RTS rows: 14 pre-cancel, 5 initial RTS, 14 monitor-only. Follow-up report reports/rts-workflow-report-2026-05-29T16-56-47-741Z.md returned 0 new/materially changed notice candidates, confirming repeat suppression. No Teams posts were sent; external send/schedule remains approval-gated.</small>
+      </div>
+      <div class="badges">
+        <span class="badge status-Done">Done</span>
+        <span class="badge">Done</span>
+        <span class="badge">Medium</span>
+        <span class="badge">Small</span>
+      </div>
+    </article>
+  
+    <article class="task">
+      <div>
+        <a href="https://app.notion.com/p/Talk-to-Ardit-re-Salesforce-Connected-App-34ba59b7e7b2816e81b3fa6a42afe84d">Talk to Ardit re: Salesforce Connected App</a>
+        <small>Closed 2026-05-29: Salesforce OAuth 2.0 Client Credentials access is already connected and working for Opportunity, Account, and Contact reads. Credentials are stored in .env.salesforce; instance https://rev-io.my.salesforce.com; API v59.0. No further Ardit handoff needed for current read-only automation work.</small>
+      </div>
+      <div class="badges">
+        <span class="badge status-Done">Done</span>
+        <span class="badge">Done</span>
+        <span class="badge">Medium</span>
+        <span class="badge">No effort</span>
+      </div>
+    </article>
+  
+      </div>
+    </section>
+  
+    <section class="group">
+      <div class="group-head">
+        <div>
+          <h2>Product Evidence / Roadmap</h2>
+          <p>3 active / 5 visible tasks</p>
+        </div>
+        <strong>31%</strong>
+      </div>
+      <div class="meter"><span style="width:31%"></span></div>
+      <div class="task-list">
+        
+    <article class="task">
+      <div>
+        <a href="https://app.notion.com/p/PM-Hub-Wrike-Dependency-Trigger-Notify-DE-352a59b7e7b2818086fce0ab169582ba">PM Hub — Wrike Dependency Trigger → Notify DE</a>
+        <small>When a Wrike checkbox completes (e.g., Product Catalog Loaded), auto-notify the assigned DE: &quot;Product catalog done for [Client] — you're clear to start comparative.&quot; Scan dependency completions and alert relevant team member. Note: Wrike being phased out — may need workaround.</small>
+      </div>
+      <div class="badges">
+        <span class="badge status-Not-Started">Not Started</span>
+        <span class="badge">Next</span>
+        <span class="badge">Medium</span>
+        <span class="badge">Medium</span>
+      </div>
+    </article>
+  
+    <article class="task">
+      <div>
+        <a href="https://app.notion.com/p/PSA-metrics-baseline-and-remove-old-forecast-risk-qualifiers-368a59b7e7b281728679ef860b1db39a">PSA metrics baseline and remove old forecast risk qualifiers</a>
+        <small>Start PSA metrics baseline from May 1 and remove 30/60/90 risk qualifiers.</small>
+      </div>
+      <div class="badges">
+        <span class="badge status-Not-Started">Not Started</span>
+        <span class="badge">Next</span>
+        <span class="badge">Medium</span>
+        <span class="badge">Medium</span>
+      </div>
+    </article>
+  
+    <article class="task">
+      <div>
+        <a href="https://app.notion.com/p/Billing-forecast-parity-targets-and-weekly-movement-368a59b7e7b281629dc1ec4eecc657e9">Billing forecast parity — targets and weekly movement</a>
+        <small>Decide/add Billing monthly targets and prior-week movement for leadership parity.</small>
+      </div>
+      <div class="badges">
+        <span class="badge status-Not-Started">Not Started</span>
+        <span class="badge">Later</span>
+        <span class="badge">Low</span>
+        <span class="badge">Medium</span>
+      </div>
+    </article>
+  
+    <article class="task">
+      <div>
+        <a href="https://app.notion.com/p/Add-SS-Items-to-ADO-33ba59b7e7b280b5ad86eef4bcffbb81">Add SS Items to ADO</a>
+        <small>Closed per Alex on 2026-05-28: no further Sky Switch feedback received; task tracker has no Invalid status, so marked Done.</small>
+      </div>
+      <div class="badges">
+        <span class="badge status-Done">Done</span>
+        <span class="badge">Done</span>
+        <span class="badge">High</span>
+        <span class="badge">No effort</span>
+      </div>
+    </article>
+  
+    <article class="task">
+      <div>
+        <a href="https://app.notion.com/p/Get-prod-Rev-io-PSA-API-key-34ba59b7e7b2817f8739e188f3cd3f62">Get prod Rev.io PSA API key</a>
+        <small>Closed 2026-05-29: production/internal PSA API key was located in the Agent Library and PSA API module work is complete for read/probe flows. Demo pre-config remains blocked separately on ARTED rollout and approval before writes; this credential-discovery task is no longer open.</small>
+      </div>
+      <div class="badges">
+        <span class="badge status-Done">Done</span>
+        <span class="badge">Done</span>
+        <span class="badge">Medium</span>
+        <span class="badge">No effort</span>
+      </div>
+    </article>
+  
+      </div>
+    </section>
+  
+    <section class="group">
+      <div class="group-head">
+        <div>
+          <h2>Revvy / Agentic Ops</h2>
+          <p>1 active / 1 visible tasks</p>
+        </div>
+        <strong>0%</strong>
+      </div>
+      <div class="meter"><span style="width:0%"></span></div>
+      <div class="task-list">
+        
+    <article class="task">
+      <div>
+        <a href="https://app.notion.com/p/PM-Hub-Ticket-Creation-Confirmation-Queue-352a59b7e7b28140b7ddde69d301d528">PM Hub — Ticket Creation Confirmation Queue</a>
+        <small>When a call summary or content flags &quot;create a ticket&quot; intent, queue candidates and ask: &quot;Want me to create these X tickets?&quot; instead of auto-creating. Prevents noise. Safety gate before any ticket writes.</small>
+      </div>
+      <div class="badges">
+        <span class="badge status-Not-Started">Not Started</span>
+        <span class="badge">Later</span>
+        <span class="badge">Low</span>
+        <span class="badge">Small</span>
+      </div>
+    </article>
+  
+      </div>
+    </section>
+  
+    <section class="group">
+      <div class="group-head">
+        <div>
+          <h2>Operations Maintenance</h2>
+          <p>1 active / 1 visible tasks</p>
+        </div>
+        <strong>0%</strong>
+      </div>
+      <div class="meter"><span style="width:0%"></span></div>
+      <div class="task-list">
+        
+    <article class="task">
+      <div>
+        <a href="https://app.notion.com/p/Billing-brief-complexity-scoring-automation-34ba59b7e7b281aca2ccd670e2ee4867">Billing brief complexity scoring automation</a>
+        <small>Automation for scoring incoming billing client briefs is on hold, with a medium priority. The process involves three scores based on distinct rubrics, and a script skeleton has been built. A dry run showed a score of 37/100 for data quality. Key questions remain regarding data sources and scoring methods, with blockers including undefined intake form data and scoring thresholds pending a meeting with Lauren.</small>
+      </div>
+      <div class="badges">
+        <span class="badge status-On-Hold">On Hold</span>
+        <span class="badge">Waiting</span>
+        <span class="badge">Medium</span>
+        <span class="badge">No effort</span>
+      </div>
+    </article>
+  
+      </div>
+    </section>
+  
+    <section class="group">
+      <div class="group-head">
+        <div>
+          <h2>Training / Admin</h2>
+          <p>3 active / 4 visible tasks</p>
+        </div>
+        <strong>17%</strong>
+      </div>
+      <div class="meter"><span style="width:17%"></span></div>
+      <div class="task-list">
+        
+    <article class="task">
+      <div>
+        <a href="https://app.notion.com/p/Acronis-SA-Training-33ba59b7e7b2802ea556eeeda818c468">Acronis SA Training</a>
+        <small>Acronis SA Training task is in progress, assigned to Alex Tucker, with a medium priority and a due date of April 10, 2026. The task includes an overview, sub-tasks, and supporting files.</small>
+      </div>
+      <div class="badges">
+        <span class="badge status-Not-Started">Not Started</span>
+        <span class="badge">Next</span>
+        <span class="badge">Medium</span>
+        <span class="badge">No effort</span>
+      </div>
+    </article>
+  
+    <article class="task">
+      <div>
+        <a href="https://app.notion.com/p/Track-Ardit-sales-process-handoff-368a59b7e7b28106a9dec3fa6662af51">Track Ardit sales process handoff</a>
+        <small>Capture/process Artit/Ardit updated sales handoff once delivered.</small>
+      </div>
+      <div class="badges">
+        <span class="badge status-Not-Started">Not Started</span>
+        <span class="badge">Next</span>
+        <span class="badge">Medium</span>
+        <span class="badge">Small</span>
+      </div>
+    </article>
+  
+    <article class="task">
+      <div>
+        <a href="https://app.notion.com/p/Complete-Rev-io-Certifications-34ca59b7e7b28120b9cdf6fdcd93ea25">Complete Rev.io Certifications</a>
+        <small>No content</small>
+      </div>
+      <div class="badges">
+        <span class="badge status-Not-Started">Not Started</span>
+        <span class="badge">Next</span>
+        <span class="badge">No priority</span>
+        <span class="badge">No effort</span>
+      </div>
+    </article>
+  
+    <article class="task">
+      <div>
+        <a href="https://app.notion.com/p/Communicate-milestone-scoring-behavior-to-PM-SA-team-368a59b7e7b2811b94a6dd0c1fa75ac1">Communicate milestone scoring behavior to PM/SA team</a>
+        <small>Completed 2026-05-22. Alex confirmed the milestone scoring notification has already been sent to PMs/SAs: Completed = 100% credit, In Progress = 1/3 credit, all other statuses = 0%. Marked complete per Alex.</small>
+      </div>
+      <div class="badges">
+        <span class="badge status-Done">Done</span>
+        <span class="badge">Done</span>
+        <span class="badge">Medium</span>
+        <span class="badge">Small</span>
+      </div>
+    </article>
+  
+      </div>
+    </section>
+  </div>
+      <aside>
+        <section class="dependency">
+          <h2>Dependency Watch</h2>
+          
+            <div class="dep-item">
+              <strong>Auto-config persistence/security design</strong>
+              <span>Onboarding Automation · Blocked · Blocked on approved persistence/security design.</span>
+            </div>
+          
+            <div class="dep-item">
+              <strong>PSA Automation Testing</strong>
+              <span>Onboarding Automation · Blocked · Blocked on ARTED rollout / access before PSA writes can proceed.</span>
+            </div>
+          
+            <div class="dep-item">
+              <strong>PSA Demo Pre-Configuration — Initial Configs with ARTED</strong>
+              <span>Onboarding Automation · Blocked · Blocked on ARTED rollout / access before PSA writes can proceed.</span>
+            </div>
+          
+            <div class="dep-item">
+              <strong>Billing brief complexity scoring automation</strong>
+              <span>Operations Maintenance · On Hold · On hold; resume when this lane becomes active again.</span>
+            </div>
+          
+            <div class="dep-item">
+              <strong>PM Hub Phase 2 — PSA client view improvements</strong>
+              <span>Onboarding Automation · On Hold · On hold; resume when this lane becomes active again.</span>
+            </div>
+          
+            <div class="dep-item">
+              <strong>Phase 3 — Rev.io PSA API Config Application</strong>
+              <span>Onboarding Automation · Not Started · Depends on API/system-setting/function availability.</span>
+            </div>
+          
+            <div class="dep-item">
+              <strong>PM Hub — Wrike Dependency Trigger → Notify DE</strong>
+              <span>Product Evidence / Roadmap · Not Started · Dependency path may change as Wrike is phased out.</span>
+            </div>
+          
+            <div class="dep-item">
+              <strong>Track Ardit sales process handoff</strong>
+              <span>Training / Admin · Not Started · Waiting on sales-process handoff/training alignment.</span>
+            </div>
+          
+            <div class="dep-item">
+              <strong>Get prod Rev.io PSA API key</strong>
+              <span>Product Evidence / Roadmap · Done · Depends on API/system-setting/function availability.</span>
+            </div>
+          
+            <div class="dep-item">
+              <strong>Talk to Ardit re: Salesforce Connected App</strong>
+              <span>Sales / GTM Automation · Done · Waiting on sales-process handoff/training alignment.</span>
+            </div>
+          
+        </section>
+        <section class="script">
+          <h2>Meeting Readout</h2>
+          <ol>
+            <li>25 active tasks are visible across 8 workstreams.</li>
+            <li>5 items are blocked or on hold and need dependency movement before execution.</li>
+            <li>3 items are in the Now increment; 15 are queued Next.</li>
+            <li>Use the Notion task tracker to change status; this page will reflect completion on the next generation run.</li>
+          </ol>
+        </section>
+      </aside>
+    </section>
+  </main>
+  <footer>
+    Source: <a href="https://app.notion.com/p/33ba59b7e7b2803486f0e749a312b51a">Notion Tasks Tracker</a>. Generated 2026-06-04T12:54:46.408Z. Rule: Done = 100%, In Progress = 50%, all other statuses = 0%, weighted by Effort level.
+  </footer>
+</body>
+</html>
