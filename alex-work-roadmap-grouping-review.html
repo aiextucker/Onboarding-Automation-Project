@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Alex Work Roadmap Grouping Review</title>
+  <style>
+    :root {
+      --bg: #f7f8fb;
+      --panel: #ffffff;
+      --panel-soft: #eef3f8;
+      --text: #172033;
+      --muted: #637083;
+      --line: #dbe3ed;
+      --blue: #225ea8;
+      --green: #16845d;
+      --orange: #b35c14;
+      --red: #b3261e;
+      --purple: #6b4bb8;
+      --radius: 8px;
+      --shadow: 0 10px 28px rgba(23, 32, 51, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.5;
+    }
+
+    header {
+      background: #172033;
+      color: #fff;
+      border-bottom: 5px solid #3ba37a;
+    }
+
+    .wrap {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    .hero {
+      padding: 30px 0 28px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 24px;
+      align-items: end;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(28px, 5vw, 42px);
+      line-height: 1.05;
+      letter-spacing: 0;
+    }
+
+    .subtitle {
+      margin: 0;
+      color: #cad6e4;
+      max-width: 760px;
+      font-size: 16px;
+    }
+
+    .meta {
+      display: grid;
+      gap: 8px;
+      min-width: 210px;
+      font-size: 13px;
+      color: #dce7f4;
+    }
+
+    .meta strong {
+      color: #fff;
+    }
+
+    main {
+      padding: 24px 0 60px;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .stat {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 16px;
+    }
+
+    .stat-value {
+      font-size: 28px;
+      font-weight: 800;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .stat-label {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 650;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      margin-top: 16px;
+      overflow: hidden;
+    }
+
+    .panel-head {
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      justify-content: space-between;
+    }
+
+    h2 {
+      margin: 0 0 4px;
+      font-size: 20px;
+      letter-spacing: 0;
+    }
+
+    .hint {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    button {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--text);
+      border-radius: 6px;
+      padding: 8px 12px;
+      font: inherit;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    button.active {
+      background: #172033;
+      color: #fff;
+      border-color: #172033;
+    }
+
+    select {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--text);
+      border-radius: 6px;
+      padding: 8px 12px;
+      font: inherit;
+      font-size: 13px;
+      min-width: 220px;
+    }
+
+    .initiative-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      padding: 16px 20px 20px;
+    }
+
+    .initiative {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 13px;
+      background: #fbfcfe;
+    }
+
+    .initiative strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .initiative span {
+      display: block;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      min-width: 980px;
+    }
+
+    th,
+    td {
+      border-bottom: 1px solid var(--line);
+      padding: 12px 14px;
+      text-align: left;
+      vertical-align: top;
+      font-size: 13px;
+    }
+
+    th {
+      background: var(--panel-soft);
+      color: #38465a;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+
+    tbody tr:hover {
+      background: #fbfcff;
+    }
+
+    .task {
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 3px 9px;
+      font-size: 12px;
+      font-weight: 750;
+      white-space: nowrap;
+      border: 1px solid transparent;
+    }
+
+    .pill.current { background: #eef3f8; color: #38465a; border-color: #d7e1ec; }
+    .pill.proposed { background: #e9f7f1; color: var(--green); border-color: #bfe5d5; }
+    .pill.review { background: #fff5e9; color: var(--orange); border-color: #f5d4ad; }
+    .pill.keep { background: #eef7ff; color: var(--blue); border-color: #c5ddf7; }
+    .pill.done { background: #f1f1f4; color: #555f70; border-color: #d8dbe2; }
+
+    .priority-review {
+      color: var(--orange);
+      font-weight: 800;
+    }
+
+    .priority-move {
+      color: var(--red);
+      font-weight: 800;
+    }
+
+    .priority-keep {
+      color: var(--blue);
+      font-weight: 800;
+    }
+
+    details {
+      border-top: 1px solid var(--line);
+      padding: 0 20px;
+    }
+
+    details summary {
+      cursor: pointer;
+      padding: 14px 0;
+      font-weight: 800;
+      color: #24324a;
+    }
+
+    details p,
+    details li {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    details ul {
+      margin: 0 0 18px 20px;
+      padding: 0;
+    }
+
+    .footer-note {
+      margin-top: 16px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    @media (max-width: 850px) {
+      .hero {
+        grid-template-columns: 1fr;
+      }
+
+      .summary-grid,
+      .initiative-list {
+        grid-template-columns: 1fr;
+      }
+
+      .panel-head {
+        display: grid;
+      }
+
+      .controls {
+        justify-content: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap hero">
+      <div>
+        <h1>Alex Work Roadmap Grouping Review</h1>
+        <p class="subtitle">A browser-friendly review of the current roadmap buckets, the proposed initiative structure, and the tasks that should probably move before the dashboard becomes a trusted operating view.</p>
+      </div>
+      <div class="meta">
+        <div><strong>Generated:</strong> June 4, 2026</div>
+        <div><strong>Source:</strong> Notion Tasks Tracker snapshot</div>
+        <div><strong>Mode:</strong> Review, not applied</div>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="summary-grid" aria-label="Review summary">
+      <div class="stat">
+        <div class="stat-value">8</div>
+        <div class="stat-label">recommended initiatives</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value">14</div>
+        <div class="stat-label">tasks flagged for review</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value">6</div>
+        <div class="stat-label">likely direct moves</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value">0</div>
+        <div class="stat-label">Notion changes applied</div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <div>
+          <h2>Recommended Initiative Set</h2>
+          <p class="hint">Use these as the parent groups. Individual tasks should roll up by outcome and stakeholder, not title keywords.</p>
+        </div>
+      </div>
+      <div class="initiative-list">
+        <div class="initiative"><strong>Alex Work Roadmap / Operating System</strong><span>Dashboard structure, tracker hygiene, review workflow, rollups, and how Alex manages Alfred/Alex work.</span></div>
+        <div class="initiative"><strong>Forecast &amp; SLT Readout</strong><span>Forecast process, baseline and duration metrics, confidence, health scoring, and leadership scripts.</span></div>
+        <div class="initiative"><strong>PSA Pre-Configuration Automation</strong><span>Questionnaire, auto-config, PSA API, demo pre-config, config preview, and apply flow.</span></div>
+        <div class="initiative"><strong>PM Hub / Portfolio Operations</strong><span>Client views, editable trackers, team rollups, DE views, interaction summaries, and ticket workflows.</span></div>
+        <div class="initiative"><strong>Data Migration &amp; Product Evidence</strong><span>Migration blockers, product/API gaps, ADO items, roadmap evidence, and push-reason signal.</span></div>
+        <div class="initiative"><strong>Sales / GTM Handoff</strong><span>Salesforce, Ardit/Ryan handoff, sales-call extraction, and Sales enablement loops.</span></div>
+        <div class="initiative"><strong>Training / Enablement</strong><span>Certifications, SA training, team communication, and adoption work.</span></div>
+        <div class="initiative"><strong>Operations Maintenance</strong><span>Background hygiene and upkeep that does not belong to a strategic initiative.</span></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <div>
+          <h2>Tasks To Review</h2>
+          <p class="hint">Start with likely moves. Items marked “needs judgment” depend on how you want the dashboard to tell the story.</p>
+        </div>
+        <div class="controls" aria-label="Table controls">
+          <button type="button" class="active" data-filter="all">All</button>
+          <button type="button" data-filter="Likely move">Likely moves</button>
+          <button type="button" data-filter="Needs judgment">Needs judgment</button>
+          <select id="initiativeFilter" aria-label="Filter by proposed initiative">
+            <option value="all">All proposed initiatives</option>
+          </select>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Priority</th>
+              <th>Task</th>
+              <th>Status</th>
+              <th>Current Bucket</th>
+              <th>Proposed Bucket</th>
+              <th>Why</th>
+            </tr>
+          </thead>
+          <tbody id="taskRows"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <div>
+          <h2>Review Rules</h2>
+          <p class="hint">This is the sorting logic I’d use before updating Notion.</p>
+        </div>
+      </div>
+      <details open>
+        <summary>How to decide the correct initiative</summary>
+        <ul>
+          <li>Ask what outcome the task advances, not which keyword appears in the title.</li>
+          <li>Group by the stakeholder who needs the rollup: Alex, SLT, SA/PM team, Product, or Sales.</li>
+          <li>Keep execution subtasks under the initiative they serve, even when the task uses another system.</li>
+          <li>Use Operations Maintenance only for true upkeep, not for orphaned strategic work.</li>
+        </ul>
+      </details>
+      <details>
+        <summary>Generator rule change</summary>
+        <p>The dashboard generator should treat <strong>Roadmap Workstream</strong> as human-owned. It can backfill blanks and flag suspicious matches, but it should not overwrite reviewed workstreams automatically.</p>
+      </details>
+    </section>
+
+    <p class="footer-note">This page is intentionally a review artifact. No Notion grouping changes have been applied from it yet.</p>
+  </main>
+
+  <script>
+    const tasks = [
+      {
+        priority: 'Likely move',
+        task: 'PM Hub Phase 2 - PSA client view improvements',
+        status: 'On Hold',
+        current: 'Onboarding Automation',
+        proposed: 'PM Hub / Portfolio Operations',
+        why: 'The outcome is improving the PM Hub client view, even though it touches PSA client data.'
+      },
+      {
+        priority: 'Needs judgment',
+        task: 'PSA client-facing tracker and PDF export',
+        status: 'Not Started',
+        current: 'Onboarding Automation',
+        proposed: 'PM Hub / Portfolio Operations',
+        why: 'If this is a project visibility surface, it belongs with PM Hub. If it drives config collection, keep it under PSA Pre-Configuration.'
+      },
+      {
+        priority: 'Likely move',
+        task: 'Create Interaction Teams Sync',
+        status: 'In Progress',
+        current: 'Forecast & SLT Reporting',
+        proposed: 'PM Hub / Portfolio Operations',
+        why: 'This is interaction workflow plumbing, not a forecast or leadership readout task.'
+      },
+      {
+        priority: 'Needs judgment',
+        task: 'PM Hub - Wrike Dependency Trigger -> Notify DE',
+        status: 'Not Started',
+        current: 'Product Evidence / Roadmap',
+        proposed: 'PM Hub / Portfolio Operations',
+        why: 'It is probably operational workflow. Move to Data Migration & Product Evidence only if the purpose is to create migration blocker evidence.'
+      },
+      {
+        priority: 'Likely move',
+        task: 'PM Hub - Ticket Creation Confirmation Queue',
+        status: 'Not Started',
+        current: 'Revvy / Agentic Ops',
+        proposed: 'PM Hub / Portfolio Operations',
+        why: 'This is a PM Hub ticket workflow control, not a standalone Revvy initiative.'
+      },
+      {
+        priority: 'Likely move',
+        task: 'Questionnaire - Add Missing Kickoff Fields',
+        status: 'Done',
+        current: 'Sales / GTM Automation',
+        proposed: 'PSA Pre-Configuration Automation',
+        why: 'Kickoff field collection supports the questionnaire and config-readiness flow.'
+      },
+      {
+        priority: 'Needs judgment',
+        task: 'RTS notification workflow - dry-run detector and guard',
+        status: 'Done',
+        current: 'Sales / GTM Automation',
+        proposed: 'Forecast & SLT Readout',
+        why: 'RTS movement affects portfolio reporting. Use PM Hub instead if the workflow is mainly team execution.'
+      },
+      {
+        priority: 'Needs judgment',
+        task: 'RTS workflow - Teams channel access and copy approval',
+        status: 'Done',
+        current: 'Sales / GTM Automation',
+        proposed: 'Forecast & SLT Readout',
+        why: 'This is tied to RTS reporting/communication. It only belongs in Sales/GTM if Sales owns the audience.'
+      },
+      {
+        priority: 'Needs judgment',
+        task: 'RTS timing policy and pre-cancel template',
+        status: 'Done',
+        current: 'Sales / GTM Automation',
+        proposed: 'Forecast & SLT Readout',
+        why: 'Policy around RTS/cancel timing is part of leadership-facing portfolio hygiene.'
+      },
+      {
+        priority: 'Likely move',
+        task: 'Track Ardit sales process handoff',
+        status: 'Not Started',
+        current: 'Training / Admin',
+        proposed: 'Sales / GTM Handoff',
+        why: 'The outcome is sales-process handoff, not general training.'
+      },
+      {
+        priority: 'Likely move',
+        task: 'Update forecast script explainer page for Billing and scenario buckets',
+        status: 'Done',
+        current: 'Onboarding Automation',
+        proposed: 'Forecast & SLT Readout',
+        why: 'This supports the forecast methodology/readout surface.'
+      },
+      {
+        priority: 'Needs judgment',
+        task: 'Communicate milestone scoring behavior to PM/SA team',
+        status: 'Done',
+        current: 'Training / Admin',
+        proposed: 'Training / Enablement',
+        why: 'This can stay in enablement, but if milestone scoring is part of PM Hub adoption, it can roll up to PM Hub.'
+      },
+      {
+        priority: 'Needs judgment',
+        task: 'Billing tracker cleanup',
+        status: 'Not Started',
+        current: 'Onboarding Automation',
+        proposed: 'PM Hub / Portfolio Operations',
+        why: 'Likely tracker/portfolio hygiene unless it specifically supports the PSA pre-config workflow.'
+      },
+      {
+        priority: 'Needs judgment',
+        task: 'Billing brief complexity scoring automation',
+        status: 'On Hold',
+        current: 'Operations Maintenance',
+        proposed: 'PSA Pre-Configuration Automation',
+        why: 'If this feeds brief readiness or implementation complexity, it belongs with automation rather than maintenance.'
+      }
+    ];
+
+    const rows = document.getElementById('taskRows');
+    const buttons = Array.from(document.querySelectorAll('button[data-filter]'));
+    const initiativeFilter = document.getElementById('initiativeFilter');
+    let activePriority = 'all';
+
+    [...new Set(tasks.map(task => task.proposed))].sort().forEach(name => {
+      const option = document.createElement('option');
+      option.value = name;
+      option.textContent = name;
+      initiativeFilter.appendChild(option);
+    });
+
+    function priorityClass(priority) {
+      if (priority === 'Likely move') return 'priority-move';
+      if (priority === 'Needs judgment') return 'priority-review';
+      return 'priority-keep';
+    }
+
+    function statusClass(status) {
+      return status === 'Done' ? 'pill done' : 'pill current';
+    }
+
+    function render() {
+      const selectedInitiative = initiativeFilter.value;
+      rows.innerHTML = '';
+      tasks
+        .filter(task => activePriority === 'all' || task.priority === activePriority)
+        .filter(task => selectedInitiative === 'all' || task.proposed === selectedInitiative)
+        .forEach(task => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td class="${priorityClass(task.priority)}">${task.priority}</td>
+            <td><div class="task">${task.task}</div></td>
+            <td><span class="${statusClass(task.status)}">${task.status}</span></td>
+            <td><span class="pill current">${task.current}</span></td>
+            <td><span class="pill proposed">${task.proposed}</span></td>
+            <td class="muted">${task.why}</td>
+          `;
+          rows.appendChild(tr);
+        });
+    }
+
+    buttons.forEach(button => {
+      button.addEventListener('click', () => {
+        activePriority = button.dataset.filter;
+        buttons.forEach(item => item.classList.toggle('active', item === button));
+        render();
+      });
+    });
+
+    initiativeFilter.addEventListener('change', render);
+    render();
+  </script>
+</body>
+</html>
