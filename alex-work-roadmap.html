@@ -44,6 +44,52 @@
     .stat { padding: 14px; min-height: 88px; }
     .stat span { color: var(--muted); font-size: 12px; font-weight: 700; text-transform: uppercase; }
     .stat strong { display: block; margin-top: 8px; font-size: 28px; }
+    .controls {
+      display: flex;
+      justify-content: flex-end;
+      margin: -4px 0 16px;
+    }
+    .toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      user-select: none;
+    }
+    .toggle input {
+      position: absolute;
+      inline-size: 1px;
+      block-size: 1px;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .switch {
+      width: 38px;
+      height: 22px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: #dfe5ec;
+      position: relative;
+      transition: background 160ms ease, border-color 160ms ease;
+    }
+    .switch::after {
+      content: "";
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 16px;
+      height: 16px;
+      border-radius: 999px;
+      background: #fff;
+      box-shadow: 0 1px 2px rgba(14, 23, 36, 0.18);
+      transition: transform 160ms ease;
+    }
+    .toggle input:checked + .switch { background: var(--blue); border-color: var(--blue); }
+    .toggle input:checked + .switch::after { transform: translateX(16px); }
+    .toggle input:focus-visible + .switch { outline: 3px solid #b5cdf5; outline-offset: 2px; }
     .layout { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 18px; align-items: start; }
     .groups { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
     .group { padding: 0; min-width: 0; overflow: hidden; }
@@ -94,6 +140,7 @@
       border-radius: 6px;
       background: #fbfcfe;
     }
+    body:not(.show-done) .task.is-done { display: none; }
     .task a { color: var(--ink); font-weight: 700; text-decoration: none; overflow-wrap: anywhere; }
     .task small { display: block; color: var(--muted); margin-top: 3px; }
     .badges { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 5px; align-content: start; }
@@ -132,12 +179,19 @@
   </header>
   <main>
     <section class="stats">
-      <div class="stat"><span>Visible Tasks</span><strong>41</strong></div>
+      <div class="stat"><span>Tracked Tasks</span><strong>41</strong></div>
       <div class="stat"><span>Active</span><strong>25</strong></div>
       <div class="stat"><span>Done</span><strong>16</strong></div>
       <div class="stat"><span>Blocked / Hold</span><strong>5</strong></div>
       <div class="stat"><span>Now</span><strong>3</strong></div>
       <div class="stat"><span>Next</span><strong>15</strong></div>
+    </section>
+    <section class="controls" aria-label="Roadmap display controls">
+      <label class="toggle">
+        <input id="showDoneToggle" type="checkbox">
+        <span class="switch" aria-hidden="true"></span>
+        <span>Show Done tasks</span>
+      </label>
     </section>
     <section class="layout">
       <div class="groups">
@@ -146,7 +200,7 @@
         <span class="group-toggle" aria-hidden="true"></span>
         <span class="group-title">
           <span class="group-name">Onboarding Automation</span>
-          <span class="group-meta">8 active / 15 visible · 0 now · 4 next · 4 waiting</span>
+          <span class="group-meta">8 active · 7 done · 0 now · 4 next · 4 waiting</span>
         </span>
         <span class="group-progress">37%</span>
       </summary>
@@ -257,7 +311,7 @@
       </div>
     </article>
   
-    <article class="task">
+    <article class="task is-done">
       <div>
         <a href="https://app.notion.com/p/Post-Submission-Auto-Create-Notion-PSA-Client-Record-35ea59b7e7b28108bc28f5ab972c145a">Post-Submission — Auto-Create Notion PSA Client Record</a>
         <small>Implemented and pushed in revio-automations commit 5425834. Questionnaire submissions now upsert the raw submission, then create/update the matching PSA Clients record by exact Client name, storing billing/operational answers in Setup Snapshots and adding PSA Client links to the review card. Verified with node --check and workflow YAML parse; no live dispatch test run to avoid creating a fake client/email.</small>
@@ -270,7 +324,7 @@
       </div>
     </article>
   
-    <article class="task">
+    <article class="task is-done">
       <div>
         <a href="https://app.notion.com/p/Update-forecast-script-explainer-page-for-Billing-and-scenario-buckets-368a59b7e7b281d38e68c98374673e24">Update forecast script explainer page for Billing and scenario buckets</a>
         <small>Completed 2026-05-22. Billing forecast scripts and standalone reference page now document PSA vs Billing behavior, Billing activation vs graduation tracks, scenario buckets, and blank Billing Confidence = Low. Relevant commits: Rev-io/slt-forecasts 5865581; Onboarding-Automation-Project 81039a0.</small>
@@ -283,7 +337,7 @@
       </div>
     </article>
   
-    <article class="task">
+    <article class="task is-done">
       <div>
         <a href="https://app.notion.com/p/Document-current-auto-config-limitation-368a59b7e7b281b9811ee6df3a743c61">Document current auto-config limitation</a>
         <small>Closed 2026-05-29: documented current auto-config limitation in docs/auto-config-current-limitation.md. Core statement: no client has completed automated PSA configuration without manual intervention; current workflow is questionnaire-driven config preview and assisted PSA setup until end-to-end write path is tested and explicitly approved.</small>
@@ -296,7 +350,7 @@
       </div>
     </article>
   
-    <article class="task">
+    <article class="task is-done">
       <div>
         <a href="https://app.notion.com/p/PSA-Guidebook-34ba59b7e7b2809fae7ddfb38ed658ce">PSA Guidebook</a>
         <small>Closed 2026-05-29: PSA client guidebook work was completed and regenerated on 2026-05-14. Live PDF: https://aiextucker.github.io/Onboarding-Automation-Project/psa-onboarding-client-guide.pdf. Graduation criteria page also deployed at https://aiextucker.github.io/Onboarding-Automation-Project/psa-graduation-criteria.html.</small>
@@ -309,7 +363,7 @@
       </div>
     </article>
   
-    <article class="task">
+    <article class="task is-done">
       <div>
         <a href="https://app.notion.com/p/Questionnaire-Duplicate-Submission-Guard-35ea59b7e7b281e7b1e3dc92b8855ab0">Questionnaire — Duplicate Submission Guard</a>
         <small>Closed 2026-05-29: added server-side duplicate submission guard in aiextucker/revio-automations .github/scripts/handle-questionnaire-submission.js. The handler now checks the questionnaire Token before writes and skips Notion updates, PSA Client upsert, Teams card, and confirmation email when the submission has already reached Submitted, Approved, Changes Requested, or SA Notified. Verified with node --check and a live duplicate-path no-write test against token demo-apex-2026-05-04.</small>
@@ -322,7 +376,7 @@
       </div>
     </article>
   
-    <article class="task">
+    <article class="task is-done">
       <div>
         <a href="https://app.notion.com/p/Post-Submission-Client-Confirmation-Email-Message-35ea59b7e7b281579cc9d098f706b8f2">Post-Submission — Client Confirmation Email/Message</a>
         <small>Implemented and pushed in revio-automations commit 5425834 as part of the submission workflow refactor. The workflow now sends the client confirmation email when an email is present; the prior broken inline heredoc/email block was replaced with a checked-in Node script. Verified with node --check and workflow YAML parse; no live dispatch test run to avoid emailing a test client.</small>
@@ -335,7 +389,7 @@
       </div>
     </article>
   
-    <article class="task">
+    <article class="task is-done">
       <div>
         <a href="https://app.notion.com/p/Questionnaire-Enforce-Expiry-Date-35ea59b7e7b2810b9afbeabae37561e9">Questionnaire — Enforce Expiry Date</a>
         <small>Expires At is stored in Notion but the generated questionnaire HTML never checks it — an expired link still works. On load, check expiry and show a friendly expired message if past date.</small>
@@ -356,7 +410,7 @@
         <span class="group-toggle" aria-hidden="true"></span>
         <span class="group-title">
           <span class="group-name">PM Hub / Portfolio</span>
-          <span class="group-meta">5 active / 5 visible · 2 now · 3 next</span>
+          <span class="group-meta">5 active · 0 done · 2 now · 3 next</span>
         </span>
         <span class="group-progress">19%</span>
       </summary>
@@ -436,7 +490,7 @@
         <span class="group-toggle" aria-hidden="true"></span>
         <span class="group-title">
           <span class="group-name">Forecast &amp; SLT Reporting</span>
-          <span class="group-meta">3 active / 4 visible · 1 now · 2 next</span>
+          <span class="group-meta">3 active · 1 done · 1 now · 2 next</span>
         </span>
         <span class="group-progress">20%</span>
       </summary>
@@ -482,7 +536,7 @@
       </div>
     </article>
   
-    <article class="task">
+    <article class="task is-done">
       <div>
         <a href="https://app.notion.com/p/Populate-Billing-Confidence-for-active-Billing-clients-368a59b7e7b281929d68de6f4d7f88fd">Populate Billing Confidence for active Billing clients</a>
         <small>Closed 2026-05-29. Alfred cleaned the source data, excluded RTS/on-hold rows from the actionable ask, and handed the remaining 6 client Confidence values to PMs for update before next week. No further Alfred action pending unless follow-up audit still shows blanks.</small>
@@ -503,7 +557,7 @@
         <span class="group-toggle" aria-hidden="true"></span>
         <span class="group-title">
           <span class="group-name">Sales / GTM Automation</span>
-          <span class="group-meta">1 active / 6 visible · 0 now · 1 next</span>
+          <span class="group-meta">1 active · 5 done · 0 now · 1 next</span>
         </span>
         <span class="group-progress">82%</span>
       </summary>
@@ -523,7 +577,7 @@
       </div>
     </article>
   
-    <article class="task">
+    <article class="task is-done">
       <div>
         <a href="https://app.notion.com/p/Questionnaire-Add-Missing-Kickoff-Fields-35ea59b7e7b281d3b063e60e49ee2c4b">Questionnaire — Add Missing Kickoff Fields</a>
         <small>Completed 2026-05-28. Added required Step 4 operational kickoff fields to psa-questionnaire.html: current/prior PSA, accounting software, RMM tool, payment processor, SureTax status, invoice continuity, business hours, holiday calendar, and SMS. Added review-preview rendering, pre-dispatch validation, submission payload fields, and Sales Brief hash prefill export. Deployed to GitHub Pages via Onboarding-Automation-Project commit bb7fea1.</small>
@@ -536,7 +590,7 @@
       </div>
     </article>
   
-    <article class="task">
+    <article class="task is-done">
       <div>
         <a href="https://app.notion.com/p/RTS-notification-workflow-dry-run-detector-and-guard-368a59b7e7b28145ba03f532de1da4e6">RTS notification workflow — dry-run detector and guard</a>
         <small>Dry-run detector and duplicate guard built in scripts/rts-communications.js. Reads PM Hub portfolio snapshot, classifies RTS / On Hold / Long-Term RTS candidates, writes timestamped Markdown reports under reports/, initializes data/rts-notification-state.json, and blocks Teams posting unless RTS_POST_APPROVED, RTS_COPY_APPROVED, and RTS_TIMING_APPROVED are all true. Latest validation: 29 active candidates from 2026-05-22 snapshot; no Teams posts sent.</small>
@@ -549,7 +603,7 @@
       </div>
     </article>
   
-    <article class="task">
+    <article class="task is-done">
       <div>
         <a href="https://app.notion.com/p/RTS-workflow-Teams-channel-access-and-copy-approval-368a59b7e7b28161a649ee58e1148d5f">RTS workflow — Teams channel access and copy approval</a>
         <small>2026-05-29: Closed as report-only/manual-ready. Added scripts/rts-workflow-report.js and baseline state data/rts-workflow-state.json. Baseline report reports/rts-workflow-report-2026-05-29T16-55-49-368Z.md scanned 205 PSA clients via Notion HTTP 200 and found 33 RTS/on-hold/long-term RTS rows: 14 pre-cancel, 5 initial RTS, 14 monitor-only. Follow-up report reports/rts-workflow-report-2026-05-29T16-56-47-741Z.md returned 0 new/materially changed notice candidates, confirming repeat suppression. No Teams posts were sent; external send/schedule remains approval-gated.</small>
@@ -562,7 +616,7 @@
       </div>
     </article>
   
-    <article class="task">
+    <article class="task is-done">
       <div>
         <a href="https://app.notion.com/p/RTS-timing-policy-and-pre-cancel-template-368a59b7e7b281989100dfd2a263171f">RTS timing policy and pre-cancel template</a>
         <small>2026-05-29: Closed as report-only/manual-ready. Added scripts/rts-workflow-report.js and baseline state data/rts-workflow-state.json. Baseline report reports/rts-workflow-report-2026-05-29T16-55-49-368Z.md scanned 205 PSA clients via Notion HTTP 200 and found 33 RTS/on-hold/long-term RTS rows: 14 pre-cancel, 5 initial RTS, 14 monitor-only. Follow-up report reports/rts-workflow-report-2026-05-29T16-56-47-741Z.md returned 0 new/materially changed notice candidates, confirming repeat suppression. No Teams posts were sent; external send/schedule remains approval-gated.</small>
@@ -575,7 +629,7 @@
       </div>
     </article>
   
-    <article class="task">
+    <article class="task is-done">
       <div>
         <a href="https://app.notion.com/p/Talk-to-Ardit-re-Salesforce-Connected-App-34ba59b7e7b2816e81b3fa6a42afe84d">Talk to Ardit re: Salesforce Connected App</a>
         <small>Closed 2026-05-29: Salesforce OAuth 2.0 Client Credentials access is already connected and working for Opportunity, Account, and Contact reads. Credentials are stored in .env.salesforce; instance https://rev-io.my.salesforce.com; API v59.0. No further Ardit handoff needed for current read-only automation work.</small>
@@ -596,7 +650,7 @@
         <span class="group-toggle" aria-hidden="true"></span>
         <span class="group-title">
           <span class="group-name">Product Evidence / Roadmap</span>
-          <span class="group-meta">3 active / 5 visible · 0 now · 2 next</span>
+          <span class="group-meta">3 active · 2 done · 0 now · 2 next</span>
         </span>
         <span class="group-progress">31%</span>
       </summary>
@@ -642,7 +696,7 @@
       </div>
     </article>
   
-    <article class="task">
+    <article class="task is-done">
       <div>
         <a href="https://app.notion.com/p/Add-SS-Items-to-ADO-33ba59b7e7b280b5ad86eef4bcffbb81">Add SS Items to ADO</a>
         <small>Closed per Alex on 2026-05-28: no further Sky Switch feedback received; task tracker has no Invalid status, so marked Done.</small>
@@ -655,7 +709,7 @@
       </div>
     </article>
   
-    <article class="task">
+    <article class="task is-done">
       <div>
         <a href="https://app.notion.com/p/Get-prod-Rev-io-PSA-API-key-34ba59b7e7b2817f8739e188f3cd3f62">Get prod Rev.io PSA API key</a>
         <small>Closed 2026-05-29: production/internal PSA API key was located in the Agent Library and PSA API module work is complete for read/probe flows. Demo pre-config remains blocked separately on ARTED rollout and approval before writes; this credential-discovery task is no longer open.</small>
@@ -676,7 +730,7 @@
         <span class="group-toggle" aria-hidden="true"></span>
         <span class="group-title">
           <span class="group-name">Revvy / Agentic Ops</span>
-          <span class="group-meta">1 active / 1 visible · 0 now · 0 next</span>
+          <span class="group-meta">1 active · 0 done · 0 now · 0 next</span>
         </span>
         <span class="group-progress">0%</span>
       </summary>
@@ -704,7 +758,7 @@
         <span class="group-toggle" aria-hidden="true"></span>
         <span class="group-title">
           <span class="group-name">Operations Maintenance</span>
-          <span class="group-meta">1 active / 1 visible · 0 now · 0 next · 1 waiting</span>
+          <span class="group-meta">1 active · 0 done · 0 now · 0 next · 1 waiting</span>
         </span>
         <span class="group-progress">0%</span>
       </summary>
@@ -732,7 +786,7 @@
         <span class="group-toggle" aria-hidden="true"></span>
         <span class="group-title">
           <span class="group-name">Training / Admin</span>
-          <span class="group-meta">3 active / 4 visible · 0 now · 3 next</span>
+          <span class="group-meta">3 active · 1 done · 0 now · 3 next</span>
         </span>
         <span class="group-progress">17%</span>
       </summary>
@@ -778,7 +832,7 @@
       </div>
     </article>
   
-    <article class="task">
+    <article class="task is-done">
       <div>
         <a href="https://app.notion.com/p/Communicate-milestone-scoring-behavior-to-PM-SA-team-368a59b7e7b2811b94a6dd0c1fa75ac1">Communicate milestone scoring behavior to PM/SA team</a>
         <small>Completed 2026-05-22. Alex confirmed the milestone scoring notification has already been sent to PMs/SAs: Completed = 100% credit, In Progress = 1/3 credit, all other statuses = 0%. Marked complete per Alex.</small>
@@ -862,7 +916,17 @@
     </section>
   </main>
   <footer>
-    Source: <a href="https://app.notion.com/p/33ba59b7e7b2803486f0e749a312b51a">Notion Tasks Tracker</a>. Generated 2026-06-04T13:24:33.016Z. Rule: Done = 100%, In Progress = 50%, all other statuses = 0%, weighted by Effort level.
+    Source: <a href="https://app.notion.com/p/33ba59b7e7b2803486f0e749a312b51a">Notion Tasks Tracker</a>. Generated 2026-06-04T13:33:44.882Z. Rule: Done = 100%, In Progress = 50%, all other statuses = 0%, weighted by Effort level.
   </footer>
+  <script>
+    const showDoneToggle = document.getElementById('showDoneToggle');
+    const savedShowDone = localStorage.getItem('alex-roadmap-show-done') === 'true';
+    showDoneToggle.checked = savedShowDone;
+    document.body.classList.toggle('show-done', savedShowDone);
+    showDoneToggle.addEventListener('change', () => {
+      document.body.classList.toggle('show-done', showDoneToggle.checked);
+      localStorage.setItem('alex-roadmap-show-done', String(showDoneToggle.checked));
+    });
+  </script>
 </body>
 </html>
