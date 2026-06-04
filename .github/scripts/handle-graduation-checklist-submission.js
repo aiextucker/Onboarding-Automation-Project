@@ -2,8 +2,6 @@
 'use strict';
 
 const fs = require('fs');
-const path = require('path');
-const PDFDocument = require('pdfkit');
 
 const TEAM_ID = process.env.PSA_GRADUATIONS_TEAM_ID || 'd29698dd-ac76-4d06-909e-e2bdd1c4e84b';
 const CHANNEL_ID = process.env.PSA_GRADUATIONS_CHANNEL_ID || '19:7bd5bd11caf6431dbebbe5051a0ccd0b@thread.tacv2';
@@ -64,57 +62,6 @@ async function graphJson(method, graphPath, token, body, label = graphPath) {
   }, label);
 }
 
-async function graphUpload(graphPath, token, buffer, label = graphPath) {
-  const res = await fetch(`https://graph.microsoft.com/v1.0${graphPath}`, {
-    method: 'PUT',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/pdf',
-    },
-    body: buffer,
-  });
-  const text = await res.text();
-  let body = {};
-  try {
-    body = text ? JSON.parse(text) : {};
-  } catch {
-    body = { raw: text };
-  }
-  if (!res.ok || body.error || body.errors) {
-    console.error(`API ERROR ${label} ${res.status} ${JSON.stringify(body).slice(0, 2000)}`);
-    process.exit(1);
-  }
-  return body;
-}
-
-async function graphUploadMaybe(graphPath, token, buffer, label = graphPath) {
-  const res = await fetch(`https://graph.microsoft.com/v1.0${graphPath}`, {
-    method: 'PUT',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/pdf',
-    },
-    body: buffer,
-  });
-  const text = await res.text();
-  let body = {};
-  try {
-    body = text ? JSON.parse(text) : {};
-  } catch {
-    body = { raw: text };
-  }
-  if (!res.ok || body.error || body.errors) {
-    const message = `API ERROR ${label} ${res.status} ${JSON.stringify(body).slice(0, 2000)}`;
-    if (String(process.env.PSA_GRADUATIONS_REQUIRE_PDF || '').toLowerCase() === 'true') {
-      console.error(message);
-      process.exit(1);
-    }
-    console.warn(message);
-    return null;
-  }
-  return body;
-}
-
 function readPayload() {
   let payload = null;
   const eventPath = process.env.GITHUB_EVENT_PATH;
@@ -171,17 +118,6 @@ function validatePayload(input) {
   };
 }
 
-function safeFileName(value) {
-  return clean(value, 'client')
-    .replace(/[^a-z0-9]+/gi, '-')
-    .replace(/^-+|-+$/g, '')
-    .slice(0, 80) || 'client';
-}
-
-function formatDateForFile(value) {
-  return clean(value).slice(0, 10) || new Date().toISOString().slice(0, 10);
-}
-
 function htmlEscape(value) {
   return String(value || '').replace(/[&<>"]/g, ch => ({
     '&': '&amp;',
@@ -191,138 +127,50 @@ function htmlEscape(value) {
   }[ch]));
 }
 
-function addLine(doc, label, value) {
-  if (!value) return;
-  doc.font('Helvetica-Bold').text(`${label}: `, { continued: true });
-  doc.font('Helvetica').text(value);
+function statusLabel(item) {
+  if (item.notApplicable) return 'N/A';
+  return item.checked ? 'Met' : 'Not met';
 }
 
-function generatePdf(data) {
-  return new Promise((resolve, reject) => {
-    const chunks = [];
-    const doc = new PDFDocument({ margin: 48, size: 'LETTER', bufferPages: true });
-    doc.on('data', chunk => chunks.push(chunk));
-    doc.on('end', () => resolve(Buffer.concat(chunks)));
-    doc.on('error', reject);
-
-    doc.font('Helvetica-Bold').fontSize(18).fillColor('#111827').text('PSA Graduation Checklist', { align: 'left' });
-    doc.moveDown(0.4);
-    doc.font('Helvetica').fontSize(10).fillColor('#4b5563').text(`Submitted ${data.submittedAt}`);
-    doc.moveDown();
-
-    doc.fontSize(11).fillColor('#111827');
-    addLine(doc, 'Client', data.clientName);
-    addLine(doc, 'SA', data.saName || 'Not provided');
-    addLine(doc, 'Graduation Date', data.graduationDate || 'Not provided');
-    addLine(doc, 'CS Handoff Owner', data.csHandoffOwner || 'Not provided');
-    const satisfied = Number(data.completion.satisfied || 0);
-    const total = Number(data.completion.total || data.criteria.length || 0);
-    addLine(doc, 'Completion', `${satisfied} of ${total} criteria met`);
-    if (data.sourceUrl) addLine(doc, 'Source', data.sourceUrl);
-
-    if (data.notes) {
-      doc.moveDown(0.8);
-      doc.font('Helvetica-Bold').text('Notes / Open Items');
-      doc.font('Helvetica').text(data.notes, { width: 500 });
+function criteriaRows(data) {
+  const rows = [];
+  let currentSection = '';
+  for (const item of data.criteria) {
+    if (item.section && item.section !== currentSection) {
+      currentSection = item.section;
+      rows.push(`<br><b>${htmlEscape(currentSection)}</b>`);
     }
-
-    doc.moveDown(1);
-    doc.font('Helvetica-Bold').fontSize(13).text('Criteria');
-    doc.moveDown(0.4);
-
-    let currentSection = '';
-    for (const item of data.criteria) {
-      if (doc.y > 680) doc.addPage();
-      if (item.section && item.section !== currentSection) {
-        currentSection = item.section;
-        doc.moveDown(0.4);
-        doc.font('Helvetica-Bold').fontSize(11).fillColor('#1d3756').text(currentSection);
-        doc.moveDown(0.2);
-      }
-      const status = item.notApplicable ? 'N/A' : item.checked ? 'Met' : 'Not met';
-      doc.font('Helvetica-Bold').fontSize(10).fillColor('#111827').text(`[${status}] ${item.title || 'Untitled criterion'}`);
-      if (item.description) {
-        doc.font('Helvetica').fontSize(9).fillColor('#4b5563').text(item.description, { width: 500 });
-      }
-      if (item.exampleLabel || item.exampleValue) {
-        doc.font('Helvetica').fontSize(9).fillColor('#111827')
-          .text(`${item.exampleLabel || 'Example'}: ${item.exampleValue || 'Not provided'}`, { width: 500 });
-      }
-      doc.moveDown(0.35);
+    const details = [];
+    if (item.exampleLabel || item.exampleValue) {
+      details.push(`${item.exampleLabel || 'Example'}: ${item.exampleValue || 'Not provided'}`);
     }
-
-    const range = doc.bufferedPageRange();
-    for (let i = range.start; i < range.start + range.count; i += 1) {
-      doc.switchToPage(i);
-      doc.font('Helvetica').fontSize(8).fillColor('#6b7280')
-        .text(`Request ID: ${data.requestId} | Page ${i + 1} of ${range.count}`, 48, 740, { align: 'center', width: 516 });
-    }
-
-    doc.end();
-  });
-}
-
-async function uploadPdf(token, data, pdf) {
-  const folder = await graphJson(
-    'GET',
-    `/teams/${TEAM_ID}/channels/${encodeURIComponent(CHANNEL_ID)}/filesFolder`,
-    token,
-    null,
-    'Teams channel filesFolder'
-  );
-  const driveId = folder.parentReference && folder.parentReference.driveId;
-  const folderId = folder.id;
-  if (!driveId || !folderId) {
-    console.error(`API ERROR Teams filesFolder missing drive/folder IDs ${JSON.stringify(folder).slice(0, 1000)}`);
-    process.exit(1);
+    rows.push(`${htmlEscape(statusLabel(item))} - ${htmlEscape(item.title || 'Untitled criterion')}${details.length ? `<br><i>${htmlEscape(details.join(' | ')).slice(0, 800)}</i>` : ''}`);
   }
-  const fileName = `PSA Graduation Checklist - ${safeFileName(data.clientName)} - ${formatDateForFile(data.graduationDate || data.submittedAt)}.pdf`;
-  const uploaded = await graphUploadMaybe(
-    `/drives/${driveId}/items/${folderId}:/${encodeURIComponent(fileName)}:/content`,
-    token,
-    pdf,
-    'Teams PDF upload'
-  );
-  if (!uploaded) {
-    console.warn(`PDF_UPLOAD_STATUS skipped ${fileName}`);
-    return { fileName, driveItem: null };
-  }
-  console.log(`PDF_UPLOAD_STATUS ok ${uploaded.id || ''} ${fileName}`);
-  return { fileName, driveItem: uploaded };
+  return rows;
 }
 
-function teamsMessage(data, file) {
+function teamsMessage(data) {
   const rows = [
     `<b>${htmlEscape(data.clientName)}</b>`,
+    `<b>Submitted:</b> ${htmlEscape(data.submittedAt)}`,
     `<b>SA:</b> ${htmlEscape(data.saName || 'Not provided')}`,
     `<b>Graduation date:</b> ${htmlEscape(data.graduationDate || 'Not provided')}`,
     `<b>CS handoff owner:</b> ${htmlEscape(data.csHandoffOwner || 'Not provided')}`,
   ];
   if (data.notes) rows.push(`<b>Notes:</b> ${htmlEscape(data.notes.slice(0, 900))}`);
-  if (file.driveItem && file.driveItem.webUrl) {
-    rows.push(`<a href="${htmlEscape(file.driveItem.webUrl)}">${htmlEscape(file.fileName)}</a>`);
-  } else {
-    rows.push(`<b>PDF:</b> upload skipped because Graph returned access denied. Grant the bot Files.ReadWrite.All/Sites.ReadWrite.All to attach the PDF.`);
-  }
-  return rows.join('<br>');
+  rows.push('<br><b>Checklist</b>');
+  rows.push(...criteriaRows(data));
+  if (data.sourceUrl) rows.push(`<br><a href="${htmlEscape(data.sourceUrl)}">Checklist source</a>`);
+  return rows.join('<br>').slice(0, 26000);
 }
 
-async function postTeamsMessage(token, data, file) {
-  const attachmentId = file.driveItem && file.driveItem.id || 'graduation-checklist-pdf';
+async function postTeamsMessage(token, data) {
   const payload = {
     body: {
       contentType: 'html',
-      content: teamsMessage(data, file),
+      content: teamsMessage(data),
     },
   };
-  if (file.driveItem && file.driveItem.webUrl) {
-    payload.attachments = [{
-      id: attachmentId,
-      contentType: 'reference',
-      contentUrl: file.driveItem.webUrl,
-      name: file.fileName,
-    }];
-  }
   const posted = await graphJson(
     'POST',
     `/teams/${TEAM_ID}/channels/${encodeURIComponent(CHANNEL_ID)}/messages`,
@@ -336,10 +184,7 @@ async function postTeamsMessage(token, data, file) {
 async function main() {
   const data = validatePayload(readPayload());
   const token = await getGraphToken();
-  const pdf = await generatePdf(data);
-  console.log(`PDF_GENERATED bytes=${pdf.length}`);
-  const file = await uploadPdf(token, data, pdf);
-  await postTeamsMessage(token, data, file);
+  await postTeamsMessage(token, data);
 }
 
 main().catch(err => {

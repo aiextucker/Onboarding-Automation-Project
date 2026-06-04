@@ -10,10 +10,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install PDF generator
-        run: npm install --no-save pdfkit@0.15.0
-
-      - name: Generate PDF and post to Teams
+      - name: Post checklist to Teams
         env:
           MS_TENANT_ID: ${{ secrets.MS_TENANT_ID }}
           MS_CLIENT_ID: ${{ secrets.MS_CLIENT_ID }}
