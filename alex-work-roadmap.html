@@ -30,6 +30,14 @@
       border-bottom: 1px solid var(--line);
       background: #fff;
     }
+    .header-inner {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 18px;
+      align-items: start;
+      max-width: 1480px;
+      margin: 0 auto;
+    }
     .eyebrow { color: var(--muted); font-size: 13px; font-weight: 700; text-transform: uppercase; }
     h1 { margin: 6px 0 6px; font-size: clamp(28px, 4vw, 42px); line-height: 1.05; letter-spacing: 0; }
     header p { max-width: 980px; margin: 0; color: var(--muted); }
@@ -150,7 +158,7 @@
     .status-Done { color: var(--green); border-color: #b8dfcc; background: #f2fbf6; }
     .top-actions {
       display: flex;
-      justify-content: space-between;
+      justify-content: flex-end;
       align-items: center;
       gap: 12px;
       margin: -4px 0 16px;
@@ -248,15 +256,21 @@
       .task { grid-template-columns: 1fr; }
       .badges { justify-content: flex-start; }
       .submit-panel form, .pending-list { grid-template-columns: 1fr; }
+      .header-inner { grid-template-columns: 1fr; }
       .top-actions { align-items: stretch; flex-direction: column; }
     }
   </style>
 </head>
 <body>
   <header>
-    <div class="eyebrow">Alex Tucker Roadmap</div>
-    <h1>Automation work, capacity, and dependencies</h1>
-    <p>Generated from the live Notion Tasks Tracker. Workstream completion is computed from related Notion task status, weighted by effort level.</p>
+    <div class="header-inner">
+      <div>
+        <div class="eyebrow">Alex Tucker Roadmap</div>
+        <h1>Automation work, capacity, and dependencies</h1>
+        <p>Generated from the live Notion Tasks Tracker. Workstream completion is computed from related Notion task status, weighted by effort level.</p>
+      </div>
+      <button class="primary-action" id="openSubmitWork" type="button">+ Submit work</button>
+    </div>
   </header>
   <main>
     <section class="stats">
@@ -268,7 +282,6 @@
       <div class="stat"><span>Next</span><strong>14</strong></div>
     </section>
     <section class="top-actions" aria-label="Roadmap actions">
-      <button class="primary-action" id="openSubmitWork" type="button">+ Submit work</button>
       <div class="controls" aria-label="Roadmap display controls">
         <label class="toggle">
           <input id="showDoneToggle" type="checkbox">
@@ -1210,7 +1223,7 @@
     </section>
   </main>
   <footer>
-    Source: <a href="https://app.notion.com/p/33ba59b7e7b2803486f0e749a312b51a">Notion Tasks Tracker</a>. Generated 2026-06-04T15:41:58.154Z. Rule: Done = 100%, In Progress = 50%, all other statuses = 0%, weighted by Effort level.
+    Source: <a href="https://app.notion.com/p/33ba59b7e7b2803486f0e749a312b51a">Notion Tasks Tracker</a>. Generated 2026-06-04T15:48:22.156Z. Rule: Done = 100%, In Progress = 50%, all other statuses = 0%, weighted by Effort level.
   </footer>
   <script>
     const showDoneToggle = document.getElementById('showDoneToggle');
