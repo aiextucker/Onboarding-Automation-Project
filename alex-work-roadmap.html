@@ -179,12 +179,12 @@
   </header>
   <main>
     <section class="stats">
-      <div class="stat"><span>Tracked Tasks</span><strong>41</strong></div>
-      <div class="stat"><span>Active</span><strong>25</strong></div>
-      <div class="stat"><span>Done</span><strong>16</strong></div>
-      <div class="stat"><span>Blocked / Hold</span><strong>5</strong></div>
-      <div class="stat"><span>Now</span><strong>3</strong></div>
-      <div class="stat"><span>Next</span><strong>15</strong></div>
+      <div class="stat"><span>Tracked Tasks</span><strong>54</strong></div>
+      <div class="stat"><span>Active</span><strong>34</strong></div>
+      <div class="stat"><span>Done</span><strong>20</strong></div>
+      <div class="stat"><span>Blocked / Hold</span><strong>6</strong></div>
+      <div class="stat"><span>Now</span><strong>4</strong></div>
+      <div class="stat"><span>Next</span><strong>18</strong></div>
     </section>
     <section class="controls" aria-label="Roadmap display controls">
       <label class="toggle">
@@ -200,7 +200,7 @@
         <span class="group-toggle" aria-hidden="true"></span>
         <span class="group-title">
           <span class="group-name">Onboarding Automation</span>
-          <span class="group-meta">5 active · 7 done · 0 now · 2 next · 3 waiting</span>
+          <span class="group-meta">5 active · 7 done · 0 now · 1 next · 4 waiting</span>
         </span>
         <span class="group-progress">56%</span>
       </summary>
@@ -249,11 +249,11 @@
     <article class="task">
       <div>
         <a href="https://app.notion.com/p/Phase-3-Rev-io-PSA-API-Config-Application-35ea59b7e7b281179c2ec698c0b4ef7a">Phase 3 — Rev.io PSA API Config Application</a>
-        <small>Blocked pending ARTED return (week of 2026-05-19). PSA demo access token in hand (expires 2026-05-21). Login automation via playwright-chromium + MFA email polling fully working. Ready to begin initial configs on psademo.psarev.io next week.</small>
+        <small>Blocked pending ARTED/system-setting/API readiness and explicit approval before any PSA writes. Read/probe and config-preview paths exist; no production or demo write path should proceed until the ARTED gate and security review are clear.</small>
       </div>
       <div class="badges">
-        <span class="badge status-Not-Started">Not Started</span>
-        <span class="badge">Next</span>
+        <span class="badge status-Blocked">Blocked</span>
+        <span class="badge">Waiting</span>
         <span class="badge">Medium</span>
         <span class="badge">No effort</span>
       </div>
@@ -353,7 +353,7 @@
     <article class="task is-done">
       <div>
         <a href="https://app.notion.com/p/Questionnaire-Enforce-Expiry-Date-35ea59b7e7b2810b9afbeabae37561e9">Questionnaire — Enforce Expiry Date</a>
-        <small>Expires At is stored in Notion but the generated questionnaire HTML never checks it — an expired link still works. On load, check expiry and show a friendly expired message if past date.</small>
+        <small>Closed 2026-05-29 in aiextucker/revio-automations. Expired questionnaire tokens now stop before submission writes, PSA Client upsert, SA notification, or Teams card; tokens are marked Expired and the client receives an expired-link email when a client email is available. Verified with node --check and a live expired-token no-write test.</small>
       </div>
       <div class="badges">
         <span class="badge status-Done">Done</span>
@@ -371,26 +371,13 @@
         <span class="group-toggle" aria-hidden="true"></span>
         <span class="group-title">
           <span class="group-name">PM Hub Internal Improvements</span>
-          <span class="group-meta">10 active · 0 done · 3 now · 5 next · 1 waiting</span>
+          <span class="group-meta">9 active · 2 done · 1 now · 6 next · 1 waiting</span>
         </span>
-        <span class="group-progress">14%</span>
+        <span class="group-progress">20%</span>
       </summary>
-      <div class="meter"><span style="width:14%"></span></div>
+      <div class="meter"><span style="width:20%"></span></div>
       <div class="task-list">
         
-    <article class="task">
-      <div>
-        <a href="https://app.notion.com/p/PM-Hub-Robust-Call-Action-Summary-Enhancements-358a59b7e7b281dd86a6e37331051408">PM Hub — Robust Call Action Summary Enhancements</a>
-        <small>Implementation started 2026-05-06. PM Hub now has action roll-up across matched calls, stale-call warnings, fuzzy-match warnings, Fireflies transcript links from snapshot data, and Next Steps UI support. Call Briefs DB now has a Next Steps field and future Fireflies extractions will populate it.</small>
-      </div>
-      <div class="badges">
-        <span class="badge status-In-Progress">In Progress</span>
-        <span class="badge">Now</span>
-        <span class="badge">High</span>
-        <span class="badge">Medium</span>
-      </div>
-    </article>
-  
     <article class="task">
       <div>
         <a href="https://app.notion.com/p/PM-Hub-Editable-Tracker-PDF-Export-Enhancements-352a59b7e7b281e5a1b0d18011f313ee">PM Hub — Editable Tracker / PDF Export Enhancements</a>
@@ -406,19 +393,6 @@
   
     <article class="task">
       <div>
-        <a href="https://app.notion.com/p/Create-Interaction-Teams-Sync-358a59b7e7b280bd96f0f550679944dc">Create Interaction Teams Sync</a>
-        <small>Scoped 2026-05-29: PM Hub browser-side GitHub PAT dispatch was removed/disabled pending a secure server-side interaction submit path. Added dry-run Teams channel resolver and manual overrides for Minutemen Security Systems, BankTec South, and Guardian Advanced Solutions. Resolver verified Graph access to PSA Client Launch Team (261 channels) and sends no Teams posts. Next gate: implement secure submit endpoint/GitHub-secret workflow, then wire Teams post only after Notion write succeeds and channel confidence is high; ambiguous/no-match channels must skip auto-post.</small>
-      </div>
-      <div class="badges">
-        <span class="badge status-In-Progress">In Progress</span>
-        <span class="badge">Now</span>
-        <span class="badge">Low</span>
-        <span class="badge">No effort</span>
-      </div>
-    </article>
-  
-    <article class="task">
-      <div>
         <a href="https://app.notion.com/p/PM-Hub-Phase-2-PSA-client-view-improvements-368a59b7e7b281f69cdbc0fbd3cea83d">PM Hub Phase 2 — PSA client view improvements</a>
         <small>Move PSA progress up top and add operational fields when PM Hub work resumes.</small>
       </div>
@@ -427,6 +401,19 @@
         <span class="badge">Waiting</span>
         <span class="badge">Medium</span>
         <span class="badge">Large</span>
+      </div>
+    </article>
+  
+    <article class="task">
+      <div>
+        <a href="https://app.notion.com/p/DE-data-migration-milestone-and-roadmap-view-375a59b7e7b28193920ececb95a39eb7">DE data migration milestone and roadmap view</a>
+        <small>Add data migration milestone/tracking layer and DE-specific view showing projects from a data migration standpoint. Coordinate with Jeremy on PSA milestone relationship and ensure DEs can speak directly to blockers in roadmap/project calls. Source: 2026-06-03 Forecast Review meeting.</small>
+      </div>
+      <div class="badges">
+        <span class="badge status-Not-Started">Not Started</span>
+        <span class="badge">Next</span>
+        <span class="badge">High</span>
+        <span class="badge">Medium</span>
       </div>
     </article>
   
@@ -508,6 +495,32 @@
       </div>
     </article>
   
+    <article class="task is-done">
+      <div>
+        <a href="https://app.notion.com/p/PM-Hub-Robust-Call-Action-Summary-Enhancements-358a59b7e7b281dd86a6e37331051408">PM Hub — Robust Call Action Summary Enhancements</a>
+        <small>Closed 2026-06-02. PM Hub now includes work snapshot/actions evidence: action roll-up, blockers/risks, follow-ups, owner hints, due dates, last-heard date, stale-call warnings, fuzzy-match warnings, and Fireflies transcript links from snapshot data. Source: Onboarding-Automation-Project commit 16f90d8 and memory/CONTEXT PM Hub secure interaction sync + work snapshot entry.</small>
+      </div>
+      <div class="badges">
+        <span class="badge status-Done">Done</span>
+        <span class="badge">Done</span>
+        <span class="badge">High</span>
+        <span class="badge">Medium</span>
+      </div>
+    </article>
+  
+    <article class="task is-done">
+      <div>
+        <a href="https://app.notion.com/p/Create-Interaction-Teams-Sync-358a59b7e7b280bd96f0f550679944dc">Create Interaction Teams Sync</a>
+        <small>Closed 2026-06-02. PM Hub interactions now submit through a secure server-side relay and GitHub-secret-only workflow; direct Notion-created interactions are watched every 5 minutes by scripts/notion-interactions-teams-sync.js. Teams posting remains limited to manual overrides or high-confidence resolver matches.</small>
+      </div>
+      <div class="badges">
+        <span class="badge status-Done">Done</span>
+        <span class="badge">Done</span>
+        <span class="badge">Low</span>
+        <span class="badge">No effort</span>
+      </div>
+    </article>
+  
       </div>
     </details>
   
@@ -544,23 +557,62 @@
         <span class="group-toggle" aria-hidden="true"></span>
         <span class="group-title">
           <span class="group-name">Forecast &amp; SLT Reporting</span>
-          <span class="group-meta">2 active · 1 done · 0 now · 2 next</span>
+          <span class="group-meta">7 active · 3 done · 1 now · 4 next</span>
         </span>
-        <span class="group-progress">13%</span>
+        <span class="group-progress">26%</span>
       </summary>
-      <div class="meter"><span style="width:13%"></span></div>
+      <div class="meter"><span style="width:26%"></span></div>
       <div class="task-list">
         
     <article class="task">
       <div>
-        <a href="https://app.notion.com/p/Pull-PSA-Duration-Data-358a59b7e7b280cda072ede54e153303">Pull PSA Duration Data</a>
-        <small>2026-05-29: Alex intentionally deferred this until after end of day / end of month so May data can close before pulling PSA duration baselines. Do not treat as ignored; resume after May close with Notion PSA cohort pull and duration distribution report.</small>
+        <a href="https://app.notion.com/p/Manual-monthly-forecast-commits-and-owner-rationale-375a59b7e7b281c69737e26650f34daa">Manual monthly forecast commits and owner rationale</a>
+        <small>Build/manualize the first-day-of-month commit flow: each owner records activations/graduations, MRR, and rationale. Original commit should persist on owner badges/team views through the month. Source: 2026-06-03 Forecast Review meeting.</small>
+      </div>
+      <div class="badges">
+        <span class="badge status-Not-Started">Not Started</span>
+        <span class="badge">Now</span>
+        <span class="badge">High</span>
+        <span class="badge">Medium</span>
+      </div>
+    </article>
+  
+    <article class="task">
+      <div>
+        <a href="https://app.notion.com/p/Forecast-assignment-cleanup-use-Owner-field-375a59b7e7b281898120e6ab1129d741">Forecast assignment cleanup — use Owner field</a>
+        <small>Update forecast assignment logic/views/scripts to use Owner instead of SA so PM roles and cross-LOB ownership are represented cleanly. Source: 2026-06-03 Forecast Review meeting.</small>
       </div>
       <div class="badges">
         <span class="badge status-Not-Started">Not Started</span>
         <span class="badge">Next</span>
         <span class="badge">Medium</span>
-        <span class="badge">No effort</span>
+        <span class="badge">Small</span>
+      </div>
+    </article>
+  
+    <article class="task">
+      <div>
+        <a href="https://app.notion.com/p/Forecast-dashboard-movement-tiles-and-most-likely-simplification-375a59b7e7b2814a8568c1e7bc25d3e5">Forecast dashboard movement tiles and most-likely simplification</a>
+        <small>Replace/augment bar graphs with flippable tiles that show original forecast, previous-week most likely, and current worst/most-likely/best. Show moved in/out projects with clear color/state treatment and treat current forecast as most-likely. Source: 2026-06-03 Forecast Review meeting.</small>
+      </div>
+      <div class="badges">
+        <span class="badge status-Not-Started">Not Started</span>
+        <span class="badge">Next</span>
+        <span class="badge">Medium</span>
+        <span class="badge">Large</span>
+      </div>
+    </article>
+  
+    <article class="task">
+      <div>
+        <a href="https://app.notion.com/p/Payments-forecast-script-with-JD-375a59b7e7b2815f8c07e7e7443db80b">Payments forecast script with JD</a>
+        <small>Formalize Payments forecast readout/script with JD so Payments can follow the same concise forecast rhythm as PSA/Billing. Source: exported Evan transcript.</small>
+      </div>
+      <div class="badges">
+        <span class="badge status-Not-Started">Not Started</span>
+        <span class="badge">Next</span>
+        <span class="badge">Medium</span>
+        <span class="badge">Small</span>
       </div>
     </article>
   
@@ -577,6 +629,32 @@
       </div>
     </article>
   
+    <article class="task">
+      <div>
+        <a href="https://app.notion.com/p/End-of-month-forecast-prep-cadence-375a59b7e7b281f68327e68a9adcbec5">End-of-month forecast prep cadence</a>
+        <small>Define group end-of-month prep cadence before forecast calls: bankable worst-case deals, total pipeline, mitigation strategies, and first-day owner commits. Source: 2026-06-03 Forecast Review meeting.</small>
+      </div>
+      <div class="badges">
+        <span class="badge status-Not-Started">Not Started</span>
+        <span class="badge">Later</span>
+        <span class="badge">Medium</span>
+        <span class="badge">Small</span>
+      </div>
+    </article>
+  
+    <article class="task">
+      <div>
+        <a href="https://app.notion.com/p/RTS-sold-date-and-briefcase-time-detail-views-375a59b7e7b2819cb4d7f8507dce51c4">RTS sold-date and briefcase-time detail views</a>
+        <small>Add sold date/project detail visibility for briefcase-time checks: closed-won to kickoff and RTS/stick-rate cohort interpretation. Source: 2026-06-03 Forecast Review meeting.</small>
+      </div>
+      <div class="badges">
+        <span class="badge status-Not-Started">Not Started</span>
+        <span class="badge">Later</span>
+        <span class="badge">Medium</span>
+        <span class="badge">Small</span>
+      </div>
+    </article>
+  
     <article class="task is-done">
       <div>
         <a href="https://app.notion.com/p/Populate-Billing-Confidence-for-active-Billing-clients-368a59b7e7b281929d68de6f4d7f88fd">Populate Billing Confidence for active Billing clients</a>
@@ -590,6 +668,32 @@
       </div>
     </article>
   
+    <article class="task is-done">
+      <div>
+        <a href="https://app.notion.com/p/PSA-metrics-baseline-and-remove-old-forecast-risk-qualifiers-368a59b7e7b281728679ef860b1db39a">PSA metrics baseline and remove old forecast risk qualifiers</a>
+        <small>Closed 2026-06-03. May baseline analysis ran against live Notion PSA/Billing/Payments data with HTTP 200 responses, generated duration baselines, forecast movement, inferred push reasons, and SLT one-pager. Source files: reports/may-baseline-analysis-2026-06-03T13-55-33-366Z.md and reports/psa-slt-one-pager-may-baseline-2026-06-03.md.</small>
+      </div>
+      <div class="badges">
+        <span class="badge status-Done">Done</span>
+        <span class="badge">Done</span>
+        <span class="badge">Medium</span>
+        <span class="badge">Medium</span>
+      </div>
+    </article>
+  
+    <article class="task is-done">
+      <div>
+        <a href="https://app.notion.com/p/Pull-PSA-Duration-Data-358a59b7e7b280cda072ede54e153303">Pull PSA Duration Data</a>
+        <small>Closed 2026-06-03 as part of the May baseline analysis. PSA rows scanned: 209. Duration baselines captured: Sold-to-kickoff n=191 median 9d/p75 15d/avg 25d; Kickoff-to-forecast n=38 median 55d/p75 80d/avg 72d; Kickoff-to-actual n=58 median 105d/p75 155d/avg 117d. Source: reports/may-baseline-analysis-2026-06-03T13-55-33-366Z.md.</small>
+      </div>
+      <div class="badges">
+        <span class="badge status-Done">Done</span>
+        <span class="badge">Done</span>
+        <span class="badge">Medium</span>
+        <span class="badge">No effort</span>
+      </div>
+    </article>
+  
       </div>
     </details>
   
@@ -598,13 +702,39 @@
         <span class="group-toggle" aria-hidden="true"></span>
         <span class="group-title">
           <span class="group-name">Sales / GTM Automation</span>
-          <span class="group-meta">1 active · 5 done · 0 now · 1 next</span>
+          <span class="group-meta">3 active · 5 done · 1 now · 2 next</span>
         </span>
-        <span class="group-progress">82%</span>
+        <span class="group-progress">63%</span>
       </summary>
-      <div class="meter"><span style="width:82%"></span></div>
+      <div class="meter"><span style="width:63%"></span></div>
       <div class="task-list">
         
+    <article class="task">
+      <div>
+        <a href="https://app.notion.com/p/Track-Ardit-sales-process-handoff-368a59b7e7b28106a9dec3fa6662af51">Track Ardit sales process handoff</a>
+        <small>In progress. Recent Evan transcript says Alex met with Ardit; Ardit is working with Ryan on sales-team training/process changes for close-won automation, targeted for the following week. Remaining work is to capture the delivered handoff and turn it into durable automation requirements.</small>
+      </div>
+      <div class="badges">
+        <span class="badge status-In-Progress">In Progress</span>
+        <span class="badge">Now</span>
+        <span class="badge">Medium</span>
+        <span class="badge">Small</span>
+      </div>
+    </article>
+  
+    <article class="task">
+      <div>
+        <a href="https://app.notion.com/p/Sales-AI-SDR-automation-discovery-with-Ryan-375a59b7e7b281a88a9dc4b7c7e394e8">Sales AI/SDR automation discovery with Ryan</a>
+        <small>Work with Ryan/Ardit on go-to-market automation opportunities, including Rocks/Outreach/Salesforce workflows, rep daily checklists, sales-call data mining, and handoff improvements. Source: exported Evan transcript and 2026-06-03 sales leadership prep.</small>
+      </div>
+      <div class="badges">
+        <span class="badge status-Not-Started">Not Started</span>
+        <span class="badge">Next</span>
+        <span class="badge">High</span>
+        <span class="badge">Medium</span>
+      </div>
+    </article>
+  
     <article class="task">
       <div>
         <a href="https://app.notion.com/p/Pre-Config-Fireflies-Extraction-for-Sales-Calls-35ea59b7e7b281309024d233c188bfd1">Pre-Config — Fireflies Extraction for Sales Calls</a>
@@ -691,23 +821,62 @@
         <span class="group-toggle" aria-hidden="true"></span>
         <span class="group-title">
           <span class="group-name">Product Evidence / Roadmap</span>
-          <span class="group-meta">2 active · 2 done · 0 now · 1 next</span>
+          <span class="group-meta">5 active · 2 done · 1 now · 1 next</span>
         </span>
-        <span class="group-progress">40%</span>
+        <span class="group-progress">24%</span>
       </summary>
-      <div class="meter"><span style="width:40%"></span></div>
+      <div class="meter"><span style="width:24%"></span></div>
       <div class="task-list">
         
     <article class="task">
       <div>
-        <a href="https://app.notion.com/p/PSA-metrics-baseline-and-remove-old-forecast-risk-qualifiers-368a59b7e7b281728679ef860b1db39a">PSA metrics baseline and remove old forecast risk qualifiers</a>
-        <small>Start PSA metrics baseline from May 1 and remove 30/60/90 risk qualifiers.</small>
+        <a href="https://app.notion.com/p/Product-issue-escalation-loop-and-blocker-dashboard-375a59b7e7b28140b5c9f57c13273391">Product issue escalation loop and blocker dashboard</a>
+        <small>Create/coordinate real-time product issue escalation loop plus clean blocker dashboard. Extract product-tagged tickets and common onboarding blockers so Product gets source-backed evidence, not anecdotes. Source: 2026-06-03 Forecast Review meeting.</small>
+      </div>
+      <div class="badges">
+        <span class="badge status-Not-Started">Not Started</span>
+        <span class="badge">Now</span>
+        <span class="badge">High</span>
+        <span class="badge">Medium</span>
+      </div>
+    </article>
+  
+    <article class="task">
+      <div>
+        <a href="https://app.notion.com/p/Viking-UX-evidence-loop-from-Jeremy-videos-375a59b7e7b2817cb0f6c70d22aa8bc1">Viking UX evidence loop from Jeremy videos</a>
+        <small>Use Jeremy/Viking UX videos plus onboarding data to identify where users consistently get stuck by module/topic and package evidence for Product. Source: 2026-05-29 Product Development meeting and 2026-06-03 Forecast Review.</small>
       </div>
       <div class="badges">
         <span class="badge status-Not-Started">Not Started</span>
         <span class="badge">Next</span>
         <span class="badge">Medium</span>
         <span class="badge">Medium</span>
+      </div>
+    </article>
+  
+    <article class="task">
+      <div>
+        <a href="https://app.notion.com/p/Halo-competitive-benchmarking-and-battlecards-375a59b7e7b281e4b366c45af249f2fe">Halo competitive benchmarking and battlecards</a>
+        <small>Get access/subscriptions for Halo or available competitive references, benchmark Rev.io against competitor workflows/pricing/setup, and turn findings into battlecards or onboarding/product evidence. Source: 2026-06-03 Forecast Review meeting.</small>
+      </div>
+      <div class="badges">
+        <span class="badge status-Not-Started">Not Started</span>
+        <span class="badge">Later</span>
+        <span class="badge">Medium</span>
+        <span class="badge">Medium</span>
+      </div>
+    </article>
+  
+    <article class="task">
+      <div>
+        <a href="https://app.notion.com/p/Workflow-replacement-UX-review-with-Jeremy-375a59b7e7b281719850f23f068cb557">Workflow-replacement UX review with Jeremy</a>
+        <small>Review workflows as possible process replacements with Jeremy and assess what is viable for onboarding/product change. Source: 2026-06-03 Forecast Review meeting.</small>
+      </div>
+      <div class="badges">
+        <span class="badge status-Not-Started">Not Started</span>
+        <span class="badge">Later</span>
+        <span class="badge">Medium</span>
+        <span class="badge">Small</span>
       </div>
     </article>
   
@@ -757,6 +926,34 @@
       <summary class="group-summary">
         <span class="group-toggle" aria-hidden="true"></span>
         <span class="group-title">
+          <span class="group-name">Revvy / Agentic Ops</span>
+          <span class="group-meta">1 active · 0 done · 0 now · 1 next</span>
+        </span>
+        <span class="group-progress">0%</span>
+      </summary>
+      <div class="meter"><span style="width:0%"></span></div>
+      <div class="task-list">
+        
+    <article class="task">
+      <div>
+        <a href="https://app.notion.com/p/Revvy-onboarding-demo-path-and-usage-habit-375a59b7e7b2817191a7f4cea58a2c9b">Revvy onboarding demo path and usage habit</a>
+        <small>Operationalize Revvy in onboarding: reliable demo path, follow-up demo readiness, use during onboarding so customers build usage habits, and capture use cases tied to agentic credit/value model. Source: 2026-06-03 Forecast Review meeting.</small>
+      </div>
+      <div class="badges">
+        <span class="badge status-Not-Started">Not Started</span>
+        <span class="badge">Next</span>
+        <span class="badge">High</span>
+        <span class="badge">Medium</span>
+      </div>
+    </article>
+  
+      </div>
+    </details>
+  
+    <details class="group">
+      <summary class="group-summary">
+        <span class="group-toggle" aria-hidden="true"></span>
+        <span class="group-title">
           <span class="group-name">Operations Maintenance</span>
           <span class="group-meta">1 active · 0 done · 0 now · 0 next · 1 waiting</span>
         </span>
@@ -786,11 +983,11 @@
         <span class="group-toggle" aria-hidden="true"></span>
         <span class="group-title">
           <span class="group-name">Training / Admin</span>
-          <span class="group-meta">3 active · 1 done · 0 now · 3 next</span>
+          <span class="group-meta">2 active · 1 done · 0 now · 2 next</span>
         </span>
-        <span class="group-progress">17%</span>
+        <span class="group-progress">20%</span>
       </summary>
-      <div class="meter"><span style="width:17%"></span></div>
+      <div class="meter"><span style="width:20%"></span></div>
       <div class="task-list">
         
     <article class="task">
@@ -803,19 +1000,6 @@
         <span class="badge">Next</span>
         <span class="badge">Medium</span>
         <span class="badge">No effort</span>
-      </div>
-    </article>
-  
-    <article class="task">
-      <div>
-        <a href="https://app.notion.com/p/Track-Ardit-sales-process-handoff-368a59b7e7b28106a9dec3fa6662af51">Track Ardit sales process handoff</a>
-        <small>Capture/process Artit/Ardit updated sales handoff once delivered.</small>
-      </div>
-      <div class="badges">
-        <span class="badge status-Not-Started">Not Started</span>
-        <span class="badge">Next</span>
-        <span class="badge">Medium</span>
-        <span class="badge">Small</span>
       </div>
     </article>
   
@@ -853,6 +1037,11 @@
           <h2>Dependency Watch</h2>
           
             <div class="dep-item">
+              <strong>Track Ardit sales process handoff</strong>
+              <span>Sales / GTM Automation · In Progress · Waiting on Ardit/Ryan sales-process handoff and training rollout.</span>
+            </div>
+          
+            <div class="dep-item">
               <strong>Auto-config persistence/security design</strong>
               <span>Onboarding Automation · Blocked · Blocked on approved persistence/security design.</span>
             </div>
@@ -868,6 +1057,11 @@
             </div>
           
             <div class="dep-item">
+              <strong>Phase 3 — Rev.io PSA API Config Application</strong>
+              <span>Onboarding Automation · Blocked · Blocked on ARTED/system-setting/API readiness and explicit approval before PSA writes.</span>
+            </div>
+          
+            <div class="dep-item">
               <strong>Billing brief complexity scoring automation</strong>
               <span>Operations Maintenance · On Hold · On hold; resume when this lane becomes active again.</span>
             </div>
@@ -878,18 +1072,13 @@
             </div>
           
             <div class="dep-item">
-              <strong>Phase 3 — Rev.io PSA API Config Application</strong>
-              <span>Onboarding Automation · Not Started · Depends on API/system-setting/function availability.</span>
+              <strong>Sales AI/SDR automation discovery with Ryan</strong>
+              <span>Sales / GTM Automation · Not Started · Waiting on sales-process handoff/training alignment.</span>
             </div>
           
             <div class="dep-item">
               <strong>PM Hub — Wrike Dependency Trigger → Notify DE</strong>
               <span>PM Hub Internal Improvements · Not Started · Dependency path may change as Wrike is phased out.</span>
-            </div>
-          
-            <div class="dep-item">
-              <strong>Track Ardit sales process handoff</strong>
-              <span>Training / Admin · Not Started · Waiting on sales-process handoff/training alignment.</span>
             </div>
           
             <div class="dep-item">
@@ -906,9 +1095,9 @@
         <section class="script">
           <h2>Meeting Readout</h2>
           <ol>
-            <li>25 active tasks are visible across 8 workstreams.</li>
-            <li>5 items are blocked or on hold and need dependency movement before execution.</li>
-            <li>3 items are in the Now increment; 15 are queued Next.</li>
+            <li>34 active tasks are visible across 9 workstreams.</li>
+            <li>6 items are blocked or on hold and need dependency movement before execution.</li>
+            <li>4 items are in the Now increment; 18 are queued Next.</li>
             <li>Use the Notion task tracker to change status; this page will reflect completion on the next generation run.</li>
           </ol>
         </section>
@@ -916,7 +1105,7 @@
     </section>
   </main>
   <footer>
-    Source: <a href="https://app.notion.com/p/33ba59b7e7b2803486f0e749a312b51a">Notion Tasks Tracker</a>. Generated 2026-06-04T14:04:35.213Z. Rule: Done = 100%, In Progress = 50%, all other statuses = 0%, weighted by Effort level.
+    Source: <a href="https://app.notion.com/p/33ba59b7e7b2803486f0e749a312b51a">Notion Tasks Tracker</a>. Generated 2026-06-04T14:15:48.125Z. Rule: Done = 100%, In Progress = 50%, all other statuses = 0%, weighted by Effort level.
   </footer>
   <script>
     const showDoneToggle = document.getElementById('showDoneToggle');
