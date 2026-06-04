@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Forecast Operating Pack</title>
+  <style>
+    :root {
+      --ink: #202327;
+      --muted: #637083;
+      --line: #d9dee5;
+      --bg: #f6f7f9;
+      --panel: #ffffff;
+      --blue: #1f6feb;
+      --green: #1f8f5f;
+      --orange: #b66800;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.48;
+    }
+    header {
+      background: #fff;
+      border-bottom: 1px solid var(--line);
+      padding: 28px 32px 20px;
+    }
+    .eyebrow {
+      color: var(--blue);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+    h1 {
+      margin: 6px 0;
+      font-size: clamp(30px, 4vw, 46px);
+      line-height: 1.05;
+      letter-spacing: 0;
+    }
+    header p {
+      margin: 0;
+      max-width: 1040px;
+      color: var(--muted);
+      font-size: 16px;
+    }
+    main {
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: 24px 32px 42px;
+    }
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+    .stat, section {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: 0 1px 2px rgba(14, 23, 36, .04);
+    }
+    .stat {
+      padding: 16px;
+      min-height: 104px;
+    }
+    .stat span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+    .stat strong {
+      display: block;
+      margin-top: 8px;
+      font-size: 24px;
+      line-height: 1.15;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(340px, .8fr);
+      gap: 18px;
+      align-items: start;
+    }
+    section {
+      padding: 18px;
+      margin-bottom: 18px;
+    }
+    h2 {
+      margin: 0 0 12px;
+      font-size: 22px;
+      letter-spacing: 0;
+    }
+    h3 {
+      margin: 18px 0 8px;
+      font-size: 16px;
+      letter-spacing: 0;
+    }
+    p { margin: 0 0 10px; }
+    ul, ol {
+      margin: 8px 0 0;
+      padding-left: 22px;
+    }
+    li { margin: 7px 0; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      background: #fff;
+    }
+    th, td {
+      text-align: left;
+      vertical-align: top;
+      padding: 10px;
+      border-bottom: 1px solid #edf0f4;
+      font-size: 13px;
+    }
+    th {
+      background: #f0f3f7;
+      color: #46515d;
+      font-size: 12px;
+      text-transform: uppercase;
+    }
+    .script {
+      border-left: 4px solid var(--blue);
+      background: #f8fbff;
+      padding: 12px 14px;
+      margin: 12px 0;
+    }
+    .script p { margin: 8px 0; }
+    .label {
+      display: inline-block;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: #fff;
+      padding: 3px 8px;
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--muted);
+      margin-right: 4px;
+    }
+    .green { color: var(--green); }
+    .orange { color: var(--orange); }
+    .note {
+      color: var(--muted);
+      font-size: 13px;
+    }
+    @media (max-width: 920px) {
+      header, main { padding-left: 16px; padding-right: 16px; }
+      .summary, .grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="eyebrow">Forecast &amp; SLT Reporting</div>
+    <h1>Forecast operating pack</h1>
+    <p>Version-zero operating artifact for monthly owner commits, Payments forecast readouts, and end-of-month prep. This is intentionally manual first: it gives the team a stable script and checklist before deeper dashboard automation.</p>
+  </header>
+
+  <main>
+    <div class="summary">
+      <div class="stat"><span>Monthly commit</span><strong>Owner rationale plus frozen first-day target</strong></div>
+      <div class="stat"><span>Payments readout</span><strong>Same rhythm as PSA and Billing</strong></div>
+      <div class="stat"><span>Month-end prep</span><strong>Bankable, likely, risk, mitigation</strong></div>
+    </div>
+
+    <div class="grid">
+      <div>
+        <section>
+          <h2>Monthly Owner Commit Flow</h2>
+          <p>Use this on the first business day of the month before the forecast review. Each owner records their monthly commit once. Later forecast changes should show movement against this original commit instead of rewriting the starting point.</p>
+          <table>
+            <thead>
+              <tr><th>Field</th><th>Required Entry</th><th>Purpose</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Owner</td><td>Named PM, SA, or functional owner</td><td>Prevents PM work from being hidden under SA-only views.</td></tr>
+              <tr><td>Line of business</td><td>PSA, Billing, or Payments</td><td>Keeps rollups comparable without blending different lifecycle rules.</td></tr>
+              <tr><td>Client / project</td><td>Client name and link to source record</td><td>Provides traceability for SLT questions.</td></tr>
+              <tr><td>Commit bucket</td><td>Worst case, Most likely, Best case</td><td>Lets the meeting talk about confidence, not just dates.</td></tr>
+              <tr><td>Expected date</td><td>Activation, graduation, bill-out, or payment-live date</td><td>Anchors weekly movement.</td></tr>
+              <tr><td>MRR / value</td><td>MRR when available; otherwise count-only</td><td>Supports Count and MRR views without forcing bad data.</td></tr>
+              <tr><td>Owner rationale</td><td>One to three sentences</td><td>Explains why the owner believes the commit is achievable.</td></tr>
+              <tr><td>Dependency</td><td>Client, product, data migration, billing/payment, internal queue, none</td><td>Turns movement into a blocker pattern.</td></tr>
+            </tbody>
+          </table>
+          <h3>Meeting Language</h3>
+          <div class="script">
+            <p><strong>Opening:</strong> "This is the frozen first-day commit. Weekly movement should be read as change against this baseline, not as a replacement for it."</p>
+            <p><strong>Owner prompt:</strong> "What changed since commit: date, confidence, blocker, or scope?"</p>
+            <p><strong>Close:</strong> "Anything that moved out needs a reason owner. Anything that moved in needs a confidence note."</p>
+          </div>
+        </section>
+
+        <section>
+          <h2>Payments Forecast Readout Script</h2>
+          <p>This gives JD and the Payments lane the same concise readout rhythm as PSA and Billing. It should be used as the first draft until Payments has deeper automated movement tiles.</p>
+          <ol>
+            <li><strong>Start with count:</strong> "Payments has [count] expected live items this month, with [count] bankable, [count] likely, and [count] at risk."</li>
+            <li><strong>Name movement:</strong> "Since the prior review, [count] moved in, [count] moved out, and [count] changed confidence."</li>
+            <li><strong>Explain blockers:</strong> "The main blockers are processor readiness, underwriting, token/ACH setup, and client test-payment timing."</li>
+            <li><strong>Call owner action:</strong> "The next action is [owner] to [action] by [date]."</li>
+            <li><strong>End with confidence:</strong> "Current most-likely Payments outcome is [count/value], assuming [top dependency] clears."</li>
+          </ol>
+          <h3>One-Minute Version</h3>
+          <div class="script">
+            <p>"Payments is currently at [bankable] bankable and [likely] most-likely for the month. The primary movement since last review is [moved item]. The biggest risk is [dependency], owned by [owner]. If that clears by [date], we hold the current commit; if not, the likely outcome drops to [fallback]."</p>
+          </div>
+        </section>
+
+        <section>
+          <h2>End-of-Month Forecast Prep Cadence</h2>
+          <p>Run this before month-end forecast calls so the meeting starts with clear owner positions instead of live discovery.</p>
+          <table>
+            <thead>
+              <tr><th>Timing</th><th>Prep Step</th><th>Output</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Five business days before month end</td><td>Owners identify bankable items and at-risk items.</td><td>Bankable list plus risk list.</td></tr>
+              <tr><td>Three business days before month end</td><td>Owners update expected date, confidence, and dependency reason.</td><td>Clean movement readout.</td></tr>
+              <tr><td>Two business days before month end</td><td>Alfred summarizes moved-in, moved-out, and confidence changes.</td><td>SLT-ready movement script.</td></tr>
+              <tr><td>One business day before month end</td><td>Owner review of final most-likely and worst-case positions.</td><td>Meeting-ready owner commits.</td></tr>
+              <tr><td>First business day of next month</td><td>Freeze original monthly commits.</td><td>Baseline for weekly movement.</td></tr>
+            </tbody>
+          </table>
+        </section>
+      </div>
+
+      <aside>
+        <section>
+          <h2>Close Criteria</h2>
+          <p><span class="label green">Done</span> The artifact defines the manual operating process clearly enough to use in the next forecast cycle.</p>
+          <p><span class="label orange">Next</span> Automation can later persist these fields directly in the SLT dashboard or Notion task/client records.</p>
+        </section>
+
+        <section>
+          <h2>What This Does Not Claim</h2>
+          <ul>
+            <li>It does not create a new production database.</li>
+            <li>It does not rewrite forecast history.</li>
+            <li>It does not send anything to JD, SLT, or owners automatically.</li>
+            <li>It does not replace source-of-truth client records.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Recommended Next Automation</h2>
+          <ul>
+            <li>Add original monthly commit fields to the forecast source model.</li>
+            <li>Persist owner rationale as a dated note.</li>
+            <li>Show previous-week vs current movement by Count and MRR.</li>
+            <li>Use Owner rather than SA wherever work ownership spans PMs or functional teams.</li>
+          </ul>
+          <p class="note">Prepared from the June 2026 Evan forecast-review context and the Alex roadmap quick-close pass.</p>
+        </section>
+      </aside>
+    </div>
+  </main>
+</body>
+</html>
