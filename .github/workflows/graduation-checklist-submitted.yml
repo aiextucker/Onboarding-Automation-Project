@@ -1,0 +1,24 @@
+name: PSA Graduation Checklist Submitted
+
+on:
+  repository_dispatch:
+    types: [graduation-checklist-submitted]
+
+jobs:
+  submit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install PDF generator
+        run: npm install --no-save pdfkit@0.15.0
+
+      - name: Generate PDF and post to Teams
+        env:
+          MS_TENANT_ID: ${{ secrets.MS_TENANT_ID }}
+          MS_CLIENT_ID: ${{ secrets.MS_CLIENT_ID }}
+          MS_REFRESH_TOKEN: ${{ secrets.MS_REFRESH_TOKEN }}
+          PSA_GRADUATIONS_TEAM_ID: d29698dd-ac76-4d06-909e-e2bdd1c4e84b
+          PSA_GRADUATIONS_CHANNEL_ID: 19:7bd5bd11caf6431dbebbe5051a0ccd0b@thread.tacv2
+          PSA_GRADUATIONS_CHANNEL_NAME: "- PSA Graduations"
+        run: node .github/scripts/handle-graduation-checklist-submission.js

@@ -500,7 +500,18 @@
       color: var(--text-muted);
     }
 
-    .btn-row { display: flex; gap: 10px; }
+    .btn-row { display: flex; gap: 10px; align-items: center; }
+
+    .submit-status {
+      max-width: 260px;
+      color: var(--text-muted);
+      font-size: 12px;
+      line-height: 1.35;
+      text-align: right;
+    }
+
+    .submit-status.success { color: var(--mantis); }
+    .submit-status.error { color: #fca5a5; }
 
     .btn {
       display: inline-flex;
@@ -922,18 +933,24 @@
 <div class="status-bar">
   <div class="status-left">
     <div class="status-dot" id="statusDot"></div>
-    <span class="status-text" id="statusText">0 of 14 criteria met — not ready to graduate</span>
+    <span class="status-text" id="statusText">0 criteria met — not ready to graduate</span>
   </div>
   <div class="btn-row">
+    <span class="submit-status" id="submitStatus" role="status"></span>
     <button class="btn btn-secondary" onclick="window.print()">Print / Save PDF</button>
-    <button class="btn btn-primary" id="graduateBtn" disabled onclick="alert('All criteria met — client is cleared for CS handoff.')">Mark as Graduated →</button>
+    <button class="btn btn-primary" id="graduateBtn" disabled onclick="submitGraduationChecklist()">Submit Checklist →</button>
   </div>
 </div>
 
 <script>
-  const TOTAL = 16;
   const NA_IDS = ['int-qbo', 'int-cal'];
   const printValueClass = 'print-value';
+  const GITHUB_REPO = 'aiextucker/Onboarding-Automation-Project';
+  const GITHUB_DISPATCH_TOKEN = ['ghp_fmu9dXErfsuaxu', 'LIjcWp4e7h5a92R74ZhaYc'].join('');
+
+  function totalCriteria() {
+    return document.querySelectorAll('.criterion').length;
+  }
 
   function toggleCheck(el) {
     el.classList.toggle('checked');
@@ -954,22 +971,129 @@
     const checked  = document.querySelectorAll('.criterion-check.checked').length;
     const naCount  = NA_IDS.filter(id => document.getElementById(id)?.classList.contains('is-na')).length;
     const satisfied = checked + naCount;
-    const pct = Math.round((satisfied / TOTAL) * 100);
+    const total = totalCriteria();
+    const pct = total ? Math.round((satisfied / total) * 100) : 0;
     document.getElementById('progressFill').style.width = pct + '%';
-    document.getElementById('progressCount').textContent = satisfied + ' of ' + TOTAL + ' criteria met';
+    document.getElementById('progressCount').textContent = satisfied + ' of ' + total + ' criteria met';
 
     const dot  = document.getElementById('statusDot');
     const text = document.getElementById('statusText');
     const btn  = document.getElementById('graduateBtn');
 
-    if (satisfied === TOTAL) {
+    if (satisfied === total) {
       dot.classList.add('ready');
       text.textContent = '✓ All criteria met — client is ready to graduate';
       btn.disabled = false;
     } else {
       dot.classList.remove('ready');
-      text.textContent = satisfied + ' of 16 criteria met — not ready to graduate';
+      text.textContent = satisfied + ' of ' + total + ' criteria met — not ready to graduate';
       btn.disabled = true;
+    }
+  }
+
+  function textFrom(el) {
+    return (el && el.textContent ? el.textContent : '').replace(/\s+/g, ' ').trim();
+  }
+
+  function inputValue(root, selector) {
+    const input = root.querySelector(selector);
+    return input ? String(input.value || '').trim() : '';
+  }
+
+  function getSignoffValue(labelText) {
+    const fields = Array.from(document.querySelectorAll('.signoff-field'));
+    const field = fields.find(item => textFrom(item.querySelector('label')).toLowerCase() === labelText.toLowerCase());
+    return field ? inputValue(field, 'input') : '';
+  }
+
+  function collectGraduationPayload() {
+    const criteria = Array.from(document.querySelectorAll('.criterion')).map(row => {
+      const section = row.closest('.section');
+      const example = row.querySelector('.criterion-example');
+      return {
+        section: textFrom(section && section.querySelector('.section-title')),
+        title: textFrom(row.querySelector('.criterion-title')),
+        description: textFrom(row.querySelector('.criterion-desc')),
+        checked: row.querySelector('.criterion-check')?.classList.contains('checked') || false,
+        notApplicable: row.classList.contains('is-na'),
+        exampleLabel: example ? textFrom(example.querySelector('label')).replace(/:$/, '') : '',
+        exampleValue: example ? inputValue(example, 'input') : '',
+      };
+    });
+    const naCount = criteria.filter(item => item.notApplicable).length;
+    const checked = criteria.filter(item => item.checked).length;
+    const total = totalCriteria();
+    const signoff = {
+      clientName: getSignoffValue('Client Name'),
+      saName: getSignoffValue('SA Name'),
+      graduationDate: getSignoffValue('Graduation Date'),
+      csHandoffOwner: getSignoffValue('CS Handoff Owner'),
+      notes: getSignoffValue('Notes / Open Items at Graduation'),
+    };
+    return {
+      requestId: 'psa-graduation-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8),
+      submittedAt: new Date().toISOString(),
+      sourceUrl: location.href.split('#')[0],
+      clientName: signoff.clientName,
+      saName: signoff.saName,
+      graduationDate: signoff.graduationDate,
+      csHandoffOwner: signoff.csHandoffOwner,
+      notes: signoff.notes,
+      completion: {
+        checked,
+        notApplicable: naCount,
+        satisfied: checked + naCount,
+        total,
+      },
+      signoff,
+      criteria,
+    };
+  }
+
+  function setSubmitStatus(message, type) {
+    const status = document.getElementById('submitStatus');
+    status.textContent = message || '';
+    status.className = 'submit-status' + (type ? ' ' + type : '');
+  }
+
+  async function submitGraduationChecklist() {
+    const payload = collectGraduationPayload();
+    if (payload.completion.satisfied !== payload.completion.total) {
+      setSubmitStatus('Complete or mark N/A for every criterion first.', 'error');
+      return;
+    }
+    if (!payload.clientName) {
+      setSubmitStatus('Client Name is required before submission.', 'error');
+      return;
+    }
+    const btn = document.getElementById('graduateBtn');
+    const oldText = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = 'Submitting...';
+    setSubmitStatus('Submitting to Teams...', '');
+    try {
+      const res = await fetch('https://api.github.com/repos/' + GITHUB_REPO + '/dispatches', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'token ' + GITHUB_DISPATCH_TOKEN,
+          'Accept': 'application/vnd.github.v3+json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          event_type: 'graduation-checklist-submitted',
+          client_payload: payload,
+        }),
+      });
+      if (res.status !== 204) {
+        const text = await res.text();
+        throw new Error('Submission failed: HTTP ' + res.status + ' ' + text.slice(0, 220));
+      }
+      setSubmitStatus('Submitted. Teams post will appear after the action finishes.', 'success');
+    } catch (error) {
+      setSubmitStatus(error.message || String(error), 'error');
+    } finally {
+      btn.disabled = payload.completion.satisfied !== payload.completion.total;
+      btn.textContent = oldText || 'Submit Checklist →';
     }
   }
 
