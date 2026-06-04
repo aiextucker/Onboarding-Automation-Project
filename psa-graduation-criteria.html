@@ -1006,6 +1006,47 @@
     return field ? inputValue(field, 'input') : '';
   }
 
+  function setSignoffValue(labelText, value) {
+    const fields = Array.from(document.querySelectorAll('.signoff-field'));
+    const field = fields.find(item => textFrom(item.querySelector('label')).toLowerCase() === labelText.toLowerCase());
+    const input = field && field.querySelector('input');
+    if (input) input.value = value || '';
+  }
+
+  function encodeState(value) {
+    const json = JSON.stringify(value);
+    const bytes = new TextEncoder().encode(json);
+    let binary = '';
+    bytes.forEach(byte => { binary += String.fromCharCode(byte); });
+    return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  }
+
+  function decodeState(value) {
+    const normalized = value.replace(/-/g, '+').replace(/_/g, '/');
+    const padded = normalized + '='.repeat((4 - normalized.length % 4) % 4);
+    const binary = atob(padded);
+    const bytes = Uint8Array.from(binary, char => char.charCodeAt(0));
+    return JSON.parse(new TextDecoder().decode(bytes));
+  }
+
+  function restorableState(payload) {
+    return {
+      version: 1,
+      requestId: payload.requestId,
+      submittedAt: payload.submittedAt,
+      signoff: payload.signoff,
+      criteria: payload.criteria.map(item => ({
+        checked: item.checked,
+        notApplicable: item.notApplicable,
+        exampleValue: item.exampleValue,
+      })),
+    };
+  }
+
+  function restorableUrl(payload) {
+    return location.href.split('#')[0] + '#submission=' + encodeState(restorableState(payload));
+  }
+
   function collectGraduationPayload() {
     const criteria = Array.from(document.querySelectorAll('.criterion')).map(row => {
       const section = row.closest('.section');
@@ -1030,10 +1071,10 @@
       csHandoffOwner: getSignoffValue('CS Handoff Owner'),
       notes: getSignoffValue('Notes / Open Items at Graduation'),
     };
-    return {
+    const payload = {
       requestId: 'psa-graduation-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8),
       submittedAt: new Date().toISOString(),
-      sourceUrl: location.href.split('#')[0],
+      sourceUrl: '',
       clientName: signoff.clientName,
       saName: signoff.saName,
       graduationDate: signoff.graduationDate,
@@ -1048,6 +1089,38 @@
       signoff,
       criteria,
     };
+    payload.sourceUrl = restorableUrl(payload);
+    return payload;
+  }
+
+  function restoreSubmissionFromUrl() {
+    if (!location.hash.startsWith('#submission=')) return;
+    try {
+      const state = decodeState(location.hash.slice('#submission='.length));
+      const signoff = state.signoff || {};
+      setSignoffValue('Client Name', signoff.clientName);
+      setSignoffValue('SA Name', signoff.saName);
+      setSignoffValue('Graduation Date', signoff.graduationDate);
+      setSignoffValue('CS Handoff Owner', signoff.csHandoffOwner);
+      setSignoffValue('Notes / Open Items at Graduation', signoff.notes);
+
+      const rows = Array.from(document.querySelectorAll('.criterion'));
+      rows.forEach((row, index) => {
+        const saved = state.criteria && state.criteria[index];
+        if (!saved) return;
+        row.classList.toggle('is-na', Boolean(saved.notApplicable));
+        row.querySelector('.na-btn')?.classList.toggle('active', Boolean(saved.notApplicable));
+        row.querySelector('.criterion-check')?.classList.toggle('checked', Boolean(saved.checked) && !saved.notApplicable);
+        const example = row.querySelector('.criterion-example input');
+        if (example) example.value = saved.exampleValue || '';
+      });
+
+      updateProgress();
+      syncPrintValues();
+      setSubmitStatus('Restored submitted checklist from link.', 'success');
+    } catch (error) {
+      setSubmitStatus('Could not restore submitted checklist from link.', 'error');
+    }
   }
 
   function setSubmitStatus(message, type) {
@@ -1121,6 +1194,7 @@
 
   window.addEventListener('beforeprint', syncPrintValues);
   syncPrintValues();
+  restoreSubmissionFromUrl();
 </script>
 
 </body>
