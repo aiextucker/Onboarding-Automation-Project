@@ -1081,7 +1081,9 @@
         },
         body: JSON.stringify({
           event_type: 'graduation-checklist-submitted',
-          client_payload: payload,
+          client_payload: {
+            submission: payload,
+          },
         }),
       });
       if (res.status !== 204) {

@@ -88,16 +88,20 @@ async function graphUpload(graphPath, token, buffer, label = graphPath) {
 }
 
 function readPayload() {
+  let payload = null;
   const eventPath = process.env.GITHUB_EVENT_PATH;
   if (eventPath && fs.existsSync(eventPath)) {
     const event = JSON.parse(fs.readFileSync(eventPath, 'utf8'));
-    return event.client_payload || {};
+    payload = event.client_payload || {};
+  } else if (process.env.GRADUATION_CHECKLIST_PAYLOAD) {
+    payload = JSON.parse(process.env.GRADUATION_CHECKLIST_PAYLOAD);
+  } else {
+    console.error('API ERROR missing repository_dispatch client_payload');
+    process.exit(1);
   }
-  if (process.env.GRADUATION_CHECKLIST_PAYLOAD) {
-    return JSON.parse(process.env.GRADUATION_CHECKLIST_PAYLOAD);
-  }
-  console.error('API ERROR missing repository_dispatch client_payload');
-  process.exit(1);
+  return payload && payload.submission && typeof payload.submission === 'object'
+    ? payload.submission
+    : payload;
 }
 
 function clean(value, fallback = '') {
