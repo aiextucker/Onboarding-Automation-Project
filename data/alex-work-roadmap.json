@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-04T16:29:26.432Z",
+  "generatedAt": "2026-06-04T16:41:34.443Z",
   "source": {
     "notionTasksDb": "33ba59b7e7b2803486f0e749a312b51a",
     "notionTasksUrl": "https://app.notion.com/p/33ba59b7e7b2803486f0e749a312b51a",
@@ -7,38 +7,38 @@
   },
   "totals": {
     "visible": 56,
-    "active": 31,
-    "done": 25,
+    "active": 30,
+    "done": 26,
     "blocked": 6,
     "now": 4,
-    "next": 16,
+    "next": 15,
     "pendingReview": 0
   },
   "incrementCounts": {
     "Waiting": 6,
-    "Next": 16,
+    "Next": 15,
     "Now": 4,
     "Later": 5,
-    "Done": 25
+    "Done": 26
   },
   "statusCounts": {
     "On Hold": 2,
-    "Not Started": 22,
+    "Not Started": 21,
     "Blocked": 4,
     "In Progress": 3,
-    "Done": 25
+    "Done": 26
   },
   "pendingReviewTasks": [],
   "groups": [
     {
       "name": "Onboarding Automation",
-      "percent": 53,
+      "percent": 63,
       "total": 14,
-      "active": 6,
-      "done": 8,
+      "active": 5,
+      "done": 9,
       "blocked": 4,
       "now": 0,
-      "next": 2,
+      "next": 1,
       "waiting": 4,
       "tasks": [
         {
@@ -142,31 +142,6 @@
           "weight": 2
         },
         {
-          "id": "375a59b7-e7b2-81be-b949-f3f182d6543f",
-          "url": "https://app.notion.com/p/Graduation-Checklist-automate-submission-capture-375a59b7e7b281beb949f3f182d6543f",
-          "lastEdited": "2026-06-04T16:29:00.000Z",
-          "name": "Graduation Checklist — automate submission capture",
-          "status": "Not Started",
-          "priority": "High",
-          "effort": "Medium",
-          "due": "",
-          "summary": "Turn the PSA graduation checklist from a print-only/static tool into a submitted record workflow so completed checklists are captured automatically instead of relying on a saved PDF/manual handoff.",
-          "description": "Add automation for completed graduation checklist submissions. Likely scope: collect checklist criteria, N/A flags, example values, sign-off fields, and notes; submit to a durable destination such as Notion; optionally notify the appropriate Teams/PM Hub surface; preserve PDF export as an output rather than the source of truth.\n\nThis builds on the 2026-06-04 PDF clipping fix in psa-graduation-criteria.html.",
-          "existingWorkstream": "Onboarding Automation",
-          "existingIncrement": "Next",
-          "existingVisible": true,
-          "existingDependency": "",
-          "reviewStatus": "",
-          "submittedViaRoadmap": false,
-          "submittedBy": "",
-          "workstream": "Onboarding Automation",
-          "increment": "Next",
-          "visible": true,
-          "dependency": "",
-          "percent": 0,
-          "weight": 3
-        },
-        {
           "id": "35ea59b7-e7b2-816b-ab2f-f583d81f6102",
           "url": "https://app.notion.com/p/Questionnaire-Save-and-Resume-localStorage-35ea59b7e7b2816bab2ff583d81f6102",
           "lastEdited": "2026-06-04T13:21:00.000Z",
@@ -190,6 +165,31 @@
           "dependency": "",
           "percent": 0,
           "weight": 2
+        },
+        {
+          "id": "375a59b7-e7b2-81be-b949-f3f182d6543f",
+          "url": "https://app.notion.com/p/Graduation-Checklist-automate-submission-capture-375a59b7e7b281beb949f3f182d6543f",
+          "lastEdited": "2026-06-04T16:41:00.000Z",
+          "name": "Graduation Checklist — automate submission capture",
+          "status": "Done",
+          "priority": "High",
+          "effort": "Medium",
+          "due": "",
+          "summary": "Implemented in Onboarding-Automation-Project commit 77c0781. PSA graduation checklist now submits via repository_dispatch to a GitHub Action, generates a PDF from the submitted checklist/sign-off data, uploads it to the Teams channel Files folder, and posts in - PSA Graduations with the PDF link/reference. Browser submit smoke test used an intercepted GitHub request; Graph read-only checks confirmed token, channel, and filesFolder access with HTTP 200. No live Teams test post was sent during setup.",
+          "description": "Add automation for completed graduation checklist submissions. Likely scope: collect checklist criteria, N/A flags, example values, sign-off fields, and notes; submit to a durable destination such as Notion; optionally notify the appropriate Teams/PM Hub surface; preserve PDF export as an output rather than the source of truth.\n\nThis builds on the 2026-06-04 PDF clipping fix in psa-graduation-criteria.html.",
+          "existingWorkstream": "Onboarding Automation",
+          "existingIncrement": "Done",
+          "existingVisible": true,
+          "existingDependency": "",
+          "reviewStatus": "",
+          "submittedViaRoadmap": false,
+          "submittedBy": "",
+          "workstream": "Onboarding Automation",
+          "increment": "Done",
+          "visible": true,
+          "dependency": "",
+          "percent": 100,
+          "weight": 3
         },
         {
           "id": "35ea59b7-e7b2-8108-bc28-f5ab972c145a",

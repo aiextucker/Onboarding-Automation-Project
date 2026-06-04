@@ -275,11 +275,11 @@
   <main>
     <section class="stats">
       <div class="stat"><span>Tracked Tasks</span><strong>56</strong></div>
-      <div class="stat"><span>Active</span><strong>31</strong></div>
-      <div class="stat"><span>Done</span><strong>25</strong></div>
+      <div class="stat"><span>Active</span><strong>30</strong></div>
+      <div class="stat"><span>Done</span><strong>26</strong></div>
       <div class="stat"><span>Blocked / Hold</span><strong>6</strong></div>
       <div class="stat"><span>Now</span><strong>4</strong></div>
-      <div class="stat"><span>Next</span><strong>16</strong></div>
+      <div class="stat"><span>Next</span><strong>15</strong></div>
     </section>
     <section class="top-actions" aria-label="Roadmap actions">
       <div class="controls" aria-label="Roadmap display controls">
@@ -333,11 +333,11 @@
         <span class="group-toggle" aria-hidden="true"></span>
         <span class="group-title">
           <span class="group-name">Onboarding Automation</span>
-          <span class="group-meta">6 active · 8 done · 0 now · 2 next · 4 waiting</span>
+          <span class="group-meta">5 active · 9 done · 0 now · 1 next · 4 waiting</span>
         </span>
-        <span class="group-progress">53%</span>
+        <span class="group-progress">63%</span>
       </summary>
-      <div class="meter"><span style="width:53%"></span></div>
+      <div class="meter"><span style="width:63%"></span></div>
       <div class="task-list">
         
     <article class="task">
@@ -394,19 +394,6 @@
   
     <article class="task">
       <div>
-        <a href="https://app.notion.com/p/Graduation-Checklist-automate-submission-capture-375a59b7e7b281beb949f3f182d6543f">Graduation Checklist — automate submission capture</a>
-        <small>Turn the PSA graduation checklist from a print-only/static tool into a submitted record workflow so completed checklists are captured automatically instead of relying on a saved PDF/manual handoff.</small>
-      </div>
-      <div class="badges">
-        <span class="badge status-Not-Started">Not Started</span>
-        <span class="badge">Next</span>
-        <span class="badge">High</span>
-        <span class="badge">Medium</span>
-      </div>
-    </article>
-  
-    <article class="task">
-      <div>
         <a href="https://app.notion.com/p/Questionnaire-Save-and-Resume-localStorage-35ea59b7e7b2816bab2ff583d81f6102">Questionnaire — Save-and-Resume (localStorage)</a>
         <small>If a client closes the tab mid-way, they lose all progress. Add localStorage persistence so answers are saved as they go and restored on reload. Should also handle the pre-filled data not being overwritten on restore.</small>
       </div>
@@ -415,6 +402,19 @@
         <span class="badge">Next</span>
         <span class="badge">Medium</span>
         <span class="badge">No effort</span>
+      </div>
+    </article>
+  
+    <article class="task is-done">
+      <div>
+        <a href="https://app.notion.com/p/Graduation-Checklist-automate-submission-capture-375a59b7e7b281beb949f3f182d6543f">Graduation Checklist — automate submission capture</a>
+        <small>Implemented in Onboarding-Automation-Project commit 77c0781. PSA graduation checklist now submits via repository_dispatch to a GitHub Action, generates a PDF from the submitted checklist/sign-off data, uploads it to the Teams channel Files folder, and posts in - PSA Graduations with the PDF link/reference. Browser submit smoke test used an intercepted GitHub request; Graph read-only checks confirmed token, channel, and filesFolder access with HTTP 200. No live Teams test post was sent during setup.</small>
+      </div>
+      <div class="badges">
+        <span class="badge status-Done">Done</span>
+        <span class="badge">Done</span>
+        <span class="badge">High</span>
+        <span class="badge">Medium</span>
       </div>
     </article>
   
@@ -1239,9 +1239,9 @@
         <section class="script">
           <h2>Meeting Readout</h2>
           <ol>
-            <li>31 active tasks are visible across 8 workstreams.</li>
+            <li>30 active tasks are visible across 8 workstreams.</li>
             <li>6 items are blocked or on hold and need dependency movement before execution.</li>
-            <li>4 items are in the Now increment; 16 are queued Next.</li>
+            <li>4 items are in the Now increment; 15 are queued Next.</li>
             <li>0 submitted items are pending review and excluded from completion rollups.</li>
           </ol>
         </section>
@@ -1249,7 +1249,7 @@
     </section>
   </main>
   <footer>
-    Source: <a href="https://app.notion.com/p/33ba59b7e7b2803486f0e749a312b51a">Notion Tasks Tracker</a>. Generated 2026-06-04T16:29:26.432Z. Rule: Done = 100%, In Progress = 50%, all other statuses = 0%, weighted by Effort level.
+    Source: <a href="https://app.notion.com/p/33ba59b7e7b2803486f0e749a312b51a">Notion Tasks Tracker</a>. Generated 2026-06-04T16:41:34.443Z. Rule: Done = 100%, In Progress = 50%, all other statuses = 0%, weighted by Effort level.
   </footer>
   <script>
     const showDoneToggle = document.getElementById('showDoneToggle');
