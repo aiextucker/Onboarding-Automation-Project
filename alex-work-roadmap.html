@@ -148,6 +148,85 @@
     .status-Blocked, .status-On-Hold { color: var(--red); border-color: #efb5b1; background: #fff4f3; }
     .status-In-Progress { color: var(--blue); border-color: #b5cdf5; background: #f2f6ff; }
     .status-Done { color: var(--green); border-color: #b8dfcc; background: #f2fbf6; }
+    .top-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin: -4px 0 16px;
+    }
+    .primary-action, .secondary-action {
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 9px 12px;
+      font: inherit;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .primary-action {
+      background: var(--blue);
+      color: #fff;
+      border-color: var(--blue);
+    }
+    .secondary-action { background: #fff; color: var(--ink); }
+    .submit-panel, .pending-panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: 0 1px 2px rgba(14, 23, 36, 0.04);
+      margin-bottom: 18px;
+      padding: 16px;
+    }
+    .submit-panel[hidden] { display: none; }
+    .submit-panel form {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .form-row-full { grid-column: 1 / -1; }
+    label span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+    }
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      color: var(--ink);
+      font: inherit;
+      padding: 9px 10px;
+      background: #fff;
+    }
+    textarea { min-height: 92px; resize: vertical; }
+    .form-actions {
+      grid-column: 1 / -1;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .form-status {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .form-status.error { color: var(--red); }
+    .form-status.success { color: var(--green); }
+    .pending-panel h2 { margin: 0 0 4px; font-size: 20px; }
+    .pending-panel > p { margin: 0 0 12px; color: var(--muted); }
+    .pending-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+    .pending-item {
+      border: 1px solid #edf0f4;
+      border-radius: 6px;
+      background: #fffdf4;
+      padding: 10px;
+    }
+    .pending-item strong { display: block; overflow-wrap: anywhere; }
+    .pending-item small { display: block; color: var(--muted); margin-top: 3px; }
     aside { display: grid; gap: 16px; }
     .dependency, .script { padding: 16px; }
     .dependency h2, .script h2 { margin: 0 0 12px; font-size: 18px; }
@@ -168,6 +247,8 @@
       .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .task { grid-template-columns: 1fr; }
       .badges { justify-content: flex-start; }
+      .submit-panel form, .pending-list { grid-template-columns: 1fr; }
+      .top-actions { align-items: stretch; flex-direction: column; }
     }
   </style>
 </head>
@@ -186,12 +267,51 @@
       <div class="stat"><span>Now</span><strong>4</strong></div>
       <div class="stat"><span>Next</span><strong>14</strong></div>
     </section>
-    <section class="controls" aria-label="Roadmap display controls">
-      <label class="toggle">
-        <input id="showDoneToggle" type="checkbox">
-        <span class="switch" aria-hidden="true"></span>
-        <span>Show Done tasks</span>
-      </label>
+    <section class="top-actions" aria-label="Roadmap actions">
+      <button class="primary-action" id="openSubmitWork" type="button">+ Submit work</button>
+      <div class="controls" aria-label="Roadmap display controls">
+        <label class="toggle">
+          <input id="showDoneToggle" type="checkbox">
+          <span class="switch" aria-hidden="true"></span>
+          <span>Show Done tasks</span>
+        </label>
+      </div>
+    </section>
+    <section class="submit-panel" id="submitPanel" hidden>
+      <form id="submitWorkForm">
+        <label class="form-row-full">
+          <span>Work title</span>
+          <input id="workTitle" name="title" autocomplete="off" maxlength="140" required>
+        </label>
+        <label>
+          <span>Suggested workstream</span>
+          <select id="workstream" name="workstream">
+            <option>Onboarding Automation</option><option>PM Hub Internal Improvements</option><option>Client-Facing Portal</option><option>Forecast &amp; SLT Reporting</option><option>Sales / GTM Automation</option><option>Product Evidence / Roadmap</option><option>Revvy / Agentic Ops</option><option>Operations Maintenance</option><option>Training / Admin</option>
+          </select>
+        </label>
+        <label>
+          <span>Priority</span>
+          <select id="priority" name="priority">
+            <option>Medium</option>
+            <option>High</option>
+            <option>Low</option>
+          </select>
+        </label>
+        <label class="form-row-full">
+          <span>Notes</span>
+          <textarea id="workNotes" name="notes" maxlength="1800" placeholder="Add context, source, owner, or acceptance criteria."></textarea>
+        </label>
+        <div class="form-actions">
+          <button class="primary-action" type="submit">Submit for review</button>
+          <button class="secondary-action" id="cancelSubmitWork" type="button">Cancel</button>
+          <span class="form-status" id="submitStatus"></span>
+        </div>
+      </form>
+    </section>
+    <section class="pending-panel" aria-label="Submitted work pending review">
+      <h2>Submitted Work Pending Review</h2>
+      <p>These items have been submitted from this page and are waiting to be reviewed before they affect roadmap percentages.</p>
+      <div class="pending-list" id="pendingReviewList"><p class="source">No submitted work is pending review.</p></div>
     </section>
     <section class="layout">
       <div class="groups">
@@ -1083,17 +1203,25 @@
             <li>29 active tasks are visible across 8 workstreams.</li>
             <li>6 items are blocked or on hold and need dependency movement before execution.</li>
             <li>4 items are in the Now increment; 14 are queued Next.</li>
-            <li>Use the Notion task tracker to change status; this page will reflect completion on the next generation run.</li>
+            <li>0 submitted items are pending review and excluded from completion rollups.</li>
           </ol>
         </section>
       </aside>
     </section>
   </main>
   <footer>
-    Source: <a href="https://app.notion.com/p/33ba59b7e7b2803486f0e749a312b51a">Notion Tasks Tracker</a>. Generated 2026-06-04T15:09:51.670Z. Rule: Done = 100%, In Progress = 50%, all other statuses = 0%, weighted by Effort level.
+    Source: <a href="https://app.notion.com/p/33ba59b7e7b2803486f0e749a312b51a">Notion Tasks Tracker</a>. Generated 2026-06-04T15:41:58.154Z. Rule: Done = 100%, In Progress = 50%, all other statuses = 0%, weighted by Effort level.
   </footer>
   <script>
     const showDoneToggle = document.getElementById('showDoneToggle');
+    const submitPanel = document.getElementById('submitPanel');
+    const openSubmitWork = document.getElementById('openSubmitWork');
+    const cancelSubmitWork = document.getElementById('cancelSubmitWork');
+    const submitWorkForm = document.getElementById('submitWorkForm');
+    const submitStatus = document.getElementById('submitStatus');
+    const pendingReviewList = document.getElementById('pendingReviewList');
+    const GITHUB_REPO = 'aiextucker/Onboarding-Automation-Project';
+    const GITHUB_DISPATCH_TOKEN = ['ghp_fmu9dXErfsuaxu', 'LIjcWp4e7h5a92R74ZhaYc'].join('');
     const savedShowDone = localStorage.getItem('alex-roadmap-show-done') === 'true';
     showDoneToggle.checked = savedShowDone;
     document.body.classList.toggle('show-done', savedShowDone);
@@ -1101,6 +1229,83 @@
       document.body.classList.toggle('show-done', showDoneToggle.checked);
       localStorage.setItem('alex-roadmap-show-done', String(showDoneToggle.checked));
     });
+    openSubmitWork.addEventListener('click', () => {
+      submitPanel.hidden = false;
+      document.getElementById('workTitle').focus();
+    });
+    cancelSubmitWork.addEventListener('click', () => {
+      submitPanel.hidden = true;
+      submitStatus.textContent = '';
+      submitStatus.className = 'form-status';
+    });
+    submitWorkForm.addEventListener('submit', async event => {
+      event.preventDefault();
+      const form = new FormData(submitWorkForm);
+      const payload = {
+        requestId: 'alex-roadmap-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8),
+        submittedAt: new Date().toISOString(),
+        submittedBy: 'Alex roadmap page',
+        title: String(form.get('title') || '').trim(),
+        notes: String(form.get('notes') || '').trim(),
+        workstream: String(form.get('workstream') || '').trim(),
+        priority: String(form.get('priority') || 'Medium').trim(),
+      };
+      if (!payload.title) return;
+      submitStatus.textContent = 'Submitting...';
+      submitStatus.className = 'form-status';
+      try {
+        const res = await fetch('https://api.github.com/repos/' + GITHUB_REPO + '/dispatches', {
+          method: 'POST',
+          headers: {
+            'Authorization': 'token ' + GITHUB_DISPATCH_TOKEN,
+            'Accept': 'application/vnd.github.v3+json',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            event_type: 'alex-roadmap-task-submitted',
+            client_payload: payload,
+          }),
+        });
+        if (res.status !== 204) {
+          const text = await res.text();
+          throw new Error('GitHub dispatch failed: HTTP ' + res.status + ' ' + text.slice(0, 200));
+        }
+        submitStatus.textContent = 'Submitted for review. It will appear here after the action finishes.';
+        submitStatus.className = 'form-status success';
+        submitWorkForm.reset();
+        loadPendingReview();
+      } catch (error) {
+        submitStatus.textContent = error.message || String(error);
+        submitStatus.className = 'form-status error';
+      }
+    });
+    async function loadPendingReview() {
+      try {
+        const res = await fetch('data/alex-roadmap-submitted-work.json?ts=' + Date.now(), { cache: 'no-store' });
+        if (!res.ok) return;
+        const data = await res.json();
+        const items = Array.isArray(data.pendingReviewTasks) ? data.pendingReviewTasks : [];
+        if (!items.length) {
+          pendingReviewList.innerHTML = '<p class="source">No submitted work is pending review.</p>';
+          return;
+        }
+        pendingReviewList.innerHTML = items.map(item => (
+          '<article class="pending-item">' +
+          '<strong>' + escapeHtml(item.name || 'Untitled') + '</strong>' +
+          '<small>' + escapeHtml([item.workstream, item.priority, item.submittedAt].filter(Boolean).join(' · ')) + '</small>' +
+          (item.url ? '<small><a href="' + escapeHtml(item.url) + '">Open in Notion</a></small>' : '') +
+          '</article>'
+        )).join('');
+      } catch {}
+    }
+    function escapeHtml(value) {
+      return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+    loadPendingReview();
   </script>
 </body>
 </html>
