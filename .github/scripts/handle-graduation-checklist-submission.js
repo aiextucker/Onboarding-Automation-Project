@@ -87,6 +87,34 @@ async function graphUpload(graphPath, token, buffer, label = graphPath) {
   return body;
 }
 
+async function graphUploadMaybe(graphPath, token, buffer, label = graphPath) {
+  const res = await fetch(`https://graph.microsoft.com/v1.0${graphPath}`, {
+    method: 'PUT',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/pdf',
+    },
+    body: buffer,
+  });
+  const text = await res.text();
+  let body = {};
+  try {
+    body = text ? JSON.parse(text) : {};
+  } catch {
+    body = { raw: text };
+  }
+  if (!res.ok || body.error || body.errors) {
+    const message = `API ERROR ${label} ${res.status} ${JSON.stringify(body).slice(0, 2000)}`;
+    if (String(process.env.PSA_GRADUATIONS_REQUIRE_PDF || '').toLowerCase() === 'true') {
+      console.error(message);
+      process.exit(1);
+    }
+    console.warn(message);
+    return null;
+  }
+  return body;
+}
+
 function readPayload() {
   let payload = null;
   const eventPath = process.env.GITHUB_EVENT_PATH;
@@ -249,12 +277,16 @@ async function uploadPdf(token, data, pdf) {
     process.exit(1);
   }
   const fileName = `PSA Graduation Checklist - ${safeFileName(data.clientName)} - ${formatDateForFile(data.graduationDate || data.submittedAt)}.pdf`;
-  const uploaded = await graphUpload(
+  const uploaded = await graphUploadMaybe(
     `/drives/${driveId}/items/${folderId}:/${encodeURIComponent(fileName)}:/content`,
     token,
     pdf,
     'Teams PDF upload'
   );
+  if (!uploaded) {
+    console.warn(`PDF_UPLOAD_STATUS skipped ${fileName}`);
+    return { fileName, driveItem: null };
+  }
   console.log(`PDF_UPLOAD_STATUS ok ${uploaded.id || ''} ${fileName}`);
   return { fileName, driveItem: uploaded };
 }
@@ -267,19 +299,23 @@ function teamsMessage(data, file) {
     `<b>CS handoff owner:</b> ${htmlEscape(data.csHandoffOwner || 'Not provided')}`,
   ];
   if (data.notes) rows.push(`<b>Notes:</b> ${htmlEscape(data.notes.slice(0, 900))}`);
-  rows.push(`<a href="${htmlEscape(file.driveItem.webUrl || '')}">${htmlEscape(file.fileName)}</a>`);
+  if (file.driveItem && file.driveItem.webUrl) {
+    rows.push(`<a href="${htmlEscape(file.driveItem.webUrl)}">${htmlEscape(file.fileName)}</a>`);
+  } else {
+    rows.push(`<b>PDF:</b> upload skipped because Graph returned access denied. Grant the bot Files.ReadWrite.All/Sites.ReadWrite.All to attach the PDF.`);
+  }
   return rows.join('<br>');
 }
 
 async function postTeamsMessage(token, data, file) {
-  const attachmentId = file.driveItem.id || 'graduation-checklist-pdf';
+  const attachmentId = file.driveItem && file.driveItem.id || 'graduation-checklist-pdf';
   const payload = {
     body: {
       contentType: 'html',
       content: teamsMessage(data, file),
     },
   };
-  if (file.driveItem.webUrl) {
+  if (file.driveItem && file.driveItem.webUrl) {
     payload.attachments = [{
       id: attachmentId,
       contentType: 'reference',
