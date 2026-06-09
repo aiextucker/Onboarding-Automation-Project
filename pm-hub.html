@@ -458,6 +458,12 @@ body {
 .ms-status-badge.not-started { background: var(--surface3); color: var(--text-mute); }
 .ms-status-badge.overdue     { background: var(--red-bg); color: var(--red); }
 .ms-due { font-size: 0.72rem; color: var(--text-mute); white-space: nowrap; }
+.btn-edit-milestone {
+  font-size: 0.7rem; font-weight: 700; padding: 3px 8px; border-radius: 6px;
+  border: 1px solid var(--border); background: var(--surface2); color: var(--text-dim);
+  cursor: pointer; white-space: nowrap;
+}
+.btn-edit-milestone:hover { border-color: var(--psa); color: var(--psa); background: var(--psa-bg); }
 .long-term-rts-flag {
   display: inline-flex; align-items: center; gap: 5px;
   background: var(--orange-bg); color: var(--orange);
@@ -1028,6 +1034,19 @@ function lobArr(c) {
 function hasBilling(c) { return lobArr(c).includes('billing'); }
 function hasPsa(c)     { return lobArr(c).includes('psa'); }
 function isDual(c)     { return hasBilling(c) && hasPsa(c); }
+function pmHubApiBase() {
+  if (window.PM_HUB_API_BASE) return window.PM_HUB_API_BASE.replace(/\/+$/, '');
+  if (location.hostname === 'aiextucker.github.io') return 'https://alfred-revio.msappproxy.net';
+  return '';
+}
+
+function pmHubFetch(path, options = {}) {
+  const base = pmHubApiBase();
+  return fetch(base + path, {
+    credentials: base ? 'include' : 'same-origin',
+    ...options,
+  });
+}
 
 function lobBadges(c) {
   const lobs = lobArr(c);
@@ -1528,6 +1547,7 @@ function renderClientView(client, data) {
           ${m.phase ? `<span style="font-size:0.7rem;color:var(--text-mute)">${esc(m.phase)}</span>` : ''}
           <span class="ms-status-badge ${badgeCls}">${esc(badgeTxt)}</span>
           ${m.due ? `<span class="ms-due">${fmtDate(m.due)}</span>` : ''}
+          <button type="button" class="btn-edit-milestone" onclick="openMilestoneModal('${esc(m.id)}')">Edit</button>
         </div>`;
     }).join('');
     main.insertAdjacentHTML('beforeend', `
@@ -2080,6 +2100,38 @@ async function init() {
 init();
 </script>
 
+<!-- ── Edit Milestone Modal ── -->
+<div class="int-modal-overlay" id="milestoneModalOverlay">
+  <div class="int-modal" role="dialog" aria-modal="true" aria-labelledby="milestoneModalTitle">
+    <button class="int-modal-close" onclick="closeMilestoneModal()" aria-label="Close">×</button>
+    <h2 id="milestoneModalTitle">Edit Milestone</h2>
+    <div class="client-label" id="milestoneModalName"></div>
+
+    <label for="milestoneStatus">Status</label>
+    <select id="milestoneStatus">
+      <option value="Not Started">Not Started</option>
+      <option value="In Progress">In Progress</option>
+      <option value="Completed">Completed</option>
+      <option value="Blocked">Blocked</option>
+    </select>
+
+    <label for="milestoneDue">Planned Due Date</label>
+    <input type="date" id="milestoneDue">
+
+    <label for="milestoneCompleted">Actual Completion Date</label>
+    <input type="date" id="milestoneCompleted">
+
+    <label for="milestoneNotes">Notes</label>
+    <textarea id="milestoneNotes" placeholder="Milestone notes, blockers, or context…"></textarea>
+
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeMilestoneModal()">Cancel</button>
+      <button class="btn-submit" id="milestoneSubmitBtn" onclick="submitMilestoneEdit()">Save Milestone</button>
+    </div>
+    <div class="int-modal-status" id="milestoneModalStatus"></div>
+  </div>
+</div>
+
 <!-- ── Log Interaction Modal ── -->
 <div class="int-modal-overlay" id="intModalOverlay">
   <div class="int-modal" role="dialog" aria-modal="true" aria-labelledby="intModalTitle">
@@ -2156,6 +2208,100 @@ init();
 </style>
 
 <script>
+// ── Edit Milestone modal state ───────────────────────────────────────────────
+let _milestoneId = null;
+
+function findActiveMilestone(id) {
+  const rows = snapshot?.psaMilestonesByClientId?.[activeClient?.id] || [];
+  return rows.find(m => m.id === id) || null;
+}
+
+async function openMilestoneModal(id) {
+  _milestoneId = id;
+  const fallback = findActiveMilestone(id) || {};
+  document.getElementById('milestoneModalName').textContent = fallback.name || '';
+  document.getElementById('milestoneStatus').value = fallback.status || 'Not Started';
+  document.getElementById('milestoneDue').value = fallback.due || '';
+  document.getElementById('milestoneCompleted').value = fallback.completedDate || '';
+  document.getElementById('milestoneNotes').value = fallback.notes || '';
+  document.getElementById('milestoneModalStatus').textContent = 'Loading latest Notion row…';
+  document.getElementById('milestoneSubmitBtn').disabled = true;
+  document.getElementById('milestoneModalOverlay').classList.add('open');
+
+  try {
+    const res = await pmHubFetch('/api/pm-hub/milestones/' + encodeURIComponent(id));
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || !data.ok) throw new Error(data.error || 'Unable to load milestone');
+    const m = data.milestone || {};
+    document.getElementById('milestoneModalName').textContent = m.name || fallback.name || '';
+    document.getElementById('milestoneStatus').value = m.status || fallback.status || 'Not Started';
+    document.getElementById('milestoneDue').value = m.due || '';
+    document.getElementById('milestoneCompleted').value = m.completedDate || '';
+    document.getElementById('milestoneNotes').value = m.notes || '';
+    document.getElementById('milestoneModalStatus').textContent = '';
+    document.getElementById('milestoneSubmitBtn').disabled = false;
+  } catch (err) {
+    document.getElementById('milestoneModalStatus').innerHTML = `<span style="color:var(--red)">Error: ${esc(err.message)}</span>`;
+  }
+}
+
+function closeMilestoneModal() {
+  document.getElementById('milestoneModalOverlay').classList.remove('open');
+}
+
+function applyMilestoneUpdate(updated) {
+  const rows = snapshot?.psaMilestonesByClientId?.[activeClient?.id] || [];
+  const idx = rows.findIndex(m => m.id === updated.id);
+  if (idx === -1) return;
+  const today = new Date().toISOString().slice(0, 10);
+  rows[idx] = {
+    ...rows[idx],
+    status: updated.status,
+    due: updated.due,
+    completedDate: updated.completedDate,
+    notes: updated.notes,
+    isOverdue: Boolean(updated.due && updated.status !== 'Completed' && updated.due < today),
+  };
+}
+
+async function submitMilestoneEdit() {
+  if (!_milestoneId) return;
+  const submitBtn = document.getElementById('milestoneSubmitBtn');
+  const statusEl = document.getElementById('milestoneModalStatus');
+  submitBtn.disabled = true;
+  statusEl.textContent = 'Saving…';
+
+  const payload = {
+    status: document.getElementById('milestoneStatus').value,
+    due: document.getElementById('milestoneDue').value || null,
+    completedDate: document.getElementById('milestoneCompleted').value || null,
+    notes: document.getElementById('milestoneNotes').value.trim(),
+  };
+
+  try {
+    const res = await pmHubFetch('/api/pm-hub/milestones/' + encodeURIComponent(_milestoneId), {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || !data.ok) throw new Error(data.error || 'Save failed');
+    applyMilestoneUpdate(data.milestone || {});
+    statusEl.innerHTML = '<span style="color:var(--green)">Saved.</span>';
+    setTimeout(() => {
+      closeMilestoneModal();
+      if (activeClient) loadClientView(activeClient.id);
+    }, 450);
+  } catch (err) {
+    statusEl.innerHTML = `<span style="color:var(--red)">Error: ${esc(err.message)}</span>`;
+    submitBtn.disabled = false;
+  }
+}
+
+document.getElementById('milestoneModalOverlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('milestoneModalOverlay')) closeMilestoneModal();
+});
+
 // ── Log Interaction modal state ──────────────────────────────────────────────
 let _intPsaId = null;
 let _intSentiment = null;
@@ -2207,8 +2353,7 @@ document.getElementById('intModalOverlay').addEventListener('click', e => {
 });
 
 async function submitInteraction() {
-  const PM_HUB_API_BASE = (window.PM_HUB_API_BASE || '').replace(/\/+$/, '');
-  const INTERACTION_API_ENDPOINT = PM_HUB_API_BASE + '/api/pm-hub/interactions';
+  const INTERACTION_API_ENDPOINT = '/api/pm-hub/interactions';
 
   const type = document.getElementById('intType').value;
   if (!type) {
@@ -2237,7 +2382,7 @@ async function submitInteraction() {
   status.textContent = 'Logging…';
 
   try {
-    const res = await fetch(INTERACTION_API_ENDPOINT, {
+    const res = await pmHubFetch(INTERACTION_API_ENDPOINT, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
