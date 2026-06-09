@@ -43,6 +43,7 @@ jobs:
           const DB_PSA_CLIENTS      = 'dba0a0aac29e42d7ac7e968e0245f4c4';
           const DB_PSA_CALLS        = '336a59b7-e7b2-812f-8011-fa4a47f348bd';
           const DB_PSA_INTERACTIONS = '6246303e-1e51-408f-ad7e-85ad865d449d';
+          const DB_PSA_MILESTONES   = '06f1e10a-4531-4e0e-8190-7562c25b4805';
 
           // ── Notion helpers ───────────────────────────────────────────────────
           async function notionQuery(dbId, filter, sorts, token) {
@@ -508,7 +509,35 @@ jobs:
             }
             console.log(`  Interactions matched to ${Object.keys(interactionsByClientId).length} clients`);
 
-            // ── 7. Billing digests ────────────────────────────────────────────
+            // ── 7. PSA milestones ─────────────────────────────────────────────
+            console.log('Fetching PSA milestones…');
+            const psaMilestonePages = await notionQuery(DB_PSA_MILESTONES, null, null, REVAY_TOKEN);
+            console.log(`  ${psaMilestonePages.length} milestone records`);
+
+            const psaMilestonesByClientId = {};
+            for (const page of psaMilestonePages) {
+              const pr = page.properties;
+              const clientRel = pr['Client']?.relation || pr['']?.relation || [];
+              if (!clientRel.length) continue;
+              const milestone = {
+                id:            page.id,
+                name:          nStr(pr['Milestone Name']),
+                status:        pr['Status']?.status?.name || null,
+                phase:         (pr['Phase']?.multi_select || []).map(o => o.name).join(', ') || null,
+                due:           pr['Planned Due Date']?.date?.start?.slice(0,10) || null,
+                completedDate: pr['Actual Completion Date']?.date?.start?.slice(0,10) || null,
+                notes:         nStr(pr['Notes']),
+                isOverdue:     pr['Is Overdue?']?.formula?.boolean || false,
+              };
+              for (const rel of clientRel) {
+                const primaryId = psaIdToClientId[rel.id] || rel.id;
+                psaMilestonesByClientId[primaryId] = psaMilestonesByClientId[primaryId] || [];
+                psaMilestonesByClientId[primaryId].push(milestone);
+              }
+            }
+            console.log(`  Milestones matched to ${Object.keys(psaMilestonesByClientId).length} clients`);
+
+            // ── 8. Billing digests ────────────────────────────────────────────
             console.log('Fetching billing digests…');
             const digestPages = await notionQuery(DB_DIGESTS, null,
               [{ property:'Name', direction:'ascending' }], NOTION_TOKEN);
@@ -535,7 +564,7 @@ jobs:
             }
             console.log(`  Digests fetched: ${Object.keys(digestsByClientId).length}`);
 
-            // ── 8. Zendesk tickets (billing only) ────────────────────────────
+            // ── 9. Zendesk tickets (billing only) ────────────────────────────
             console.log('Fetching Zendesk tickets for billing clients…');
             const ticketsByClientId = {};
             const billingForZd = allClients.filter(c => c.lob === 'billing' || (Array.isArray(c.lob) && c.lob.includes('billing')));
@@ -552,12 +581,13 @@ jobs:
               console.log(`  Total: ${Object.keys(ticketsByClientId).length} clients, ${total} tickets`);
             }
 
-            // ── 9. Write snapshot ─────────────────────────────────────────────
+            // ── 10. Write snapshot ────────────────────────────────────────────
             const snapshot = {
               updatedAt: new Date().toISOString(),
               clients: allClients,
               briefsByClientId,
               psaBriefsByClientId,
+              psaMilestonesByClientId,
               interactionsByClientId,
               digestsByClientId,
               ticketsByClientId,
