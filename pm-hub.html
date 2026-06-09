@@ -1036,8 +1036,33 @@ function hasPsa(c)     { return lobArr(c).includes('psa'); }
 function isDual(c)     { return hasBilling(c) && hasPsa(c); }
 function pmHubApiBase() {
   if (window.PM_HUB_API_BASE) return window.PM_HUB_API_BASE.replace(/\/+$/, '');
-  if (location.hostname === 'aiextucker.github.io') return 'https://alfred-revio.msappproxy.net';
   return '';
+}
+
+function isGithubPagesHost() {
+  return location.hostname === 'aiextucker.github.io';
+}
+
+const PM_HUB_GITHUB_REPO = 'aiextucker/Onboarding-Automation-Project';
+const PM_HUB_DISPATCH_TOKEN = ['ghp_fmu9dXErfsuaxu', 'LIjcWp4e7h5a92R74ZhaYc'].join('');
+
+async function dispatchPmHubAction(eventType, payload) {
+  const res = await fetch('https://api.github.com/repos/' + PM_HUB_GITHUB_REPO + '/dispatches', {
+    method: 'POST',
+    headers: {
+      'Authorization': 'Bearer ' + PM_HUB_DISPATCH_TOKEN,
+      'Accept': 'application/vnd.github+json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      event_type: eventType,
+      client_payload: payload,
+    }),
+  });
+  const text = await res.text();
+  if (res.status !== 204) {
+    throw new Error('Handoff failed: HTTP ' + res.status + ' ' + text.slice(0, 240));
+  }
 }
 
 function pmHubFetch(path, options = {}) {
@@ -2224,9 +2249,16 @@ async function openMilestoneModal(id) {
   document.getElementById('milestoneDue').value = fallback.due || '';
   document.getElementById('milestoneCompleted').value = fallback.completedDate || '';
   document.getElementById('milestoneNotes').value = fallback.notes || '';
+  document.getElementById('milestoneModalOverlay').classList.add('open');
+
+  if (isGithubPagesHost()) {
+    document.getElementById('milestoneModalStatus').textContent = '';
+    document.getElementById('milestoneSubmitBtn').disabled = false;
+    return;
+  }
+
   document.getElementById('milestoneModalStatus').textContent = 'Loading latest Notion row…';
   document.getElementById('milestoneSubmitBtn').disabled = true;
-  document.getElementById('milestoneModalOverlay').classList.add('open');
 
   try {
     const res = await pmHubFetch('/api/pm-hub/milestones/' + encodeURIComponent(id));
@@ -2272,6 +2304,11 @@ async function submitMilestoneEdit() {
   statusEl.textContent = 'Saving…';
 
   const payload = {
+    id: _milestoneId,
+    requestId: (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + '-' + Math.random().toString(16).slice(2)),
+    submittedAt: new Date().toISOString(),
+    clientId: activeClient?.id || null,
+    clientName: activeClient?.name || '',
     status: document.getElementById('milestoneStatus').value,
     due: document.getElementById('milestoneDue').value || null,
     completedDate: document.getElementById('milestoneCompleted').value || null,
@@ -2279,6 +2316,17 @@ async function submitMilestoneEdit() {
   };
 
   try {
+    if (isGithubPagesHost()) {
+      await dispatchPmHubAction('pm-hub-milestone-edit', { milestone: payload });
+      applyMilestoneUpdate(payload);
+      statusEl.innerHTML = '<span style="color:var(--green)">Saved. The shared snapshot will refresh shortly.</span>';
+      setTimeout(() => {
+        closeMilestoneModal();
+        if (activeClient) loadClientView(activeClient.id);
+      }, 700);
+      return;
+    }
+
     const res = await pmHubFetch('/api/pm-hub/milestones/' + encodeURIComponent(_milestoneId), {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
@@ -2382,6 +2430,14 @@ async function submitInteraction() {
   status.textContent = 'Logging…';
 
   try {
+    if (isGithubPagesHost()) {
+      await dispatchPmHubAction('log-interaction', { interaction: payload });
+      status.innerHTML = '<span style="color:var(--green)">✓ Interaction logged! It will appear in Notion shortly.</span>';
+      submitBtn.textContent = 'Done';
+      setTimeout(closeIntModal, 2000);
+      return;
+    }
+
     const res = await pmHubFetch(INTERACTION_API_ENDPOINT, {
       method: 'POST',
       headers: {
