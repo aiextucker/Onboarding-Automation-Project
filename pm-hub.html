@@ -2207,7 +2207,8 @@ document.getElementById('intModalOverlay').addEventListener('click', e => {
 });
 
 async function submitInteraction() {
-  const INTERACTION_API_ENDPOINT = '/api/pm-hub/interactions';
+  const PM_HUB_API_BASE = (window.PM_HUB_API_BASE || '').replace(/\/+$/, '');
+  const INTERACTION_API_ENDPOINT = PM_HUB_API_BASE + '/api/pm-hub/interactions';
 
   const type = document.getElementById('intType').value;
   if (!type) {
@@ -2216,6 +2217,8 @@ async function submitInteraction() {
   }
 
   const payload = {
+    requestId:     (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + '-' + Math.random().toString(16).slice(2)),
+    submittedAt:   new Date().toISOString(),
     psaId:         _intPsaId,
     clientName:    document.getElementById('intModalClientName').textContent.trim(),
     title:         document.getElementById('intTitle').value.trim(),
