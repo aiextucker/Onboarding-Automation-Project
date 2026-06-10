@@ -2486,8 +2486,7 @@ All method-panel ids should follow: id="${panelId}-tab1"`;
         headers: {
           'x-api-key': ANTHROPIC_API_KEY,
           'anthropic-version': '2023-06-01',
-          'content-type': 'application/json',
-          'anthropic-dangerous-direct-browser-calls': 'true'
+          'content-type': 'application/json'
         },
         body: JSON.stringify({
           model: 'claude-opus-4-6',
