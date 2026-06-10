@@ -1,0 +1,2609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Data Access & Migration Guide | Rev.io</title>
+<style>
+  :root {
+    --rev-orange: #E8511E;
+    --rev-orange-light: #F47041;
+    --rev-orange-dark: #C43F10;
+    --rev-navy: #0D1117;
+    --rev-navy-light: #161B22;
+    --sidebar-bg: #070B10;
+    --sidebar-width: 240px;
+    --content-bg: #0D1117;
+    --white: #161B22;
+    --border: #2D3340;
+    --text-dark: #E6EDF3;
+    --text-muted: #8B949E;
+    --text-body: #C9D1D9;
+    --green: #3FB950;
+    --blue: #58A6FF;
+    --yellow: #D29922;
+    --badge-api-bg: #2D1F00;
+    --badge-api-color: #FCD34D;
+    --badge-export-bg: #0D1F3C;
+    --badge-export-color: #93C5FD;
+    --badge-both-bg: #0D2818;
+    --badge-both-color: #6EE7B7;
+    --step-num-bg: #E8511E;
+    --note-bg: #1C1208;
+    --note-border: #E8511E;
+    --tip-bg: #0D1F3C;
+    --tip-border: #3B82F6;
+    --warning-bg: #1C1500;
+    --warning-border: #D29922;
+    --table-head: #1C2128;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--content-bg);
+    color: var(--text-body);
+    display: flex;
+    min-height: 100vh;
+  }
+
+  /* ── SIDEBAR ── */
+  #sidebar {
+    width: var(--sidebar-width);
+    background: var(--sidebar-bg);
+    color: #CBD5E1;
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    overflow-y: auto;
+    z-index: 100;
+  }
+
+  .sidebar-header {
+    padding: 24px 20px 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .sidebar-logo {
+    font-size: 22px;
+    font-weight: 800;
+    color: #FFFFFF;
+    letter-spacing: -0.5px;
+  }
+
+  .sidebar-logo span {
+    color: var(--rev-orange);
+  }
+
+  .sidebar-subtitle {
+    font-size: 11px;
+    color: #94A3B8;
+    margin-top: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .sidebar-section-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #64748B;
+    padding: 20px 20px 8px;
+    font-weight: 600;
+  }
+
+  .sidebar-nav {
+    flex: 1;
+    padding-bottom: 24px;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-left: 3px solid transparent;
+    transition: all 0.15s;
+    font-size: 13.5px;
+    color: #94A3B8;
+    user-select: none;
+  }
+
+  .nav-item:hover {
+    background: rgba(255,255,255,0.05);
+    color: #E2E8F0;
+    border-left-color: rgba(232,81,30,0.4);
+  }
+
+  .nav-item.active {
+    background: rgba(232,81,30,0.12);
+    color: #FFFFFF;
+    border-left-color: var(--rev-orange);
+    font-weight: 600;
+  }
+
+  .nav-badge {
+    margin-left: auto;
+    font-size: 9px;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+
+  .badge-api { background: rgba(245,158,11,0.2); color: #FCD34D; }
+  .badge-export { background: rgba(59,130,246,0.2); color: #93C5FD; }
+  .badge-both { background: rgba(16,185,129,0.2); color: #6EE7B7; }
+  .badge-pending { background: rgba(100,116,139,0.2); color: #94A3B8; }
+
+  .nav-icon {
+    width: 20px;
+    text-align: center;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+
+  /* ── MAIN CONTENT ── */
+  #main {
+    margin-left: var(--sidebar-width);
+    flex: 1;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* TOP HEADER */
+  .top-header {
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    padding: 20px 40px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+  }
+
+  .page-title-area h1 {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text-dark);
+  }
+
+  .page-title-area p {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+
+  .header-contact {
+    text-align: right;
+    font-size: 13px;
+    color: var(--text-muted);
+    flex-shrink: 0;
+  }
+
+  .header-contact strong {
+    display: block;
+    color: var(--rev-orange);
+    font-size: 14px;
+    margin-bottom: 2px;
+  }
+
+  .header-contact a {
+    color: var(--rev-orange);
+    text-decoration: none;
+  }
+
+  /* PANEL */
+  .panel {
+    display: none;
+    padding: 40px 40px 60px;
+    max-width: 900px;
+  }
+
+  .panel.active { display: block; }
+
+  /* PANEL HEADER */
+  .panel-header {
+    margin-bottom: 32px;
+  }
+
+  .panel-header-top {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 10px;
+  }
+
+  .system-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    background: var(--rev-orange);
+    color: white;
+    flex-shrink: 0;
+  }
+
+  .panel-header h2 {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-dark);
+  }
+
+  .type-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 20px;
+  }
+
+  .type-badge.api { background: var(--badge-api-bg); color: var(--badge-api-color); }
+  .type-badge.export { background: var(--badge-export-bg); color: var(--badge-export-color); }
+  .type-badge.both { background: var(--badge-both-bg); color: var(--badge-both-color); }
+
+  .panel-header p.lead {
+    font-size: 15px;
+    color: var(--text-body);
+    line-height: 1.6;
+    margin-top: 10px;
+    max-width: 720px;
+  }
+
+  /* SECTION TITLES */
+  .section-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin: 32px 0 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .section-title .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--rev-orange);
+    flex-shrink: 0;
+  }
+
+  /* STEPS */
+  .steps {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 16px;
+  }
+
+  .step {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+
+  .step-num {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--rev-orange);
+    color: white;
+    font-size: 13px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .step-body {
+    flex: 1;
+  }
+
+  .step-body strong {
+    display: block;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 4px;
+  }
+
+  .step-body p, .step-body ul {
+    font-size: 14px;
+    color: var(--text-body);
+    line-height: 1.6;
+  }
+
+  .step-body ul {
+    padding-left: 18px;
+    margin-top: 4px;
+  }
+
+  .step-body ul li { margin-bottom: 3px; }
+
+  .step-body code {
+    background: #1C2128;
+    border: 1px solid #2D3340;
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-family: 'SF Mono', 'Consolas', monospace;
+    font-size: 12.5px;
+    color: #F4855A;
+  }
+
+  /* CALLOUTS */
+  .callout {
+    border-radius: 8px;
+    padding: 14px 16px;
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 16px 0;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .callout-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+
+  .callout.note { background: var(--note-bg); border-left: 3px solid var(--note-border); }
+  .callout.tip  { background: var(--tip-bg); border-left: 3px solid var(--tip-border); }
+  .callout.warn { background: var(--warning-bg); border-left: 3px solid var(--warning-border); }
+
+  .callout strong { color: var(--text-dark); }
+
+  /* TABLES */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+    margin: 16px 0;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+
+  .data-table thead tr {
+    background: var(--table-head);
+  }
+
+  .data-table th {
+    text-align: left;
+    padding: 10px 14px;
+    font-weight: 700;
+    color: var(--text-dark);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .data-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid #21262D;
+    vertical-align: top;
+  }
+
+  .data-table tr:last-child td { border-bottom: none; }
+
+  .data-table td:first-child { font-weight: 600; color: var(--text-dark); }
+
+  .data-table code {
+    background: #1C2128;
+    border: 1px solid #2D3340;
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-family: 'SF Mono', 'Consolas', monospace;
+    font-size: 12px;
+    color: #F4855A;
+  }
+
+  /* METHOD TABS (within a panel) */
+  .method-tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 2px solid var(--border);
+    margin: 24px 0 0;
+  }
+
+  .method-tab {
+    padding: 10px 20px;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--text-muted);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.15s;
+  }
+
+  .method-tab:hover { color: var(--rev-orange); }
+  .method-tab.active { color: var(--rev-orange); border-bottom-color: var(--rev-orange); }
+
+  .method-panel { display: none; padding-top: 24px; }
+  .method-panel.active { display: block; }
+
+  /* CREDENTIALS BOX */
+  .creds-box {
+    background: var(--rev-navy);
+    color: #E2E8F0;
+    border-radius: 8px;
+    padding: 16px 20px;
+    font-family: 'SF Mono', 'Consolas', monospace;
+    font-size: 13px;
+    line-height: 2;
+    margin: 12px 0;
+  }
+
+  .creds-box .label { color: #94A3B8; }
+  .creds-box .placeholder { color: #FBD38D; }
+
+  /* DIVIDER */
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 28px 0;
+  }
+
+  /* CHECKLIST */
+  .checklist {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 12px 0;
+  }
+
+  .checklist li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 14px;
+    color: var(--text-body);
+  }
+
+  .checklist li::before {
+    content: '☐';
+    font-size: 15px;
+    color: var(--rev-orange);
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  /* PLACEHOLDER / COMING SOON */
+  .coming-soon {
+    text-align: center;
+    padding: 60px 40px;
+    color: var(--text-muted);
+  }
+
+  .coming-soon .icon { font-size: 48px; margin-bottom: 16px; }
+  .coming-soon h3 { font-size: 18px; color: var(--text-dark); margin-bottom: 8px; }
+  .coming-soon p { font-size: 14px; max-width: 400px; margin: 0 auto; line-height: 1.6; }
+
+  /* QUICK REF TABLE */
+  .quick-ref {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    margin: 16px 0;
+  }
+
+  .quick-ref-title {
+    background: var(--rev-navy);
+    color: white;
+    padding: 10px 16px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    :root { --sidebar-width: 0px; }
+    #sidebar { transform: translateX(-240px); width: 240px; }
+    #main { margin-left: 0; }
+    .panel, .top-header { padding-left: 20px; padding-right: 20px; }
+  }
+
+  /* ── REQUEST NEW BUTTON ── */
+  .sidebar-request-btn {
+    margin: 8px 16px 16px;
+    padding: 9px 14px;
+    background: var(--rev-orange);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    width: calc(100% - 32px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: background 0.15s;
+  }
+  .sidebar-request-btn:hover { background: var(--rev-orange-dark); }
+
+  /* ── EXPORT PDF BUTTON ── */
+  .btn-export-pdf {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text-muted);
+    font-size: 12.5px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+    flex-shrink: 0;
+  }
+  .btn-export-pdf:hover { border-color: var(--rev-orange); color: var(--rev-orange); }
+
+  /* ── MODAL OVERLAY ── */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    width: 660px;
+    max-width: calc(100vw - 40px);
+    max-height: 88vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.5);
+  }
+
+  .modal-header {
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+  .modal-header h3 { font-size: 16px; font-weight: 700; color: var(--text-dark); }
+  .modal-header p { font-size: 13px; color: var(--text-muted); margin-top: 3px; }
+
+  .modal-close {
+    background: none; border: none; color: var(--text-muted);
+    font-size: 22px; cursor: pointer; padding: 2px 6px; line-height: 1; border-radius: 4px;
+  }
+  .modal-close:hover { background: var(--border); color: var(--text-dark); }
+
+  .modal-body { padding: 24px; overflow-y: auto; flex: 1; }
+
+  .modal-footer {
+    padding: 14px 24px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    flex-shrink: 0;
+    align-items: center;
+  }
+
+  .modal-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .modal-input {
+    width: 100%;
+    padding: 10px 14px;
+    background: var(--content-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-dark);
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .modal-input:focus { border-color: var(--rev-orange); }
+
+  .modal-hint {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 6px;
+  }
+
+  .btn-primary {
+    padding: 9px 20px;
+    background: var(--rev-orange);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+    white-space: nowrap;
+  }
+  .btn-primary:hover { background: var(--rev-orange-dark); }
+  .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
+
+  .btn-secondary {
+    padding: 9px 20px;
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .btn-secondary:hover { color: var(--text-dark); border-color: var(--text-muted); }
+
+  .modal-status {
+    font-size: 13px;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-right: auto;
+  }
+
+  .spinner {
+    width: 15px; height: 15px;
+    border: 2px solid var(--border);
+    border-top-color: var(--rev-orange);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    flex-shrink: 0;
+    display: inline-block;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .preview-box {
+    background: var(--content-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 24px;
+    margin-top: 20px;
+  }
+  .preview-box-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .preview-box-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .save-success {
+    background: rgba(16,185,129,0.12);
+    border: 1px solid rgba(16,185,129,0.3);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 13px;
+    color: #6EE7B7;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 16px;
+  }
+
+  /* ── PRINT STYLES ── */
+  .print-brand-header {
+    display: none;
+  }
+
+  @media print {
+    #sidebar, .top-header, .method-tabs, .btn-export-pdf,
+    .sidebar-request-btn, .modal-overlay { display: none !important; }
+    #main { margin-left: 0 !important; }
+    body { background: white !important; }
+    .panel { display: none !important; }
+    .panel.printing {
+      display: block !important;
+      padding: 0 !important;
+      max-width: 100% !important;
+    }
+    .method-panel { display: block !important; padding-top: 16px !important; }
+    .print-brand-header {
+      display: flex !important;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 0 16px;
+      margin-bottom: 24px;
+      border-bottom: 3px solid #E8511E;
+    }
+    .print-brand-header .brand { font-size: 22px; font-weight: 800; color: #1A2035; }
+    .print-brand-header .brand span { color: #E8511E; }
+    .print-brand-header .meta { font-size: 12px; color: #6B7280; text-align: right; }
+    .callout { border-left-width: 3px !important; background: #f9f9f9 !important; }
+    .callout div, .callout strong { color: #374151 !important; }
+    .data-table th { background: #F3F4F6 !important; color: #1A2035 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .data-table td { color: #374151 !important; border-color: #E2E6EA !important; }
+    .section-title { color: #1A2035 !important; border-color: #E2E6EA !important; }
+    .section-title .dot { background: #E8511E !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .step-num { background: #E8511E !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .step-body strong, .step-body p, .step-body ul { color: #374151 !important; }
+    .panel-header h2 { color: #1A2035 !important; }
+    .panel-header p.lead { color: #374151 !important; }
+    .creds-box { background: #1A2035 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .type-badge { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════
+     SIDEBAR
+════════════════════════════════════════ -->
+<nav id="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-logo">Rev<span>.</span>io</div>
+    <div class="sidebar-subtitle">Data Access & Migration Guide</div>
+  </div>
+  <div class="sidebar-nav">
+    <button class="sidebar-request-btn" onclick="openRequestModal()">
+      ＋ Request New System
+    </button>
+    <div class="nav-item active" onclick="showPanel('home', this)" style="margin-bottom:4px;">
+      <span class="nav-icon">🏠</span> Overview
+    </div>
+    <div class="sidebar-section-label">Source Systems</div>
+
+    <div class="nav-item" onclick="showPanel('alarm7sql', this)">
+      <span class="nav-icon">📋</span> Alarm 7 SQL
+      <span class="nav-badge badge-export">Export</span>
+    </div>
+    <div class="nav-item" onclick="showPanel('alarmbiller', this)">
+      <span class="nav-icon">📋</span> AlarmBiller
+      <span class="nav-badge badge-export">Export</span>
+    </div>
+    <div class="nav-item" onclick="showPanel('autotask', this)">
+      <span class="nav-icon">📋</span> Autotask
+      <span class="nav-badge badge-both">Both</span>
+    </div>
+    <div class="nav-item" onclick="showPanel('connectwise', this)">
+      <span class="nav-icon">📋</span> ConnectWise
+      <span class="nav-badge badge-api">API</span>
+    </div>
+    <div class="nav-item" onclick="showPanel('eautomate', this)">
+      <span class="nav-icon">📋</span> eAutomate
+      <span class="nav-badge badge-both">Both</span>
+    </div>
+    <div class="nav-item" onclick="showPanel('fieldpulse', this)">
+      <span class="nav-icon">📋</span> FieldPulse
+      <span class="nav-badge badge-both">Both</span>
+    </div>
+    <div class="nav-item" onclick="showPanel('halopsa', this)">
+      <span class="nav-icon">📋</span> HaloPSA
+      <span class="nav-badge badge-api">API</span>
+    </div>
+    <div class="nav-item" onclick="showPanel('housecallpro', this)">
+      <span class="nav-icon">📋</span> HouseCall Pro
+      <span class="nav-badge badge-both">Both</span>
+    </div>
+    <div class="nav-item" onclick="showPanel('jobber', this)">
+      <span class="nav-icon">📋</span> Jobber
+      <span class="nav-badge badge-both">Both</span>
+    </div>
+    <div class="nav-item" onclick="showPanel('pax8', this)">
+      <span class="nav-icon">📋</span> Pax8
+      <span class="nav-badge badge-both">Both</span>
+    </div>
+    <div class="nav-item" onclick="showPanel('qbd', this)">
+      <span class="nav-icon">📋</span> QuickBooks Desktop
+      <span class="nav-badge badge-export">Export</span>
+    </div>
+    <div class="nav-item" onclick="showPanel('qbo', this)">
+      <span class="nav-icon">📋</span> QuickBooks Online
+      <span class="nav-badge badge-both">Both</span>
+    </div>
+    <div class="nav-item" onclick="showPanel('quotewerks', this)">
+      <span class="nav-icon">📋</span> QuoteWerks
+      <span class="nav-badge badge-export">Export</span>
+    </div>
+    <div class="nav-item" onclick="showPanel('sedona', this)">
+      <span class="nav-icon">📋</span> Sedona
+      <span class="nav-badge badge-pending">Soon</span>
+    </div>
+    <div class="nav-item" onclick="showPanel('servicefusion', this)">
+      <span class="nav-icon">📋</span> Service Fusion
+      <span class="nav-badge badge-both">Both</span>
+    </div>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════
+     MAIN
+════════════════════════════════════════ -->
+<div id="main">
+  <div class="top-header">
+    <div class="page-title-area">
+      <h1>Data Access &amp; Migration Guide</h1>
+      <p>Step-by-step instructions to grant Rev.io access or export your data for migration.</p>
+    </div>
+    <div class="header-contact">
+      <strong>Questions?</strong>
+      Contact your Rev.io Sales Representative
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────
+       LANDING / HOME
+  ──────────────────────────────────── -->
+  <div id="panel-home" class="panel active">
+    <div class="panel-header">
+      <div class="panel-header-top">
+        <div class="system-icon" style="background:var(--rev-orange);">📂</div>
+        <h2>Welcome to Your Migration Guide</h2>
+      </div>
+      <p class="lead">
+        This guide provides step-by-step instructions for connecting your existing software to Rev.io or exporting your data for migration. Select your source system from the left sidebar to get started.
+      </p>
+    </div>
+
+    <div class="section-title"><span class="dot"></span>How This Works</div>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><div class="step-body">
+        <strong>Find your system in the left sidebar</strong>
+        <p>Each source system has its own dedicated guide. Select the platform your data currently lives in.</p>
+      </div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-body">
+        <strong>Choose your access method</strong>
+        <p>Some systems support both direct API access and manual report exports. Your Rev.io Sales Representative can help you decide which path is right for your situation.</p>
+      </div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-body">
+        <strong>Follow the step-by-step instructions</strong>
+        <p>Each guide walks you through exactly what to do — no technical background required for most export methods.</p>
+      </div></div>
+      <div class="step"><div class="step-num">4</div><div class="step-body">
+        <strong>Send your credentials or files to Rev.io</strong>
+        <p>Once complete, share the results with your Rev.io Sales Representative. Always use a secure channel for API keys and credentials — never plain email.</p>
+      </div></div>
+    </div>
+
+    <div class="section-title"><span class="dot"></span>Available Source Systems</div>
+    <table class="data-table">
+      <thead><tr><th>System</th><th>Access Method</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td onclick="showPanel('alarm7sql', document.querySelector('[onclick*=alarm7sql]'))" style="cursor:pointer;color:var(--rev-orange);">Alarm 7 SQL</td><td>Report Export</td><td>✅ Available</td></tr>
+        <tr><td onclick="showPanel('alarmbiller', document.querySelector('[onclick*=alarmbiller]'))" style="cursor:pointer;color:var(--rev-orange);">AlarmBiller</td><td>Report Export</td><td>✅ Available</td></tr>
+        <tr><td onclick="showPanel('autotask', document.querySelector('[onclick*=autotask]'))" style="cursor:pointer;color:var(--rev-orange);">Autotask</td><td>API Access &amp; Export</td><td>✅ Available</td></tr>
+        <tr><td onclick="showPanel('connectwise', document.querySelector('[onclick*=connectwise]'))" style="cursor:pointer;color:var(--rev-orange);">ConnectWise</td><td>API Access</td><td>✅ Available</td></tr>
+        <tr><td onclick="showPanel('eautomate', document.querySelector('[onclick*=eautomate]'))" style="cursor:pointer;color:var(--rev-orange);">eAutomate</td><td>User Access &amp; Export</td><td>✅ Available</td></tr>
+        <tr><td onclick="showPanel('fieldpulse', document.querySelector('[onclick*=fieldpulse]'))" style="cursor:pointer;color:var(--rev-orange);">FieldPulse</td><td>API Access &amp; Export</td><td>✅ Available</td></tr>
+        <tr><td onclick="showPanel('halopsa', document.querySelector('[onclick*=halopsa]'))" style="cursor:pointer;color:var(--rev-orange);">HaloPSA</td><td>API Access</td><td>✅ Available</td></tr>
+        <tr><td onclick="showPanel('housecallpro', document.querySelector('[onclick*=housecallpro]'))" style="cursor:pointer;color:var(--rev-orange);">HouseCall Pro</td><td>API Access &amp; Export</td><td>✅ Available</td></tr>
+        <tr><td onclick="showPanel('jobber', document.querySelector('[onclick*=jobber]'))" style="cursor:pointer;color:var(--rev-orange);">Jobber</td><td>API Access &amp; Export</td><td>✅ Available</td></tr>
+        <tr><td onclick="showPanel('pax8', document.querySelector('[onclick*=pax8]'))" style="cursor:pointer;color:var(--rev-orange);">Pax8</td><td>API Access &amp; Export</td><td>✅ Available</td></tr>
+        <tr><td onclick="showPanel('qbd', document.querySelector('[onclick*=qbd]'))" style="cursor:pointer;color:var(--rev-orange);">QuickBooks Desktop</td><td>Report Export</td><td>✅ Available</td></tr>
+        <tr><td onclick="showPanel('qbo', document.querySelector('[onclick*=qbo]'))" style="cursor:pointer;color:var(--rev-orange);">QuickBooks Online</td><td>API Access &amp; Export</td><td>✅ Available</td></tr>
+        <tr><td onclick="showPanel('quotewerks', document.querySelector('[onclick*=quotewerks]'))" style="cursor:pointer;color:var(--rev-orange);">QuoteWerks</td><td>Report Export</td><td>✅ Available</td></tr>
+        <tr><td style="color:var(--text-muted);">Sedona</td><td>—</td><td>🚧 Coming Soon</td></tr>
+        <tr><td onclick="showPanel('servicefusion', document.querySelector('[onclick*=servicefusion]'))" style="cursor:pointer;color:var(--rev-orange);">Service Fusion</td><td>API Access &amp; Export</td><td>✅ Available</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout note" style="margin-top:32px;">
+      <span class="callout-icon">🔒</span>
+      <div><strong>Security reminder:</strong> API keys and credentials give access to your account data. Always send them via a secure channel — your Rev.io Sales Representative will provide guidance on the safest transfer method.</div>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────
+       ALARM 7 SQL
+  ──────────────────────────────────── -->
+  <div id="panel-alarm7sql" class="panel">
+    <div class="panel-header">
+      <div class="panel-header-top">
+        <div class="system-icon">📋</div>
+        <h2>Alarm 7 SQL</h2>
+      </div>
+      <span class="type-badge export">📤 Report Export</span>
+      <p class="lead">
+        Alarm 7 SQL is a billing and service CRM built for security alarm dealers, backed by a SQL database with open ODBC connectivity. Data can be exported via the built-in reports engine (recommended for most users) or directly from the database for IT teams needing raw extracts.
+      </p>
+    </div>
+
+    <div class="method-tabs">
+      <div class="method-tab active" onclick="showMethod('alarm7sql','reports', this)">Option A: Built-In Reports</div>
+      <div class="method-tab" onclick="showMethod('alarm7sql','db', this)">Option B: Direct DB Access</div>
+    </div>
+
+    <div id="alarm7sql-reports" class="method-panel active">
+      <p style="font-size:14px;color:var(--text-body);margin-bottom:16px;">No technical knowledge required. Most migration data can be exported directly from the Reports menu.</p>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-body">
+          <strong>Log in as an Admin user</strong>
+          <p>Use an account with full access to the Reports section and all customer data. Limited users may not see all report options.</p>
+        </div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-body">
+          <strong>Navigate to the Reports section</strong>
+          <p>From the Main Menu, select <code>Reports</code>. Reports are organized by category — look for Customer, Billing/Recurring, Service, and Inventory groups.</p>
+        </div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-body">
+          <strong>Select the report you need and set filters</strong>
+          <p>For migration purposes, export all active records with no date filter applied unless otherwise directed by your Rev.io Sales Representative.</p>
+        </div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-body">
+          <strong>Export to Excel or CSV</strong>
+          <p>Once a report is generated, look for an <strong>Export</strong> or <strong>Print</strong> option in the toolbar. Choose <strong>Excel (.xls)</strong> or <strong>CSV</strong> for easiest compatibility with Rev.io import templates.</p>
+        </div></div>
+        <div class="step"><div class="step-num">5</div><div class="step-body">
+          <strong>Use Custom Reports for missing fields</strong>
+          <p>Go to <code>Reports → Custom Reports</code> to select specific fields from the database if a built-in report doesn't include what you need.</p>
+        </div></div>
+        <div class="step"><div class="step-num">6</div><div class="step-body">
+          <strong>Repeat for each data category</strong>
+          <p>Work through the categories in the table below and save all exports to a single folder labeled with your company name and export date.</p>
+        </div></div>
+      </div>
+      <div class="callout tip">
+        <span class="callout-icon">💡</span>
+        <div>Alarm 7 SQL supports Outlook integration. If customer email addresses are incomplete in the main reports, try <code>File → Export to Outlook</code> as a supplemental source.</div>
+      </div>
+
+      <div class="section-title" style="margin-top:28px;"><span class="dot"></span>Key Data Categories to Export</div>
+      <table class="data-table">
+        <thead><tr><th>Data Category</th><th>Where to Find It</th><th>Priority</th></tr></thead>
+        <tbody>
+          <tr><td>Customer / Account List</td><td><code>Customer Maintenance</code> → Customer List Report, or Custom Report on the Customer file</td><td>✅ Required</td></tr>
+          <tr><td>Recurring Charges / RMR</td><td><code>Reports → Recurring Billing</code> → Recurring Charges report; or per account in <code>Customer Maintenance → Recurring Charges</code></td><td>✅ Required</td></tr>
+          <tr><td>Invoice / Billing History</td><td><code>Reports → Invoice / A/R</code>; Customer Invoice History under <code>Customer Maintenance</code></td><td>✅ Required</td></tr>
+          <tr><td>Service Ticket History</td><td><code>Reports → Service</code>; or <code>Customer Maintenance → Customer Service History List</code></td><td>Recommended</td></tr>
+          <tr><td>Equipment / Installed Parts</td><td><code>Customer Maintenance → Equipment List</code>; also in Inventory Reports</td><td>Recommended</td></tr>
+          <tr><td>Inventory / Parts List</td><td><code>Reports → Inventory</code>; or <code>Inventory Maintenance</code> screen exports</td><td>If applicable</td></tr>
+          <tr><td>Contacts / Rolodex</td><td><code>Customer Maintenance → Contact List</code>; or Outlook export integration</td><td>If applicable</td></tr>
+          <tr><td>Employee / Technician List</td><td><code>Setup → Employee Profiles</code> report</td><td>If applicable</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div id="alarm7sql-db" class="method-panel">
+      <div class="callout note">
+        <span class="callout-icon">ℹ️</span>
+        <div>This option requires someone familiar with your Windows server environment and basic SQL. Z-Micro explicitly states they never prevent you from accessing your own data — the database is open and ODBC-accessible.</div>
+      </div>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-body">
+          <strong>Identify your database server</strong>
+          <p>Alarm 7 SQL is typically installed as a shared network application. Check with the person who manages your installation for the server name or IP address.</p>
+        </div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-body">
+          <strong>Locate the data directory</strong>
+          <p>The default data path is typically <code>C:\ALARMWIN\</code> or the network share path configured during setup. Verify by checking the Alarm 7 SQL workstation shortcut or network share configuration.</p>
+        </div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-body">
+          <strong>Connect via ODBC</strong>
+          <p>Open <code>Windows Control Panel → Administrative Tools → ODBC Data Sources</code>. Create a new System DSN pointing to the Alarm 7 SQL database. Then use any SQL-capable tool (SQL Server Management Studio, Excel Power Query, Microsoft Access, etc.) to query the tables directly.</p>
+        </div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-body">
+          <strong>Export tables to CSV</strong>
+          <p>Query the relevant tables and export to CSV. Key tables include the customer master, recurring charges, invoice history, and service tickets. Your Rev.io Sales Representative can advise on which tables map to which import templates.</p>
+        </div></div>
+      </div>
+      <div class="callout warn">
+        <span class="callout-icon">⚠️</span>
+        <div>If your Alarm 7 SQL is hosted or managed by a third party, you may need to request a database backup or extract directly from them. Contact Z-Micro Technologies at <strong>(877) 864-5010</strong> if you need help obtaining your data.</div>
+      </div>
+    </div>
+
+    <div class="section-title"><span class="dot"></span>What to Send Rev.io</div>
+    <ul class="checklist">
+      <li>☐ <strong>Customer / Account List</strong> — all active accounts with name, address, phone, email, and account number</li>
+      <li>☐ <strong>Recurring Charges (RMR) by Account</strong> — billing line items, amounts, frequencies, and service descriptions</li>
+      <li>☐ <strong>Open Invoices / A/R Aging</strong> — outstanding balances that need to carry over into Rev.io</li>
+      <li>☐ <strong>Service / Product Catalog</strong> — services and parts used in recurring billing and invoices</li>
+      <li>☐ <strong>Equipment per Site (if applicable)</strong> — installed equipment records per customer</li>
+    </ul>
+    <div class="callout tip" style="margin-top:16px;">
+      <span class="callout-icon">💡</span>
+      <div>Use one file per data category with a header row. Avoid merged cells or summary rows — raw report exports from Alarm 7 SQL are ideal.</div>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────
+       ALARMBILLER
+  ──────────────────────────────────── -->
+  <div id="panel-alarmbiller" class="panel">
+    <div class="panel-header">
+      <div class="panel-header-top">
+        <div class="system-icon">🔔</div>
+        <h2>AlarmBiller</h2>
+      </div>
+      <span class="type-badge export">📤 Report Export</span>
+      <p class="lead">
+        AlarmBiller provides built-in export tools accessible directly from list views and the Reports section. No API setup is required. Follow the methods below to pull all data needed for your Rev.io migration.
+      </p>
+      <div class="callout warn">
+        <span class="callout-icon">⚠️</span>
+        <div><strong>Before you start:</strong> Confirm your AlarmBiller account has <strong>Administrator or Manager</strong> role permissions. Some reports and export functions are role-restricted. If you can't access something, contact your AlarmBiller admin or open a ticket at <a href="mailto:support.boldgroup.com">support.boldgroup.com</a>.</div>
+      </div>
+    </div>
+
+    <div class="section-title"><span class="dot"></span>Method 1 — Export from Grid / List Views</div>
+    <p style="font-size:14px;color:var(--text-body);margin-bottom:16px;">Most list views in AlarmBiller (Customers, Invoices, RMR, Payments) allow direct export to a spreadsheet.</p>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><div class="step-body"><strong>Navigate to the section you want to export</strong><p>Go to Customers, Invoices, RMR, or Payments — whichever data you need.</p></div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-body"><strong>Apply filters (optional)</strong><p>Set any date range, status, or customer type filters to scope your dataset before exporting.</p></div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-body"><strong>Locate the Export / Download icon</strong><p>Look in the upper-right area of the grid for a spreadsheet or CSV icon. If you don't see it, check the column settings or options menu — it may be nested there.</p></div></div>
+      <div class="step"><div class="step-num">4</div><div class="step-body"><strong>Download the file</strong><p>Click the icon to download the visible data as a CSV or Excel file. Repeat for each data section you need.</p></div></div>
+    </div>
+
+    <div class="section-title"><span class="dot"></span>Method 2 — Reports Section</div>
+    <p style="font-size:14px;color:var(--text-body);margin-bottom:16px;">AlarmBiller's Reports section provides structured financial and operational reports with download options.</p>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><div class="step-body"><strong>Click Reports in the top navigation</strong></div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-body"><strong>Select the appropriate report</strong>
+        <p>Key reports for migration:</p>
+        <ul>
+          <li><strong>RMR Report</strong> — recurring billing schedules per customer</li>
+          <li><strong>Aging Report</strong> — open invoices by age</li>
+          <li><strong>Customer List</strong> — active and inactive customers</li>
+          <li><strong>Invoice Report</strong> — invoice history by date range</li>
+          <li><strong>Payment Report</strong> — payment history</li>
+        </ul>
+      </div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-body"><strong>Set your date range and filters, then click Run / Generate</strong></div></div>
+      <div class="step"><div class="step-num">4</div><div class="step-body"><strong>Download the report</strong><p>Look for a Download, Export, or Print option. Most reports support PDF and/or CSV output.</p></div></div>
+      <div class="step"><div class="step-num">5</div><div class="step-body"><strong>Label and save each file</strong><p>Save to a clearly labeled folder, e.g. <code>AlarmBiller_Export_YYYYMMDD</code>, and send to your Rev.io implementation team.</p></div></div>
+    </div>
+
+    <div class="section-title"><span class="dot"></span>Method 3 — QuickBooks IIF Export (Financial History)</div>
+    <p style="font-size:14px;color:var(--text-body);margin-bottom:16px;">If you need a complete record of invoices, credits, and payments, AlarmBiller can export a QuickBooks-compatible IIF file.</p>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><div class="step-body"><strong>Go to Setup → QuickBooks</strong><p>Review the QuickBooks documentation on that page before proceeding.</p></div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-body"><strong>Click the Export tab</strong><p>Enter your desired export date. AlarmBiller will export all <em>reconciled</em> transactions up to that date.</p></div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-body"><strong>Click Export (upper-right) to queue the file</strong></div></div>
+      <div class="step"><div class="step-num">4</div><div class="step-body"><strong>Download the IIF file</strong><p>Click the Download button next to the export entry once it has generated.</p></div></div>
+    </div>
+    <div class="callout note">
+      <span class="callout-icon">ℹ️</span>
+      <div>Only <strong>reconciled transactions</strong> are included in the IIF export. Customer records and RMR data are not available through this path — use Methods 1 and 2 for those.</div>
+    </div>
+
+    <div class="section-title"><span class="dot"></span>Export Checklist</div>
+    <table class="data-table">
+      <thead><tr><th>Data Type</th><th>Where to Export</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Customers</td><td>Customers grid → Export</td><td>Include both active and inactive; capture all address and contact fields</td></tr>
+        <tr><td>Sites & Systems</td><td>Customer record detail / Bold Group support</td><td>May require a manual pull or support-assisted extract</td></tr>
+        <tr><td>Recurring Billing (RMR)</td><td>RMR grid → Export; or Reports → RMR Report</td><td>Critical for billing continuity — include frequency, amount, and service type</td></tr>
+        <tr><td>Invoices & Credits</td><td>Invoices grid → Export; or Reports → Invoice Report</td><td>Set a wide date range to capture full history</td></tr>
+        <tr><td>Payments</td><td>Payments grid → Export; or QuickBooks IIF export</td><td>IIF covers reconciled payments only</td></tr>
+        <tr><td>Contracts / Documents</td><td>Customer record → Docs tab</td><td>PDF attachments — download individually or request bulk extract from support</td></tr>
+        <tr><td>Financial History (GL-level)</td><td>Setup → QuickBooks → Export</td><td>Best option for complete financial transaction history</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout tip">
+      <span class="callout-icon">💡</span>
+      <div>Need help or can't access certain data? Contact Bold Group support at <strong>support.boldgroup.com</strong> or call <strong>(855) 524-5537</strong> to request a full data extract.</div>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────
+       CONNECTWISE
+  ──────────────────────────────────── -->
+  <div id="panel-connectwise" class="panel">
+    <div class="panel-header">
+      <div class="panel-header-top">
+        <div class="system-icon">⚙️</div>
+        <h2>ConnectWise Manage</h2>
+      </div>
+      <span class="type-badge api">🔑 API Access</span>
+      <p class="lead">
+        This guide walks you through creating an API key in ConnectWise Manage so Rev.io can securely pull your data for migration. The process takes about 10 minutes and does not require any software installation.
+      </p>
+    </div>
+
+    <div class="section-title"><span class="dot"></span>What We Need From You</div>
+    <table class="data-table">
+      <thead><tr><th>Item</th><th>Description</th><th>Example</th></tr></thead>
+      <tbody>
+        <tr><td>Site URL</td><td>The domain of your ConnectWise instance</td><td><code>na.myconnectwise.net</code></td></tr>
+        <tr><td>Company ID</td><td>The company name used on the login screen</td><td><code>yourcompanyname</code></td></tr>
+        <tr><td>Public Key</td><td>Generated in Step 4</td><td><code>aBcDeFgHiJkLmNoP</code></td></tr>
+        <tr><td>Private Key</td><td>Generated in Step 4 — shown once only</td><td><code>aBcDeFgHiJkLmNoP</code></td></tr>
+      </tbody>
+    </table>
+    <div class="callout note">
+      <span class="callout-icon">🔒</span>
+      <div>These credentials provide <strong>read-only access</strong>. Rev.io will not use them to make any changes to your system.</div>
+    </div>
+
+    <div class="section-title"><span class="dot"></span>Setup Steps</div>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><div class="step-body">
+        <strong>Find Your Site URL and Company ID</strong>
+        <p>Log into ConnectWise Manage. Look at the address bar — your URL will look like:<br>
+        <code>https://na.myconnectwise.net/v4_6_release/ConnectWise.aspx</code></p>
+        <ul>
+          <li><strong>Site URL:</strong> the domain portion, e.g. <code>na.myconnectwise.net</code></li>
+          <li><strong>Company ID:</strong> the name you type in the <em>Company</em> field on the login screen</li>
+        </ul>
+      </div></div>
+
+      <div class="step"><div class="step-num">2</div><div class="step-body">
+        <strong>Create an API Member Account</strong>
+        <p>An API Member is a special non-login account for API access. It does not consume a regular user license.</p>
+        <ul>
+          <li>Go to <strong>System → Members</strong> and click <strong>+</strong> to create a new member.</li>
+          <li>Set <strong>Member ID</strong> to <code>APIIntegration</code> (or any name you prefer).</li>
+          <li>Set <strong>License Class</strong> to <code>API</code> (not Full or Non-billable).</li>
+          <li>Assign the security role created in Step 3, then click <strong>Save</strong>.</li>
+        </ul>
+      </div></div>
+
+      <div class="step"><div class="step-num">3</div><div class="step-body">
+        <strong>Create a Security Role with Read Permissions</strong>
+        <p>Create a role called <code>API Read Only</code> under <strong>System → Security Roles</strong> and enable <strong>Inquire (read)</strong> access for the following:</p>
+        <table class="data-table" style="margin-top:10px;">
+          <thead><tr><th>Category</th><th>Sections</th></tr></thead>
+          <tbody>
+            <tr><td>Companies</td><td>Companies, Contacts, Configurations, Sites</td></tr>
+            <tr><td>Finance</td><td>Agreements, Invoices, Billing Terms, Tax Codes</td></tr>
+            <tr><td>Procurement</td><td>Products, Product Catalog</td></tr>
+            <tr><td>Service Desk</td><td>Tickets, Boards, Priorities</td></tr>
+            <tr><td>Sales</td><td>Opportunities, Activities</td></tr>
+            <tr><td>Time & Expense</td><td>Time Entries, Expense Entries</td></tr>
+            <tr><td>Schedule</td><td>Schedule Entries</td></tr>
+            <tr><td>System</td><td>Members, Locations</td></tr>
+          </tbody>
+        </table>
+        <p style="margin-top:8px;">After saving the role, go back to the API Member and assign it.</p>
+      </div></div>
+
+      <div class="step"><div class="step-num">4</div><div class="step-body">
+        <strong>Generate API Keys</strong>
+        <ul>
+          <li>While viewing the API Member record, click the <strong>API Keys</strong> tab.</li>
+          <li>Click <strong>+</strong> to generate a new key pair; give it a description such as <code>Rev.io Data Migration</code>.</li>
+          <li>Click <strong>Save</strong>.</li>
+        </ul>
+        <div class="callout warn" style="margin-top:10px;">
+          <span class="callout-icon">⚠️</span>
+          <div>ConnectWise will display the <strong>Public Key</strong> and <strong>Private Key</strong>. <strong>Copy both immediately</strong> — the Private Key is only shown once and cannot be retrieved later.</div>
+        </div>
+      </div></div>
+
+      <div class="step"><div class="step-num">5</div><div class="step-body">
+        <strong>Send Your Credentials to Rev.io</strong>
+        <p>Send the following to your Rev.io project contact via a secure channel (encrypted email or secure file sharing — not plain email):</p>
+        <div class="creds-box">
+          <span class="label">Site URL: </span><span class="placeholder">na.myconnectwise.net</span><br>
+          <span class="label">Company ID: </span><span class="placeholder">yourcompanyname</span><br>
+          <span class="label">Public Key: </span><span class="placeholder">(from Step 4)</span><br>
+          <span class="label">Private Key: </span><span class="placeholder">(from Step 4)</span>
+        </div>
+      </div></div>
+    </div>
+
+    <div class="section-title"><span class="dot"></span>Frequently Asked Questions</div>
+    <table class="data-table">
+      <tbody>
+        <tr><td>Will this affect my ConnectWise users or data?</td><td>No. The API key provides read-only access and does not interfere with normal ConnectWise operations.</td></tr>
+        <tr><td>I already have an API user set up — can I use it?</td><td>Yes. Generate an additional key pair on an existing API member, or point us to one you already have — just ensure it has the read access described in Step 3.</td></tr>
+        <tr><td>How do I revoke access after migration?</td><td>Go to System → Members, open the API Member, click the API Keys tab, and delete the key pair. Access is immediately revoked.</td></tr>
+        <tr><td>What ConnectWise version is required?</td><td>ConnectWise Manage version 2019.1 or later. Check under System → My Company → ConnectWise.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ─────────────────────────────────
+       EAUTOMATE
+  ──────────────────────────────────── -->
+  <div id="panel-eautomate" class="panel">
+    <div class="panel-header">
+      <div class="panel-header-top">
+        <div class="system-icon">🖨️</div>
+        <h2>e-automate (ECI)</h2>
+      </div>
+      <span class="type-badge both">✅ User Access &amp; Report Export</span>
+      <p class="lead">
+        e-automate does not have a dedicated API-only user type. Instead, you create a standard user account with read permissions through e-admin (on-premise) or the User Management tool (hosted/cloud), then share those credentials with Rev.io.
+      </p>
+    </div>
+
+    <div class="method-tabs">
+      <div class="method-tab active" onclick="showMethod('eautomate','access', this)">Part 1: User Account Setup</div>
+      <div class="method-tab" onclick="showMethod('eautomate','export', this)">Part 2: Data Export</div>
+    </div>
+
+    <div id="eautomate-access" class="method-panel active">
+      <div class="callout note">
+        <span class="callout-icon">ℹ️</span>
+        <div>You'll need <strong>Administrator access</strong> to e-admin (on-premise) or User Management (hosted/cloud) to complete this setup.</div>
+      </div>
+
+      <div class="method-tabs" style="margin-top:20px;">
+        <div class="method-tab active" onclick="showMethod('eautomate-sub','onprem', this)">On-Premise (e-admin)</div>
+        <div class="method-tab" onclick="showMethod('eautomate-sub','cloud', this)">Hosted / Cloud</div>
+      </div>
+
+      <div id="eautomate-sub-onprem" class="method-panel active">
+        <div class="steps">
+          <div class="step"><div class="step-num">1</div><div class="step-body">
+            <strong>Open e-admin on your e-automate server</strong>
+            <p>Start → All Programs → ECi → e-admin. Log in using Windows authentication (administrator-level required).</p>
+          </div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-body">
+            <strong>Select your company from the company list</strong>
+          </div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-body">
+            <strong>Click [Security]</strong>
+            <p>You'll be prompted to enter your admin password.</p>
+          </div></div>
+          <div class="step"><div class="step-num">4</div><div class="step-body">
+            <strong>On the Users tab, add a new user</strong>
+            <ul>
+              <li><strong>User ID:</strong> e.g. <code>revio.integration</code></li>
+              <li><strong>First / Last Name:</strong> e.g. <code>Rev.io Integration</code></li>
+              <li><strong>Email Address:</strong> a shared/generic inbox is fine</li>
+              <li><strong>Password:</strong> set a strong password and document it securely</li>
+            </ul>
+          </div></div>
+          <div class="step"><div class="step-num">5</div><div class="step-body">
+            <strong>Assign permissions</strong>
+            <p>You can assign the user to a group to inherit its security settings, or copy from a System Template. At minimum, grant <strong>read access</strong> to: Customers, Contracts, Equipment, and Billing data.</p>
+          </div></div>
+          <div class="step"><div class="step-num">6</div><div class="step-body"><strong>Save the new user record</strong></div></div>
+        </div>
+      </div>
+
+      <div id="eautomate-sub-cloud" class="method-panel">
+        <p style="font-size:14px;color:var(--text-body);margin-bottom:16px;">The User Management Utility is an e-automate add-in that lets you manage security from within the e-automate client — no server access required.</p>
+        <div class="steps">
+          <div class="step"><div class="step-num">1</div><div class="step-body">
+            <strong>In e-automate, go to Tools → Add-ins → User Management Utility</strong>
+          </div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-body">
+            <strong>Click [OK] to open the e-admin Security screen</strong>
+          </div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-body">
+            <strong>Follow the same steps as On-Premise</strong>
+            <p>Create the user, assign a User ID, name, email, password, and group-based read permissions for Customers, Contracts, Equipment, and Billing.</p>
+          </div></div>
+        </div>
+        <div class="callout warn" style="margin-top:8px;">
+          <span class="callout-icon">⚠️</span>
+          <div><strong>MFA Notice:</strong> ECI is rolling out multi-factor authentication via MyECI in phases. If your organization has already transitioned, make sure the integration account uses a <strong>company email address</strong> (personal emails are not recommended). Let your Rev.io Sales Representative know if MFA is enabled so we can coordinate the right access method.</div>
+        </div>
+      </div>
+
+      <div class="section-title"><span class="dot"></span>What to Send Us</div>
+      <table class="data-table">
+        <thead><tr><th>Field</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td>Username / User ID</td><td>The login ID you created</td></tr>
+          <tr><td>Password</td><td>The password set for the account</td></tr>
+          <tr><td>Server / Database Name</td><td>Your e-automate company database name (e.g., <code>CoYourCompany</code>)</td></tr>
+          <tr><td>Hosted or On-Premise?</td><td>Helps us confirm the connection method</td></tr>
+          <tr><td>e-automate URL or Server Address</td><td>For hosted clients, your MyECI/cloud login URL</td></tr>
+        </tbody>
+      </table>
+      <div class="callout warn">
+        <span class="callout-icon">🔒</span>
+        <div>Please share credentials via a secure method (password manager share link, encrypted email, etc.) — not plain email or chat.</div>
+      </div>
+    </div>
+
+    <div id="eautomate-export" class="method-panel">
+      <div class="section-title" style="margin-top:0;"><span class="dot"></span>Option A — Report Console</div>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-body">
+          <strong>Click [Reports] to open the Report Console</strong>
+          <p>In the left pane, select the category you need: Service, Customers, Contracts, Accounting, etc.</p>
+        </div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-body">
+          <strong>Run the report</strong>
+          <p>Select your report, set any date or filter prompts, and click OK.</p>
+        </div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-body">
+          <strong>Export the report</strong>
+          <p>In the report window, click the <strong>Export Report</strong> icon (envelope/disk icon in the toolbar). Navigate to your save folder, set a file name, and choose your format.</p>
+          <p style="margin-top:6px;">Supported formats: <strong>Excel (.xls/.xlsx), PDF, CSV</strong></p>
+        </div></div>
+      </div>
+
+      <div class="section-title"><span class="dot"></span>Option B — Spreadsheet Utilities (Bulk Export)</div>
+      <p style="font-size:14px;color:var(--text-body);margin-bottom:12px;">This is the most effective method for bulk data extraction. Utilities are located at <code>C:\Program Files (x86)\ECi\e-automate\Utilities</code> (on-premise).</p>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-body">
+          <strong>On-Premise:</strong>
+          <p>Open the utility directly from the path above. Each utility is an Excel file pre-formatted for a specific data type (Customers, Contacts, Equipment, etc.). Macros must be enabled in Excel.</p>
+        </div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-body">
+          <strong>Hosted/Cloud:</strong>
+          <p>Log into the hosted environment, open the ECI Field Service launcher, and click <strong>Spreadsheet Utilities</strong>. Drag the relevant <code>.xlsx</code> utility file from your Documents folder onto the "Drop a file here" region.</p>
+        </div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-body">
+          <strong>The utility generates an Excel export</strong>
+          <p>Save the file and send it to your Rev.io Sales Representative.</p>
+        </div></div>
+      </div>
+
+      <div class="section-title"><span class="dot"></span>Common Data Exports We Need</div>
+      <table class="data-table">
+        <thead><tr><th>Data Type</th><th>Export Method</th></tr></thead>
+        <tbody>
+          <tr><td>Customers</td><td>EA_CustomerExport utility or Customer List report</td></tr>
+          <tr><td>Contacts</td><td>Contacts spreadsheet utility</td></tr>
+          <tr><td>Service Contracts</td><td>Contracts report or utility — include billing schedules and meter-based contracts</td></tr>
+          <tr><td>Equipment / Configuration Items</td><td>Equipment utility — devices tracked per customer</td></tr>
+          <tr><td>Invoices / AR History</td><td>Accounting reports or AR History report</td></tr>
+          <tr><td>Meter Reads</td><td>If applicable for contract billing</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────
+       FIELDPULSE
+  ──────────────────────────────────── -->
+  <div id="panel-fieldpulse" class="panel">
+    <div class="panel-header">
+      <div class="panel-header-top">
+        <div class="system-icon">⚡</div>
+        <h2>FieldPulse</h2>
+      </div>
+      <span class="type-badge both">✅ API Access &amp; Report Export</span>
+      <p class="lead">
+        FieldPulse supports two data access methods: direct API integration (recommended for full migrations) and built-in CSV exports available from the web app. Choose the option that fits your needs below.
+      </p>
+    </div>
+
+    <div class="method-tabs">
+      <div class="method-tab active" onclick="showMethod('fieldpulse','api', this)">Option 1: API Access</div>
+      <div class="method-tab" onclick="showMethod('fieldpulse','export', this)">Option 2: Built-In Exports</div>
+    </div>
+
+    <div id="fieldpulse-api" class="method-panel active">
+      <div class="callout note">
+        <span class="callout-icon">ℹ️</span>
+        <div><strong>Plan requirement:</strong> The Open API is available on FieldPulse's <strong>Professional+</strong> plan. Contact FieldPulse support to confirm your plan includes API access before proceeding.</div>
+      </div>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-body">
+          <strong>Verify your plan includes API access</strong>
+          <p>Log into FieldPulse and check your subscription tier. If unsure, proceed to Step 2 — the support team can confirm.</p>
+        </div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-body">
+          <strong>Contact FieldPulse Support to request an API key</strong>
+          <ul>
+            <li>Email: <a href="mailto:support@fieldpulse.com">support@fieldpulse.com</a></li>
+            <li>Live chat: click the chat icon in the bottom-right corner of the app or website</li>
+          </ul>
+          <p>Request an API key and mention your intended use case (e.g., CRM integration, data migration).</p>
+        </div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-body">
+          <strong>Receive and store your API key securely</strong>
+          <p>FieldPulse will provide a unique Bearer token. Store it in a secure location (password manager or secrets vault). Do not share it publicly.</p>
+        </div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-body">
+          <strong>Share your API key with Rev.io</strong>
+          <p>Send the Bearer token to your Rev.io Onboarding Analyst via a secure channel. We will use it to authenticate requests against the FieldPulse API:</p>
+          <div class="creds-box">
+            <span class="label">Base URL: </span><span class="placeholder">https://api.fieldpulse.com/</span><br>
+            <span class="label">Auth header: </span><span class="placeholder">Authorization: Bearer YOUR_API_KEY</span>
+          </div>
+        </div></div>
+      </div>
+      <table class="data-table" style="margin-top:20px;">
+        <thead><tr><th>Parameter</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Base URL</td><td><code>https://api.fieldpulse.com/</code></td></tr>
+          <tr><td>Authentication</td><td>Bearer token in Authorization header</td></tr>
+          <tr><td>Rate Limit</td><td>1,000 requests/hour</td></tr>
+          <tr><td>Pagination</td><td>Available on list endpoints</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div id="fieldpulse-export" class="method-panel">
+      <div class="callout note">
+        <span class="callout-icon">ℹ️</span>
+        <div>You must be logged in with an <strong>Admin account</strong> to access export features. Sub-user and field technician accounts do not have export permissions.</div>
+      </div>
+      <div class="section-title" style="margin-top:0"><span class="dot"></span>Customer Export</div>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-body"><strong>Log in to FieldPulse</strong><p>Open <a href="https://app.fieldpulse.com" target="_blank">app.fieldpulse.com</a> and sign in with your Admin credentials.</p></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-body"><strong>Navigate to the Customers page</strong><p>Click <strong>Customers</strong> in the main left-hand navigation menu.</p></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-body"><strong>Click the Export button</strong><p>Look for the <strong>Export</strong> button near the top of the Customers list and click it.</p></div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-body"><strong>Check your email</strong><p>You'll receive an email at your FieldPulse login address with the export file attached. The export includes all customers, custom fields, and tags. Check spam if you don't see it within a few minutes.</p></div></div>
+      </div>
+      <div class="section-title"><span class="dot"></span>Other Available Exports</div>
+      <table class="data-table">
+        <thead><tr><th>Data Type</th><th>Navigation Path</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td>Customers</td><td>Customers → Export</td><td>Includes custom fields and tags</td></tr>
+          <tr><td>Jobs</td><td>Jobs → Export</td><td>All job records and statuses</td></tr>
+          <tr><td>Invoices</td><td>Invoices → Export</td><td>Invoice history and line items</td></tr>
+          <tr><td>Payments</td><td>Payments → Export</td><td>Payment records and amounts</td></tr>
+          <tr><td>Timesheets</td><td>Timesheets → Export</td><td>Employee time tracking data</td></tr>
+        </tbody>
+      </table>
+      <div class="callout tip">
+        <span class="callout-icon">💡</span>
+        <div>Custom field data is included in all exports automatically. If you need data not listed above, contact FieldPulse support at <a href="mailto:support@fieldpulse.com">support@fieldpulse.com</a>.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────
+       HALOPSA
+  ──────────────────────────────────── -->
+  <div id="panel-halopsa" class="panel">
+    <div class="panel-header">
+      <div class="panel-header-top">
+        <div class="system-icon">🛠️</div>
+        <h2>HaloPSA</h2>
+      </div>
+      <span class="type-badge api">🔑 API Access</span>
+      <p class="lead">
+        Rev.io needs read-only API access to your HaloPSA account to pull your existing data — clients, sites, tickets, and supporting reference data — into the Rev.io platform as part of your migration. The process takes about five minutes.
+      </p>
+      <div class="callout note">
+        <span class="callout-icon">🔒</span>
+        <div>Access level: <strong>Read-only.</strong> Rev.io will never create, update, or delete any records in your HaloPSA instance.</div>
+      </div>
+    </div>
+
+    <div class="section-title"><span class="dot"></span>Part 1 — Create the API Application</div>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><div class="step-body">
+        <strong>Open the HaloPSA Configuration menu</strong>
+        <p>Log in as an administrator. Go to <strong>Configuration → Integrations → HaloPSA API</strong>.</p>
+      </div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-body">
+        <strong>Create a new API application</strong>
+        <p>Click <strong>New</strong> (or the + button) to add a new application entry.</p>
+      </div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-body">
+        <strong>Fill in the application details</strong>
+        <table class="data-table" style="margin-top:10px;">
+          <thead><tr><th>Field</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td>Application Name</td><td>Rev.io Integration</td></tr>
+            <tr><td>Authentication Method</td><td>Client Credentials</td></tr>
+            <tr><td>Login Type</td><td>Agent</td></tr>
+            <tr><td>Agent</td><td>See note below</td></tr>
+          </tbody>
+        </table>
+        <div class="callout warn" style="margin-top:10px;">
+          <span class="callout-icon">⚠️</span>
+          <div><strong>Important — Agent team membership:</strong> HaloPSA scopes API results to whatever the selected agent can see. The agent must be a member of <strong>all teams</strong> with both <em>View Unassigned Tickets</em> and <em>View Other Agents' Tickets</em> enabled for each team. We recommend creating a dedicated agent (e.g. <code>Rev.io API</code>) added to every team with full visibility.</div>
+        </div>
+      </div></div>
+      <div class="step"><div class="step-num">4</div><div class="step-body">
+        <strong>Set API permissions (scope)</strong>
+        <p>Under the Permissions section, grant <strong>read</strong> access to:</p>
+        <table class="data-table" style="margin-top:10px;">
+          <thead><tr><th>Permission Area</th><th>Access Level</th></tr></thead>
+          <tbody>
+            <tr><td>Clients, Sites, Tickets, Actions / Notes</td><td>read</td></tr>
+            <tr><td>Attachments, Assets, Contracts, Invoices</td><td>read</td></tr>
+            <tr><td>Items / Products, Agents, Suppliers</td><td>read</td></tr>
+            <tr><td>Lookup Values, Teams / Statuses / Priorities</td><td>read</td></tr>
+          </tbody>
+        </table>
+        <div class="callout tip" style="margin-top:10px;">
+          <span class="callout-icon">💡</span>
+          <div>If HaloPSA presents a single Scope field, enter <code>all</code>. This grants the same read access through the Client Credentials flow.</div>
+        </div>
+      </div></div>
+      <div class="step"><div class="step-num">5</div><div class="step-body">
+        <strong>Save the application</strong>
+        <p>Click <strong>Save</strong>. HaloPSA will generate a <strong>Client ID</strong> and <strong>Client Secret</strong>.</p>
+      </div></div>
+      <div class="step"><div class="step-num">6</div><div class="step-body">
+        <strong>Send your credentials to Rev.io</strong>
+        <p>Send the following to your Rev.io onboarding contact via a secure channel. Do not include credentials in plain email.</p>
+        <div class="creds-box">
+          <span class="label">Tenant URL: </span><span class="placeholder">https://yourcompany.halopsa.com</span><br>
+          <span class="label">Client ID: </span><span class="placeholder">(from Step 5)</span><br>
+          <span class="label">Client Secret: </span><span class="placeholder">(from Step 5)</span>
+        </div>
+      </div></div>
+    </div>
+
+    <div class="section-title"><span class="dot"></span>Part 2 — What Data Will Be Pulled</div>
+    <p style="font-size:14px;color:var(--text-body);margin-bottom:12px;">Rev.io pulls a complete snapshot of your HaloPSA data one time as part of the migration. No ongoing sync is established unless separately agreed upon.</p>
+    <table class="data-table">
+      <thead><tr><th>Data Type</th><th>What's Included</th><th>Used For</th></tr></thead>
+      <tbody>
+        <tr><td>Clients</td><td>Company name, account ID, contact settings, tax codes, billing flags</td><td>Creating matching billing accounts in Rev.io</td></tr>
+        <tr><td>Sites</td><td>Site name, parent client, address, SLA, timezone</td><td>Mapping service locations to billing accounts</td></tr>
+        <tr><td>Assets</td><td>Asset name, type, group, client/site, serial numbers, custom fields</td><td>Migrating managed devices and inventory</td></tr>
+        <tr><td>Tickets</td><td>ID, subject, description, status, priority, SLA, assigned agent, open/close dates</td><td>Migrating service history and open work items</td></tr>
+        <tr><td>Actions / Notes</td><td>All notes, replies, and email threads per ticket</td><td>Preserving full audit trail per ticket</td></tr>
+        <tr><td>Contracts</td><td>Contract name, client, billing terms, line items</td><td>Recreating recurring service agreements</td></tr>
+        <tr><td>Invoices</td><td>Invoice number, client, date, line items, payment status</td><td>Historical billing record migration</td></tr>
+        <tr><td>Items / Products</td><td>Product/service catalog: name, description, pricing, tax codes</td><td>Mapping your catalog to Rev.io charge codes</td></tr>
+        <tr><td>Agents / Teams / Statuses</td><td>Reference data for tickets and records</td><td>Translating IDs to human-readable values</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ─────────────────────────────────
+       HOUSECALL PRO
+  ──────────────────────────────────── -->
+  <div id="panel-housecallpro" class="panel">
+    <div class="panel-header">
+      <div class="panel-header-top">
+        <div class="system-icon">🏠</div>
+        <h2>HouseCall Pro</h2>
+      </div>
+      <span class="type-badge both">✅ API Access &amp; CSV Export</span>
+      <p class="lead">
+        HouseCall Pro supports both a public REST API (MAX plan required) and built-in CSV exports available to all plan levels. Choose the option that fits your account below.
+      </p>
+    </div>
+
+    <div class="method-tabs">
+      <div class="method-tab active" onclick="showMethod('housecallpro','api', this)">Option 1: API Access</div>
+      <div class="method-tab" onclick="showMethod('housecallpro','csv', this)">Option 2: CSV Export</div>
+    </div>
+
+    <div id="housecallpro-api" class="method-panel active">
+      <div class="callout note">
+        <span class="callout-icon">ℹ️</span>
+        <div><strong>Plan requirement:</strong> API access is only available to accounts on the <strong>MAX plan</strong>. If you're on a lower tier, use Option 2 (CSV Export) or contact HouseCall Pro to upgrade.</div>
+      </div>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-body">
+          <strong>Sign into your HouseCall Pro account and go to the App Store</strong>
+          <p>Navigate to the App Store from your HCP dashboard.</p>
+        </div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-body">
+          <strong>Find the API app card and click "View Details"</strong>
+        </div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-body">
+          <strong>Generate your API key</strong>
+          <p>On the right-hand side, click <strong>Generate API Key</strong>. Name your key so you can track which project or developer it's associated with (e.g. <code>Rev.io Migration</code>).</p>
+          <div class="callout warn" style="margin-top:10px;">
+            <span class="callout-icon">⚠️</span>
+            <div>This key gives whoever holds it <strong>access to all data in your HCP account</strong>. Treat it like a password and only share it with your Rev.io Onboarding Analyst via a secure channel.</div>
+          </div>
+        </div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-body">
+          <strong>Copy the key and send it to Rev.io</strong>
+          <p>Send your API key to your Rev.io Onboarding Analyst via a secure channel (not plain email).</p>
+          <div class="creds-box">
+            <span class="label">API Key: </span><span class="placeholder">(generated in Step 3)</span>
+          </div>
+        </div></div>
+      </div>
+      <table class="data-table" style="margin-top:20px;">
+        <thead><tr><th>Parameter</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Authentication</td><td>API key <em>and</em> OAuth 2.0 both supported</td></tr>
+          <tr><td>API Documentation</td><td><a href="https://docs.housecallpro.com" target="_blank">docs.housecallpro.com</a></td></tr>
+          <tr><td>Required Plan</td><td>MAX plan only</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div id="housecallpro-csv" class="method-panel">
+      <p style="font-size:14px;color:var(--text-body);margin-bottom:16px;">No API or technical setup required. These exports are available on all HCP plan levels.</p>
+
+      <div class="section-title" style="margin-top:0;"><span class="dot"></span>Export Customers</div>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-body"><strong>Navigate to Customers in the top navigation</strong></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-body"><strong>Click the Actions button on the right</strong></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-body"><strong>Select Export</strong></div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-body"><strong>Confirm your email address and click Send File</strong><p>You'll receive a CSV of your customer list via email from <a href="mailto:notifications@housecallpro.com">notifications@housecallpro.com</a>.</p></div></div>
+      </div>
+
+      <div class="section-title"><span class="dot"></span>Export Jobs</div>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-body"><strong>From Customers, select Jobs from the left menu</strong></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-body"><strong>Click Actions → Export</strong></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-body"><strong>Verify your email and click Send File</strong><p>You'll receive a CSV of your jobs data via email.</p></div></div>
+      </div>
+
+      <div class="section-title"><span class="dot"></span>Dashboard Reports (Jobs / Estimates)</div>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-body"><strong>Open the Jobs or Estimates Dashboard report</strong></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-body"><strong>Click the eye icon in the top right</strong><p>Set your date range and any filters.</p></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-body"><strong>Click the Excel icon at the top of the page</strong><p>Choose either <strong>Download CSV</strong> or <strong>Send by Email</strong>.</p></div></div>
+      </div>
+
+      <div class="section-title"><span class="dot"></span>Price Book Export</div>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-body"><strong>Go to Settings → Price Book</strong></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-body"><strong>Click the blue Export button</strong><p>A CSV of your services or materials will be emailed to you.</p></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────
+       JOBBER
+  ──────────────────────────────────── -->
+  <div id="panel-jobber" class="panel">
+    <div class="panel-header">
+      <div class="panel-header-top">
+        <div class="system-icon">📋</div>
+        <h2>Jobber</h2>
+      </div>
+      <span class="type-badge both">✅ API Access &amp; CSV Export</span>
+      <p class="lead">
+        Jobber offers two data access methods. The API is recommended for migrations as it provides complete, structured data. CSV exports are available for quick pulls of client lists and reports without any technical setup.
+      </p>
+    </div>
+
+    <div class="method-tabs">
+      <div class="method-tab active" onclick="showMethod('jobber','api', this)">Option 1: API (Recommended)</div>
+      <div class="method-tab" onclick="showMethod('jobber','csv', this)">Option 2: CSV Export</div>
+    </div>
+
+    <div id="jobber-api" class="method-panel active">
+      <div class="callout warn">
+        <span class="callout-icon">⚠️</span>
+        <div><strong>Custom Integration Approval Required:</strong> Jobber restricts API access for custom integrations. Your implementation team will need approval from Jobber (<a href="mailto:api-support@getjobber.com">api-support@getjobber.com</a>) before connecting to live accounts. Contact them early in the process.</div>
+      </div>
+
+      <div class="section-title" style="margin-top:16px;"><span class="dot"></span>Step A — Implementation Team Setup</div>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-body"><strong>Create a Jobber Developer Center Account</strong><p>Go to <a href="https://developer.getjobber.com" target="_blank">developer.getjobber.com</a> and sign up. This is separate from your regular Jobber login.</p></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-body"><strong>Create a New App</strong><p>Navigate to <strong>Apps → New</strong>. Fill in a name and description. The app can remain in Draft state — it does not need to be published to the marketplace.</p></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-body"><strong>Retrieve Client ID and Client Secret</strong><p>After creating the app, Jobber displays a Client ID and Client Secret. Copy and store these securely. The Client Secret must never be shared publicly.</p></div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-body"><strong>Configure Scopes</strong><p>Select all relevant data types: Clients, Jobs, Invoices, Quotes, Timesheets, Properties. Scopes can be edited freely while the app is in Draft state.</p></div></div>
+        <div class="step"><div class="step-num">5</div><div class="step-body"><strong>Generate the Authorization Link for Your Client</strong>
+          <p>Build the following URL and send it to your Jobber admin user:</p>
+          <div class="creds-box"><span class="placeholder">https://api.getjobber.com/api/oauth/authorize?response_type=code&client_id=&lt;CLIENT_ID&gt;&redirect_uri=&lt;REDIRECT_URI&gt;</span></div>
+        </div></div>
+      </div>
+
+      <div class="section-title"><span class="dot"></span>Step B — Client Authorization (You — Jobber Admin)</div>
+      <div class="steps">
+        <div class="step"><div class="step-num">6</div><div class="step-body"><strong>Log into your Jobber account first</strong><p>Before clicking the authorization link, make sure you are logged into <a href="https://jobber.com" target="_blank">jobber.com</a> as an admin user.</p></div></div>
+        <div class="step"><div class="step-num">7</div><div class="step-body"><strong>Click the authorization link provided by your implementation team</strong><p>Jobber will display an authorization screen showing the app name and the list of data permissions it's requesting.</p></div></div>
+        <div class="step"><div class="step-num">8</div><div class="step-body"><strong>Review and click Allow Access</strong><p>You'll be redirected to a confirmation page. Jobber will issue an access token to the implementation team's app. Access tokens expire after 60 minutes but refresh automatically — you won't need to reauthorize.</p></div></div>
+      </div>
+
+      <div class="callout tip">
+        <span class="callout-icon">💡</span>
+        <div>You can revoke access at any time from <strong>Settings → Connected Apps</strong> in your Jobber account.</div>
+      </div>
+
+      <div class="section-title"><span class="dot"></span>Data Available via API</div>
+      <table class="data-table">
+        <thead><tr><th>Object</th><th>Details</th></tr></thead>
+        <tbody>
+          <tr><td>Clients</td><td>Contact info, billing address, tags, custom fields</td></tr>
+          <tr><td>Properties</td><td>Service addresses linked to each client</td></tr>
+          <tr><td>Jobs</td><td>One-off and recurring, with status, schedule, and line items</td></tr>
+          <tr><td>Quotes</td><td>Line items, totals, and approval status</td></tr>
+          <tr><td>Invoices</td><td>Line items, totals, and payment status</td></tr>
+          <tr><td>Timesheets</td><td>Entries by user, job, and visit</td></tr>
+          <tr><td>Users</td><td>Team member records</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div id="jobber-csv" class="method-panel">
+      <div class="section-title" style="margin-top:0"><span class="dot"></span>Export Your Client List</div>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-body"><strong>Navigate to Clients</strong><p>Sign into <a href="https://jobber.com" target="_blank">jobber.com</a> and select <strong>Clients</strong> from the left navigation.</p></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-body"><strong>Click More Actions</strong><p>Click the <strong>More Actions</strong> button in the top-right corner of the Clients page.</p></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-body"><strong>Select Export Clients → CSV</strong></div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-body"><strong>Check your email</strong><p>A CSV will be emailed to your Jobber login address. Open it in Excel or Google Sheets.</p></div></div>
+      </div>
+      <div class="callout note">
+        <span class="callout-icon">ℹ️</span>
+        <div>The client export handles up to <strong>1,500 rows per file</strong>. If you have more than 1,499 clients, Jobber will automatically split the export into multiple files delivered via email.</div>
+      </div>
+      <div class="section-title"><span class="dot"></span>Export Reports</div>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-body"><strong>Go to Insights → Reports</strong></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-body"><strong>Open the report you want to export</strong><p>e.g. One-Off Jobs, Invoice Report, Timesheet Report.</p></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-body"><strong>Click Email CSV</strong><p>Choose to export all available columns or only the columns currently visible.</p></div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-body"><strong>Check your email</strong><p>The CSV will be sent to your Jobber login email.</p></div></div>
+      </div>
+      <div class="callout note">
+        <span class="callout-icon">ℹ️</span>
+        <div>The <strong>Taxation, Waypoints, and Job Follow-ups</strong> reports are not available in CSV format. All other reports support CSV export.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────
+       PAX8
+  ──────────────────────────────────── -->
+  <div id="panel-pax8" class="panel">
+    <div class="panel-header">
+      <div class="panel-header-top">
+        <div class="system-icon">☁️</div>
+        <h2>Pax8</h2>
+      </div>
+      <span class="type-badge both">✅ Portal Export &amp; API Access</span>
+      <p class="lead">
+        Rev.io needs a copy of your existing customer list from Pax8. You can export it directly from the portal (quickest option) or use Pax8's API for a complete programmatic export with all fields.
+      </p>
+    </div>
+
+    <div class="method-tabs">
+      <div class="method-tab active" onclick="showMethod('pax8','portal', this)">Option 1: Portal Export (Fastest)</div>
+      <div class="method-tab" onclick="showMethod('pax8','api', this)">Option 2: API Export (Complete)</div>
+    </div>
+
+    <div id="pax8-portal" class="method-panel active">
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-body"><strong>Log in to Pax8</strong><p>Go to <a href="https://app.pax8.com" target="_blank">app.pax8.com</a> and sign in with your partner credentials.</p></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-body"><strong>Navigate to Companies</strong><p>Click <strong>Companies</strong> in the left-hand navigation menu to display all managed end-customer accounts.</p></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-body"><strong>Export the list</strong><p>Look for an <strong>Export</strong> or <strong>Download CSV</strong> button in the upper-right area. Select all companies (or filter first), then click Export. The file will download as a CSV.</p></div></div>
+      </div>
+      <div class="callout note">
+        <span class="callout-icon">ℹ️</span>
+        <div>Pax8's built-in portal export may not include all fields (such as internal Company IDs or full contact details). If the export is missing information, use Option 2 for a complete pull.</div>
+      </div>
+    </div>
+
+    <div id="pax8-api" class="method-panel">
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-body">
+          <strong>Generate API Credentials</strong>
+          <p>Log in to <a href="https://app.pax8.com" target="_blank">app.pax8.com</a> → <strong>Integrations → API Credentials → + Create API Credential</strong>. Give it a descriptive name (e.g. <code>Rev.io Migration</code>) and click Save. Copy the generated <strong>Client ID</strong> and <strong>Client Secret</strong>.</p>
+          <div class="callout warn" style="margin-top:10px;">
+            <span class="callout-icon">⚠️</span>
+            <div>Your API credentials provide <strong>full access</strong> to your Pax8 account. Only share them with your Rev.io onboarding team. Never paste them in shared documents or plain emails.</div>
+          </div>
+        </div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-body">
+          <strong>Authenticate (No-Code Option)</strong>
+          <p>Go to <a href="https://devx.pax8.com" target="_blank">devx.pax8.com</a> and click <strong>Log In</strong> in the top navigation. Sign in with your Pax8 credentials. You can now make live API calls directly from the documentation site.</p>
+        </div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-body">
+          <strong>Pull your Company list</strong>
+          <p>Call the following endpoint once authenticated:</p>
+          <div class="creds-box">
+            <span class="label">GET </span><span class="placeholder">https://api.pax8.com/v1/companies</span><br>
+            <span class="label">Header: </span><span class="placeholder">Authorization: Bearer {your_access_token}</span>
+          </div>
+          <p style="margin-top:8px;">Results are paginated (pages start at 0, max 200 records/page). Copy the JSON response and paste it into Excel or a JSON-to-CSV converter.</p>
+        </div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-body">
+          <strong>Share credentials with Rev.io (optional)</strong>
+          <p>If you prefer, share your Client ID and Secret with your Rev.io team directly and we'll pull the list on your behalf during the migration intake session.</p>
+        </div></div>
+      </div>
+      <table class="data-table" style="margin-top:16px;">
+        <thead><tr><th>Resource</th><th>URL</th></tr></thead>
+        <tbody>
+          <tr><td>Pax8 Partner Portal</td><td><a href="https://app.pax8.com" target="_blank">app.pax8.com</a></td></tr>
+          <tr><td>Pax8 API Documentation</td><td><a href="https://devx.pax8.com" target="_blank">devx.pax8.com</a></td></tr>
+          <tr><td>Companies Endpoint</td><td><code>GET https://api.pax8.com/v1/companies</code></td></tr>
+          <tr><td>Pax8 Technical Support</td><td><a href="mailto:devxsupport@pax8.com">devxsupport@pax8.com</a></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────
+       QUICKBOOKS DESKTOP
+  ──────────────────────────────────── -->
+  <div id="panel-qbd" class="panel">
+    <div class="panel-header">
+      <div class="panel-header-top">
+        <div class="system-icon">💼</div>
+        <h2>QuickBooks Desktop</h2>
+      </div>
+      <span class="type-badge export">📤 Report Export</span>
+      <p class="lead">
+        Follow each section below to export the data needed for your migration to Rev.io. Save all exports as .CSV files unless otherwise noted, then deliver them using the instructions in Section 5.
+      </p>
+    </div>
+
+    <div class="section-title"><span class="dot"></span>Section 1 — Customer List</div>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><div class="step-body"><strong>Open QuickBooks Desktop</strong><p>Go to <strong>Reports → Customers &amp; Receivables → Customer Contact List</strong>.</p></div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-body"><strong>Click Customize Report</strong><p>Under the Display tab, add the following columns: Customer Name, Company Name, Bill To Address (all lines), Phone, Alt. Phone, Fax, Email, Account No., Terms, Tax Code / Resale Number, Notes / Additional Info.</p></div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-body"><strong>Click Excel → Create New Worksheet</strong><p>Save the file as: <code>customers_export_YYYYMMDD.csv</code></p></div></div>
+    </div>
+    <div class="callout tip"><span class="callout-icon">💡</span><div>If you manage sub-customers (jobs), check <strong>Include sub-customers</strong> in the report filters so child accounts are captured.</div></div>
+
+    <div class="section-title"><span class="dot"></span>Section 2 — Contact Information</div>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><div class="step-body"><strong>Go to Reports → Customers &amp; Receivables → Customer Phone List</strong></div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-body"><strong>Customize Report</strong><p>Add: Contact, Alt. Contact, Phone, Email, and Customer Name. Alternatively, the Customer Contact List (Section 1 path) includes both account and contact fields in one report.</p></div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-body"><strong>Export to Excel</strong><p>Save as: <code>contacts_export_YYYYMMDD.csv</code></p></div></div>
+    </div>
+
+    <div class="section-title"><span class="dot"></span>Section 3 — Products &amp; Services (Item List)</div>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><div class="step-body"><strong>Go to Lists → Item List</strong></div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-body"><strong>Click Excel at the bottom of the Item List window</strong><p>Choose <strong>Export all items</strong> and click Export. Alternatively, use <strong>Reports → List → Item Listing</strong> for more filter options.</p></div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-body"><strong>Save as:</strong> <code>items_export_YYYYMMDD.csv</code></div></div>
+    </div>
+
+    <div class="section-title"><span class="dot"></span>Section 4 — Billing / Invoice History</div>
+    <p style="font-size:14px;color:var(--text-body);margin-bottom:12px;"><strong>Open Invoice Report:</strong></p>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><div class="step-body"><strong>Reports → Customers &amp; Receivables → Open Invoices</strong><p>Set the date range (e.g. last 12–24 months or All Dates). Confirm columns: Customer Name, Invoice Date &amp; Due Date, Invoice Number, Amount &amp; Open Balance, Item detail.</p></div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-body"><strong>Export to Excel</strong><p>Save as: <code>open_invoices_YYYYMMDD.csv</code></p></div></div>
+    </div>
+    <p style="font-size:14px;color:var(--text-body);margin:12px 0;"><strong>Transaction History (Paid Invoices):</strong></p>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><div class="step-body"><strong>Reports → Customers &amp; Receivables → Transaction List by Customer</strong><p>Set full history date range. Filter by Transaction Type: Invoice and Payment.</p></div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-body"><strong>Export to Excel</strong><p>Save as: <code>transaction_history_YYYYMMDD.csv</code></p></div></div>
+    </div>
+
+    <div class="section-title"><span class="dot"></span>Section 5 — File Delivery</div>
+    <ul class="checklist">
+      <li><code>customers_export_YYYYMMDD.csv</code></li>
+      <li><code>contacts_export_YYYYMMDD.csv</code></li>
+      <li><code>items_export_YYYYMMDD.csv</code></li>
+      <li><code>open_invoices_YYYYMMDD.csv</code></li>
+      <li><code>transaction_history_YYYYMMDD.csv</code></li>
+    </ul>
+    <div class="steps" style="margin-top:16px;">
+      <div class="step"><div class="step-num">1</div><div class="step-body"><strong>Zip all files</strong><p>Name the archive: <code>YourCompanyName_QBD_Export_YYYYMMDD.zip</code></p></div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-body"><strong>Upload to the secure link provided by your Solutions Analyst</strong><p>Or share via the method agreed upon during your kickoff call (SharePoint, email attachment, etc.).</p></div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-body"><strong>Notify your Solutions Analyst</strong><p>Let them know files are uploaded so validation can begin.</p></div></div>
+    </div>
+    <div class="callout tip"><span class="callout-icon">💡</span><div>Double-check that your CSV files open correctly in Excel before submitting. If any file shows garbled characters or missing columns, let your SA know immediately.</div></div>
+  </div>
+
+  <!-- ─────────────────────────────────
+       QUICKBOOKS ONLINE
+  ──────────────────────────────────── -->
+  <div id="panel-qbo" class="panel">
+    <div class="panel-header">
+      <div class="panel-header-top">
+        <div class="system-icon">💚</div>
+        <h2>QuickBooks Online</h2>
+      </div>
+      <span class="type-badge both">✅ API Access &amp; Manual Export</span>
+      <p class="lead">
+        QuickBooks Online supports full API access via Intuit's developer platform, as well as built-in bulk and individual report exports — no coding required.
+      </p>
+    </div>
+
+    <div class="method-tabs">
+      <div class="method-tab active" onclick="showMethod('qbo','api', this)">Option 1: API Access</div>
+      <div class="method-tab" onclick="showMethod('qbo','export', this)">Option 2: Manual Export</div>
+    </div>
+
+    <div id="qbo-api" class="method-panel active">
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-body">
+          <strong>Create an Intuit Developer Account</strong>
+          <p>Go to <a href="https://developer.intuit.com" target="_blank">developer.intuit.com</a> and sign up for a free account.</p>
+        </div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-body">
+          <strong>Create an App</strong>
+          <ul>
+            <li>Click <strong>Create an App</strong> and select <em>QuickBooks Online and Payments</em>.</li>
+            <li>Name your app and configure your OAuth scopes.</li>
+            <li>Copy your <strong>Client ID</strong> and <strong>Client Secret</strong>.</li>
+          </ul>
+        </div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-body">
+          <strong>Authorize Access to Your QBO Company</strong>
+          <ul>
+            <li>Run through the OAuth 2.0 authorization flow.</li>
+            <li>Log in with your QBO credentials when prompted.</li>
+            <li>Grant the app permission to access your company data.</li>
+            <li>You'll receive an <strong>Access Token</strong> and <strong>Realm ID</strong> (your Company ID) — both required for all API calls.</li>
+          </ul>
+        </div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-body">
+          <strong>Make API Calls</strong>
+          <div class="creds-box" style="margin-top:10px;">
+            <span class="label">Base URL: </span><span class="placeholder">https://quickbooks.api.intuit.com/v3/company/{realmId}/{endpoint}</span><br>
+            <span class="label">Auth header: </span><span class="placeholder">Authorization: Bearer {access_token}</span>
+          </div>
+          <p style="margin-top:8px;">All responses return in JSON format.</p>
+        </div></div>
+        <div class="step"><div class="step-num">5</div><div class="step-body">
+          <strong>Handle Token Refresh</strong>
+          <p>Access tokens expire after <strong>1 hour</strong>. Use your Refresh Token to obtain a new Access Token without re-authorizing.</p>
+        </div></div>
+      </div>
+      <div class="callout tip">
+        <span class="callout-icon">💡</span>
+        <div>Share your Client ID, Client Secret, Access Token, and Realm ID with your Rev.io Onboarding Analyst via a secure channel and we'll handle the data pull during your migration intake session.</div>
+      </div>
+    </div>
+
+    <div id="qbo-export" class="method-panel">
+      <div class="section-title" style="margin-top:0;"><span class="dot"></span>Bulk Export (All Reports &amp; Lists at Once)</div>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-body"><strong>Click the Gear icon (top right) in QBO</strong></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-body"><strong>Select Export Data under the Tools section</strong></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-body"><strong>On the Reports tab, toggle on the reports you want</strong></div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-body"><strong>On the Lists tab, toggle on any lists</strong><p>e.g. Customers, Vendors, Chart of Accounts.</p></div></div>
+        <div class="step"><div class="step-num">5</div><div class="step-body"><strong>Click Export to Excel</strong><p>A .zip file will download containing individual Excel files per report/list.</p></div></div>
+      </div>
+
+      <div class="section-title"><span class="dot"></span>Individual Report Export</div>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-body"><strong>Go to Reports in the left nav and open any report</strong></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-body"><strong>Click the Export button at the top right</strong><p>Choose <strong>Export to Excel</strong> or <strong>Export to PDF</strong>.</p></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-body"><strong>To get a CSV</strong><p>Open the downloaded Excel file → <strong>File → Save As</strong> → choose CSV format.</p></div></div>
+      </div>
+
+      <div class="section-title"><span class="dot"></span>List Exports (Customers, Products, Chart of Accounts, etc.)</div>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-body"><strong>Navigate to the relevant list</strong><p>e.g. <strong>Sales → Customers</strong>.</p></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-body"><strong>Click the Export icon at the top of the list</strong><p>Download as Excel, then save as CSV if needed.</p></div></div>
+      </div>
+
+      <div class="callout note">
+        <span class="callout-icon">ℹ️</span>
+        <div>QBO does not natively export directly to CSV for most reports. The standard workaround is to <strong>export to Excel first, then save as CSV</strong> from within Excel.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────
+       QUOTEWERKS
+  ──────────────────────────────────── -->
+  <div id="panel-quotewerks" class="panel">
+    <div class="panel-header">
+      <div class="panel-header-top">
+        <div class="system-icon">💬</div>
+        <h2>QuoteWerks</h2>
+      </div>
+      <span class="type-badge export">📤 Report Export</span>
+      <p class="lead">
+        QuoteWerks offers several built-in export methods depending on what data you need. Use the guide below to pull quotes, orders, invoices, products, and contacts for your Rev.io migration.
+      </p>
+    </div>
+
+    <div class="section-title"><span class="dot"></span>When to Use Each Method</div>
+    <table class="data-table">
+      <thead><tr><th>Method</th><th>Best For</th></tr></thead>
+      <tbody>
+        <tr><td>Report Export (CSV/Excel)</td><td>Quotes, orders, and invoice data across your full account</td></tr>
+        <tr><td>Line Item Export</td><td>Quick per-quote Excel export of products and pricing</td></tr>
+        <tr><td>Data Manager</td><td>Bulk exports of products, contacts, or pricing tables — <strong>recommended for migration</strong></td></tr>
+        <tr><td>Open Export Module</td><td>Tab-delimited or XML output (Professional/Corporate editions only)</td></tr>
+      </tbody>
+    </table>
+
+    <div class="section-title"><span class="dot"></span>Method 1 — Export via Reports (CSV / Excel)</div>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><div class="step-body"><strong>Go to Reports → Reports from the top menu</strong></div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-body"><strong>Select the report you want to export, then click [Edit]</strong></div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-body">
+        <strong>Click the Output tab within the report editor</strong>
+        <ul>
+          <li>Select the <strong>File Export</strong> radio button (not Report Layout/PDF)</li>
+          <li>Choose Export Format: <strong>CSV (comma delimited)</strong> is recommended for Excel compatibility</li>
+          <li>In the Fields section, select which columns to include and set their order</li>
+          <li>In the Sort section, choose how data should be ordered (e.g., Grand Total Z→A)</li>
+          <li>Set the Output File path — this is where the CSV will be saved on your machine</li>
+        </ul>
+      </div></div>
+      <div class="step"><div class="step-num">4</div><div class="step-body"><strong>Click Save, then run the report</strong><p>The CSV will be written to the path you specified.</p></div></div>
+    </div>
+    <div class="callout tip">
+      <span class="callout-icon">💡</span>
+      <div>CSV format opens natively in Excel. If using tab-delimited (.txt), open Excel first and use <strong>Data → From Text/CSV</strong> for full control over delimiter settings.</div>
+    </div>
+
+    <div class="section-title"><span class="dot"></span>Method 2 — Export Quote Line Items to Excel</div>
+    <p style="font-size:14px;color:var(--text-body);margin-bottom:12px;">For a quick export of an individual quote's line items directly into Excel.</p>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><div class="step-body"><strong>Open the quote you want to export in QuoteWerks</strong></div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-body"><strong>Go to Tools → Export Items to Microsoft Excel</strong></div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-body"><strong>Select the columns you want to include</strong><p>Drag and drop or use [Move Up] / [Move Down] to set column order.</p></div></div>
+      <div class="step"><div class="step-num">4</div><div class="step-body"><strong>Click Export</strong><p>Excel will open with your line item data pre-populated.</p></div></div>
+    </div>
+    <div class="callout tip">
+      <span class="callout-icon">💡</span>
+      <div>To paste into another application instead, use <strong>Tools → Export Items to Clipboard</strong>, then paste with Ctrl+V in your target application.</div>
+    </div>
+
+    <div class="section-title"><span class="dot"></span>Method 3 — Bulk Export via Data Manager <span style="font-size:12px;font-weight:500;color:var(--rev-orange);margin-left:8px;">(Recommended for Migration)</span></div>
+    <p style="font-size:14px;color:var(--text-body);margin-bottom:12px;">Use this for bulk exports of your full product list, contacts, or pricing tables.</p>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><div class="step-body"><strong>Go to Utilities → Data Manager from the top menu</strong></div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-body"><strong>Select the Export tab</strong></div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-body"><strong>Choose the data set to export</strong><p>e.g. Products, Contacts, Pricing Tables</p></div></div>
+      <div class="step"><div class="step-num">4</div><div class="step-body"><strong>Click Export DataSet</strong><p>The file will be saved as a CSV with column headers. Open it in Excel to review before sharing.</p></div></div>
+    </div>
+    <div class="callout note">
+      <span class="callout-icon">ℹ️</span>
+      <div>Use <strong>Create Empty DataSet file with ALL Columns</strong> if you want to understand your full data structure before the migration.</div>
+    </div>
+
+    <div class="section-title"><span class="dot"></span>Method 4 — Open Export Module <span style="font-size:12px;font-weight:500;color:var(--text-muted);margin-left:8px;">Professional / Corporate editions only</span></div>
+    <p style="font-size:14px;color:var(--text-body);margin-bottom:12px;">Exports full documents (quotes, orders, invoices) as tab-delimited text or XML — useful for accounting integrations and external systems.</p>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><div class="step-body"><strong>Open the QuoteWerks document you want to export</strong></div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-body"><strong>Go to Tools → Export using Open Export Module</strong></div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-body"><strong>Select your export format: Tab-Delimited Text or XML</strong></div></div>
+      <div class="step"><div class="step-num">4</div><div class="step-body"><strong>Choose the output destination and click Export</strong></div></div>
+    </div>
+    <div class="callout note">
+      <span class="callout-icon">ℹ️</span>
+      <div>Don't see this option? It's only available in the <strong>Professional and Corporate Editions</strong>. Check your edition under <strong>Help → About</strong>. One license covers all users at a site.</div>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────
+       SEDONA
+  ──────────────────────────────────── -->
+  <div id="panel-sedona" class="panel">
+    <div class="panel-header">
+      <div class="panel-header-top">
+        <div class="system-icon">🔐</div>
+        <h2>Sedona</h2>
+      </div>
+      <div class="coming-soon">
+        <div class="icon">🚧</div>
+        <h3>Instructions Coming Soon</h3>
+        <p>We're preparing a step-by-step guide for Sedona data access. In the meantime, please reach out to your Rev.io Onboarding Analyst at <a href="mailto:onboarding@rev.io" style="color:var(--rev-orange)">onboarding@rev.io</a> and they'll walk you through the process directly.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────
+       SERVICE FUSION
+  ──────────────────────────────────── -->
+  <div id="panel-servicefusion" class="panel">
+    <div class="panel-header">
+      <div class="panel-header-top">
+        <div class="system-icon">🔧</div>
+        <h2>Service Fusion</h2>
+      </div>
+      <span class="type-badge both">✅ API Access &amp; Report Export</span>
+      <p class="lead">
+        Service Fusion supports both direct API access and built-in report exports. Use the API for full programmatic data extraction, or use the Reports Dashboard / Reports Center for no-code exports.
+      </p>
+    </div>
+
+    <div class="method-tabs">
+      <div class="method-tab active" onclick="showMethod('servicefusion','reports', this)">Option 1: Report Export</div>
+      <div class="method-tab" onclick="showMethod('servicefusion','api', this)">Option 2: API Access</div>
+    </div>
+
+    <div id="servicefusion-reports" class="method-panel active">
+      <p style="font-size:14px;color:var(--text-body);margin-bottom:16px;">Service Fusion provides two built-in reporting interfaces for exporting data to Excel. No API or technical setup required.</p>
+
+      <div class="section-title" style="margin-top:0;"><span class="dot"></span>Reports Dashboard (Bulk Exports)</div>
+      <p style="font-size:14px;color:var(--text-body);margin-bottom:12px;">Access via <strong>Reports → Reports Dashboard</strong> from the top navigation.</p>
+      <div class="steps">
+        <div class="step"><div class="step-num">A</div><div class="step-body">
+          <strong>Export Customer List</strong>
+          <ul>
+            <li>Scroll to <strong>List Reports</strong> → click <strong>Custom</strong> under Customer List.</li>
+            <li>Set <em>Customers Created Between</em> Start Date to <code>01/01/1901</code> to capture all records.</li>
+            <li>Move all columns from Available to Selected using the <strong>&gt;&gt;</strong> button.</li>
+            <li>Set Report Type to <strong>Excel</strong> → click <strong>Generate Report</strong>.</li>
+          </ul>
+          <div class="callout tip" style="margin-top:8px;"><span class="callout-icon">💡</span><div>You must have at least 3 columns selected for the report to export. Use <strong>&gt;&gt;</strong> to move all columns at once.</div></div>
+        </div></div>
+        <div class="step"><div class="step-num">B</div><div class="step-body">
+          <strong>Export Customer Service Locations</strong>
+          <ul>
+            <li>Remain in List Reports → click <strong>Custom</strong> under Customer Service Locations.</li>
+            <li>Use <code>01/01/1901</code> as Start Date. Click Address 1 first, then <strong>&gt;&gt;</strong> to move all columns.</li>
+            <li>Set Report Type to Excel → click <strong>Generate Report</strong>.</li>
+          </ul>
+        </div></div>
+        <div class="step"><div class="step-num">C</div><div class="step-body">
+          <strong>Export Jobs / Sales Revenue</strong>
+          <ul>
+            <li>Find the <strong>Sales Revenue</strong> section → click <strong>Custom</strong> under All Sales Ungrouped.</li>
+            <li>Use <code>01/01/1901</code> as Start Date.</li>
+            <li>Check <strong>Itemize Job Charge</strong> and check <strong>ALL</strong> boxes in the "Where Status Is" section.</li>
+            <li>Click <strong>Generate Excel</strong>.</li>
+          </ul>
+        </div></div>
+      </div>
+
+      <div class="section-title"><span class="dot"></span>Reports Center (Flexible / Jobs & Estimates)</div>
+      <p style="font-size:14px;color:var(--text-body);margin-bottom:12px;">Access from <strong>Reports</strong> tab in your top navigation.</p>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-body"><strong>Click Create New Report</strong><p>Select your date range using the calendar — choose a preset timeframe or define a custom range.</p></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-body"><strong>Customize columns</strong><p>Use the <strong>Customize</strong> button to add or remove columns without starting over.</p></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-body"><strong>Export to Excel</strong><p>The <strong>Export to Excel</strong> option appears to the right of the Customize button when viewing any report.</p></div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-body"><strong>Save for reuse (optional)</strong><p>Click <strong>Save Report</strong> after generating — saved reports appear in your Reports Center list and can be rerun at any time.</p></div></div>
+      </div>
+
+      <div class="section-title"><span class="dot"></span>Quick Reference</div>
+      <table class="data-table">
+        <thead><tr><th>Data Needed</th><th>Where to Find It</th><th>Report Name</th></tr></thead>
+        <tbody>
+          <tr><td>All Customers</td><td>Reports Dashboard → List Reports</td><td>Customer List → Custom</td></tr>
+          <tr><td>Service Locations</td><td>Reports Dashboard → List Reports</td><td>Customer Service Locations → Custom</td></tr>
+          <tr><td>All Jobs / Revenue</td><td>Reports Dashboard → Sales Revenue</td><td>All Sales Ungrouped → Custom</td></tr>
+          <tr><td>Jobs &amp; Estimates (flexible)</td><td>Reports Center</td><td>Create New Report</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div id="servicefusion-api" class="method-panel">
+      <div class="callout note">
+        <span class="callout-icon">ℹ️</span>
+        <div>The Service Fusion API is only available to <strong>Pro plan</strong> subscribers. If you're on a lower tier, contact Service Fusion support or sales to upgrade before proceeding.</div>
+      </div>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-body"><strong>Confirm you are on the Pro Plan</strong><p>Contact <a href="https://servicefusion.com" target="_blank">servicefusion.com</a> or your account dashboard to confirm.</p></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-body">
+          <strong>Choose your Authentication Method</strong>
+          <table class="data-table" style="margin-top:8px;">
+            <thead><tr><th>Flow</th><th>Best For</th></tr></thead>
+            <tbody>
+              <tr><td>Client Credentials Grant</td><td>Data exports, migrations, internal tools — no user login required</td></tr>
+              <tr><td>Authorization Code Grant</td><td>Third-party apps where an end user authorizes the connection</td></tr>
+            </tbody>
+          </table>
+          <div class="callout tip" style="margin-top:8px;"><span class="callout-icon">💡</span><div>For data extraction and migration, <strong>Client Credentials Grant</strong> is the correct choice.</div></div>
+        </div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-body">
+          <strong>Generate API Credentials</strong>
+          <ul>
+            <li>Log in to your Service Fusion account.</li>
+            <li>Navigate to the <strong>API / Integrations</strong> section of your account settings.</li>
+            <li>Follow the "Open API Integration: Generating Credentials — Client Credentials Grant" guide in the <a href="https://servicefusion.zendesk.com" target="_blank">Service Fusion Help Center</a>.</li>
+            <li>Copy and securely store your <strong>Client ID</strong> and <strong>Client Secret</strong>.</li>
+          </ul>
+        </div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-body">
+          <strong>Share credentials with Rev.io</strong>
+          <p>Send your Client ID and Client Secret to your Rev.io Onboarding Analyst via a secure channel. API documentation is at <a href="https://docs.servicefusion.com" target="_blank">docs.servicefusion.com</a>.</p>
+        </div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────
+       AUTOTASK
+  ──────────────────────────────────── -->
+  <div id="panel-autotask" class="panel">
+    <div class="panel-header">
+      <div class="panel-header-top">
+        <div class="system-icon">🤖</div>
+        <h2>Autotask PSA</h2>
+      </div>
+      <span class="type-badge both">✅ API Access &amp; Report Export</span>
+      <p class="lead">
+        To connect Autotask to Rev.io, you'll create a dedicated API User — a special account type that doesn't consume a user license and has no UI access. You can also export data directly using LiveReports, the Billing Export Wizard, or dashboard widgets.
+      </p>
+    </div>
+
+    <div class="method-tabs">
+      <div class="method-tab active" onclick="showMethod('autotask','api', this)">Part 1: API User Setup</div>
+      <div class="method-tab" onclick="showMethod('autotask','export', this)">Part 2: Data Export</div>
+    </div>
+
+    <div id="autotask-api" class="method-panel active">
+      <div class="callout note">
+        <span class="callout-icon">ℹ️</span>
+        <div>You'll need <strong>Administrator-level access</strong> to Autotask PSA to complete this setup.</div>
+      </div>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-body">
+          <strong>Log into Autotask PSA as an administrator</strong>
+        </div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-body">
+          <strong>Navigate to Admin → Resources/Users (HR) → Resources/Users</strong>
+        </div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-body">
+          <strong>Click the dropdown arrow next to the + New button and select "New API User"</strong>
+        </div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-body">
+          <strong>Fill in the required fields</strong>
+          <ul>
+            <li><strong>First Name, Last Name, Email Address</strong> — a shared/generic address works (e.g. <code>revio-integration@yourdomain.com</code>)</li>
+            <li><strong>Security Level:</strong> API User (system) — the default pre-configured level</li>
+            <li>Date Format, Time Format, Number Format, Primary Internal Location (your time zone)</li>
+          </ul>
+        </div></div>
+        <div class="step"><div class="step-num">5</div><div class="step-body">
+          <strong>Set the API Tracking Identifier</strong>
+          <p>Select <strong>Integration Vendor</strong> from the dropdown. Choose the appropriate vendor, or if Rev.io isn't listed, select <strong>Custom (Internal Integration)</strong> and enter <code>Rev.io PSA</code>.</p>
+        </div></div>
+        <div class="step"><div class="step-num">6</div><div class="step-body">
+          <strong>Generate your credentials</strong>
+          <ul>
+            <li>In the Credentials section, click <strong>Generate Key</strong> to create your Username (Key)</li>
+            <li>Click <strong>Generate Secret</strong> to create your Password (Secret)</li>
+          </ul>
+          <div class="callout warn" style="margin-top:10px;">
+            <span class="callout-icon">⚠️</span>
+            <div>Copy both values immediately and store them securely. <strong>The Secret cannot be retrieved again</strong> after you leave this screen.</div>
+          </div>
+        </div></div>
+        <div class="step"><div class="step-num">7</div><div class="step-body"><strong>Click Save &amp; Close</strong></div></div>
+      </div>
+
+      <div class="section-title"><span class="dot"></span>What to Send Us</div>
+      <table class="data-table">
+        <thead><tr><th>Field</th><th>Where to Find It</th></tr></thead>
+        <tbody>
+          <tr><td>API Username (Key)</td><td>Generated in the Credentials section</td></tr>
+          <tr><td>API Secret (Password)</td><td>Generated in the Credentials section</td></tr>
+          <tr><td>Autotask Zone URL</td><td>The base URL you use to log in (e.g., <code>ww1.autotask.net</code>)</td></tr>
+        </tbody>
+      </table>
+      <div class="callout warn">
+        <span class="callout-icon">🔒</span>
+        <div>Please share credentials via a secure method (password manager share link, encrypted email, etc.) — not plain email or chat.</div>
+      </div>
+    </div>
+
+    <div id="autotask-export" class="method-panel">
+      <div class="section-title" style="margin-top:0;"><span class="dot"></span>Option A — LiveReports</div>
+      <p style="font-size:14px;color:var(--text-body);margin-bottom:12px;">Autotask includes a large library of pre-built Standard Reports and System Reports (built on the LiveReports engine) that can be run as-is or copied and customized.</p>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-body">
+          <strong>Click the Autotask logo (≡) in the top navigation → hover over Reports → click LiveReports Designer</strong>
+        </div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-body">
+          <strong>Browse to the report you want in the folder tree on the left</strong>
+        </div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-body">
+          <strong>Run or export the report</strong>
+          <ul>
+            <li>Right-click → <strong>Run Report</strong> to generate in the default format</li>
+            <li>Right-click → <strong>Export As</strong> to choose a specific output format</li>
+          </ul>
+          <p style="margin-top:6px;">Supported formats: <strong>HTML, PDF, Excel (.xlsx), RTF, CSV</strong></p>
+        </div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-body">
+          <strong>Adjust any date/filter prompts as needed and click OK</strong>
+        </div></div>
+      </div>
+
+      <div class="section-title"><span class="dot"></span>Option B — Billing Export Wizard</div>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-body"><strong>Navigate to Billing in the top menu</strong></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-body"><strong>Use the Export Wizard to search and filter your billing items</strong></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-body">
+          <strong>Select items and export</strong>
+          <p>Click <strong>Check All</strong> to select everything, then click <strong>Next</strong> and choose your file format.</p>
+        </div></div>
+      </div>
+      <div class="callout note">
+        <span class="callout-icon">ℹ️</span>
+        <div>Autotask will not display more than <strong>2,000 billing items</strong> at once. If your results exceed this, refine your search or export all items without previewing them first.</div>
+      </div>
+
+      <div class="section-title"><span class="dot"></span>Option C — Dashboard Widget Export</div>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-body"><strong>Find the relevant widget on your Autotask dashboard</strong></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-body"><strong>Look for the export/download icon on the widget</strong></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-body"><strong>Export to Excel or CSV</strong></div></div>
+      </div>
+
+      <div class="section-title"><span class="dot"></span>Common Reports We Typically Need</div>
+      <table class="data-table">
+        <thead><tr><th>Data Type</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td>Customers / Accounts</td><td>Company list with contact info</td></tr>
+          <tr><td>Contracts</td><td>Active service agreements and billing details</td></tr>
+          <tr><td>Configuration Items (CIs)</td><td>Devices/assets tracked per client</td></tr>
+          <tr><td>Time Entries</td><td>Historical labor records</td></tr>
+          <tr><td>Invoices / Billing Items</td><td>Past billing history</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<!-- ══════════════════════════════════════
+     REQUEST NEW SYSTEM MODAL
+════════════════════════════════════════ -->
+<div class="modal-overlay" id="requestModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <h3>Request New Source System</h3>
+        <p>Claude will generate client-facing instructions for this system.</p>
+      </div>
+      <button class="modal-close" onclick="closeRequestModal()">×</button>
+    </div>
+    <div class="modal-body" id="modalBody">
+      <label class="modal-label" for="systemNameInput">Source System Name</label>
+      <input class="modal-input" id="systemNameInput" type="text"
+        placeholder="e.g. Salesforce, NetSuite, Zendesk..."
+        onkeydown="if(event.key==='Enter') generateSystem()" />
+      <p class="modal-hint">Claude will research this system and generate step-by-step instructions for API access and/or data export.</p>
+      <div id="previewArea" style="display:none;">
+        <div class="preview-box">
+          <div class="preview-box-label">Preview</div>
+          <div id="previewContent"></div>
+        </div>
+        <div id="saveSuccess" class="save-success" style="display:none;">
+          ✅ Guide updated successfully! Refresh the page to see the new system in the sidebar.
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <div class="modal-status" id="modalStatus" style="display:none;"></div>
+      <button class="btn-secondary" onclick="closeRequestModal()">Cancel</button>
+      <button class="btn-primary" id="generateBtn" onclick="generateSystem()">Generate Instructions</button>
+      <button class="btn-primary" id="saveBtn" onclick="saveToGuide()" style="display:none;">Save to Guide</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ─── ANTHROPIC API KEY ───────────────────────────────────────────
+  // Replace the placeholder below with your Anthropic API key.
+  // Keep this file internal — do not share with clients.
+  const ANTHROPIC_API_KEY = 'YOUR_ANTHROPIC_API_KEY_HERE';
+  // ─────────────────────────────────────────────────────────────────
+
+  let generatedPanelId = null;
+  let generatedPanelHTML = null;
+  let fileHandle = null;
+
+  // ── NAV / PANEL ──────────────────────────────────────────────────
+  function showPanel(id, navEl) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.getElementById('panel-' + id).classList.add('active');
+    navEl.classList.add('active');
+    document.getElementById('main').scrollTop = 0;
+    window.scrollTo(0, 0);
+  }
+
+  function showMethod(system, method, tabEl) {
+    tabEl.closest('.panel').querySelectorAll('.method-tab').forEach(t => t.classList.remove('active'));
+    tabEl.closest('.panel').querySelectorAll('.method-panel').forEach(p => p.classList.remove('active'));
+    tabEl.classList.add('active');
+    document.getElementById(system + '-' + method).classList.add('active');
+  }
+
+  // ── PDF EXPORT ───────────────────────────────────────────────────
+  function exportPDF(panelEl) {
+    // Inject print brand header if not present
+    if (!panelEl.querySelector('.print-brand-header')) {
+      const header = document.createElement('div');
+      header.className = 'print-brand-header';
+      header.innerHTML = `
+        <div class="brand">Rev<span>.</span>io</div>
+        <div class="meta">Data Access &amp; Migration Guide<br>${new Date().toLocaleDateString('en-US', {year:'numeric',month:'long',day:'numeric'})}</div>`;
+      panelEl.insertBefore(header, panelEl.firstChild);
+    }
+    panelEl.classList.add('printing');
+    window.print();
+    panelEl.classList.remove('printing');
+  }
+
+  // Dynamically add Export PDF button to every system panel (not home)
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.panel').forEach(panel => {
+      if (panel.id === 'panel-home') return;
+      const header = panel.querySelector('.panel-header-top');
+      if (!header) return;
+      const btn = document.createElement('button');
+      btn.className = 'btn-export-pdf';
+      btn.innerHTML = '&#128438; Export PDF';
+      btn.onclick = () => exportPDF(panel);
+      header.appendChild(btn);
+    });
+  });
+
+  // ── REQUEST NEW SYSTEM MODAL ─────────────────────────────────────
+  function openRequestModal() {
+    document.getElementById('systemNameInput').value = '';
+    document.getElementById('previewArea').style.display = 'none';
+    document.getElementById('previewContent').innerHTML = '';
+    document.getElementById('saveSuccess').style.display = 'none';
+    document.getElementById('saveBtn').style.display = 'none';
+    document.getElementById('generateBtn').style.display = 'inline-flex';
+    document.getElementById('modalStatus').style.display = 'none';
+    generatedPanelId = null;
+    generatedPanelHTML = null;
+    document.getElementById('requestModal').classList.add('open');
+    setTimeout(() => document.getElementById('systemNameInput').focus(), 100);
+  }
+
+  function closeRequestModal() {
+    document.getElementById('requestModal').classList.remove('open');
+  }
+
+  // Close on backdrop click
+  document.getElementById('requestModal').addEventListener('click', e => {
+    if (e.target === document.getElementById('requestModal')) closeRequestModal();
+  });
+
+  async function generateSystem() {
+    const name = document.getElementById('systemNameInput').value.trim();
+    if (!name) { document.getElementById('systemNameInput').focus(); return; }
+
+    if (ANTHROPIC_API_KEY === 'YOUR_ANTHROPIC_API_KEY_HERE') {
+      setStatus('⚠️ Add your Anthropic API key to the file before using this feature.');
+      return;
+    }
+
+    const generateBtn = document.getElementById('generateBtn');
+    generateBtn.disabled = true;
+    setStatus('<span class="spinner"></span> Generating instructions for ' + name + '…');
+
+    const panelId = name.toLowerCase().replace(/[^a-z0-9]/g, '');
+
+    const systemPrompt = `You are building a client-facing data migration guide for Rev.io PSA.
+Generate the inner HTML content for a new source system panel. Use ONLY these CSS classes (already defined in the page):
+- .steps > .step > .step-num + .step-body for numbered steps
+- .callout.note / .callout.tip / .callout.warn with .callout-icon + div for callouts
+- .data-table for tables
+- .creds-box with .label and .placeholder spans for credential display boxes
+- .section-title with <span class="dot"></span> for section headers
+- .type-badge.api, .type-badge.export, or .type-badge.both for the access type badge
+- .method-tabs > .method-tab and .method-panel for tabbed sections (use id="${panelId}-tab1", etc.)
+- p.lead for the intro paragraph
+
+Return ONLY valid HTML with no markdown, no code fences, no explanation.
+Start with the type badge, then p.lead, then sections.
+Do NOT include the outer panel div or panel-header div — just the inner content starting from the type badge.
+All method-tab onclick attributes should follow this pattern: showMethod('${panelId}','tab1', this)
+All method-panel ids should follow: id="${panelId}-tab1"`;
+
+    const userPrompt = `Please provide client-facing instructions for ${name}. Include: (1) how to grant Rev.io API access with step-by-step credential setup, OR (2) steps for exporting reports/data for Rev.io to use for migration uploads — or both if the system supports it. Format per the system prompt.`;
+
+    try {
+      const response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'x-api-key': ANTHROPIC_API_KEY,
+          'anthropic-version': '2023-06-01',
+          'content-type': 'application/json',
+          'anthropic-dangerous-direct-browser-calls': 'true'
+        },
+        body: JSON.stringify({
+          model: 'claude-opus-4-6',
+          max_tokens: 4096,
+          system: systemPrompt,
+          messages: [{ role: 'user', content: userPrompt }]
+        })
+      });
+
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error?.message || 'API error ' + response.status);
+      }
+
+      const data = await response.json();
+      const innerHTML = data.content[0].text;
+
+      // Build full panel
+      generatedPanelId = panelId;
+      generatedPanelHTML = `
+  <!-- ─────────────────────────────────
+       ${name.toUpperCase()}
+  ──────────────────────────────────── -->
+  <div id="panel-${panelId}" class="panel">
+    <div class="panel-header">
+      <div class="panel-header-top">
+        <div class="system-icon">📋</div>
+        <h2>${name}</h2>
+      </div>
+      ${innerHTML}
+    </div>
+  </div>`;
+
+      // Show preview
+      document.getElementById('previewContent').innerHTML = innerHTML;
+      document.getElementById('previewArea').style.display = 'block';
+      document.getElementById('saveBtn').style.display = 'inline-flex';
+      generateBtn.style.display = 'none';
+      setStatus('✅ Instructions generated — review below before saving.');
+
+    } catch (err) {
+      setStatus('❌ Error: ' + err.message);
+      generateBtn.disabled = false;
+    }
+  }
+
+  async function saveToGuide() {
+    if (!generatedPanelHTML) return;
+
+    const name = document.getElementById('systemNameInput').value.trim();
+    const panelId = generatedPanelId;
+    const saveBtn = document.getElementById('saveBtn');
+    saveBtn.disabled = true;
+    setStatus('<span class="spinner"></span> Saving…');
+
+    // 1. Inject panel into live DOM before the closing </div><!-- /main -->
+    const main = document.getElementById('main');
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = generatedPanelHTML;
+    main.appendChild(tempDiv.firstElementChild);
+
+    // 2. Add nav item to sidebar (alphabetically would be ideal, append for now)
+    const nav = document.querySelector('.sidebar-nav');
+    const navItem = document.createElement('div');
+    navItem.className = 'nav-item';
+    navItem.setAttribute('onclick', `showPanel('${panelId}', this)`);
+    navItem.innerHTML = `<span class="nav-icon">📋</span> ${name} <span class="nav-badge badge-both">New</span>`;
+    // Insert before Sedona/last pending items
+    nav.appendChild(navItem);
+
+    // 3. Get updated HTML and write to file
+    const updatedHTML = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+
+    try {
+      // Try File System Access API (Chrome/Edge)
+      if (window.showOpenFilePicker && !fileHandle) {
+        const handles = await window.showOpenFilePicker({
+          types: [{ description: 'HTML File', accept: { 'text/html': ['.html'] } }],
+          multiple: false
+        });
+        fileHandle = handles[0];
+      }
+
+      if (fileHandle) {
+        const writable = await fileHandle.createWritable();
+        await writable.write(updatedHTML);
+        await writable.close();
+        setStatus('');
+        document.getElementById('saveSuccess').style.display = 'flex';
+      } else {
+        throw new Error('File System Access API not available');
+      }
+    } catch (err) {
+      // Fallback: download updated file
+      const blob = new Blob([updatedHTML], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'rev-io-data-access-guide.html';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      setStatus('');
+      document.getElementById('saveSuccess').style.display = 'flex';
+      document.getElementById('saveSuccess').textContent = '✅ Updated file downloaded — replace your current file with the downloaded version.';
+    }
+
+    saveBtn.disabled = false;
+  }
+
+  function setStatus(html) {
+    const el = document.getElementById('modalStatus');
+    el.style.display = html ? 'flex' : 'none';
+    el.innerHTML = html;
+  }
+</script>
+</body>
+</html>
