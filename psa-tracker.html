@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PSA Client Tracker — Internal Preview</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #0f1117;
+  --surface: #181c27;
+  --surface2: #1e2436;
+  --surface3: #242840;
+  --border: #2a3050;
+  --border-hi: #3d4870;
+  --text: #e8e8f0;
+  --text-dim: #a7adc8;
+  --text-mute: #6e748d;
+  --teal: #00d4aa;
+  --blue: #4fa3ff;
+  --yellow: #f0a500;
+  --red: #ff5a6e;
+}
+html { font-size: 14px; }
+body {
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  line-height: 1.5;
+}
+a { color: inherit; }
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 20px;
+  background: rgba(24, 28, 39, .96);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(12px);
+}
+.brand { font-weight: 800; color: var(--teal); white-space: nowrap; }
+.back-link {
+  color: var(--text-dim);
+  text-decoration: none;
+  font-size: .86rem;
+  white-space: nowrap;
+}
+.back-link:hover { color: var(--text); }
+.top-title {
+  min-width: 0;
+  flex: 1;
+  color: var(--text-dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.btn {
+  border: 1px solid var(--border-hi);
+  background: var(--surface2);
+  color: var(--text);
+  border-radius: 6px;
+  padding: 6px 11px;
+  font-size: .84rem;
+  cursor: pointer;
+}
+.btn:hover { border-color: var(--teal); }
+.preview-flag {
+  background: rgba(240, 165, 0, .12);
+  border: 1px solid rgba(240, 165, 0, .38);
+  color: var(--yellow);
+  border-radius: 999px;
+  padding: 3px 9px;
+  font-size: .76rem;
+  font-weight: 750;
+  white-space: nowrap;
+}
+.wrap { max-width: 1180px; margin: 0 auto; padding: 22px 20px 44px; }
+.hero {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 22px;
+  margin-bottom: 18px;
+}
+.hero-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 18px;
+  margin-bottom: 18px;
+}
+.client-name { font-size: 1.8rem; font-weight: 800; line-height: 1.1; }
+.subtitle { color: var(--text-dim); margin-top: 6px; max-width: 720px; }
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 4px 10px;
+  border: 1px solid var(--border-hi);
+  background: var(--surface2);
+  color: var(--text-dim);
+  font-size: .78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  white-space: nowrap;
+}
+.status-pill.on-track { color: var(--teal); border-color: rgba(0,212,170,.45); background: rgba(0,212,170,.1); }
+.status-pill.rts { color: var(--yellow); border-color: rgba(240,165,0,.45); background: rgba(240,165,0,.1); }
+.status-pill.on-hold { color: var(--text-dim); }
+.status-pill.off-track { color: var(--red); border-color: rgba(255,90,110,.45); background: rgba(255,90,110,.1); }
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+.metric {
+  min-width: 0;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+}
+.metric-label {
+  color: var(--text-mute);
+  font-size: .72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  margin-bottom: 5px;
+}
+.metric-value {
+  color: var(--text);
+  font-weight: 760;
+  font-size: 1rem;
+  overflow-wrap: anywhere;
+}
+.metric-note { color: var(--text-mute); font-size: .78rem; margin-top: 4px; }
+.section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 18px;
+  overflow: hidden;
+}
+.section-header {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.section-title { font-size: .96rem; font-weight: 800; }
+.section-subtitle { color: var(--text-mute); font-size: .8rem; margin-top: 2px; }
+.section-body { padding: 16px; }
+.phase-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.phase-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.phase-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 11px 12px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface3);
+}
+.phase-name { font-weight: 800; }
+.phase-count { color: var(--text-mute); font-size: .8rem; white-space: nowrap; }
+.milestone-list { display: grid; }
+.milestone {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+}
+.milestone:last-child { border-bottom: none; }
+.milestone-name { color: var(--text); font-weight: 620; overflow-wrap: anywhere; }
+.milestone-date { color: var(--text-mute); font-size: .78rem; margin-top: 2px; }
+.ms-status {
+  align-self: start;
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-size: .72rem;
+  font-weight: 800;
+  white-space: nowrap;
+  background: var(--surface);
+  color: var(--text-dim);
+  border: 1px solid var(--border-hi);
+}
+.ms-status.completed { color: var(--teal); border-color: rgba(0,212,170,.45); background: rgba(0,212,170,.1); }
+.ms-status.in-progress { color: var(--yellow); border-color: rgba(240,165,0,.45); background: rgba(240,165,0,.1); }
+.ms-status.overdue { color: var(--red); border-color: rgba(255,90,110,.45); background: rgba(255,90,110,.1); }
+.columns { display: grid; grid-template-columns: 1.1fr .9fr; gap: 18px; }
+.copy-block {
+  color: var(--text-dim);
+  font-size: .95rem;
+  line-height: 1.6;
+}
+.list { list-style: none; display: grid; gap: 9px; }
+.list li {
+  position: relative;
+  padding-left: 15px;
+  color: var(--text-dim);
+}
+.list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: .65em;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--teal);
+}
+.empty {
+  color: var(--text-mute);
+  font-size: .9rem;
+}
+.error {
+  max-width: 760px;
+  margin: 60px auto;
+  padding: 20px;
+  background: rgba(255,90,110,.08);
+  border: 1px solid rgba(255,90,110,.3);
+  border-radius: 8px;
+  color: var(--text);
+}
+#print-header { display: none; }
+@media (max-width: 840px) {
+  .hero-top { flex-direction: column; }
+  .metric-grid, .phase-grid, .columns { grid-template-columns: 1fr; }
+}
+@media print {
+  :root {
+    --bg: #fff; --surface: #fff; --surface2: #f7f8fb; --surface3: #eef1f7;
+    --border: #d7dce8; --border-hi: #aeb7c8;
+    --text: #151823; --text-dim: #3f4758; --text-mute: #687086;
+    --teal: #007a64; --blue: #1a5fa0; --yellow: #9a6500; --red: #b63545;
+  }
+  body { background: #fff; }
+  .topbar { display: none; }
+  .wrap { max-width: none; padding: 0; }
+  #print-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #222;
+    padding-bottom: 10px;
+    margin-bottom: 14px;
+    font-weight: 800;
+  }
+  .hero, .section, .phase-card { break-inside: avoid; box-shadow: none; }
+  .section { margin-bottom: 14px; }
+  .preview-flag { display: none; }
+}
+</style>
+</head>
+<body>
+<div id="print-header">
+  <span id="printClientName"></span>
+  <span>Rev.io PSA Client Tracker</span>
+  <span id="printDate"></span>
+</div>
+
+<header class="topbar">
+  <span class="brand">Onboarding Hub</span>
+  <a class="back-link" href="pm-hub.html">Back to hub</a>
+  <span class="top-title" id="topTitle">Loading client...</span>
+  <span class="preview-flag">Internal preview</span>
+  <button class="btn" type="button" onclick="window.print()">Export PDF</button>
+</header>
+
+<main class="wrap" id="app">
+  <div class="empty">Loading client tracker...</div>
+</main>
+
+<script>
+let snapshot = null;
+
+function esc(value) {
+  return String(value ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function fmtDate(value) {
+  if (!value) return 'Not set';
+  const date = new Date(String(value).slice(0, 10) + 'T12:00:00');
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+function dateOnly(value) {
+  return value ? String(value).slice(0, 10) : null;
+}
+
+function daysFromToday(value) {
+  const day = dateOnly(value);
+  if (!day) return null;
+  const today = new Date();
+  const todayUtc = Date.UTC(today.getFullYear(), today.getMonth(), today.getDate());
+  return Math.round((new Date(day + 'T00:00:00Z').getTime() - todayUtc) / 86400000);
+}
+
+function statusClass(value) {
+  const v = String(value || '').toLowerCase();
+  if (v.includes('rts')) return 'rts';
+  if (v.includes('hold')) return 'on-hold';
+  if (v.includes('off')) return 'off-track';
+  if (v.includes('track') || v.includes('progress') || v.includes('nko')) return 'on-track';
+  return '';
+}
+
+function hasPsa(client) {
+  const lob = Array.isArray(client.lob) ? client.lob : [client.lob || 'billing'];
+  return lob.includes('psa') || Boolean(client.psaId);
+}
+
+function isComplete(client) {
+  return /graduated|completed/i.test(client.psaStatus || client.status || '') || Boolean(client.psaActualGradDate);
+}
+
+function gradInfo(client) {
+  if (isComplete(client) && client.psaActualGradDate) {
+    return { label: 'Actual Graduation', date: client.psaActualGradDate, note: 'Project completed' };
+  }
+  const diff = daysFromToday(client.psaGradDate || client.gradDate);
+  let note = 'Forecast date not set';
+  if (diff != null) {
+    if (diff < 0) note = `${Math.abs(diff)} days past forecast`;
+    else if (diff === 0) note = 'Forecast graduation is today';
+    else note = `${diff} days to forecast graduation`;
+  }
+  return { label: 'Forecast Graduation', date: client.psaGradDate || client.gradDate, note };
+}
+
+function displayStatus(status) {
+  return status || 'Status not set';
+}
+
+function milestonePhase(name, phase) {
+  const explicit = String(phase || '').trim();
+  if (explicit) return explicit;
+  const text = String(name || '').trim();
+  const match = text.match(/^(\d+)\./);
+  if (match?.[1] === '1') return 'Foundation';
+  if (match?.[1] === '2') return 'Configuration and Training';
+  if (match?.[1] === '3') return 'Billing Readiness';
+  if (match?.[1] === '4') return 'Final Review';
+  return 'Project Setup';
+}
+
+function cleanMilestoneName(name) {
+  return String(name || 'Milestone').replace(/^\d+\.\s*/, '').trim();
+}
+
+function statusLabel(milestone) {
+  if (milestone.isOverdue && milestone.status !== 'Completed') return 'Overdue';
+  return milestone.status || 'Not Started';
+}
+
+function statusSlug(label) {
+  return String(label || '').toLowerCase().replace(/\s+/g, '-');
+}
+
+function groupMilestones(milestones) {
+  const groups = new Map();
+  for (const milestone of milestones) {
+    const phase = milestonePhase(milestone.name, milestone.phase);
+    if (!groups.has(phase)) groups.set(phase, []);
+    groups.get(phase).push(milestone);
+  }
+  return [...groups.entries()].sort(([a], [b]) => a.localeCompare(b, undefined, { numeric: true }));
+}
+
+function percentComplete(client, milestones) {
+  if (client.psaMilestonePercent != null) return client.psaMilestonePercent;
+  if (!milestones.length) return null;
+  const credit = milestones.reduce((sum, m) => {
+    if (m.status === 'Completed' || m.completedDate) return sum + 1;
+    if (m.status === 'In Progress') return sum + (1 / 3);
+    return sum;
+  }, 0);
+  return Math.round((credit / milestones.length) * 100);
+}
+
+function latestActivity(calls, interactions) {
+  const callItems = calls.map(call => ({
+    date: call.date,
+    label: 'Project call',
+    detail: call.summary || call.keyFinding || '',
+  }));
+  const interactionItems = interactions.map(item => ({
+    date: item.date,
+    label: item.type || 'Project update',
+    detail: item.title || item.outcome || item.notes || '',
+  }));
+  return [...callItems, ...interactionItems]
+    .filter(item => item.date || item.detail)
+    .sort((a, b) => String(b.date || '').localeCompare(String(a.date || '')))[0] || null;
+}
+
+function compact(text, max = 360) {
+  const clean = String(text || '').replace(/\s+/g, ' ').trim();
+  if (clean.length <= max) return clean;
+  return clean.slice(0, max - 1).trimEnd() + '...';
+}
+
+function actionLines(calls, clientName) {
+  const latest = calls.find(call => call.actionItems) || null;
+  if (!latest) return [];
+  const clientTokens = String(clientName || '').toLowerCase().split(/[^a-z0-9]+/).filter(t => t.length > 3);
+  return String(latest.actionItems)
+    .split(/\n|•/g)
+    .map(line => line.replace(/^[-*\s]+/, '').trim())
+    .filter(Boolean)
+    .filter(line => {
+      const lower = line.toLowerCase();
+      if (lower.includes('client') || lower.includes('customer')) return true;
+      return clientTokens.some(token => lower.includes(token));
+    })
+    .map(line => line.replace(/^[^:]{1,45}:\s*/, '').trim())
+    .filter(Boolean)
+    .slice(0, 6);
+}
+
+function nextMilestones(milestones) {
+  return milestones
+    .filter(m => m.status !== 'Completed')
+    .sort((a, b) => String(a.due || '9999-12-31').localeCompare(String(b.due || '9999-12-31')))
+    .slice(0, 6)
+    .map(m => {
+      const due = m.due ? ` (${fmtDate(m.due)})` : '';
+      return `${cleanMilestoneName(m.name)}${due}`;
+    });
+}
+
+function renderMetrics(client, milestones) {
+  const grad = gradInfo(client);
+  const pct = percentComplete(client, milestones);
+  const ids = [
+    client.psaAccountId ? `Account ${client.psaAccountId}` : null,
+    client.psaRevioCustomerId ? `Rev.io ${client.psaRevioCustomerId}` : null,
+  ].filter(Boolean).join(' / ');
+  return `
+    <div class="metric-grid">
+      <div class="metric">
+        <div class="metric-label">${esc(grad.label)}</div>
+        <div class="metric-value">${esc(fmtDate(grad.date))}</div>
+        <div class="metric-note">${esc(grad.note)}</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Milestone Progress</div>
+        <div class="metric-value">${pct == null ? 'Not set' : esc(pct) + '%'}</div>
+        <div class="metric-note">${milestones.length ? `${milestones.length} tracked milestones` : 'Milestones not available'}</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Project Contact</div>
+        <div class="metric-value">${esc(client.psaSa || (client.sa || []).join(', ') || 'Not set')}</div>
+        <div class="metric-note">Rev.io onboarding owner</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Identifiers</div>
+        <div class="metric-value">${ids ? esc(ids) : 'Not set'}</div>
+        <div class="metric-note">${client.psaCurrentBalanceStatus ? 'Balance: ' + esc(client.psaCurrentBalanceStatus) : 'Internal reference'}</div>
+      </div>
+    </div>`;
+}
+
+function renderPhases(milestones) {
+  if (!milestones.length) return '<div class="empty">No PSA milestones are available for this client yet.</div>';
+  return `<div class="phase-grid">${groupMilestones(milestones).map(([phase, rows]) => {
+    const done = rows.filter(m => m.status === 'Completed' || m.completedDate).length;
+    return `
+      <div class="phase-card">
+        <div class="phase-head">
+          <div class="phase-name">${esc(phase)}</div>
+          <div class="phase-count">${done} / ${rows.length} complete</div>
+        </div>
+        <div class="milestone-list">
+          ${rows.map(m => {
+            const label = statusLabel(m);
+            return `
+              <div class="milestone">
+                <div>
+                  <div class="milestone-name">${esc(cleanMilestoneName(m.name))}</div>
+                  ${m.due ? `<div class="milestone-date">Target: ${esc(fmtDate(m.due))}</div>` : ''}
+                </div>
+                <span class="ms-status ${statusSlug(label)}">${esc(label)}</span>
+              </div>`;
+          }).join('')}
+        </div>
+      </div>`;
+  }).join('')}</div>`;
+}
+
+function renderList(items, empty) {
+  if (!items.length) return `<div class="empty">${esc(empty)}</div>`;
+  return `<ul class="list">${items.map(item => `<li>${esc(item)}</li>`).join('')}</ul>`;
+}
+
+function render(client) {
+  const milestones = snapshot.psaMilestonesByClientId?.[client.id] || [];
+  const calls = snapshot.psaBriefsByClientId?.[client.id] || [];
+  const interactions = snapshot.interactionsByClientId?.[client.id] || [];
+  const activity = latestActivity(calls, interactions);
+  const safeUpdate = activity?.detail
+    ? compact(activity.detail)
+    : 'No recent project update is available in the tracker data yet.';
+  const actions = actionLines(calls, client.name);
+  const upcoming = nextMilestones(milestones);
+
+  document.getElementById('topTitle').textContent = client.name || 'PSA client';
+  document.getElementById('printClientName').textContent = client.name || 'PSA client';
+  document.getElementById('printDate').textContent = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
+  document.getElementById('app').innerHTML = `
+    <section class="hero">
+      <div class="hero-top">
+        <div>
+          <div class="client-name">${esc(client.name || 'PSA Client')}</div>
+          <div class="subtitle">Internal preview of a client-safe onboarding tracker. Review language before sharing externally.</div>
+        </div>
+        <span class="status-pill ${statusClass(client.psaStatus || client.status)}">${esc(displayStatus(client.psaStatus || client.status))}</span>
+      </div>
+      ${renderMetrics(client, milestones)}
+    </section>
+
+    <section class="section">
+      <div class="section-header">
+        <div>
+          <div class="section-title">Project Progress</div>
+          <div class="section-subtitle">Milestones are grouped into client-readable project phases.</div>
+        </div>
+      </div>
+      <div class="section-body">${renderPhases(milestones)}</div>
+    </section>
+
+    <div class="columns">
+      <section class="section">
+        <div class="section-header">
+          <div>
+            <div class="section-title">Recent Update</div>
+            <div class="section-subtitle">${activity?.date ? fmtDate(activity.date) : 'No dated update'}</div>
+          </div>
+        </div>
+        <div class="section-body"><div class="copy-block">${esc(safeUpdate)}</div></div>
+      </section>
+
+      <section class="section">
+        <div class="section-header">
+          <div>
+            <div class="section-title">Client Next Steps</div>
+            <div class="section-subtitle">Items that appear client-owned or client-confirmed.</div>
+          </div>
+        </div>
+        <div class="section-body">${renderList(actions, 'No client-owned action items are available from the latest project notes.')}</div>
+      </section>
+    </div>
+
+    <section class="section">
+      <div class="section-header">
+        <div>
+          <div class="section-title">Upcoming Focus</div>
+          <div class="section-subtitle">Next incomplete milestones by target date.</div>
+        </div>
+      </div>
+      <div class="section-body">${renderList(upcoming, 'No upcoming milestones are available.')}</div>
+    </section>`;
+}
+
+async function init() {
+  const params = new URLSearchParams(location.search);
+  const clientId = params.get('client');
+  if (!clientId) {
+    document.getElementById('app').innerHTML = '<div class="error">No client selected. Open this tracker from a PSA client in Onboarding Hub.</div>';
+    return;
+  }
+  const res = await fetch('data/portfolio.json?_=' + Date.now());
+  if (!res.ok) throw new Error('Unable to load portfolio data');
+  snapshot = await res.json();
+  const client = (snapshot.clients || []).find(c => c.id === clientId);
+  if (!client) {
+    document.getElementById('app').innerHTML = '<div class="error">Client was not found in the latest portfolio data.</div>';
+    return;
+  }
+  if (!hasPsa(client)) {
+    document.getElementById('app').innerHTML = '<div class="error">This tracker is only available for PSA clients.</div>';
+    return;
+  }
+  render(client);
+}
+
+init().catch(err => {
+  document.getElementById('app').innerHTML = `<div class="error">${esc(err.message)}</div>`;
+});
+</script>
+</body>
+</html>

@@ -1561,8 +1561,11 @@ function renderClientView(client, data) {
   if (client.notionUrl && isBilling) links.push(`<a class="ql-link notion" href="${esc(client.notionUrl)}" target="_blank">📝 Notion</a>`);
   if (isPsa && client.psaNotionUrl) links.push(`<a class="ql-link psa-internal" href="${esc(client.psaNotionUrl)}" target="_blank">🔷 PSA Notion</a>`);
 
-  const trackerBtn = hasBilling(client) && !isPsa
-    ? `<a class="tracker-btn" href="#" target="_blank" onclick="openTracker(event)">▶ Open Tracker</a>` : '';
+  const trackerBtn = isPsa
+    ? `<a class="tracker-btn" href="#" target="_blank" onclick="openTracker(event)">Open Client Preview</a>`
+    : hasBilling(client)
+      ? `<a class="tracker-btn" href="#" target="_blank" onclick="openTracker(event)">Open Tracker</a>`
+      : '';
   main.insertAdjacentHTML('beforeend', `
     <div class="quick-links-bar">
       ${links.join('')}
@@ -2292,7 +2295,9 @@ function esc(s) {
 function openTracker(e) {
   if (!activeClient) { e.preventDefault(); return; }
   const a = e.currentTarget;
-  a.href = 'tracker.html?client=' + encodeURIComponent(activeClient.id);
+  a.href = hasPsa(activeClient)
+    ? 'psa-tracker.html?client=' + encodeURIComponent(activeClient.id)
+    : 'tracker.html?client=' + encodeURIComponent(activeClient.id);
 }
 
 // ── Controls ──────────────────────────────────────────────────────────────────
