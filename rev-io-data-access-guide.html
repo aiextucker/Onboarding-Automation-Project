@@ -2495,6 +2495,11 @@ All method-panel ids should follow: id="${panelId}-tab1"`;
       }
 
       const data = await response.json();
+
+      // Surface any API-level errors clearly
+      if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
+      if (!data.content || !data.content[0]) throw new Error('Unexpected response: ' + JSON.stringify(data));
+
       const innerHTML = data.content[0].text;
 
       // Build full panel
