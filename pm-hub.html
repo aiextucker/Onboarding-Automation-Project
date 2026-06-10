@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PM Hub — Rev.io Onboarding</title>
+<title>Onboarding Hub — Rev.io</title>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -271,6 +271,99 @@ body {
 .status-dot.other::before     { background: var(--blue); }
 .status-dot.canceled::before  { background: var(--text-mute); }
 .status-dot.graduated::before { background: var(--teal); }
+
+/* ── PSA project snapshot ── */
+.psa-project-snapshot {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+  margin-bottom: 20px;
+}
+.psa-project-snapshot-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: flex-start;
+  margin-bottom: 14px;
+}
+.psa-project-snapshot-title {
+  font-size: 0.88rem;
+  font-weight: 750;
+  color: var(--text);
+}
+.psa-project-snapshot-subtitle {
+  margin-top: 3px;
+  font-size: 0.74rem;
+  color: var(--text-mute);
+}
+.psa-project-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+.psa-project-item {
+  min-width: 0;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 11px 12px;
+}
+.psa-project-item.wide { grid-column: span 2; }
+.psa-project-label {
+  color: var(--text-mute);
+  font-size: 0.68rem;
+  font-weight: 750;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  margin-bottom: 5px;
+}
+.psa-project-value {
+  color: var(--text);
+  font-size: 0.92rem;
+  font-weight: 700;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+.psa-project-value.muted { color: var(--text-mute); font-weight: 550; }
+.psa-project-note {
+  margin-top: 4px;
+  color: var(--text-mute);
+  font-size: 0.72rem;
+  line-height: 1.35;
+}
+.psa-project-progress {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.psa-project-progress .pct {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--teal);
+}
+.psa-project-progress .pct.warn { color: var(--yellow); }
+.psa-project-progress .pct.risk { color: var(--red); }
+.psa-project-progress .detail {
+  color: var(--text-mute);
+  font-size: 0.74rem;
+}
+.psa-status-pill-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+@media (max-width: 900px) {
+  .psa-project-grid { grid-template-columns: 1fr 1fr; }
+  .psa-project-item.wide { grid-column: span 2; }
+}
+@media (max-width: 620px) {
+  .psa-project-snapshot-header { flex-direction: column; }
+  .psa-project-grid { grid-template-columns: 1fr; }
+  .psa-project-item.wide { grid-column: span 1; }
+}
 
 /* ── PSA milestone bar ── */
 .psa-milestone-bar {
@@ -989,7 +1082,7 @@ body {
 <header class="app-header">
   <div class="logo">
     <div class="logo-mark">A</div>
-    <span>PM Hub <span class="logo-sub">/ Rev.io Onboarding</span></span>
+    <span>Onboarding Hub <span class="logo-sub">/ Rev.io</span></span>
   </div>
   <nav class="header-links">
     <a href="https://green-river-03f870c10.4.azurestaticapps.net" class="header-link" target="_blank">SLT Dashboard ↗</a>
@@ -1016,7 +1109,7 @@ body {
   <div class="empty-state" id="emptyState">
     <div class="icon">🗂️</div>
     <h2>Select a client to get started</h2>
-    <p>Search billing and PSA clients by name to pull up call history, interactions, action items, and open tickets.</p>
+    <p>Search billing and PSA clients by name to pull up project status, activity, action items, and open tickets.</p>
   </div>
 </main>
 
@@ -1261,21 +1354,135 @@ function koTimingLabel(client) {
   return `${raw}d since KO`;
 }
 
-function renderPsaOpsSummary(client, showCriticalPath) {
-  const items = [
-    ['KO Date', client.psaKoDate ? fmtDate(client.psaKoDate) : null],
-    ['Forecast Grad', client.psaGradDate ? fmtDate(client.psaGradDate) : null],
-    ['Account ID', client.psaAccountId],
-    ['Rev.io Customer ID', client.psaRevioCustomerId],
-    ['Forecast Health', client.psaForecastHealth],
-    ['Critical Path', showCriticalPath ? `${client.psaCriticalMilestonePercent}%` : (client.psaCriticalMilestoneApplicable === false ? 'Coverage exempt' : null)],
-  ];
-  const html = items.map(([label, value]) => `
-    <div class="psa-ops-item">
-      <div class="psa-ops-label">${esc(label)}</div>
-      <div class="psa-ops-value${value == null || value === '' ? ' muted' : ''}">${esc(value ?? 'Not set')}</div>
-    </div>`).join('');
-  return `<div class="psa-ops-summary"><div class="psa-ops-grid">${html}</div></div>`;
+function dateOnly(d) {
+  if (!d) return null;
+  return String(d).slice(0, 10);
+}
+
+function daysFromToday(d) {
+  const day = dateOnly(d);
+  if (!day) return null;
+  const today = new Date();
+  const todayUtc = Date.UTC(today.getFullYear(), today.getMonth(), today.getDate());
+  const target = new Date(day + 'T00:00:00Z');
+  return Math.round((target.getTime() - todayUtc) / 86400000);
+}
+
+function isPsaComplete(client) {
+  return /graduated|completed/i.test(client.psaStatus || client.status || '') || Boolean(client.psaActualGradDate);
+}
+
+function psaGraduationInfo(client) {
+  if (isPsaComplete(client) && client.psaActualGradDate) {
+    return { label: 'Actual Graduation', date: client.psaActualGradDate, note: 'Completed' };
+  }
+  const diff = daysFromToday(client.psaGradDate);
+  let note = 'No forecast date set';
+  if (diff != null) {
+    if (diff < 0) note = `${Math.abs(diff)}d past forecast`;
+    else if (diff === 0) note = 'Forecast graduation today';
+    else note = `${diff}d to forecast graduation`;
+  }
+  return { label: 'Forecast Graduation', date: client.psaGradDate, note };
+}
+
+function progressTone(percent) {
+  if (percent == null) return '';
+  if (percent < 50) return 'risk';
+  if (percent < 80) return 'warn';
+  return '';
+}
+
+function compactText(text, max = 150) {
+  const clean = String(text || '').replace(/\s+/g, ' ').trim();
+  if (clean.length <= max) return clean;
+  return clean.slice(0, max - 1).trimEnd() + '…';
+}
+
+function latestPsaActivity(data) {
+  const interactions = (data.interactions || []).map(i => ({
+    date: i.date,
+    type: i.type || 'Interaction',
+    title: i.title || i.outcome || 'Client interaction',
+    detail: i.notes || i.outcome || '',
+    owner: i.owner,
+  }));
+  const calls = (data.psaBriefs || []).map(b => ({
+    date: b.date,
+    type: 'PSA Call',
+    title: b.title || 'PSA call',
+    detail: b.summary || b.keyFinding || '',
+    owner: b.sa,
+  }));
+  return [...interactions, ...calls]
+    .filter(a => a.date || a.title || a.detail)
+    .sort((a, b) => String(b.date || '').localeCompare(String(a.date || '')))[0] || null;
+}
+
+function renderProjectProgress(label, percent, detail) {
+  if (percent == null) {
+    return `
+      <div class="psa-project-label">${esc(label)}</div>
+      <div class="psa-project-value muted">Not set</div>`;
+  }
+  const tone = progressTone(percent);
+  return `
+    <div class="psa-project-label">${esc(label)}</div>
+    <div class="psa-project-progress">
+      <span class="pct ${tone}">${esc(percent)}%</span>
+      ${detail ? `<span class="detail">${esc(detail)}</span>` : ''}
+    </div>`;
+}
+
+function renderPsaProjectSnapshot(client, data, showCriticalPath) {
+  const grad = psaGraduationInfo(client);
+  const activity = latestPsaActivity(data);
+  const totalDetail = client.psaTotalMilestones
+    ? `${client.psaCompletedMilestones ?? '—'} of ${client.psaTotalMilestones}`
+    : '';
+  const criticalDetail = showCriticalPath
+    ? `${client.psaCriticalMilestonesComplete ?? '—'} of ${client.psaCriticalMilestonesTotal || '—'}`
+    : client.psaCriticalMilestoneApplicable === false ? 'Coverage exempt' : '';
+  const identifiers = [
+    client.psaAccountId ? `Account ${client.psaAccountId}` : null,
+    client.psaRevioCustomerId ? `Rev.io ${client.psaRevioCustomerId}` : null,
+  ].filter(Boolean);
+  return `
+    <div class="psa-project-snapshot">
+      <div class="psa-project-snapshot-header">
+        <div>
+          <div class="psa-project-snapshot-title">PSA Project Snapshot</div>
+          <div class="psa-project-snapshot-subtitle">Forecast date, milestone signal, identifiers, and latest activity.</div>
+        </div>
+        <div class="psa-status-pill-row">
+          ${client.psaOnboardingHealth ? `<span class="psa-health-flag ${psaHealthFlagClass(client.psaOnboardingHealth)}">${esc(client.psaOnboardingHealth)}</span>` : ''}
+          ${client.psaForecastHealth ? `<span class="psa-health-flag ${psaHealthFlagClass(client.psaForecastHealth)}">${esc(client.psaForecastHealth)}</span>` : ''}
+        </div>
+      </div>
+      <div class="psa-project-grid">
+        <div class="psa-project-item">
+          <div class="psa-project-label">${esc(grad.label)}</div>
+          <div class="psa-project-value${grad.date ? '' : ' muted'}">${grad.date ? fmtDate(grad.date) : 'Not set'}</div>
+          <div class="psa-project-note">${esc(grad.note)}</div>
+        </div>
+        <div class="psa-project-item">
+          ${renderProjectProgress('Total Milestones', client.psaMilestonePercent, totalDetail)}
+        </div>
+        <div class="psa-project-item">
+          ${renderProjectProgress('Critical Path', showCriticalPath ? client.psaCriticalMilestonePercent : null, criticalDetail)}
+        </div>
+        <div class="psa-project-item">
+          <div class="psa-project-label">Client Identifiers</div>
+          <div class="psa-project-value${identifiers.length ? '' : ' muted'}">${identifiers.length ? identifiers.map(esc).join('<br>') : 'Not set'}</div>
+          ${client.psaCurrentBalanceStatus ? `<div class="psa-project-note">Balance: ${esc(client.psaCurrentBalanceStatus)}</div>` : ''}
+        </div>
+        <div class="psa-project-item wide">
+          <div class="psa-project-label">Latest Activity</div>
+          <div class="psa-project-value${activity ? '' : ' muted'}">${activity ? esc(activity.type) + (activity.date ? ` · ${fmtDate(activity.date)}` : '') : 'No recent activity'}</div>
+          ${activity ? `<div class="psa-project-note">${esc(compactText(activity.detail || activity.title, 180))}${activity.owner ? ` · ${esc(activity.owner)}` : ''}</div>` : ''}
+        </div>
+      </div>
+    </div>`;
 }
 
 function renderClientView(client, data) {
@@ -1299,24 +1506,13 @@ function renderClientView(client, data) {
     teamParts.push(`<span class="meta-item">PSA SA: <strong>${esc(client.psaSa)}</strong></span>`);
   }
   const billingDaysActive = isBilling && !isPsa ? client.daysActive : null;
-  const psaTiming = isPsa ? koTimingLabel(client) : null;
 
   // Stats
   const stats = [];
   if (isBilling && client.health != null) {
     stats.push(`<div class="stat-pill ${healthClass(client.health)}"><div class="val">${client.health}</div><div class="lbl">Health</div></div>`);
   }
-  if (isPsa && client.psaMilestonePercent != null) {
-    const msLabel = client.psaTotalMilestones ? `${client.psaMilestonePercent}%` : `${client.psaMilestonePercent}%`;
-    const overdueWarn = client.psaOverdueMilestones > 0 ? ` style="color:var(--red)"` : '';
-    stats.push(`<div class="stat-pill"><div class="val"${overdueWarn} style="color:${client.psaOverdueMilestones > 0 ? 'var(--red)' : 'var(--teal)'}">${msLabel}</div><div class="lbl">Milestones${client.psaTotalMilestones ? ' / ' + client.psaTotalMilestones : ''}</div></div>`);
-  }
   const showCriticalPath = isPsa && client.psaCriticalMilestoneApplicable !== false && client.psaCriticalMilestonePercent != null;
-  if (showCriticalPath) {
-    const cp = client.psaCriticalMilestonePercent;
-    const cpColor = cp >= 80 ? 'var(--green)' : cp >= 50 ? 'var(--yellow)' : 'var(--red)';
-    stats.push(`<div class="stat-pill"><div class="val" style="color:${cpColor}">${cp}%</div><div class="lbl">Critical Path</div></div>`);
-  }
   if (isPsa && client.psaDaysSinceContact != null) {
     const dCls = client.psaDaysSinceContact >= 14 ? 'health-low' : client.psaDaysSinceContact >= 7 ? 'health-mid' : 'health-high';
     stats.push(`<div class="stat-pill ${dCls}"><div class="val">${client.psaDaysSinceContact}</div><div class="lbl">Days Since Contact</div></div>`);
@@ -1352,7 +1548,6 @@ function renderClientView(client, data) {
           <span class="status-dot ${sg}">${esc(displayStatus || '—')}</span>
           ${teamParts.join('')}
           ${billingDaysActive != null ? `<span class="meta-item">${billingDaysActive}d active</span>` : ''}
-          ${psaTiming ? `<span class="meta-item">${esc(psaTiming)}</span>` : ''}
         </div>
       </div>
       <div class="client-stats">${stats.join('')}</div>
@@ -1377,7 +1572,7 @@ function renderClientView(client, data) {
   `);
 
   if (isPsa) {
-    main.insertAdjacentHTML('beforeend', renderPsaOpsSummary(client, showCriticalPath));
+    main.insertAdjacentHTML('beforeend', renderPsaProjectSnapshot(client, data, showCriticalPath));
   }
 
   main.insertAdjacentHTML('beforeend', renderWorkSnapshot(client, data));
@@ -1397,8 +1592,6 @@ function renderClientView(client, data) {
     const fhBadge = client.psaForecastHealth
       ? `<span class="psa-health-flag ${psaHealthFlagClass(client.psaForecastHealth)}" style="font-size:0.68rem">${esc(client.psaForecastHealth)}</span>` : '';
     // Health drivers callout
-    const hdHtml = client.psaHealthDrivers
-      ? `<div class="psa-health-drivers ${hCls}"><span class="hd-label">Why:</span>${esc(client.psaHealthDrivers)}</div>` : '';
     // Stale contact warning
     const staleHtml = (client.psaDaysSinceContact != null && client.psaDaysSinceContact >= 14)
       ? `<div class="psa-stale-warning">⏱ Last contact ${client.psaDaysSinceContact} days ago — engagement may be at risk.</div>` : '';
@@ -1435,7 +1628,6 @@ function renderClientView(client, data) {
         </div>
         ${criticalHtml}
         ${metaParts.length ? `<div class="psa-milestone-meta">${metaParts.map(p => esc(p)).join('<span style="color:var(--border-hi)"> · </span>')}</div>` : ''}
-        ${hdHtml}
         ${staleHtml}
       </div>
     `);
