@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Onboarding Hub Demo Walkthrough</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%231D3756'/%3E%3Ctext x='32' y='41' font-family='Arial' font-size='30' font-weight='700' text-anchor='middle' fill='white'%3EA%3C/text%3E%3C/svg%3E">
+  <style>
+    :root {
+      --navy: #1D3756;
+      --navy-2: #244564;
+      --teal: #2399B5;
+      --green: #6EBE4F;
+      --yellow: #DDAA34;
+      --red: #D85C5C;
+      --ink: #17202B;
+      --muted: #657184;
+      --line: #DDE5EE;
+      --panel: #FFFFFF;
+      --panel-2: #F5F8FB;
+      --panel-3: #EAF2F7;
+      --shadow: 0 18px 50px rgba(29, 55, 86, 0.12);
+      --radius: 8px;
+      --font: Inter, "Segoe UI", Roboto, Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      background: #F7FAFC;
+      color: var(--ink);
+      font-family: var(--font);
+      font-size: 15px;
+      line-height: 1.55;
+    }
+
+    a { color: inherit; }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      min-height: 66px;
+      padding: 12px 28px;
+      background: rgba(255, 255, 255, 0.95);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(12px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 230px;
+      font-weight: 800;
+      color: var(--navy);
+    }
+
+    .brand-mark {
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 7px;
+      background: var(--navy);
+      color: white;
+      font-weight: 900;
+    }
+
+    .nav {
+      display: flex;
+      gap: 8px;
+      flex: 1;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .nav::-webkit-scrollbar { display: none; }
+
+    .nav a {
+      flex: 0 0 auto;
+      padding: 7px 10px;
+      border-radius: 6px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .nav a:hover { background: var(--panel-2); color: var(--navy); }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 38px;
+      padding: 8px 14px;
+      border-radius: 7px;
+      border: 1px solid transparent;
+      background: var(--navy);
+      color: white;
+      font-size: 13px;
+      font-weight: 800;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .button.secondary {
+      background: white;
+      color: var(--navy);
+      border-color: var(--line);
+    }
+
+    .hero {
+      position: relative;
+      min-height: 520px;
+      display: grid;
+      align-items: center;
+      padding: 54px 28px 34px;
+      overflow: hidden;
+      background:
+        linear-gradient(120deg, rgba(29, 55, 86, 0.96), rgba(36, 69, 100, 0.86)),
+        radial-gradient(circle at 75% 18%, rgba(110, 190, 79, 0.42), transparent 34%),
+        linear-gradient(135deg, #1D3756, #2399B5);
+      color: white;
+    }
+
+    .hero-inner {
+      width: min(1180px, 100%);
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: minmax(0, 0.85fr) minmax(460px, 1.15fr);
+      gap: 42px;
+      align-items: center;
+    }
+
+    .eyebrow {
+      margin-bottom: 14px;
+      color: rgba(255, 255, 255, 0.72);
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+    }
+
+    h1 {
+      max-width: 620px;
+      margin: 0;
+      font-size: 44px;
+      line-height: 1.08;
+      letter-spacing: 0;
+    }
+
+    .hero-copy {
+      max-width: 640px;
+      margin: 18px 0 24px;
+      color: rgba(255, 255, 255, 0.84);
+      font-size: 17px;
+    }
+
+    .hero-links {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .hero .button.secondary {
+      background: rgba(255, 255, 255, 0.12);
+      color: white;
+      border-color: rgba(255, 255, 255, 0.24);
+    }
+
+    .hub-preview {
+      min-height: 410px;
+      border-radius: 8px;
+      background: #111827;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.34);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      overflow: hidden;
+    }
+
+    .preview-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 16px 18px;
+      background: #182235;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .preview-title {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      color: #F8FAFC;
+      font-weight: 800;
+    }
+
+    .preview-chip {
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: rgba(35, 153, 181, 0.16);
+      color: #8DE3F4;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .preview-body {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 14px;
+      padding: 16px;
+    }
+
+    .preview-search,
+    .preview-main {
+      border-radius: 8px;
+      background: #0F172A;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 14px;
+    }
+
+    .search-box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      height: 38px;
+      padding: 0 10px;
+      background: #111C30;
+      border: 1px solid rgba(141, 227, 244, 0.25);
+      border-radius: 7px;
+      color: #A9B6C8;
+      font-size: 13px;
+      margin-bottom: 12px;
+    }
+
+    .client-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      align-items: center;
+      padding: 11px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      color: #E5EDF7;
+      font-size: 13px;
+    }
+
+    .client-row:last-child { border-bottom: 0; }
+
+    .lob {
+      padding: 3px 7px;
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 900;
+      color: white;
+    }
+
+    .lob.psa { background: var(--teal); }
+    .lob.billing { background: var(--green); color: #102116; }
+
+    .preview-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .preview-stat {
+      padding: 10px;
+      border-radius: 7px;
+      background: #121F34;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .preview-stat strong {
+      display: block;
+      color: var(--green);
+      font-size: 22px;
+      line-height: 1;
+    }
+
+    .preview-stat span {
+      display: block;
+      margin-top: 5px;
+      color: #8FA1B7;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .mini-panel {
+      margin-top: 10px;
+      padding: 12px;
+      border-radius: 7px;
+      background: #121F34;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .mini-panel h3 {
+      margin: 0 0 8px;
+      color: white;
+      font-size: 14px;
+    }
+
+    .progress-line {
+      display: grid;
+      grid-template-columns: 108px 1fr 38px;
+      gap: 8px;
+      align-items: center;
+      margin-top: 9px;
+      color: #BBD0E2;
+      font-size: 12px;
+    }
+
+    .bar {
+      height: 8px;
+      border-radius: 999px;
+      background: #0B1220;
+      overflow: hidden;
+    }
+
+    .bar span {
+      display: block;
+      height: 100%;
+      background: linear-gradient(90deg, var(--teal), var(--green));
+    }
+
+    .content {
+      width: min(1180px, calc(100% - 56px));
+      margin: 0 auto;
+      padding: 34px 0 72px;
+    }
+
+    .section {
+      scroll-margin-top: 88px;
+      margin-top: 44px;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 16px;
+    }
+
+    .section-label {
+      margin-bottom: 5px;
+      color: var(--teal);
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    h2 {
+      margin: 0;
+      color: var(--navy);
+      font-size: 26px;
+      line-height: 1.18;
+      letter-spacing: 0;
+    }
+
+    .section-note {
+      max-width: 520px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
+
+    .metric {
+      min-height: 128px;
+      padding: 18px;
+      border-radius: var(--radius);
+      background: var(--panel);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+    }
+
+    .metric-value {
+      color: var(--navy);
+      font-size: 34px;
+      line-height: 1;
+      font-weight: 900;
+    }
+
+    .metric-label {
+      margin-top: 8px;
+      color: var(--ink);
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .metric-detail {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .walkthrough {
+      display: grid;
+      grid-template-columns: 290px 1fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .agenda {
+      position: sticky;
+      top: 88px;
+      padding: 16px;
+      border-radius: var(--radius);
+      background: var(--panel);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+    }
+
+    .agenda-title {
+      margin-bottom: 10px;
+      color: var(--navy);
+      font-size: 13px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+
+    .agenda a {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 9px 8px;
+      color: var(--muted);
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .agenda a:hover {
+      background: var(--panel-2);
+      color: var(--navy);
+    }
+
+    .agenda-num {
+      display: grid;
+      place-items: center;
+      width: 22px;
+      height: 22px;
+      flex: 0 0 auto;
+      border-radius: 999px;
+      background: var(--panel-3);
+      color: var(--navy);
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .cards {
+      display: grid;
+      gap: 16px;
+    }
+
+    .demo-card {
+      display: grid;
+      grid-template-columns: 1fr minmax(250px, 0.58fr);
+      gap: 18px;
+      padding: 22px;
+      border-radius: var(--radius);
+      background: var(--panel);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+    }
+
+    .demo-card h3 {
+      margin: 0 0 8px;
+      color: var(--navy);
+      font-size: 20px;
+      letter-spacing: 0;
+    }
+
+    .demo-card p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .show-list {
+      margin: 16px 0 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 9px;
+    }
+
+    .show-list li {
+      position: relative;
+      padding-left: 22px;
+      color: var(--ink);
+      font-size: 14px;
+    }
+
+    .show-list li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 9px;
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--teal);
+    }
+
+    .say-box {
+      align-self: stretch;
+      padding: 16px;
+      border-radius: 8px;
+      background: var(--panel-2);
+      border: 1px solid var(--line);
+    }
+
+    .say-label {
+      margin-bottom: 8px;
+      color: var(--navy);
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.7px;
+    }
+
+    .say-box p {
+      color: var(--ink);
+      font-size: 14px;
+    }
+
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 27px;
+      padding: 5px 9px;
+      border-radius: 999px;
+      background: white;
+      border: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .chip.teal { color: #127E97; border-color: rgba(35, 153, 181, 0.34); background: rgba(35, 153, 181, 0.08); }
+    .chip.green { color: #34751D; border-color: rgba(110, 190, 79, 0.34); background: rgba(110, 190, 79, 0.1); }
+    .chip.yellow { color: #84600E; border-color: rgba(221, 170, 52, 0.34); background: rgba(221, 170, 52, 0.1); }
+
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+    }
+
+    .flow-step {
+      min-height: 112px;
+      padding: 14px;
+      border-radius: var(--radius);
+      background: var(--panel);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+    }
+
+    .flow-step strong {
+      display: block;
+      color: var(--navy);
+      font-size: 14px;
+      line-height: 1.25;
+    }
+
+    .flow-step span {
+      display: block;
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .callout {
+      margin-top: 18px;
+      padding: 18px;
+      border-radius: var(--radius);
+      background: #FFF9EA;
+      border: 1px solid #F0DFAE;
+      color: #5D4610;
+    }
+
+    .callout strong { color: #3E2D06; }
+
+    .footer {
+      padding: 24px 28px 46px;
+      color: var(--muted);
+      text-align: center;
+      font-size: 13px;
+    }
+
+    @media (max-width: 1040px) {
+      .hero-inner,
+      .walkthrough,
+      .demo-card {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-inner { gap: 26px; }
+      .hub-preview { min-height: auto; }
+      .agenda { position: static; }
+      .metric-grid { grid-template-columns: repeat(2, 1fr); }
+      .flow { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 720px) {
+      .topbar {
+        position: static;
+        align-items: flex-start;
+        flex-direction: column;
+        padding: 14px 18px;
+      }
+
+      .brand { min-width: 0; }
+      .actions { width: 100%; flex-wrap: wrap; }
+      .button { flex: 1 1 180px; }
+      .hero { padding: 38px 18px 24px; }
+      .hero-inner { grid-template-columns: 1fr; }
+      h1 { font-size: 34px; }
+      .preview-body { grid-template-columns: 1fr; }
+      .content { width: calc(100% - 32px); }
+      .section-head { display: block; }
+      .section-note { margin-top: 8px; }
+      .metric-grid, .flow { grid-template-columns: 1fr; }
+      .preview-stats { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark">A</div>
+      <span>Onboarding Hub Demo</span>
+    </div>
+    <nav class="nav" aria-label="Walkthrough sections">
+      <a href="#snapshot">Snapshot</a>
+      <a href="#path">Demo Path</a>
+      <a href="#walkthrough">Functionality</a>
+      <a href="#close">Close</a>
+    </nav>
+    <div class="actions">
+      <a class="button secondary" href="index.html">Library</a>
+      <a class="button" href="pm-hub.html">Open Hub</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-inner">
+        <div>
+          <div class="eyebrow">Brief walkthrough for a live demo</div>
+          <h1>One hub for onboarding status, evidence, follow-up, and DE progress.</h1>
+          <p class="hero-copy">
+            Use this page as the talk track. Start with the problem: onboarding data used to be scattered across Notion, Wrike, calls, tickets, and one-off notes. The hub brings that operating context into one client-level view.
+          </p>
+          <div class="hero-links">
+            <a class="button" href="pm-hub.html">Launch Onboarding Hub</a>
+            <a class="button secondary" href="#walkthrough">Walk the functionality</a>
+          </div>
+        </div>
+
+        <div class="hub-preview" aria-label="Onboarding Hub interface preview">
+          <div class="preview-header">
+            <div class="preview-title"><span class="brand-mark">A</span> Onboarding Hub</div>
+            <div class="preview-chip">Live snapshot</div>
+          </div>
+          <div class="preview-body">
+            <div class="preview-search">
+              <div class="search-box">Search client...</div>
+              <div class="client-row"><span>Dual-LOB client</span><span class="lob psa">PSA</span></div>
+              <div class="client-row"><span>Billing migration</span><span class="lob billing">Billing</span></div>
+              <div class="client-row"><span>At-risk project</span><span class="lob billing">Billing</span></div>
+              <div class="client-row"><span>Training client</span><span class="lob psa">PSA</span></div>
+            </div>
+            <div class="preview-main">
+              <div class="preview-stats">
+                <div class="preview-stat"><strong data-stat="clients">93</strong><span>Clients</span></div>
+                <div class="preview-stat"><strong data-stat="briefs">498</strong><span>Call briefs</span></div>
+                <div class="preview-stat"><strong data-stat="tickets">753</strong><span>Tickets</span></div>
+              </div>
+              <div class="mini-panel">
+                <h3>Client overview</h3>
+                <div class="progress-line"><span>Health</span><div class="bar"><span style="width:58%"></span></div><b>58</b></div>
+                <div class="progress-line"><span>Milestones</span><div class="bar"><span style="width:72%"></span></div><b>72%</b></div>
+                <div class="progress-line"><span>Critical Path</span><div class="bar"><span style="width:64%"></span></div><b>64%</b></div>
+              </div>
+              <div class="mini-panel">
+                <h3>What the hub adds</h3>
+                <div class="chip-row">
+                  <span class="chip teal">Status</span>
+                  <span class="chip green">Milestones</span>
+                  <span class="chip yellow">Risks</span>
+                  <span class="chip teal">Interactions</span>
+                  <span class="chip green">DE View</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="content">
+      <section class="section" id="snapshot">
+        <div class="section-head">
+          <div>
+            <div class="section-label">Current Scope</div>
+            <h2>Start with the live operating footprint</h2>
+          </div>
+          <div class="section-note" id="updatedNote">Loading latest portfolio snapshot...</div>
+        </div>
+        <div class="metric-grid">
+          <div class="metric">
+            <div class="metric-value" data-stat="clients">93</div>
+            <div class="metric-label">active hub clients</div>
+            <div class="metric-detail"><span data-stat="billing">37</span> Billing, <span data-stat="psa">63</span> PSA, <span data-stat="dual">7</span> dual-LOB.</div>
+          </div>
+          <div class="metric">
+            <div class="metric-value" data-stat="briefs">498</div>
+            <div class="metric-label">call briefs</div>
+            <div class="metric-detail">Billing and PSA call context grouped by client.</div>
+          </div>
+          <div class="metric">
+            <div class="metric-value" data-stat="milestones">2,126</div>
+            <div class="metric-label">PSA milestones</div>
+            <div class="metric-detail">Training progress and critical path visibility.</div>
+          </div>
+          <div class="metric">
+            <div class="metric-value" data-stat="deRows">100</div>
+            <div class="metric-label">DE view rows</div>
+            <div class="metric-detail">Split by line of business for PSA and Billing.</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="path">
+        <div class="section-head">
+          <div>
+            <div class="section-label">Suggested Flow</div>
+            <h2>A clean five-minute demo path</h2>
+          </div>
+          <div class="section-note">Keep this tight: search, client view, evidence, action, then portfolio/DE visibility.</div>
+        </div>
+        <div class="flow">
+          <div class="flow-step"><strong>1. Open with search</strong><span>Show that Billing, PSA, and dual-LOB clients are searchable from one place.</span></div>
+          <div class="flow-step"><strong>2. Pick a live client</strong><span>Use the overview to show status, health, dates, owners, and links.</span></div>
+          <div class="flow-step"><strong>3. Prove the evidence</strong><span>Scroll through briefs, interactions, tickets, risks, and recent calls.</span></div>
+          <div class="flow-step"><strong>4. Show action loops</strong><span>Log an interaction or edit a PSA milestone from the same screen.</span></div>
+          <div class="flow-step"><strong>5. End with DE View</strong><span>Switch from one-client mode to DE progress by LOB.</span></div>
+        </div>
+      </section>
+
+      <section class="section" id="walkthrough">
+        <div class="section-head">
+          <div>
+            <div class="section-label">Functionality</div>
+            <h2>What to walk through</h2>
+          </div>
+          <div class="section-note">Each card has the screen behavior plus the line to say out loud.</div>
+        </div>
+
+        <div class="walkthrough">
+          <aside class="agenda" aria-label="Functionality agenda">
+            <div class="agenda-title">Demo Beats</div>
+            <a href="#client-search"><span class="agenda-num">1</span>Client search</a>
+            <a href="#overview"><span class="agenda-num">2</span>Client overview</a>
+            <a href="#evidence"><span class="agenda-num">3</span>Evidence feed</a>
+            <a href="#milestones"><span class="agenda-num">4</span>PSA milestones</a>
+            <a href="#actions"><span class="agenda-num">5</span>Action logging</a>
+            <a href="#trackers"><span class="agenda-num">6</span>Trackers</a>
+            <a href="#de-view"><span class="agenda-num">7</span>DE View</a>
+          </aside>
+
+          <div class="cards">
+            <article class="demo-card" id="client-search">
+              <div>
+                <h3>Client Search</h3>
+                <p>The hub starts with one searchable surface across Billing, PSA, and dual-LOB onboarding clients.</p>
+                <ul class="show-list">
+                  <li>Search any client by name and point out the LOB badges.</li>
+                  <li>Use the date filter to scope recent activity to 30, 60, 90, or 180 days.</li>
+                  <li>Show the snapshot timestamp so people know they are seeing refreshed data.</li>
+                </ul>
+              </div>
+              <div class="say-box">
+                <div class="say-label">Say this</div>
+                <p>"Instead of asking which system has the latest note, we start with the client and pull the operating record around them."</p>
+                <div class="chip-row"><span class="chip teal">Billing</span><span class="chip green">PSA</span><span class="chip yellow">Dual-LOB</span></div>
+              </div>
+            </article>
+
+            <article class="demo-card" id="overview">
+              <div>
+                <h3>Client Overview</h3>
+                <p>The client view brings project health, status, owners, forecast dates, balances, and useful source links into a single page.</p>
+                <ul class="show-list">
+                  <li>Point to SA, PM, DE, CSA, status, health score, and forecast/graduation dates.</li>
+                  <li>For PSA clients, show onboarding health, forecast health, sentiment, overdue milestones, and long-term RTS flags.</li>
+                  <li>Use quick links to Notion, Wrike, tracker pages, Fireflies, and source records when available.</li>
+                </ul>
+              </div>
+              <div class="say-box">
+                <div class="say-label">Say this</div>
+                <p>"This is designed for repeated operational use: what is the state, who owns it, what changed, and where do I go next?"</p>
+              </div>
+            </article>
+
+            <article class="demo-card" id="evidence">
+              <div>
+                <h3>Evidence Feed</h3>
+                <p>The hub ties status back to source evidence instead of relying on stale summary fields.</p>
+                <ul class="show-list">
+                  <li>Show Billing briefs, PSA call briefs, recent interactions, open Zendesk tickets, and PSA tickets.</li>
+                  <li>Point out risk/action extraction from call records and briefs.</li>
+                  <li>Use a ticket or call link to show that summaries can be audited back to source systems.</li>
+                </ul>
+              </div>
+              <div class="say-box">
+                <div class="say-label">Say this</div>
+                <p>"The important part is not just summarization. It is traceability. If we flag a risk, the source context is one click away."</p>
+                <div class="chip-row">
+                  <span class="chip teal"><span data-stat="briefs">498</span> briefs</span>
+                  <span class="chip yellow"><span data-stat="tickets">753</span> tickets</span>
+                  <span class="chip green"><span data-stat="interactions">1,136</span> interactions</span>
+                </div>
+              </div>
+            </article>
+
+            <article class="demo-card" id="milestones">
+              <div>
+                <h3>PSA Milestones and Critical Path</h3>
+                <p>PSA clients include training milestone progress, overdue work, phase grouping, and critical path coverage.</p>
+                <ul class="show-list">
+                  <li>Show milestone percentage and total milestone count.</li>
+                  <li>Scroll to the training milestone table and point out status, due date, completion date, phase, and overdue flags.</li>
+                  <li>Open the milestone edit modal if you want to show the write-back workflow.</li>
+                </ul>
+              </div>
+              <div class="say-box">
+                <div class="say-label">Say this</div>
+                <p>"This turns a project tracker into a leadership-readable progress model without hiding the underlying task list."</p>
+                <div class="chip-row"><span class="chip teal" data-stat="milestones">2,126</span><span class="chip green">Critical path</span><span class="chip yellow">Overdue flags</span></div>
+              </div>
+            </article>
+
+            <article class="demo-card" id="actions">
+              <div>
+                <h3>Action Logging and Edits</h3>
+                <p>The hub is not only read-only. It supports controlled updates where the team needs quick operational capture.</p>
+                <ul class="show-list">
+                  <li>Use "Log Interaction" to capture a call, email, meeting, Zendesk note, sentiment, outcome, and next-step context.</li>
+                  <li>Use milestone edit for PSA task status, planned due date, completion date, and notes.</li>
+                  <li>Call out that these workflows route through controlled automation rather than manual spreadsheet drift.</li>
+                </ul>
+              </div>
+              <div class="say-box">
+                <div class="say-label">Say this</div>
+                <p>"The goal is to keep the operating record current from the place people are already reviewing the work."</p>
+              </div>
+            </article>
+
+            <article class="demo-card" id="trackers">
+              <div>
+                <h3>Client Tracker Pages</h3>
+                <p>From the hub, a client can branch into a client-readable tracker view for Billing or PSA.</p>
+                <ul class="show-list">
+                  <li>Open the tracker link from a Billing client to show status and milestone timeline.</li>
+                  <li>Open the PSA tracker from a PSA client to show phase-grouped milestone progress.</li>
+                  <li>Explain that the hub is the internal operating cockpit; trackers are cleaner views for client/project context.</li>
+                </ul>
+              </div>
+              <div class="say-box">
+                <div class="say-label">Say this</div>
+                <p>"We can move from internal detail to a simpler client-facing progress view without rebuilding the data twice."</p>
+                <div class="chip-row"><a class="chip teal" href="tracker.html">Billing tracker</a><a class="chip green" href="psa-tracker.html">PSA tracker</a></div>
+              </div>
+            </article>
+
+            <article class="demo-card" id="de-view">
+              <div>
+                <h3>DE View</h3>
+                <p>The new DE View flips the hub from client search into a line-of-business work queue for data engineering progress.</p>
+                <ul class="show-list">
+                  <li>Switch to the DE View tab and show that dual-LOB clients split into separate PSA and Billing rows.</li>
+                  <li>For PSA, point to exactly Data Access, Data Load, and Data Review.</li>
+                  <li>For Billing, point to exactly Data Load, Comparative, and Bill-Out Support.</li>
+                  <li>Be clear that Billing task state is currently inferred from existing hub signals.</li>
+                </ul>
+              </div>
+              <div class="say-box">
+                <div class="say-label">Say this</div>
+                <p>"This gives DE a single queue without mixing PSA and Billing work together. Same client, separate LOB work when needed."</p>
+                <div class="chip-row"><span class="chip teal"><span data-stat="dePsa">63</span> PSA rows</span><span class="chip green"><span data-stat="deBilling">37</span> Billing rows</span></div>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="close">
+        <div class="section-head">
+          <div>
+            <div class="section-label">Close</div>
+            <h2>The simplest framing</h2>
+          </div>
+          <div class="section-note">Use this if you need to end crisply.</div>
+        </div>
+        <div class="callout">
+          <strong>Onboarding Hub is the operating layer between source systems and action.</strong>
+          It does not replace Notion, Wrike, tickets, or call records. It reduces the time spent hunting through them, makes client status auditable, and gives the team a shared view of what needs attention next.
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="footer">
+    Onboarding Hub demo walkthrough. Data counts load from <code>data/portfolio.json</code> when available.
+  </footer>
+
+  <script>
+    const fmt = new Intl.NumberFormat('en-US');
+    function setStat(name, value) {
+      document.querySelectorAll(`[data-stat="${name}"]`).forEach(el => {
+        el.textContent = typeof value === 'number' ? fmt.format(value) : value;
+      });
+    }
+
+    function lobsFor(client) {
+      if (Array.isArray(client.lob)) return client.lob;
+      return [client.lob || 'billing'];
+    }
+
+    async function loadSnapshot() {
+      try {
+        const res = await fetch('data/portfolio.json?_=' + Date.now(), { cache: 'no-store' });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        const clients = data.clients || [];
+        const deRows = data.deView || [];
+        const sumMap = map => Object.values(map || {}).reduce((sum, rows) => sum + (rows?.length || 0), 0);
+        const counts = {
+          clients: clients.length,
+          billing: clients.filter(c => lobsFor(c).includes('billing')).length,
+          psa: clients.filter(c => lobsFor(c).includes('psa')).length,
+          dual: clients.filter(c => {
+            const lobs = lobsFor(c);
+            return lobs.includes('billing') && lobs.includes('psa');
+          }).length,
+          deRows: deRows.length,
+          deBilling: deRows.filter(r => r.lobs?.[0] === 'billing').length,
+          dePsa: deRows.filter(r => r.lobs?.[0] === 'psa').length,
+          briefs: sumMap(data.briefsByClientId) + sumMap(data.psaBriefsByClientId),
+          milestones: sumMap(data.psaMilestonesByClientId),
+          tickets: sumMap(data.ticketsByClientId) + sumMap(data.psaTicketsByClientId),
+          interactions: sumMap(data.interactionsByClientId),
+        };
+        Object.entries(counts).forEach(([key, value]) => setStat(key, value));
+        const updated = data.updatedAt ? new Date(data.updatedAt) : null;
+        const note = document.getElementById('updatedNote');
+        if (updated && !Number.isNaN(updated.getTime())) {
+          note.textContent = `Snapshot refreshed ${updated.toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}.`;
+        } else {
+          note.textContent = 'Snapshot counts loaded from the current portfolio data.';
+        }
+      } catch (err) {
+        document.getElementById('updatedNote').textContent = `Live counts unavailable: ${err.message}. Showing demo defaults.`;
+      }
+    }
+
+    loadSnapshot();
+  </script>
+</body>
+</html>
