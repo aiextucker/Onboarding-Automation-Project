@@ -24,6 +24,7 @@ jobs:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
           REVAY_TOKEN:  ${{ secrets.REVAY_TOKEN }}
           ZD_AUTH:      ${{ secrets.ZD_AUTH }}
+          PSA_API_KEY:  ${{ secrets.PSA_API_KEY }}
         run: |
           node << 'SCRIPT'
           const fs = require('fs');
@@ -32,6 +33,9 @@ jobs:
           const REVAY_TOKEN  = process.env.REVAY_TOKEN || NOTION_TOKEN;
           const ZD_AUTH      = process.env.ZD_AUTH || '';
           const ZD_BASE      = 'https://rev-io.zendesk.com/api/v2';
+          const PSA_API_KEY  = process.env.PSA_API_KEY || '';
+          const PSA_HOST     = 'psainternal.psarev.io';
+          const PSA_API_BASE = 'https://api.psarev.io';
 
           const notionHdr = tok => ({
             'Authorization': 'Bearer ' + tok,
@@ -49,6 +53,7 @@ jobs:
           const DB_PSA_CALLS        = '336a59b7-e7b2-812f-8011-fa4a47f348bd';
           const DB_PSA_INTERACTIONS = '6246303e-1e51-408f-ad7e-85ad865d449d';
           const DB_PSA_MILESTONES   = '06f1e10a-4531-4e0e-8190-7562c25b4805';
+          const DB_BLOCK_TRAINING   = '86ea59b7-e7b2-8207-ad8c-81fa408390d3';
 
           // ── Notion helpers ───────────────────────────────────────────────────
           async function notionQuery(dbId, filter, sorts, token) {
@@ -190,6 +195,266 @@ jobs:
               }));
           }
 
+          // ── PM Hub enrichment helpers ───────────────────────────────────────
+          const PSA_DE_MILESTONES = ['Data Access', 'Data Load', 'Data Review'];
+          const BILLING_DE_TASKS = [
+            { label: 'Data Load', terms: ['data load', 'data import', 'data migration', 'load data'] },
+            { label: 'Comparative', terms: ['comparative', 'comparison billing', 'bill comparison', 'compare bill'] },
+            { label: 'Bill-Out Support', terms: ['bill out', 'bill-out', 'billout', 'first bill', '1st bill'] },
+          ];
+          const DE_NOTE_TERMS = [
+            'data engineer', 'data engineering', 'de ', '[de]', ' data ', 'data access',
+            'data load', 'data review', 'comparative', 'bill out', 'bill-out', 'billout',
+            'migration', 'import', 'mapping',
+          ];
+
+          function compactText(...parts) {
+            return parts.filter(Boolean).map(x => String(x)).join(' ').replace(/\s+/g, ' ').trim();
+          }
+
+          function textHasAny(text, terms) {
+            const haystack = ` ${String(text || '').toLowerCase()} `;
+            return terms.some(term => haystack.includes(term.toLowerCase()));
+          }
+
+          function normalizeForKey(value) {
+            return String(value || '')
+              .toLowerCase()
+              .replace(/&/g, ' and ')
+              .replace(/[^a-z0-9]+/g, ' ')
+              .replace(/\s+/g, ' ')
+              .trim();
+          }
+
+          function canonicalMilestoneKey(name) {
+            const key = normalizeForKey(String(name || '').replace(/^\d+\.\s*/, ''));
+            const aliases = { 'ado ticket turn on billing': 'turn on billing' };
+            return aliases[key] || key;
+          }
+
+          function milestoneComplete(milestone) {
+            return milestone?.status === 'Completed' || Boolean(milestone?.completedDate);
+          }
+
+          function milestoneCompletionCredit(milestone) {
+            if (milestoneComplete(milestone)) return 1;
+            return String(milestone?.status || '').trim().toLowerCase() === 'in progress' ? 1 / 3 : 0;
+          }
+
+          function applyPsaMilestoneMetrics(clients, psaMilestonesByClientId) {
+            for (const client of clients) {
+              if (!client.psaId) continue;
+              const milestones = psaMilestonesByClientId[client.id] || [];
+              if (!milestones.length) continue;
+              const complete = milestones.reduce((sum, m) => sum + milestoneCompletionCredit(m), 0);
+              client.psaTotalMilestones = milestones.length;
+              client.psaCompletedMilestones = Number(complete.toFixed(2));
+              client.psaMilestonePercent = Math.round((complete / milestones.length) * 100);
+              client.psaOverdueMilestones = milestones.filter(m => m.isOverdue && !milestoneComplete(m)).length;
+            }
+          }
+
+          function applyPsaCriticalMilestoneMetrics(clients, psaMilestonesByClientId, criticalMilestones) {
+            const criticalByKey = new Map(criticalMilestones.map(m => [m.key, m]));
+            for (const client of clients) {
+              if (!client.psaId) continue;
+              const milestones = psaMilestonesByClientId[client.id] || [];
+              const criticalRows = milestones.filter(m => criticalByKey.has(canonicalMilestoneKey(m.name)));
+              const complete = criticalRows.reduce((sum, m) => sum + milestoneCompletionCredit(m), 0);
+              const total = criticalMilestones.length;
+              const foundKeys = new Set(criticalRows.map(m => canonicalMilestoneKey(m.name)));
+              const completedKeys = new Set(criticalRows.filter(milestoneComplete).map(m => canonicalMilestoneKey(m.name)));
+
+              client.psaCriticalMilestonesTotal = total;
+              client.psaCriticalMilestoneApplicable = true;
+              client.psaCriticalMilestonesFound = foundKeys.size;
+              client.psaCriticalMilestonesComplete = Number(complete.toFixed(2));
+              client.psaCriticalMilestonePercent = total ? Math.round((complete / total) * 100) : null;
+              client.psaCriticalMilestonesMissing = criticalMilestones
+                .filter(m => !foundKeys.has(m.key))
+                .map(m => m.task);
+              client.psaCriticalMilestonesIncomplete = criticalMilestones
+                .filter(m => foundKeys.has(m.key) && !completedKeys.has(m.key))
+                .map(m => m.task);
+            }
+          }
+
+          function noteEvidence(item, source, text, url) {
+            return {
+              source,
+              date: item.date || item.updated || item.created || item.opened || null,
+              title: item.title || item.subject || item.description || source,
+              text: String(text || '').replace(/\s+/g, ' ').trim().slice(0, 320),
+              url: url || item.url || item.firefliesUrl || null,
+            };
+          }
+
+          function milestoneState(milestone) {
+            if (!milestone) return { status: 'Missing', statusGroup: 'missing', date: null, notes: null };
+            const raw = milestone.status || (milestone.completedDate ? 'Completed' : 'In Progress');
+            const lower = raw.toLowerCase();
+            const statusGroup = milestone.completedDate || lower.includes('complete') || lower.includes('done')
+              ? 'complete'
+              : milestone.isOverdue || lower.includes('block') || lower.includes('risk')
+                ? 'risk'
+                : lower.includes('progress') || milestone.due
+                  ? 'progress'
+                  : 'other';
+            return {
+              status: raw,
+              statusGroup,
+              date: milestone.completedDate || milestone.due || null,
+              notes: milestone.notes || null,
+              url: milestone.url || null,
+            };
+          }
+
+          function buildDeTask(label, milestone, evidence, fallbackDate) {
+            const state = milestoneState(milestone);
+            if (state.status === 'Missing' && evidence?.length) {
+              return { label, status: 'Evidence Found', statusGroup: 'progress', date: evidence[0].date || fallbackDate || null, evidenceCount: evidence.length };
+            }
+            if (state.status === 'Missing' && fallbackDate) {
+              return { label, status: 'Forecasted', statusGroup: 'progress', date: fallbackDate, evidenceCount: 0 };
+            }
+            return { label, ...state, evidenceCount: evidence?.length || 0 };
+          }
+
+          function buildDeView(clients, maps) {
+            const {
+              psaMilestonesByClientId,
+              interactionsByClientId,
+              psaBriefsByClientId,
+              briefsByClientId,
+              ticketsByClientId,
+              psaTicketsByClientId,
+            } = maps;
+
+            return clients
+              .flatMap(client => {
+                const isPsa = Array.isArray(client.lob) ? client.lob.includes('psa') : client.lob === 'psa';
+                const isBilling = Array.isArray(client.lob) ? client.lob.includes('billing') : client.lob === 'billing';
+                const milestoneMap = new Map((psaMilestonesByClientId[client.id] || []).map(m => [canonicalMilestoneKey(m.name), m]));
+                const psaNotes = [
+                  ...(interactionsByClientId[client.id] || []).map(i => {
+                    const text = compactText(i.title, i.outcome, i.notes, i.owner, i.type);
+                    return textHasAny(text, DE_NOTE_TERMS) ? noteEvidence(i, 'PSA Interaction', text) : null;
+                  }),
+                  ...(psaBriefsByClientId[client.id] || []).map(b => {
+                    const text = compactText(b.summary, b.actionItems, b.blockers, b.keyFinding, b.psaTickets, b.sa);
+                    return textHasAny(text, DE_NOTE_TERMS) ? noteEvidence(b, 'PSA Call', text, b.firefliesUrl) : null;
+                  }),
+                  ...(psaTicketsByClientId[client.id] || []).map(t => {
+                    const text = compactText(t.description, t.type, t.tech);
+                    return textHasAny(text, DE_NOTE_TERMS) ? noteEvidence(t, 'PSA Ticket', text, t.url) : null;
+                  }),
+                ].filter(Boolean);
+                const billingNotes = [
+                  ...(briefsByClientId[client.id] || []).map(b => {
+                    const text = compactText(b.title, b.callType, b.ownerRole, b.owner, b.keyTakeaways, b.actionItems, b.blockers, b.nextSteps, b.configTopics, b.riskReason);
+                    return textHasAny(text, DE_NOTE_TERMS) ? noteEvidence(b, 'Billing Call', text) : null;
+                  }),
+                  ...(ticketsByClientId[client.id] || []).map(t => {
+                    const text = compactText(t.subject, t.priority, t.status);
+                    return textHasAny(text, DE_NOTE_TERMS) ? noteEvidence(t, 'Zendesk', text, t.url) : null;
+                  }),
+                ].filter(Boolean);
+                const milestoneTasks = isPsa
+                  ? PSA_DE_MILESTONES.map(label => {
+                      const milestone = milestoneMap.get(canonicalMilestoneKey(label));
+                      const evidence = psaNotes.filter(n => textHasAny(compactText(n.title, n.text), [label]));
+                      return buildDeTask(label, milestone, evidence);
+                    })
+                  : [];
+                const billingTasks = isBilling
+                  ? BILLING_DE_TASKS.map(task => {
+                      const evidence = billingNotes.filter(n => textHasAny(compactText(n.title, n.text), task.terms));
+                      const fallbackDate = task.label === 'Bill-Out Support' ? client.billOutDate : null;
+                      return buildDeTask(task.label, null, evidence, fallbackDate);
+                    })
+                  : [];
+                const rows = [];
+                if (milestoneTasks.length) {
+                  rows.push({
+                    clientId: client.id,
+                    rowId: `${client.id}:psa`,
+                    name: client.name,
+                    lobs: ['psa'],
+                    de: [...new Set([...(client.psaDe || []), ...(client.de || [])])],
+                    forecastDate: client.psaGradDate || null,
+                    forecastHealth: client.psaForecastHealth || client.psaOnboardingHealth || null,
+                    daysActive: client.psaDaysActive ?? null,
+                    tasks: milestoneTasks,
+                    notes: psaNotes.sort((a, b) => String(b.date || '').localeCompare(String(a.date || ''))).slice(0, 5),
+                    notionUrl: client.psaNotionUrl || null,
+                  });
+                }
+                if (billingTasks.length) {
+                  rows.push({
+                    clientId: client.id,
+                    rowId: `${client.id}:billing`,
+                    name: client.name,
+                    lobs: ['billing'],
+                    de: client.de || [],
+                    forecastDate: client.gradDate || null,
+                    forecastHealth: client.health != null ? String(client.health) : null,
+                    daysActive: client.daysActive ?? null,
+                    tasks: billingTasks,
+                    notes: billingNotes.sort((a, b) => String(b.date || '').localeCompare(String(a.date || ''))).slice(0, 5),
+                    notionUrl: client.notionUrl || null,
+                  });
+                }
+                return rows;
+              })
+              .filter(row => row.name && row.tasks.length)
+              .map(row => ({
+                ...row,
+                name: row.lobs.includes('psa') ? `${row.name} - PSA` : `${row.name} - Billing`,
+              }))
+              .sort((a, b) => {
+                const aRisk = a.tasks.filter(t => t.statusGroup === 'risk' || t.statusGroup === 'missing').length;
+                const bRisk = b.tasks.filter(t => t.statusGroup === 'risk' || t.statusGroup === 'missing').length;
+                if (bRisk !== aRisk) return bRisk - aRisk;
+                return String(a.forecastDate || '9999').localeCompare(String(b.forecastDate || '9999'));
+              });
+          }
+
+          function buildMatchDiagnostics(clients, briefsByClientId, psaBriefsByClientId) {
+            const firefliesOwners = new Map();
+            const addOwners = (kind, map) => {
+              for (const [clientId, briefs] of Object.entries(map || {})) {
+                const client = clients.find(c => c.id === clientId);
+                for (const brief of briefs || []) {
+                  if (!brief.firefliesId) continue;
+                  const owners = firefliesOwners.get(brief.firefliesId) || [];
+                  owners.push({ kind, clientId, clientName: client?.name || null, briefId: brief.id, date: brief.date, title: brief.title });
+                  firefliesOwners.set(brief.firefliesId, owners);
+                }
+              }
+            };
+            addOwners('billing', briefsByClientId);
+            addOwners('psa', psaBriefsByClientId);
+            const multiClientFireflies = [];
+            for (const [firefliesId, owners] of firefliesOwners.entries()) {
+              const uniqueClientIds = Array.from(new Set(owners.map(o => o.clientId)));
+              if (uniqueClientIds.length > 1) multiClientFireflies.push({ firefliesId, clients: owners });
+            }
+            const normalizedPsaNames = new Map();
+            for (const c of clients.filter(c => c.psaId && c.name)) {
+              const key = normalizeForKey(c.name).replace(/\s+/g, '');
+              const arr = normalizedPsaNames.get(key) || [];
+              arr.push({ id: c.id, name: c.name, status: c.psaStatus || c.status, lob: c.lob });
+              normalizedPsaNames.set(key, arr);
+            }
+            return {
+              softMatches: [],
+              multiClientFireflies: multiClientFireflies.slice(0, 100),
+              duplicatePsaClientNames: Array.from(normalizedPsaNames.values()).filter(arr => arr.length > 1),
+              dedupedBriefs: 0,
+              reviewSync: { skipped: true, reason: 'GitHub workflow is read-only for Notion match review' },
+            };
+          }
+
           // ── Digest helpers ───────────────────────────────────────────────────
           async function fetchDigestBlocks(pageId) {
             const res = await fetch(`https://api.notion.com/v1/blocks/${pageId}/children?page_size=100`, {
@@ -239,6 +504,26 @@ jobs:
           // ── Main ─────────────────────────────────────────────────────────────
           (async () => {
             const cutoff90 = new Date(Date.now()-90*86400000).toISOString().split('T')[0];
+            const todayDate = new Date().toISOString().slice(0, 10);
+
+            // ── 0. PSA critical path template ────────────────────────────────
+            console.log('Fetching Block Training Tracker critical path…');
+            const blockTrainingPages = await notionQuery(DB_BLOCK_TRAINING, null,
+              [{ property: 'Task', direction: 'ascending' }], NOTION_TOKEN);
+            const psaCriticalMilestones = blockTrainingPages
+              .map(page => {
+                const pr = page.properties;
+                return {
+                  id: page.id,
+                  task: nStr(pr['Task']),
+                  phase: pr['Phases']?.select?.name || null,
+                  required: nBool(pr['Required']),
+                  url: page.url,
+                };
+              })
+              .filter(m => m.required && m.task)
+              .map(m => ({ ...m, key: canonicalMilestoneKey(m.task) }));
+            console.log(`  ${psaCriticalMilestones.length} required milestones`);
 
             // ── 1. Billing clients ────────────────────────────────────────────
             console.log('Fetching billing clients…');
@@ -305,12 +590,23 @@ jobs:
                 psaStatus:       status,
                 psaStatusGroup:  psaStatusGroup(status),
                 psaSa:           pr['Solutions Analyst']?.select?.name || null,
+                psaDe:           nPpl(pr['DE']).concat(nPpl(pr['Data Engineer']), nPpl(pr['Data Engineering'])),
                 psaKoDate:       koDate,
                 psaGradDate:     gradDate,
+                psaActualGradDate: nDate(pr['Actual Graduation Date']) || nDate(pr['Grad Date (System)']),
+                psaAccountId:    nStr(pr['Account ID']),
+                psaRevioCustomerId: nStr(pr['Rev.io Customer ID']),
+                psaCurrentBalanceStatus: nStr(pr['Current Balance Status']),
                 psaDaysActive:   koDate ? Math.floor((Date.now()-new Date(koDate).getTime())/86400000) : null,
                 psaMrr:          nNum(pr['Fees (MRR)']) || nNum(pr['MRRC']),
                 psaMilestonePercent: milePct,
                 psaOnboardingHealth: health,
+                psaHealthDrivers: nStr(pr['Health Drivers']),
+                psaForecastHealth: nStr(pr['Forecast Health']),
+                psaDaysSinceContact: nNum(pr['Days Since Last Interaction']),
+                psaAvgSentiment: nNum(pr['Avg Sentiment']),
+                psaOverdueMilestones: nNum(pr['Overdue Milestones (Count)']),
+                psaTotalMilestones: nNum(pr['Total Milestones']),
                 psaLongTermRts:  longTermRts,
                 existingBilling,
                 isActivePsa:     ACTIVE_PSA.has(status),
@@ -331,12 +627,23 @@ jobs:
                 match.psaStatus  = psa.psaStatus;
                 match.psaStatusGroup = psa.psaStatusGroup;
                 match.psaSa      = psa.psaSa;
+                match.psaDe      = psa.psaDe;
                 match.psaKoDate  = psa.psaKoDate;
                 match.psaGradDate = psa.psaGradDate;
+                match.psaActualGradDate = psa.psaActualGradDate;
+                match.psaAccountId = psa.psaAccountId;
+                match.psaRevioCustomerId = psa.psaRevioCustomerId;
+                match.psaCurrentBalanceStatus = psa.psaCurrentBalanceStatus;
                 match.psaDaysActive = psa.psaDaysActive;
                 match.psaMrr     = psa.psaMrr;
                 match.psaMilestonePercent = psa.psaMilestonePercent;
                 match.psaOnboardingHealth = psa.psaOnboardingHealth;
+                match.psaHealthDrivers = psa.psaHealthDrivers;
+                match.psaForecastHealth = psa.psaForecastHealth;
+                match.psaDaysSinceContact = psa.psaDaysSinceContact;
+                match.psaAvgSentiment = psa.psaAvgSentiment;
+                match.psaOverdueMilestones = psa.psaOverdueMilestones;
+                match.psaTotalMilestones = psa.psaTotalMilestones;
                 match.psaLongTermRts = psa.psaLongTermRts;
                 match.interactionIds = psa.interactionIds;
                 mergedBillingIds.add(psa.psaId);
@@ -355,6 +662,7 @@ jobs:
                 status:         psa.psaStatus,
                 statusGroup:    psa.psaStatusGroup,
                 sa:             psa.psaSa ? [psa.psaSa] : [],
+                de:             psa.psaDe || [],
                 health:         null,
                 mrr:            psa.psaMrr,
                 koDate:         psa.psaKoDate,
@@ -365,12 +673,23 @@ jobs:
                 psaStatus:      psa.psaStatus,
                 psaStatusGroup: psa.psaStatusGroup,
                 psaSa:          psa.psaSa,
+                psaDe:          psa.psaDe,
                 psaKoDate:      psa.psaKoDate,
                 psaGradDate:    psa.psaGradDate,
+                psaActualGradDate: psa.psaActualGradDate,
+                psaAccountId:   psa.psaAccountId,
+                psaRevioCustomerId: psa.psaRevioCustomerId,
+                psaCurrentBalanceStatus: psa.psaCurrentBalanceStatus,
                 psaDaysActive:  psa.psaDaysActive,
                 psaMrr:         psa.psaMrr,
                 psaMilestonePercent: psa.psaMilestonePercent,
                 psaOnboardingHealth: psa.psaOnboardingHealth,
+                psaHealthDrivers: psa.psaHealthDrivers,
+                psaForecastHealth: psa.psaForecastHealth,
+                psaDaysSinceContact: psa.psaDaysSinceContact,
+                psaAvgSentiment: psa.psaAvgSentiment,
+                psaOverdueMilestones: psa.psaOverdueMilestones,
+                psaTotalMilestones: psa.psaTotalMilestones,
                 psaLongTermRts: psa.psaLongTermRts,
                 interactionIds: psa.interactionIds,
               }));
@@ -408,10 +727,12 @@ jobs:
                 keyTakeaways:  nStr(pr['Key Takeaways']),
                 actionItems:   nStr(pr['Action Items']),
                 blockers:      nStr(pr['Blockers']),
+                nextSteps:     nStr(pr['Next Steps']) || nStr(pr['Next Step']),
                 openQuestions: nStr(pr['Open Questions']),
                 redFlags:      nStr(pr['Red Flags']),
                 configTopics:  nStr(pr['Config Topics']),
                 riskReason:    nStr(pr['Risk Reason']),
+                firefliesId:   nStr(pr['Fireflies ID']),
               };
             });
 
@@ -531,8 +852,9 @@ jobs:
                 phase:         (pr['Phase']?.multi_select || []).map(o => o.name).join(', ') || null,
                 due:           pr['Planned Due Date']?.date?.start?.slice(0,10) || null,
                 completedDate: pr['Actual Completion Date']?.date?.start?.slice(0,10) || null,
-                notes:         nStr(pr['Notes']),
+                notes:         nStr(pr['Notes']) || nStr(pr['Commentary']) || nStr(pr['Description']),
                 isOverdue:     pr['Is Overdue?']?.formula?.boolean || false,
+                url:           page.url,
               };
               for (const rel of clientRel) {
                 const primaryId = psaIdToClientId[rel.id] || rel.id;
@@ -541,6 +863,8 @@ jobs:
               }
             }
             console.log(`  Milestones matched to ${Object.keys(psaMilestonesByClientId).length} clients`);
+            applyPsaMilestoneMetrics(allClients, psaMilestonesByClientId);
+            applyPsaCriticalMilestoneMetrics(allClients, psaMilestonesByClientId, psaCriticalMilestones);
 
             // ── 8. Billing digests ────────────────────────────────────────────
             console.log('Fetching billing digests…');
@@ -569,7 +893,65 @@ jobs:
             }
             console.log(`  Digests fetched: ${Object.keys(digestsByClientId).length}`);
 
-            // ── 9. Zendesk tickets (billing only) ────────────────────────────
+            // ── 9. PSA internal tickets ──────────────────────────────────────
+            console.log('Fetching PSA internal tickets…');
+            const psaTicketsByClientId = {};
+            if (!PSA_API_KEY) {
+              console.log('  PSA_API_KEY not configured; skipping PSA ticket enrichment');
+            } else {
+              try {
+                const jwtRes = await fetch(`${PSA_API_BASE}/api/v1/auth/api-key/exchange`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ apiKey: PSA_API_KEY }),
+                });
+                const jwtData = await jwtRes.json();
+                const psaJwt = jwtData?.data?.token;
+                if (!psaJwt) throw new Error(`JWT exchange failed: ${JSON.stringify(jwtData).slice(0, 120)}`);
+
+                const psaHdr = {
+                  'Authorization': 'Bearer ' + psaJwt,
+                  'X-Revio-Host': PSA_HOST,
+                  'Content-Type': 'application/json',
+                };
+                const OPEN_STATUSES = new Set(['New', 'Open', 'Pending']);
+                const allPsaTickets = [];
+                let page = 1;
+                while (true) {
+                  const res = await fetch(`${PSA_API_BASE}/psac/api/v1/ticket-list?page=${page}&pageSize=10`, { headers: psaHdr });
+                  const d = await res.json();
+                  const rows = d.data || [];
+                  if (!rows.length) break;
+                  for (const t of rows) {
+                    if (!OPEN_STATUSES.has(t.ticketStatus)) continue;
+                    allPsaTickets.push({
+                      id:          t.ticketId,
+                      description: t.ticketDescription || '',
+                      status:      t.ticketStatus,
+                      priority:    t.ticketPriority || null,
+                      type:        t.ticketType || null,
+                      tech:        t.techAssigned || null,
+                      customerName: t.customerName || '',
+                      customerId:  t.customerId || null,
+                      url:         t.customerId ? `https://${PSA_HOST}/tickets/${t.ticketId}/customers/${t.customerId}` : null,
+                      opened:      t.openedDate ? t.openedDate.slice(0,10) : null,
+                    });
+                  }
+                  page++;
+                }
+                console.log(`  ${allPsaTickets.length} open PSA tickets across ${page - 1} pages`);
+                for (const client of allClients) {
+                  if (!client.psaId || !client.name) continue;
+                  const matched = allPsaTickets.filter(t => t.customerName && psaNameMatch(t.customerName, client.name));
+                  if (matched.length) psaTicketsByClientId[client.id] = matched;
+                }
+                console.log(`  Matched tickets to ${Object.keys(psaTicketsByClientId).length} clients`);
+              } catch (err) {
+                console.error(`  PSA ticket fetch failed: ${err.message}`);
+              }
+            }
+
+            // ── 10. Zendesk tickets (billing only) ───────────────────────────
             console.log('Fetching Zendesk tickets for billing clients…');
             const ticketsByClientId = {};
             const billingForZd = allClients.filter(c => c.lob === 'billing' || (Array.isArray(c.lob) && c.lob.includes('billing')));
@@ -586,20 +968,54 @@ jobs:
               console.log(`  Total: ${Object.keys(ticketsByClientId).length} clients, ${total} tickets`);
             }
 
-            // ── 10. Write snapshot ────────────────────────────────────────────
+            // ── 11. DE view and diagnostics ──────────────────────────────────
+            const deView = buildDeView(allClients, {
+              psaMilestonesByClientId,
+              interactionsByClientId,
+              psaBriefsByClientId,
+              briefsByClientId,
+              ticketsByClientId,
+              psaTicketsByClientId,
+            });
+            console.log(`  DE view rows: ${deView.length}`);
+            const matchDiagnostics = buildMatchDiagnostics(allClients, briefsByClientId, psaBriefsByClientId);
+            console.log(`  Match diagnostics: ${matchDiagnostics.multiClientFireflies.length} shared Fireflies IDs, ${matchDiagnostics.duplicatePsaClientNames.length} duplicate PSA names`);
+
+            // ── 12. Write snapshot ───────────────────────────────────────────
             const snapshot = {
               updatedAt: new Date().toISOString(),
               clients: allClients,
               briefsByClientId,
               psaBriefsByClientId,
+              psaTicketsByClientId,
               psaMilestonesByClientId,
               interactionsByClientId,
               digestsByClientId,
               ticketsByClientId,
+              psaCriticalMilestones,
+              deView,
+              matchDiagnostics,
             };
 
             fs.mkdirSync('data', { recursive: true });
             fs.writeFileSync('data/portfolio.json', JSON.stringify(snapshot));
+            fs.mkdirSync('data/snapshots', { recursive: true });
+            const dailySnapshotPath = `data/snapshots/${todayDate}.json`;
+            if (!fs.existsSync(dailySnapshotPath)) {
+              fs.writeFileSync(dailySnapshotPath, JSON.stringify(snapshot));
+              console.log(`Daily snapshot saved: ${dailySnapshotPath}`);
+            } else {
+              console.log(`Daily snapshot already exists for ${todayDate}; preserving first snapshot of day`);
+            }
+            const manifestPath = 'data/snapshots/manifest.json';
+            let manifest = [];
+            if (fs.existsSync(manifestPath)) {
+              try { manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8')); } catch { manifest = []; }
+            }
+            if (!manifest.includes(todayDate)) manifest.push(todayDate);
+            manifest.sort((a, b) => b.localeCompare(a));
+            if (manifest.length > 90) manifest = manifest.slice(0, 90);
+            fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));
             const bytes = JSON.stringify(snapshot).length;
             console.log(`Snapshot written: ${bytes.toLocaleString()} bytes, ${allClients.length} clients`);
           })();
@@ -644,6 +1060,8 @@ jobs:
             'interactionsByClientId',
             'digestsByClientId',
             'ticketsByClientId',
+            'psaTicketsByClientId',
+            'matchDiagnostics',
           ];
 
           if (!Array.isArray(snapshot.clients)) {
@@ -678,6 +1096,32 @@ jobs:
             fail(`interaction coverage dropped below guardrail (${objectKeyCount(snapshot.interactionsByClientId)} clients)`);
           }
 
+          if (!Array.isArray(snapshot.deView)) {
+            fail('deView missing or not an array');
+          }
+
+          if (snapshot.deView.length < 80) {
+            fail(`DE View row count dropped below guardrail (${snapshot.deView.length})`);
+          }
+
+          const deRowIds = snapshot.deView.map(row => row && row.rowId).filter(Boolean);
+          if (deRowIds.length !== snapshot.deView.length) {
+            fail('one or more DE View rows are missing rowId');
+          }
+
+          const duplicateDeRowIds = deRowIds.filter((id, index) => deRowIds.indexOf(id) !== index);
+          if (duplicateDeRowIds.length) {
+            fail(`duplicate DE View rowIds: ${[...new Set(duplicateDeRowIds)].slice(0, 10).join(', ')}`);
+          }
+
+          if (!Array.isArray(snapshot.psaCriticalMilestones) || snapshot.psaCriticalMilestones.length < 1) {
+            fail('psaCriticalMilestones missing or empty');
+          }
+
+          if (!snapshot.matchDiagnostics || typeof snapshot.matchDiagnostics !== 'object' || Array.isArray(snapshot.matchDiagnostics)) {
+            fail('matchDiagnostics missing or not an object');
+          }
+
           if (snapshot.updatedAt && Number.isNaN(Date.parse(snapshot.updatedAt))) {
             fail(`updatedAt is invalid: ${snapshot.updatedAt}`);
           }
@@ -692,8 +1136,11 @@ jobs:
             interactionClients: objectKeyCount(snapshot.interactionsByClientId),
             digestClients: objectKeyCount(snapshot.digestsByClientId),
             zendeskClients: objectKeyCount(snapshot.ticketsByClientId),
+            psaTicketClients: objectKeyCount(snapshot.psaTicketsByClientId),
             hasDeView: Array.isArray(snapshot.deView),
+            deViewRows: snapshot.deView?.length || 0,
             hasPsaTickets: !!snapshot.psaTicketsByClientId,
+            criticalMilestones: snapshot.psaCriticalMilestones?.length || 0,
           };
 
           console.log(`SNAPSHOT_VALIDATION_OK ${JSON.stringify(summary)}`);
@@ -703,7 +1150,7 @@ jobs:
         run: |
           git config user.name  "Alfred"
           git config user.email "alfred@rev.io"
-          git add data/portfolio.json
+          git add data/portfolio.json data/snapshots/
           if git diff --cached --quiet; then
             echo "No changes"
             exit 0
@@ -721,7 +1168,7 @@ jobs:
           git fetch origin main
           git reset --hard origin/main
           cp /tmp/portfolio.json data/portfolio.json
-          git add data/portfolio.json
+          git add data/portfolio.json data/snapshots/
           if git diff --cached --quiet; then
             echo "Snapshot already current after refresh"
             exit 0
