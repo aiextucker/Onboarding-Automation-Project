@@ -8,9 +8,14 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: pm-hub-snapshot-main
+  cancel-in-progress: false
+
 jobs:
   snapshot:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
 
@@ -598,6 +603,100 @@ jobs:
             const bytes = JSON.stringify(snapshot).length;
             console.log(`Snapshot written: ${bytes.toLocaleString()} bytes, ${allClients.length} clients`);
           })();
+          SCRIPT
+
+      - name: Validate snapshot before commit
+        run: |
+          node << 'SCRIPT'
+          const fs = require('fs');
+
+          function fail(message) {
+            console.error(`SNAPSHOT_VALIDATION_FAILED: ${message}`);
+            process.exit(1);
+          }
+
+          function objectKeyCount(value) {
+            return value && typeof value === 'object' && !Array.isArray(value)
+              ? Object.keys(value).length
+              : 0;
+          }
+
+          if (!fs.existsSync('data/portfolio.json')) {
+            fail('data/portfolio.json was not generated');
+          }
+
+          const raw = fs.readFileSync('data/portfolio.json', 'utf8');
+          if (raw.length < 1000000) {
+            fail(`snapshot is suspiciously small (${raw.length} bytes)`);
+          }
+
+          let snapshot;
+          try {
+            snapshot = JSON.parse(raw);
+          } catch (err) {
+            fail(`invalid JSON: ${err.message}`);
+          }
+
+          const requiredObjects = [
+            'briefsByClientId',
+            'psaBriefsByClientId',
+            'psaMilestonesByClientId',
+            'interactionsByClientId',
+            'digestsByClientId',
+            'ticketsByClientId',
+          ];
+
+          if (!Array.isArray(snapshot.clients)) {
+            fail('clients is not an array');
+          }
+
+          if (snapshot.clients.length < 80) {
+            fail(`client count dropped below guardrail (${snapshot.clients.length})`);
+          }
+
+          const clientIds = snapshot.clients.map(client => client && client.id).filter(Boolean);
+          if (clientIds.length !== snapshot.clients.length) {
+            fail('one or more clients are missing id');
+          }
+
+          const duplicateIds = clientIds.filter((id, index) => clientIds.indexOf(id) !== index);
+          if (duplicateIds.length) {
+            fail(`duplicate client ids: ${[...new Set(duplicateIds)].slice(0, 10).join(', ')}`);
+          }
+
+          for (const key of requiredObjects) {
+            if (!snapshot[key] || typeof snapshot[key] !== 'object' || Array.isArray(snapshot[key])) {
+              fail(`${key} missing or not an object`);
+            }
+          }
+
+          if (objectKeyCount(snapshot.psaMilestonesByClientId) < 100) {
+            fail(`PSA milestone coverage dropped below guardrail (${objectKeyCount(snapshot.psaMilestonesByClientId)} clients)`);
+          }
+
+          if (objectKeyCount(snapshot.interactionsByClientId) < 50) {
+            fail(`interaction coverage dropped below guardrail (${objectKeyCount(snapshot.interactionsByClientId)} clients)`);
+          }
+
+          if (snapshot.updatedAt && Number.isNaN(Date.parse(snapshot.updatedAt))) {
+            fail(`updatedAt is invalid: ${snapshot.updatedAt}`);
+          }
+
+          const summary = {
+            updatedAt: snapshot.updatedAt,
+            bytes: raw.length,
+            clients: snapshot.clients.length,
+            billingBriefClients: objectKeyCount(snapshot.briefsByClientId),
+            psaBriefClients: objectKeyCount(snapshot.psaBriefsByClientId),
+            milestoneClients: objectKeyCount(snapshot.psaMilestonesByClientId),
+            interactionClients: objectKeyCount(snapshot.interactionsByClientId),
+            digestClients: objectKeyCount(snapshot.digestsByClientId),
+            zendeskClients: objectKeyCount(snapshot.ticketsByClientId),
+            hasDeView: Array.isArray(snapshot.deView),
+            hasPsaTickets: !!snapshot.psaTicketsByClientId,
+          };
+
+          console.log(`SNAPSHOT_VALIDATION_OK ${JSON.stringify(summary)}`);
           SCRIPT
 
       - name: Commit snapshot
