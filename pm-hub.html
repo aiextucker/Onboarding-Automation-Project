@@ -170,9 +170,151 @@ body {
 }
 .refresh-btn:hover { border-color: var(--accent); color: var(--accent); }
 .updated-at { font-size: 0.75rem; color: var(--text-mute); }
+.view-tabs {
+  display: inline-flex;
+  gap: 4px;
+  padding: 3px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+.view-tab {
+  border: 0;
+  background: transparent;
+  color: var(--text-dim);
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-size: 0.78rem;
+  font-weight: 650;
+  cursor: pointer;
+}
+.view-tab:hover { color: var(--text); }
+.view-tab.active { background: var(--surface3); color: var(--text); }
 
 /* ── Main layout ── */
 .main { padding: 24px; max-width: 1100px; margin: 0 auto; }
+
+/* ── DE view ── */
+.de-view {
+  max-width: 1280px;
+}
+.de-view-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+.de-view-title {
+  font-size: 1.05rem;
+  font-weight: 750;
+}
+.de-view-subtitle {
+  color: var(--text-mute);
+  font-size: 0.78rem;
+  margin-top: 3px;
+}
+.internal-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--orange-bg);
+  color: var(--orange);
+  border: 1px solid rgba(251,146,60,.22);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.de-table-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow-x: auto;
+}
+.de-table {
+  width: 100%;
+  min-width: 980px;
+  border-collapse: collapse;
+}
+.de-table th,
+.de-table td {
+  padding: 11px 12px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+  text-align: left;
+}
+.de-table th {
+  color: var(--text-mute);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  background: rgba(255,255,255,.015);
+}
+.de-table tr:last-child td { border-bottom: 0; }
+.de-client-link {
+  color: var(--text);
+  font-weight: 750;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  text-align: left;
+  cursor: pointer;
+}
+.de-client-link:hover { color: var(--accent-lt); }
+.de-muted { color: var(--text-mute); font-size: 0.76rem; }
+.de-task-list {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 210px;
+}
+.de-task {
+  display: grid;
+  grid-template-columns: minmax(92px, 1fr) auto;
+  gap: 8px;
+  align-items: baseline;
+  font-size: 0.78rem;
+}
+.de-task-name { color: var(--text-dim); font-weight: 650; }
+.de-task-state {
+  justify-self: end;
+  border-radius: 999px;
+  padding: 1px 7px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+.de-task-state.complete { background: var(--green-bg); color: var(--green); }
+.de-task-state.progress { background: var(--blue-bg); color: var(--blue); }
+.de-task-state.risk,
+.de-task-state.missing { background: var(--red-bg); color: var(--red); }
+.de-task-state.other { background: var(--surface3); color: var(--text-dim); }
+.de-task-date {
+  grid-column: 1 / -1;
+  color: var(--text-mute);
+  font-size: 0.7rem;
+  margin-top: -4px;
+}
+.de-notes {
+  max-width: 390px;
+  font-size: 0.76rem;
+  line-height: 1.45;
+  color: var(--text-dim);
+}
+.de-note + .de-note { margin-top: 7px; padding-top: 7px; border-top: 1px solid var(--border); }
+.de-note-meta { color: var(--text-mute); font-size: 0.68rem; font-weight: 750; text-transform: uppercase; letter-spacing: .04em; }
+.de-note a { color: var(--accent-lt); text-decoration: none; }
+.de-note a:hover { text-decoration: underline; }
+@media (max-width: 720px) {
+  .de-view-header { flex-direction: column; }
+  .search-bar { align-items: stretch; }
+  .view-tabs { width: 100%; }
+  .view-tab { flex: 1; }
+}
 
 /* ── Empty / loading states ── */
 .empty-state {
@@ -1090,6 +1232,10 @@ body {
 </header>
 
 <div class="search-bar">
+  <div class="view-tabs" role="tablist" aria-label="Hub views">
+    <button class="view-tab active" id="clientViewTab" type="button" data-view="client">Client Search</button>
+    <button class="view-tab" id="deViewTab" type="button" data-view="de">DE View</button>
+  </div>
   <div class="search-wrap">
     <span class="icon">⌕</span>
     <input id="clientSearch" type="text" placeholder="Search client…" autocomplete="off" />
@@ -1118,6 +1264,7 @@ body {
 let allClients  = [];
 let activeClient = null;
 let snapshot = null;
+let activeView = 'client';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 function lobArr(c) {
@@ -1318,6 +1465,7 @@ document.addEventListener('click', e => {
 });
 
 function selectClient(id, name) {
+  setActiveView('client', { keepClient: true });
   searchEl.value = name;
   acList.classList.remove('open');
   activeClient = allClients.find(c => c.id === id) || { id, name };
@@ -2287,9 +2435,124 @@ function fmtDate(d) {
   return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
+function fmtShortDate(d) {
+  if (!d) return '';
+  const dt = new Date(String(d).length === 10 ? d + 'T12:00:00' : d);
+  return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
 function esc(s) {
   if (!s) return '';
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function taskStatusLabel(task) {
+  if (!task) return 'Missing';
+  if (task.status === 'Evidence Found') return 'Evidence';
+  return task.status || 'Missing';
+}
+
+function renderDeTasks(tasks) {
+  return `<div class="de-task-list">${(tasks || []).map(task => `
+    <div class="de-task">
+      <div class="de-task-name">${esc(task.label)}</div>
+      <div class="de-task-state ${esc(task.statusGroup || 'other')}">${esc(taskStatusLabel(task))}</div>
+      ${task.date ? `<div class="de-task-date">${esc(fmtShortDate(task.date))}${task.evidenceCount ? ` · ${task.evidenceCount} note${task.evidenceCount === 1 ? '' : 's'}` : ''}</div>` : ''}
+    </div>
+  `).join('')}</div>`;
+}
+
+function renderDeNotes(notes) {
+  if (!notes?.length) return '<div class="de-muted">No recent DE-specific notes found.</div>';
+  return `<div class="de-notes">${notes.slice(0, 3).map(note => `
+    <div class="de-note">
+      <div class="de-note-meta">${esc(note.source || 'Note')}${note.date ? ` · ${esc(fmtShortDate(note.date))}` : ''}</div>
+      <div>${note.url ? `<a href="${esc(note.url)}" target="_blank" rel="noopener">` : ''}${esc(note.title || '')}${note.url ? '</a>' : ''}</div>
+      ${note.text ? `<div>${esc(note.text)}</div>` : ''}
+    </div>
+  `).join('')}</div>`;
+}
+
+function renderDeView() {
+  activeView = 'de';
+  activeClient = null;
+  searchEl.value = '';
+  acList.classList.remove('open');
+  document.querySelectorAll('.view-tab').forEach(btn => btn.classList.toggle('active', btn.dataset.view === 'de'));
+  const main = document.getElementById('main');
+  main.classList.add('de-view');
+  const rows = snapshot?.deView || [];
+  const psaCount = rows.filter(r => r.lobs?.includes('psa')).length;
+  const billingCount = rows.filter(r => r.lobs?.includes('billing')).length;
+  if (!rows.length) {
+    main.innerHTML = `
+      <div class="empty-state">
+        <div class="icon">▦</div>
+        <h2>No DE view rows in the current snapshot</h2>
+        <p>Refresh the hub after the next portfolio snapshot completes.</p>
+      </div>`;
+    return;
+  }
+  main.innerHTML = `
+    <div class="de-view-header">
+      <div>
+        <div class="de-view-title">Data Engineering Progress</div>
+        <div class="de-view-subtitle">PSA tracks Data Access, Data Load, and Data Review. Billing tracks Data Load, Comparative, and Bill-Out Support from existing hub signals.</div>
+      </div>
+      <div class="internal-badge">Internal Only</div>
+    </div>
+    <div class="client-meta-row" style="margin-bottom:12px">
+      <div class="meta-item"><strong>${rows.length}</strong> clients</div>
+      <div class="meta-item"><strong>${psaCount}</strong> PSA</div>
+      <div class="meta-item"><strong>${billingCount}</strong> billing</div>
+    </div>
+    <div class="de-table-wrap">
+      <table class="de-table">
+        <thead>
+          <tr>
+            <th>Client</th>
+            <th>DE</th>
+            <th>Forecast</th>
+            <th>Tracked Work</th>
+            <th>Recent Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows.map(row => `
+            <tr>
+              <td>
+                <button type="button" class="de-client-link" data-client-id="${esc(row.clientId)}" data-client-name="${esc(row.name)}">${esc(row.name)}</button>
+                <div class="client-lob-row" style="margin-top:6px">${lobBadges({ lob: row.lobs })}</div>
+                <div class="de-muted">${row.daysActive != null ? `${esc(row.daysActive)}d active` : ''}</div>
+              </td>
+              <td>${row.de?.length ? esc(row.de.join(', ')) : '<span class="de-muted">Unassigned</span>'}</td>
+              <td>
+                <div>${esc(fmtDate(row.forecastDate))}</div>
+                ${row.forecastHealth ? `<div class="de-muted">${esc(row.forecastHealth)}</div>` : ''}
+              </td>
+              <td>${renderDeTasks(row.tasks)}</td>
+              <td>${renderDeNotes(row.notes)}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>`;
+}
+
+function setActiveView(view, options = {}) {
+  activeView = view;
+  document.querySelectorAll('.view-tab').forEach(btn => btn.classList.toggle('active', btn.dataset.view === view));
+  document.getElementById('main').classList.toggle('de-view', view === 'de');
+  if (view === 'de') {
+    renderDeView();
+  } else if (!options.keepClient && !activeClient) {
+    document.getElementById('main').innerHTML = `
+      <div class="empty-state" id="emptyState">
+        <div class="icon">🗂️</div>
+        <h2>Select a client to get started</h2>
+        <p>Search billing and PSA clients by name to pull up project status, activity, action items, and open tickets.</p>
+      </div>`;
+  }
 }
 
 function openTracker(e) {
@@ -2301,19 +2564,31 @@ function openTracker(e) {
 }
 
 // ── Controls ──────────────────────────────────────────────────────────────────
+document.querySelectorAll('.view-tab').forEach(btn => {
+  btn.addEventListener('click', () => setActiveView(btn.dataset.view));
+});
+
+document.getElementById('main').addEventListener('click', e => {
+  const btn = e.target.closest('.de-client-link');
+  if (!btn) return;
+  selectClient(btn.dataset.clientId, btn.dataset.clientName);
+});
+
 document.getElementById('daysSelect').addEventListener('change', () => {
   if (activeClient) loadClientView(activeClient.id);
+  else if (activeView === 'de') renderDeView();
 });
 
 document.getElementById('refreshBtn').addEventListener('click', () => {
   if (activeClient) loadClientView(activeClient.id);
-  else init();
+  else init().then(() => { if (activeView === 'de') renderDeView(); });
 });
 
 // ── Init ──────────────────────────────────────────────────────────────────────
 async function init() {
   try {
     allClients = await fetchPortfolio();
+    if (activeView === 'de') renderDeView();
   } catch (err) {
     console.error('Portfolio load failed:', err);
   }
