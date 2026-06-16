@@ -603,6 +603,8 @@ jobs:
                 psaOnboardingHealth: health,
                 psaHealthDrivers: nStr(pr['Health Drivers']),
                 psaForecastHealth: nStr(pr['Forecast Health']),
+                psaConfidence: nStr(pr['Confidence']),
+                psaBlockers: nStr(pr['Blockers']) || nStr(pr['Blocker']),
                 psaDaysSinceContact: nNum(pr['Days Since Last Interaction']),
                 psaAvgSentiment: nNum(pr['Avg Sentiment']),
                 psaOverdueMilestones: nNum(pr['Overdue Milestones (Count)']),

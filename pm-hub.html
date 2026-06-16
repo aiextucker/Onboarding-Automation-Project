@@ -439,6 +439,18 @@ body {
   font-size: 0.74rem;
   color: var(--text-mute);
 }
+.btn-edit-project {
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  color: var(--text);
+  border-radius: var(--radius-sm);
+  padding: 7px 10px;
+  font-size: 0.74rem;
+  font-weight: 750;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.btn-edit-project:hover { background: var(--surface3); border-color: var(--blue); }
 .psa-project-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -826,6 +838,13 @@ body {
   display: flex; align-items: center; justify-content: space-between;
 }
 .interactions-header h3 { font-size: 0.9rem; font-weight: 600; }
+.interactions-guidance {
+  padding: 9px 18px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-mute);
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
 .interaction-row {
   display: flex;
   align-items: flex-start;
@@ -1602,16 +1621,18 @@ function renderPsaProjectSnapshot(client, data, showCriticalPath) {
           <div class="psa-project-snapshot-title">PSA Project Snapshot</div>
           <div class="psa-project-snapshot-subtitle">Forecast date, milestone signal, identifiers, and latest activity.</div>
         </div>
-        <div class="psa-status-pill-row">
-          ${client.psaOnboardingHealth ? `<span class="psa-health-flag ${psaHealthFlagClass(client.psaOnboardingHealth)}">${esc(client.psaOnboardingHealth)}</span>` : ''}
-          ${client.psaForecastHealth ? `<span class="psa-health-flag ${psaHealthFlagClass(client.psaForecastHealth)}">${esc(client.psaForecastHealth)}</span>` : ''}
-        </div>
+        <button type="button" class="btn-edit-project" onclick="openProjectModal()">Edit Project</button>
       </div>
       <div class="psa-project-grid">
         <div class="psa-project-item">
           <div class="psa-project-label">${esc(grad.label)}</div>
           <div class="psa-project-value${grad.date ? '' : ' muted'}">${grad.date ? fmtDate(grad.date) : 'Not set'}</div>
           <div class="psa-project-note">${esc(grad.note)}</div>
+        </div>
+        <div class="psa-project-item">
+          <div class="psa-project-label">Confidence</div>
+          <div class="psa-project-value${client.psaConfidence ? '' : ' muted'}">${client.psaConfidence ? esc(client.psaConfidence) : 'Not set'}</div>
+          ${client.psaForecastHealth && client.psaForecastHealth !== client.psaConfidence ? `<div class="psa-project-note">Forecast health: ${esc(client.psaForecastHealth)}</div>` : ''}
         </div>
         <div class="psa-project-item">
           ${renderProjectProgress('Total Milestones', client.psaMilestonePercent, totalDetail)}
@@ -1623,6 +1644,10 @@ function renderPsaProjectSnapshot(client, data, showCriticalPath) {
           <div class="psa-project-label">Client Identifiers</div>
           <div class="psa-project-value${identifiers.length ? '' : ' muted'}">${identifiers.length ? identifiers.map(esc).join('<br>') : 'Not set'}</div>
           ${client.psaCurrentBalanceStatus ? `<div class="psa-project-note">Balance: ${esc(client.psaCurrentBalanceStatus)}</div>` : ''}
+        </div>
+        <div class="psa-project-item wide">
+          <div class="psa-project-label">Blockers</div>
+          <div class="psa-project-value${client.psaBlockers ? '' : ' muted'}">${client.psaBlockers ? esc(compactText(client.psaBlockers, 220)) : 'No top-level blockers'}</div>
         </div>
         <div class="psa-project-item wide">
           <div class="psa-project-label">Latest Activity</div>
@@ -1705,7 +1730,6 @@ function renderClientView(client, data) {
   // ── Quick links ──
   const links = [];
   if (client.wrikeUrl) links.push(`<a class="ql-link wrike" href="${esc(client.wrikeUrl)}" target="_blank">📊 Wrike</a>`);
-  if (isBilling) links.push(`<a class="ql-link zd" href="https://rev-io.zendesk.com/agent/organizations" target="_blank">🎫 Zendesk</a>`);
   if (client.notionUrl && isBilling) links.push(`<a class="ql-link notion" href="${esc(client.notionUrl)}" target="_blank">📝 Notion</a>`);
   if (isPsa && client.psaNotionUrl) links.push(`<a class="ql-link psa-internal" href="${esc(client.psaNotionUrl)}" target="_blank">🔷 PSA Notion</a>`);
 
@@ -1729,20 +1753,13 @@ function renderClientView(client, data) {
   main.insertAdjacentHTML('beforeend', renderWorkSnapshot(client, data));
 
   // ── PSA milestone bar ──
-  if (isPsa && (client.psaMilestonePercent != null || client.psaOnboardingHealth)) {
+  if (isPsa && client.psaMilestonePercent != null) {
     const pct = client.psaMilestonePercent ?? 0;
-    const health = client.psaOnboardingHealth || '';
-    const hCls = psaHealthFlagClass(health);
-    const barCls = hCls === 'at-risk' ? 'at-risk' : hCls === 'on-hold' ? 'on-hold' : hCls === 'rts' ? 'rts' : '';
     const metaParts = [];
     if (client.psaKoDate)   metaParts.push(`KO: ${fmtDate(client.psaKoDate)}`);
     if (client.psaGradDate) metaParts.push(`Forecast Grad: ${fmtDate(client.psaGradDate)}`);
     if (client.psaMrr)      metaParts.push(`MRR: $${client.psaMrr.toLocaleString()}`);
     if (client.psaOverdueMilestones > 0) metaParts.push(`⚠ ${client.psaOverdueMilestones} overdue milestone${client.psaOverdueMilestones > 1 ? 's' : ''}`);
-    // Forecast health badge
-    const fhBadge = client.psaForecastHealth
-      ? `<span class="psa-health-flag ${psaHealthFlagClass(client.psaForecastHealth)}" style="font-size:0.68rem">${esc(client.psaForecastHealth)}</span>` : '';
-    // Health drivers callout
     // Stale contact warning
     const staleHtml = (client.psaDaysSinceContact != null && client.psaDaysSinceContact >= 14)
       ? `<div class="psa-stale-warning">⏱ Last contact ${client.psaDaysSinceContact} days ago — engagement may be at risk.</div>` : '';
@@ -1769,13 +1786,11 @@ function renderClientView(client, data) {
         <div class="psa-milestone-header">
           <span class="psa-milestone-title">PSA Training Progress</span>
           <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-            ${health ? `<span class="psa-health-flag ${hCls}">${esc(health)}</span>` : ''}
-            ${fhBadge}
             <span class="psa-milestone-pct">${pct}%${client.psaTotalMilestones ? ` <span style="font-size:0.8rem;color:var(--text-mute);font-weight:400">/ ${client.psaTotalMilestones}</span>` : ''}</span>
           </div>
         </div>
         <div class="psa-bar-track">
-          <div class="psa-bar-fill ${barCls}" style="width:${Math.min(pct,100)}%"></div>
+          <div class="psa-bar-fill" style="width:${Math.min(pct,100)}%"></div>
         </div>
         ${criticalHtml}
         ${metaParts.length ? `<div class="psa-milestone-meta">${metaParts.map(p => esc(p)).join('<span style="color:var(--border-hi)"> · </span>')}</div>` : ''}
@@ -1966,6 +1981,7 @@ function renderInteractionsPanel(interactions, psaId, clientName) {
         <h3>Client Interactions</h3>
         <div style="display:flex;align-items:center;gap:8px">${logBtn}</div>
       </div>
+      <div class="interactions-guidance">Log calls, emails, attempted outreach, and no-shows. Summarize same-day back-and-forth as one interaction.</div>
       <div class="no-interactions">No interactions found in the selected time window.</div>
     </div>`;
   }
@@ -2000,6 +2016,7 @@ function renderInteractionsPanel(interactions, psaId, clientName) {
           ${logBtn}
         </div>
       </div>
+      <div class="interactions-guidance">Log calls, emails, attempted outreach, and no-shows. Summarize same-day back-and-forth as one interaction.</div>
       ${rows}
     </div>`;
 }
@@ -2597,6 +2614,38 @@ async function init() {
 init();
 </script>
 
+<!-- ── Edit Project Modal ── -->
+<div class="int-modal-overlay" id="projectModalOverlay">
+  <div class="int-modal" role="dialog" aria-modal="true" aria-labelledby="projectModalTitle">
+    <button class="int-modal-close" onclick="closeProjectModal()" aria-label="Close">×</button>
+    <h2 id="projectModalTitle">Edit Project</h2>
+    <div class="client-label" id="projectModalName"></div>
+
+    <label for="projectForecastDate">Forecast Graduation Date</label>
+    <input type="date" id="projectForecastDate">
+
+    <label for="projectConfidence">Confidence</label>
+    <select id="projectConfidence">
+      <option value="">Not set</option>
+      <option value="High">High</option>
+      <option value="Medium">Medium</option>
+      <option value="Low">Low</option>
+      <option value="Committed">Committed</option>
+      <option value="At Risk">At Risk</option>
+      <option value="Blocked">Blocked</option>
+    </select>
+
+    <label for="projectBlockers">Blockers</label>
+    <textarea id="projectBlockers" placeholder="Top-level blockers, owner asks, or risk context…"></textarea>
+
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeProjectModal()">Cancel</button>
+      <button class="btn-submit" id="projectSubmitBtn" onclick="submitProjectEdit()">Save Project</button>
+    </div>
+    <div class="int-modal-status" id="projectModalStatus"></div>
+  </div>
+</div>
+
 <!-- ── Edit Milestone Modal ── -->
 <div class="int-modal-overlay" id="milestoneModalOverlay">
   <div class="int-modal" role="dialog" aria-modal="true" aria-labelledby="milestoneModalTitle">
@@ -2705,6 +2754,113 @@ init();
 </style>
 
 <script>
+// ── Edit Project modal state ─────────────────────────────────────────────────
+function projectIdForClient(client) {
+  return client?.psaId || client?.id || null;
+}
+
+function closeProjectModal() {
+  document.getElementById('projectModalOverlay').classList.remove('open');
+}
+
+function openProjectModal() {
+  if (!activeClient || !hasPsa(activeClient)) return;
+  document.getElementById('projectModalName').textContent = activeClient.name || '';
+  document.getElementById('projectForecastDate').value = activeClient.psaGradDate || '';
+  setProjectConfidenceValue(activeClient.psaConfidence || '');
+  document.getElementById('projectBlockers').value = activeClient.psaBlockers || '';
+  document.getElementById('projectModalStatus').textContent = '';
+  document.getElementById('projectSubmitBtn').disabled = false;
+  document.getElementById('projectModalOverlay').classList.add('open');
+}
+
+function setProjectConfidenceValue(value) {
+  const select = document.getElementById('projectConfidence');
+  const text = String(value || '').trim();
+  if (text && !Array.from(select.options).some(option => option.value === text)) {
+    select.add(new Option(text, text));
+  }
+  select.value = text;
+}
+
+function applyProjectUpdate(updated) {
+  if (!activeClient || !updated) return;
+  const projectId = updated.id || projectIdForClient(activeClient);
+  const clients = snapshot?.clients || allClients || [];
+  const row = clients.find(c => c.id === activeClient.id) || activeClient;
+  const nextGradDate = Object.prototype.hasOwnProperty.call(updated, 'forecastDate') ? updated.forecastDate : row.psaGradDate;
+  const nextConfidence = Object.prototype.hasOwnProperty.call(updated, 'confidence') ? updated.confidence : row.psaConfidence;
+  const nextBlockers = Object.prototype.hasOwnProperty.call(updated, 'blockers') ? updated.blockers : row.psaBlockers;
+  const changes = {
+    psaId: projectId,
+    psaGradDate: nextGradDate || null,
+    psaConfidence: nextConfidence || '',
+    psaBlockers: nextBlockers || '',
+  };
+  Object.assign(row, changes);
+  Object.assign(activeClient, changes);
+}
+
+async function submitProjectEdit() {
+  if (!activeClient || !hasPsa(activeClient)) return;
+  const projectId = projectIdForClient(activeClient);
+  const submitBtn = document.getElementById('projectSubmitBtn');
+  const statusEl = document.getElementById('projectModalStatus');
+
+  if (!projectId) {
+    statusEl.innerHTML = '<span style="color:var(--red)">Error: missing project id.</span>';
+    return;
+  }
+
+  submitBtn.disabled = true;
+  statusEl.textContent = 'Saving…';
+
+  const payload = {
+    id: projectId,
+    requestId: (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + '-' + Math.random().toString(16).slice(2)),
+    submittedAt: new Date().toISOString(),
+    clientId: activeClient.id || null,
+    clientName: activeClient.name || '',
+    forecastDate: document.getElementById('projectForecastDate').value || null,
+    confidence: document.getElementById('projectConfidence').value || null,
+    blockers: document.getElementById('projectBlockers').value.trim(),
+  };
+
+  try {
+    if (isGithubPagesHost()) {
+      await dispatchPmHubAction('pm-hub-project-edit', { project: payload });
+      applyProjectUpdate(payload);
+      statusEl.innerHTML = '<span style="color:var(--green)">Saved. The shared snapshot will refresh shortly.</span>';
+      setTimeout(() => {
+        closeProjectModal();
+        if (activeClient) loadClientView(activeClient.id);
+      }, 700);
+      return;
+    }
+
+    const res = await pmHubFetch('/api/pm-hub/projects/' + encodeURIComponent(projectId), {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || !data.ok) throw new Error(data.error || 'Save failed');
+    applyProjectUpdate(data.project || payload);
+    statusEl.innerHTML = '<span style="color:var(--green)">Saved.</span>';
+    setTimeout(() => {
+      closeProjectModal();
+      if (activeClient) loadClientView(activeClient.id);
+    }, 450);
+  } catch (err) {
+    statusEl.innerHTML = `<span style="color:var(--red)">Error: ${esc(err.message)}</span>`;
+    submitBtn.disabled = false;
+  }
+}
+
+document.getElementById('projectModalOverlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('projectModalOverlay')) closeProjectModal();
+});
+
 // ── Edit Milestone modal state ───────────────────────────────────────────────
 let _milestoneId = null;
 
