@@ -3,10 +3,20 @@
   "sourceSnapshotUpdatedAt": "2026-06-16T15:24:01.602Z",
   "livePsaApi": "not_available_in_shell_PSA_API_KEY_missing",
   "missingClientCodeRows": 14,
-  "missingClientCodesWithCandidate": 0,
-  "missingClientCodesNeedingLiveLookup": 14,
+  "missingClientCodesWithCandidate": 14,
+  "missingClientCodesNeedingLiveLookup": 0,
   "reviewedActiveUnmappedCustomers": 18,
   "reviewedActiveUnmappedTickets": 82,
   "unmappedCustomersWithSuggestedPmHubMatch": 0,
-  "unmappedCustomersSuggestedExistingPmHubNoPsa": 0
+  "unmappedCustomersSuggestedExistingPmHubNoPsa": 0,
+  "revioCustomerLookup": {
+    "generatedAt": "2026-06-17T01:35:16.984Z",
+    "customersFetched": 1586,
+    "targets": 14,
+    "candidatesFound": 14,
+    "exactOrNearExact": 14,
+    "closedMatches": 2,
+    "prospectMatches": 1,
+    "source": "Rev.io Billing REST Customers, equivalent source for internal.rev.io customer records"
+  }
 }
