@@ -238,7 +238,7 @@ body {
   <div class="pl">Recommendation</div>
   <div class="pt">Use one short spoken flow, then keep the current detail as backup</div>
   <div class="pb">
-    The proposed change is not to rebuild every script section. It is to make the copied/read-aloud portion easier to use in the forecast call: start with the owner's portfolio and commitment, then walk leadership through on-track projects, risks, moved-out work, pull-in candidates, and hold/RTS movement. The existing PSA and Billing field breakdowns remain below as the explanation layer.
+    The proposed change is not to review forecast movement at the individual-owner level each week. The dashboard should keep the snapshots and movement deltas, while the copied/read-aloud portion stays focused on projects that can impact the forecast, key risks, the owner's strategy to keep work in forecast, and any help needed from leadership. The existing PSA and Billing field breakdowns remain below as the explanation layer.
   </div>
 </div>
 
@@ -253,28 +253,18 @@ body {
 I have [Active Project Count] active projects for [Active Project MRR].
 Of those, I committed [Original Monthly Commitment Count] to [Activation or Graduation Verb] this month for [Original Monthly Commitment MRR].
 [Completed This Month Count] have [Activated or Graduated Verb] so far for [Completed This Month MRR].
-[Forecast Movement Summary] have moved in or out from the original forecast.
 
-On track:
-- [Client Name] is on track for [Forecast Date]. [Milestone Progress Summary]. [Confidence Summary].
+Projects that can impact my forecast:
+- [Client Name] is currently forecasted for [Forecast Date]. [Milestone Progress Summary]. [Confidence Summary]. The key item to protect the forecast is [Forecast Protection Strategy].
 
-At risk / may move out:
-- [Client Name] is off track because [Blocker or Risk Reason]. It may move out if [Condition to Hold Forecast] is not resolved by [Decision Date].
+Key risks:
+- [Client Name] is at risk because [Blocker or Risk Reason]. I will make a forecast decision if [Condition to Hold Forecast] is not resolved by [Decision Date].
 
-Moved out:
-- [Client Name] moved out of this month because [Movement Reason].
+Strategy to keep them in forecast:
+- [Client Name]: [Owner Action or Recovery Plan]. I am watching [Decision Point or Dependency] by [Decision Date].
 
-Pull-in candidates:
-- [Client Name] may be pulled into this month if [Pull-In Dependency] is completed by [Pull-In Decision Date].
-
-Outside concerns:
-- [Client Name] is outside the current-month forecast but needs attention because [Concern Reason].
-
-On Hold:
-- [On Hold Count] projects for [On Hold MRR]. [On Hold Movement Summary].
-
-RTS:
-- [RTS Count] projects for [RTS MRR]. [RTS Movement Summary].</div>
+Help needed from leadership:
+- [Client Name or Issue Area]: [Leadership Ask].</div>
   <div class="logic-box">
     <div class="logic-label">Important wording cleanup</div>
     PSA should say <strong>graduate</strong>. Billing Phase 1 should say <strong>activate</strong>. Billing Phase 2 can use <strong>graduate</strong> or <strong>complete</strong>, but should remain separate from Phase 1 activation MRR.
@@ -292,29 +282,20 @@ RTS:
 I have 12 active projects for $10,850 MRR.
 Of those, I committed 6 to graduate this month for $5,400 MRR.
 2 have graduated so far for $1,750 MRR.
-1 client moved out from the original forecast, and 1 client moved into the current-month view.
 
-On track:
-- Northstar Fiber is on track for June 24. Required milestones are 8 of 10 complete, overall milestones are 14 of 18 complete, and confidence is High.
-- Summit Ridge IT is on track for June 28. The remaining item is final billing validation, and confidence is Medium.
+Projects that can impact my forecast:
+- Northstar Fiber is currently forecasted for June 24. Required milestones are 8 of 10 complete, overall milestones are 14 of 18 complete, and confidence is High. The key item to protect the forecast is keeping the client on schedule for final launch validation.
+- Summit Ridge IT is currently forecasted for June 28. The remaining item is final billing validation, and confidence is Medium. The key item to protect the forecast is confirming their finance lead can complete validation this week.
 
-At risk / may move out:
-- Prairie Cloud Services is off track because the client has not returned final tax setup data. It may move out if the data is not received by June 21.
+Key risks:
+- Prairie Cloud Services is off track because the client has not returned final tax setup data. I will make a forecast decision if the data is not received by June 21.
 
-Moved out:
-- HarborLink moved out of June because the kickoff was delayed and the current milestone path no longer supports a June graduation.
+Strategy to keep them in forecast:
+- Prairie Cloud Services: I have the SA following up daily and will keep them in the forecast only if the tax data is received by June 21.
+- Summit Ridge IT: I am holding the June forecast date, but I need the billing validation call completed before the end of the week.
 
-Pull-in candidates:
-- ClearPath Managed Services may be pulled into June if required training is completed by June 20 and the client signs off on launch readiness.
-
-Outside concerns:
-- Metro Voice Group is outside the current-month forecast but needs attention because it has been quiet for more than two weeks and still has an unresolved integration blocker.
-
-On Hold:
-- 1 project for $900 MRR. No material change this week.
-
-RTS:
-- 2 projects for $1,450 MRR. One returned from RTS review, and one remains pending sales re-engagement.</div>
+Help needed from leadership:
+- Prairie Cloud Services: If the client misses the June 21 data deadline, I need support escalating with their sponsor so we can make a clean keep-or-remove decision.</div>
 </div>
 
 </div><!-- end #proposal -->
@@ -771,7 +752,7 @@ RTS:
   <div class="section-label">Example Flows</div>
   <div class="section-title">🎬 What a Real Script Looks Like</div>
   <div class="section-divider"></div>
-  <p style="font-size:14px; color:var(--text-dim); margin-bottom:6px;">All client names, people, and numbers below are fictional. These show exactly how a generated script reads in the forecast call window — both PSA and Billing.</p>
+  <p style="font-size:14px; color:var(--text-dim); margin-bottom:6px;">All client names, people, and numbers below are fictional. These show how the simplified generated script should read in the forecast call window — both PSA and Billing.</p>
 </div>
 
 <!-- PSA EXAMPLE -->
@@ -780,50 +761,32 @@ RTS:
     <span class="script-section-num">Example</span>
     <span class="script-section-name">PSA Script — Jordan M., May 2026</span>
   </div>
-  <p>Jordan has 4 clients in view: one clean High, one blocked Medium, one On Hold edging toward RTS, and one Low with no kickoff date. Here's the full generated script.</p>
+  <p>Jordan has 4 clients in view. The readout focuses on projects that can affect the forecast, the risks, the plan to protect the forecast, and where leadership help is needed.</p>
 </div>
 
 <div class="verbatim" style="margin-top:0; border-top:none; border-radius:0 0 var(--radius) var(--radius); font-size:12px; line-height:1.8;"># PSA Weekly Forecast Call — Jordan M.
 Month: May 2026
 
-## 1. Graduation Forecast Roll-Up
-- I have 6 active onboarding clients representing $14,200 MRR.
-- I have 1 client on hold representing $1,800 MRR.
-- I have zero clients in RTS.
-- So far this month, 1 client has graduated representing $2,100 MRR: Prestige Managed Services.
-- My original monthly graduation commitment is 3 graduations for May 2026. The current date-driven forecast has 4 clients representing $9,400 MRR.
-- My scenario range is 1 client in Worst Case representing $2,500 MRR, 2 clients in Most Likely representing $5,700 MRR, and 4 clients in Best Case representing $9,400 MRR.
-- Against the original commitment, that puts Worst Case at -2, Most Likely at -1, and Best Case at +1.
-- I have 1 Tigerpaw migration in this month's forecast representing $3,200 MRR: Quick Copper Technologies.
-- I have 1 forecast sitting on the last day of the month: Coastal Systems.
-- Since the prior snapshot (May 15), this forecast moved by -1 client and -$1,800 MRR.
-  - Into RTS: 0
-  - Out of RTS: 0
-  - Into On Hold: 1 — Atlantic MSP Group
-  - Back from On Hold: 0
+## Forecast Readout
+I have 6 active onboarding clients representing $14,200 MRR.
+My original monthly graduation commitment is 3 graduations for May 2026.
+So far this month, 1 client has graduated representing $2,100 MRR: Prestige Managed Services.
 
-## 2. Worst Case — Firmest Commitments
-- Greenfield Technology is forecast for May 22 at $2,500. Milestone progress: required 9/10; overall 14/16. Confidence is High. Blocker status: No blockers. Recommendation: Keep forecast date.
+Projects that can impact my forecast:
+- Greenfield Technology is forecast for May 22 at $2,500. Required milestones are 9 of 10 complete, overall milestones are 14 of 16 complete, and confidence is High. The key item to protect the forecast is keeping final launch validation on schedule.
+- Quick Copper Technologies is forecast for May 29 at $3,200. Required milestones are 6 of 10 complete, overall milestones are 10 of 16 complete, and confidence is Medium. The key item to protect the forecast is clearing the technician contact-permission blocker.
 
-## 3. Most Likely Additions
-- Quick Copper Technologies is forecast for May 29 at $3,200. Milestone progress: required 6/10; overall 10/16. Confidence is Medium. Blocker status: Blocked by 403 permission errors when technicians create contacts — Ray/Engineering, ETA May 24. Recommendation: Keep date only if blocker has owner + due date.
+Key risks:
+- Quick Copper Technologies is at risk because technicians are receiving 403 permission errors when creating contacts. I will make a forecast decision if Ray/Engineering does not resolve the blocker by May 24.
+- Coastal Systems is at risk because it has a May forecast date but no kickoff date. It should not be treated as reliable until kickoff status is confirmed.
 
-## 4. Best Case / Outside Shots
-- Summit Fiber Co is forecast for May 27 at $1,900. Milestone progress: required 3/10; overall 5/16. Confidence is Low. Blocker status: No blockers. Recommendation: Validate date; move if no clear path this week.
-- Coastal Systems is forecast for May 31 at $1,800. Milestone progress: required 2/10; overall 4/16. Confidence is Low. Blocker status: No blockers. Recommendation: Validate date; move if no clear path this week.
+Strategy to keep them in forecast:
+- Quick Copper Technologies: I am keeping the date only if the engineering blocker has an owner, due date, and visible progress by May 24.
+- Greenfield Technology: I am protecting the date by keeping the client on the final validation path and checking launch readiness daily.
 
-## 5. Replacement / Pull-In Opportunities (June)
-- Ridgeline Partners is forecast for Jun 12 at $2,800. Milestone progress: required 8/10; overall 11/16. Confidence is High. Blocker status: No blockers. Recommendation: Only pull in if required milestones and client data are ready.
-- Blue Mesa IT is forecast for Jun 18 at $2,100. Milestone progress: required 5/10; overall 9/16. Confidence is Medium. Blocker status: No blockers. Recommendation: Only pull in if required milestones and client data are ready.
-
-## 6. Not Kicked Off But Forecasted This Month
-- Coastal Systems is forecast for May 31 but has no kickoff date set. Milestone progress: required 2/10; overall 4/16. Recommendation: Validate kickoff status before counting in the committed forecast.
-
-## 7. Product / Process Blockers / Follow-Ups
-- Quick Copper Technologies. Blocked by 403 permission errors when technicians create contacts — Ray/Engineering, ETA May 24. Milestone progress: required 6/10; overall 10/16. Sales rep: Marcus T. Days since last interaction: 4. Recommendation: Keep date only if blocker has owner + due date.
-- Atlantic MSP Group. Status: On Hold — client paused due to internal acquisition. Milestone progress: required 4/10; overall 7/16. Sales rep: Dana W. Days since last interaction: 12. Recommendation: Confirm re-engagement path or move toward RTS/pre-cancel if no movement.
-- Summit Fiber Co. Confidence is Low. Milestone progress: required 3/10; overall 5/16. Sales rep: Marcus T. Days since last interaction: 6. Recommendation: Validate date; move if no clear path this week.
-- Coastal Systems. Confidence is Low. No kickoff date. Milestone progress: required 2/10; overall 4/16. Sales rep: Dana W. Days since last interaction: 9. Recommendation: Validate date; move if no clear path this week.</div>
+Help needed from leadership:
+- Quick Copper Technologies: I need help confirming Ray/Engineering has the permission blocker tracked and can hit the May 24 ETA.
+- Coastal Systems: I need a keep-or-remove decision if kickoff is still unconfirmed by the next forecast review.</div>
 
 <!-- PSA ANNOTATIONS -->
 <div class="section" style="margin-top:32px;">
@@ -835,27 +798,27 @@ Month: May 2026
 <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:14px; margin-bottom:32px;">
   <div class="script-section" style="--section-color:#00d4aa; margin-bottom:0;">
     <div class="script-section-header"><span class="script-section-num">§1</span><span class="script-section-name">Roll-Up tells the story upfront</span></div>
-    <p>Jordan is 1 below Most Likely and 2 below Worst Case vs her commitment of 3. The roll-up now reads like spoken meeting language while still preserving the counts, MRR, movement, and special flags.</p>
+    <p>The opening anchors the discussion in active workload, original commitment, and completed graduations. The dashboard still holds the deeper snapshot and scenario detail.</p>
   </div>
   <div class="script-section" style="--section-color:#00d4aa; margin-bottom:0;">
     <div class="script-section-header"><span class="script-section-num">§2</span><span class="script-section-name">Only Greenfield is a clean commit</span></div>
-    <p>One client, High confidence, no blocker, 9/10 required milestones done. This is the only number Jordan can stand behind unconditionally this month. Worst Case = 1.</p>
+    <p>One client, High confidence, no blocker, 9/10 required milestones done. The readout explains what must happen to protect the date.</p>
   </div>
   <div class="script-section" style="--section-color:#ffa94d; margin-bottom:0;">
     <div class="script-section-header"><span class="script-section-num">§3</span><span class="script-section-name">Quick Copper is the swing client</span></div>
-    <p>Medium confidence because it has a blocker — 403 errors, owned by Ray/Engineering, due May 24. If that clears, Most Likely goes to 2. The facilitator should ask: does Ray have this tracked? Is the ETA real?</p>
+    <p>Medium confidence because it has a blocker — 403 errors, owned by Ray/Engineering, due May 24. The facilitator should ask: does Ray have this tracked? Is the ETA real?</p>
   </div>
   <div class="script-section" style="--section-color:#7b7f9e; margin-bottom:0;">
     <div class="script-section-header"><span class="script-section-num">§4</span><span class="script-section-name">Summit and Coastal are not commitments</span></div>
-    <p>Both Low confidence — Summit has weak milestone progress, Coastal has no kickoff date. They appear in Best Case only. Coastal is also called out in §6 (no KO date) and §7 (follow-up needed).</p>
+    <p>Coastal is called out because the forecast date depends on kickoff status. The discussion is about the decision needed, not a separate movement bucket.</p>
   </div>
   <div class="script-section" style="--section-color:#a78bfa; margin-bottom:0;">
-    <div class="script-section-header"><span class="script-section-num">§5</span><span class="script-section-name">Two June clients could pull in</span></div>
-    <p>Ridgeline is 8/10 required milestones done and High confidence — a realistic pull-in if Quick Copper slips. Blue Mesa is Medium. Neither is a commitment yet.</p>
+    <div class="script-section-header"><span class="script-section-num">Plan</span><span class="script-section-name">Strategy is explicit</span></div>
+    <p>The owner states the condition for keeping Quick Copper in forecast and the operating action for Greenfield. That makes the weekly follow-up concrete.</p>
   </div>
   <div class="script-section" style="--section-color:#ffa94d; margin-bottom:0;">
-    <div class="script-section-header"><span class="script-section-num">§7</span><span class="script-section-name">Atlantic is the risk to watch</span></div>
-    <p>12 days since last interaction, On Hold, Sales rep Dana W. hasn't moved it. Recommendation: confirm re-engagement path or start moving toward RTS. This should be an action item out of the call.</p>
+    <div class="script-section-header"><span class="script-section-num">Ask</span><span class="script-section-name">Leadership help is visible</span></div>
+    <p>The script ends with the exact leadership help needed, so the call produces a decision or action item instead of a passive status review.</p>
   </div>
 </div>
 
