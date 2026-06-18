@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Forecast Call Script Reference — PSA &amp; Billing — Rev.io</title>
+<title>Forecast Call Script Leadership Review — PSA &amp; Billing — Rev.io</title>
 <style>
 :root {
   --bg: #0f1117;
@@ -188,15 +188,15 @@ body {
 <!-- HERO -->
 <div class="hero">
   <div class="hero-eyebrow">Rev.io Onboarding · Operations</div>
-  <h1>Forecast Call <span>Script Reference</span></h1>
+  <h1>Forecast Call <span>Script Review</span></h1>
   <div class="hero-sub">
-    Complete field definitions, logic rules, and section-by-section reference for the PSA and Billing forecast scripts generated in the SLT Dashboard Team Overview.
+    Leadership review page for the proposed forecast-script changes from team feedback, with the current generated-script reference preserved below for implementation traceability.
   </div>
   <div class="hero-badges">
-    <div class="hero-badge"><span>📋</span> PSA: 7 Sections</div>
-    <div class="hero-badge"><span>💳</span> Billing: 4 Sections</div>
-    <div class="hero-badge"><span>🤖</span> Auto-Generated</div>
-    <div class="hero-badge"><span>📐</span> All Logic Defined</div>
+    <div class="hero-badge"><span>✓</span> Leadership Review</div>
+    <div class="hero-badge"><span>📋</span> PSA + Billing</div>
+    <div class="hero-badge"><span>↔</span> Proposed vs Current</div>
+    <div class="hero-badge"><span>📐</span> Implementation Notes</div>
   </div>
 </div>
 
@@ -218,11 +218,175 @@ body {
 
 <!-- LOB TABS -->
 <nav class="lob-tabs">
-  <a href="#psa" class="lob-tab active">📋 PSA Script</a>
+  <a href="#proposal" class="lob-tab active">✨ Proposed Changes</a>
+  <a href="#psa" class="lob-tab">📋 PSA Script</a>
   <a href="#billing" class="lob-tab">💳 Billing Script</a>
   <a href="#defs" class="lob-tab">📖 Definitions</a>
   <a href="#examples" class="lob-tab">🎬 Examples</a>
 </nav>
+
+<!-- ============================== PROPOSAL ============================== -->
+<div id="proposal">
+
+<div class="section">
+  <div class="section-label">Leadership Review</div>
+  <div class="section-title">Proposed Forecast Script Changes From Team Feedback</div>
+  <div class="section-divider"></div>
+</div>
+
+<div class="principle-box">
+  <div class="pl">Recommendation</div>
+  <div class="pt">Shift the meeting readout from dashboard analysis to accountable project narration</div>
+  <div class="pb">
+    The current generated script is strong as an audit trail: it preserves committed forecast, current Most Likely, scenario buckets, movement, blockers, milestones, and client-level detail. The proposed team-feedback script is stronger as a live meeting script: it asks each owner to state what is active, what was committed, what has already landed, what moved, and which specific projects are on track, off track, moved out, or possible pull-ins.<br><br>
+    <strong>Proposed path:</strong> keep the current detailed breakdown as the support layer, but replace the copied/spoken readout with this shorter meeting-native structure.
+  </div>
+</div>
+
+<div class="script-section" style="--section-color:#00d4aa;">
+  <div class="script-section-header">
+    <span class="script-section-num">Change 1</span>
+    <span class="script-section-name">Billing Overview becomes a true leadership roll-up</span>
+  </div>
+  <p><strong>Current:</strong> the overall Billing script reuses the same detailed owner script logic and can read like a combined owner packet.</p>
+  <p><strong>Proposed:</strong> add a leadership-level Billing overview that separates Phase 1 activation from Phase 2 graduation/completion, then summarizes On Hold and RTS movement.</p>
+  <div class="verbatim">Billing - Overview
+X active projects in Phase 1 for $XX Activation MRR.
+Of those X, we committed Y to activate this month for $YY Activation MRR. So far, Z have activated for $ZZ MRR.
+
+X active projects are in Phase 2.
+Of those X, we committed Y to graduate this month. So far, Z have graduated.
+
+On Hold: X projects for $XX Activation MRR. Status changes: [new holds / returned from hold / no material changes].
+RTS: X projects for $XX Activation MRR. Status changes: [new RTS / returned from RTS / no material changes].</div>
+</div>
+
+<div class="script-section" style="--section-color:#38bdf8;">
+  <div class="script-section-header">
+    <span class="script-section-num">Change 2</span>
+    <span class="script-section-name">Individual Billing scripts use Phase 1 and Phase 2 project buckets</span>
+  </div>
+  <p><strong>Current:</strong> Billing already separates activation and graduation sections, but the meeting readout still emphasizes scenario math and detailed per-client lines.</p>
+  <p><strong>Proposed:</strong> organize the owner readout around accountability buckets: on track, off track, moved out, pull-in candidate, and outside concern. This matches how leaders actually inspect forecast risk.</p>
+  <div class="verbatim">Billing - Individual
+Phase 1: I have X active projects for $XX Activation MRR.
+Of those X, I committed Y to activate this month for $YY Activation MRR. Z have activated so far, and W moved in or out from my original forecast.
+
+Project A is on track.
+Project B is off track due to [blocker / issue] and may move out of the month if [condition] does not clear by [date].
+Project C moved out of this month from the original forecast due to [reason].
+Project D may be pulled into this month if [dependency] is completed by [date].
+Outside of those, Project E is off track due to [issue]. Project F is Strategic+ with next executive alignment scheduled on [date].
+
+Phase 2: I have X active projects.
+Of those X, I committed Y to graduate this month.
+Project G is on track.
+Project H is off track due to [issue] and may move out of the month.
+Project J moved out of this month from the original forecast due to [reason].
+
+On Hold: X projects for $XX Activation MRR.
+RTS: X projects for $XX Activation MRR.</div>
+  <div class="warn-banner">
+    <span>⚠</span>
+    <div><strong>Data gap:</strong> blocker/status/confidence/MRR/movement are available today. "Strategic+" and "next executive alignment scheduled" are not first-class fields in the current forecast payload and would need a data-source decision before automation.</div>
+  </div>
+</div>
+
+<div class="script-section" style="--section-color:#a78bfa;">
+  <div class="script-section-header">
+    <span class="script-section-num">Change 3</span>
+    <span class="script-section-name">PSA individual scripts follow the same accountability rhythm</span>
+  </div>
+  <p><strong>Current:</strong> PSA scripts classify clients by scenario bucket: Worst Case, Most Likely, Best Case, pull-ins, not-kicked-off, and follow-ups.</p>
+  <p><strong>Proposed:</strong> keep the scenario math in the support detail, but make the spoken owner script lead with original commitment, completed graduations, movement, and project disposition.</p>
+  <div class="verbatim">PSA - Individual
+I have X active projects for $XX MRR.
+Of those X, I committed Y to graduate this month for $YY MRR. Z have graduated so far, and W moved in or out from my original forecast.
+
+Project A is on track.
+Project B is off track due to [blocker / issue] and may move out of the month if [condition] does not clear by [date].
+Project C moved out of this month from the original forecast due to [reason].
+Project D may be pulled into this month if [dependency] is completed by [date].
+Outside of those, Project E is off track due to [issue]. Project F is Strategic+ with next executive alignment scheduled on [date].
+
+On Hold: X projects for $XX MRR.
+RTS: X projects for $XX MRR.</div>
+  <div class="logic-box">
+    <div class="logic-label">Important wording cleanup</div>
+    PSA should say <strong>graduate</strong>, not activate. The source feedback draft used "activate" and "Activation MRR" in the PSA section; this page treats that as template carryover from Billing, not as a PSA wording change.
+  </div>
+</div>
+
+<div class="script-section" style="--section-color:#ffa94d;">
+  <div class="script-section-header">
+    <span class="script-section-num">Change 4</span>
+    <span class="script-section-name">Separate spoken script from support detail</span>
+  </div>
+  <p>The dashboard should produce two layers:</p>
+  <table class="field-table">
+    <thead><tr><th>Layer</th><th>Purpose</th><th>What leadership sees</th></tr></thead>
+    <tbody>
+      <tr>
+        <td class="field-name">Meeting readout</td>
+        <td>Short spoken script for forecast call accountability.</td>
+        <td>Commit, actuals, moved in/out, on-track/off-track projects, pull-ins, On Hold, RTS.</td>
+      </tr>
+      <tr>
+        <td class="field-name">Support detail</td>
+        <td>Audit layer for why the script says what it says.</td>
+        <td>Scenario buckets, confidence logic, milestone progress, blocker text, prior-snapshot movement, not-kicked-off flags.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="script-section" style="--section-color:#6c63ff;">
+  <div class="script-section-header">
+    <span class="script-section-num">Decision</span>
+    <span class="script-section-name">Leadership Review Questions</span>
+  </div>
+  <ul style="font-size:13px; color:var(--text-dim); padding-left:20px; margin-top:8px;">
+    <li>Should the copied forecast script switch to this shorter accountability format while retaining the current detail pane?</li>
+    <li>For Billing, should leadership commit against Phase 1 activation only, with Phase 2 graduation shown as separate completion hygiene?</li>
+    <li>Should "moved in/out from original forecast" compare against the seeded committed forecast, the prior weekly snapshot, or both?</li>
+    <li>Do we want to source "Strategic+" and "next executive alignment scheduled" from Notion, PM Hub, calendar, or leave those as manual call notes for now?</li>
+    <li>Should On Hold and RTS movement be included in every owner readout, even when unchanged, or only when there was a status change?</li>
+  </ul>
+</div>
+
+<div class="script-section" style="--section-color:#00d4aa;">
+  <div class="script-section-header">
+    <span class="script-section-num">Implementation</span>
+    <span class="script-section-name">Suggested Build Plan</span>
+  </div>
+  <table class="field-table">
+    <thead><tr><th>Step</th><th>Change</th><th>Risk</th></tr></thead>
+    <tbody>
+      <tr>
+        <td class="field-name">1</td>
+        <td>Add new meeting-readout builder that outputs the proposed structure from existing forecast data.</td>
+        <td>Low — mostly copy/formatting over existing data.</td>
+      </tr>
+      <tr>
+        <td class="field-name">2</td>
+        <td>Bucket current-month projects into on track, off track, moved out, and pull-in candidates.</td>
+        <td>Medium — requires clear rules for "on track" vs "off track".</td>
+      </tr>
+      <tr>
+        <td class="field-name">3</td>
+        <td>Add clean Billing overview readout separate from individual Billing owner readouts.</td>
+        <td>Low/Medium — data exists, but wording needs leadership signoff.</td>
+      </tr>
+      <tr>
+        <td class="field-name">4</td>
+        <td>Decide whether to add Strategic+ / next executive alignment fields to the payload.</td>
+        <td>Medium/High — needs source-of-truth decision and data plumbing.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+</div><!-- end #proposal -->
 
 <!-- ============================== PSA ============================== -->
 <div id="psa">
@@ -833,7 +997,7 @@ Month: May 2026
 </div><!-- .content -->
 
 <div class="footer">
-  ⚡ Rev.io Intelligence Stack · Forecast Call Script Reference (PSA &amp; Billing) · Updated May 2026
+  ⚡ Rev.io Intelligence Stack · Forecast Call Script Leadership Review (PSA &amp; Billing) · Updated June 2026
   &nbsp;·&nbsp;
   <a href="forecast-methodology.html" style="color:var(--muted); text-decoration:none;">↗ Forecast Methodology</a>
 </div>
