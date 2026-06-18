@@ -2909,6 +2909,17 @@ function closeMilestoneModal() {
   document.getElementById('milestoneModalOverlay').classList.remove('open');
 }
 
+function syncMilestoneCompletionDateForStatus() {
+  const statusEl = document.getElementById('milestoneStatus');
+  const completedEl = document.getElementById('milestoneCompleted');
+  if (!statusEl || !completedEl) return;
+  if (statusEl.value === 'Completed' && !completedEl.value) {
+    completedEl.value = new Date().toISOString().slice(0, 10);
+  } else if (statusEl.value !== 'Completed' && completedEl.value) {
+    completedEl.value = '';
+  }
+}
+
 function applyMilestoneUpdate(updated) {
   const rows = snapshot?.psaMilestonesByClientId?.[activeClient?.id] || [];
   const idx = rows.findIndex(m => m.id === updated.id);
@@ -2977,6 +2988,7 @@ async function submitMilestoneEdit() {
 document.getElementById('milestoneModalOverlay').addEventListener('click', e => {
   if (e.target === document.getElementById('milestoneModalOverlay')) closeMilestoneModal();
 });
+document.getElementById('milestoneStatus').addEventListener('change', syncMilestoneCompletionDateForStatus);
 
 // ── Log Interaction modal state ──────────────────────────────────────────────
 let _intPsaId = null;

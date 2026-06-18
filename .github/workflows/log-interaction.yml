@@ -4,6 +4,10 @@ on:
   repository_dispatch:
     types: [log-interaction, pm-hub-milestone-edit, pm-hub-project-edit]
 
+permissions:
+  actions: write
+  contents: read
+
 jobs:
   log:
     runs-on: ubuntu-latest
@@ -18,6 +22,7 @@ jobs:
           MS_CLIENT_SECRET: ${{ secrets.MS_CLIENT_SECRET }}
           MS_REFRESH_TOKEN: ${{ secrets.MS_REFRESH_TOKEN }}
           PSA_CLIENT_LAUNCH_TEAM_ID: ${{ secrets.PSA_CLIENT_LAUNCH_TEAM_ID }}
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
           node - <<'EOF'
           const fs = require('fs');
@@ -99,9 +104,11 @@ jobs:
             const id = String(input.id || input.milestoneId || '').trim();
             if (!id || !/^[0-9a-f-]{32,36}$/i.test(id)) throw new Error('Invalid milestone id');
             const properties = {};
+            let requestedStatus = null;
             if (Object.prototype.hasOwnProperty.call(input, 'status')) {
               const status = String(input.status || '').trim();
               if (!MILESTONE_STATUSES.has(status)) throw new Error('Invalid milestone status');
+              requestedStatus = status;
               properties.Status = { status: { name: status } };
               if (status === 'Completed' && !input.completedDate) {
                 properties['Actual Completion Date'] = { date: { start: new Date().toISOString().slice(0, 10) } };
@@ -113,13 +120,34 @@ jobs:
             }
             if (Object.prototype.hasOwnProperty.call(input, 'completedDate')) {
               const completedDate = validateDate(input.completedDate, 'actual completion date');
-              properties['Actual Completion Date'] = { date: completedDate ? { start: completedDate } : null };
+              const defaultCompletedDate = requestedStatus === 'Completed' ? new Date().toISOString().slice(0, 10) : null;
+              const finalCompletedDate = completedDate || defaultCompletedDate;
+              properties['Actual Completion Date'] = { date: finalCompletedDate ? { start: finalCompletedDate } : null };
             }
             if (Object.prototype.hasOwnProperty.call(input, 'notes')) {
               properties.Notes = { rich_text: propText(input.notes, 1800) };
             }
             if (!Object.keys(properties).length) throw new Error('No milestone fields provided');
             return { id, properties };
+          }
+
+          async function triggerSnapshotRefresh(reason) {
+            const token = process.env.GITHUB_TOKEN;
+            if (!token) {
+              console.log('SNAPSHOT_REFRESH_SKIPPED missing GITHUB_TOKEN');
+              return;
+            }
+            await apiJson('https://api.github.com/repos/aiextucker/Onboarding-Automation-Project/actions/workflows/pm-hub-snapshot.yml/dispatches', {
+              method: 'POST',
+              headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: 'application/vnd.github+json',
+                'X-GitHub-Api-Version': '2022-11-28',
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ ref: 'main', inputs: {} }),
+            });
+            console.log(`SNAPSHOT_REFRESH_REQUESTED ${reason}`);
           }
 
           function validateProjectPayload(input) {
@@ -475,6 +503,7 @@ jobs:
             if (eventType === 'pm-hub-project-edit') {
               try {
                 await updateProject(dispatchPayload.project || dispatchPayload);
+                await triggerSnapshotRefresh('project-edit');
               } catch (err) {
                 console.error(`API ERROR project ${err.message}`);
                 process.exit(1);
@@ -485,6 +514,7 @@ jobs:
             if (eventType === 'pm-hub-milestone-edit') {
               try {
                 await updateMilestone(dispatchPayload.milestone || dispatchPayload);
+                await triggerSnapshotRefresh('milestone-edit');
               } catch (err) {
                 console.error(`API ERROR milestone ${err.message}`);
                 process.exit(1);
