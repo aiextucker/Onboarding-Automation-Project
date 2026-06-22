@@ -190,7 +190,7 @@ body {
   <div class="hero-eyebrow">Rev.io Onboarding · Operations</div>
   <h1>Forecast Call <span>Script Review</span></h1>
   <div class="hero-sub">
-    Leadership review page for the proposed forecast-call flow, with a sample readout and the current generated-script field breakdown preserved below for implementation traceability.
+    Leadership review page for the simplified forecast-call flow. Dashboard snapshots retain the detailed movement analysis; the spoken readout stays focused on forecast impact, risks, strategy, and leadership help needed.
   </div>
   <div class="hero-badges">
     <div class="hero-badge"><span>✓</span> Leadership Review</div>
@@ -210,8 +210,8 @@ body {
     <div class="pl">How It Works</div>
     <div class="pt">Scripts are generated live from Notion data — not filled in manually</div>
     <div class="pb">
-      Click <strong>PSA Script</strong> or <strong>Billing Script</strong> on any Team Overview card in the SLT Dashboard. The script is built from the current Notion sync: forecast dates, statuses, blockers, Confidence, milestone progress, owner goals, and historical snapshots. Copy the output and read it directly in the forecast call.<br><br>
-      <strong>Source fields:</strong> Notion PSA Onboarding Clients (PSA) · Notion Billing Onboarding Clients (Billing) · Owner Goals on the Forecast database · Prior-week snapshots for movement deltas.
+      Click <strong>Forecast Readout</strong> on any Team Overview card in the SLT Dashboard. The readout is built from the current Notion sync: forecast dates, statuses, blockers, Confidence, milestone progress, owner goals, and historical snapshots. Copy the output and use it to guide the forecast call.<br><br>
+      <strong>Source fields:</strong> Notion PSA Onboarding Clients (PSA) · Notion Billing Onboarding Clients (Billing) · Owner Goals on the Forecast database · dashboard snapshots for movement deltas.
     </div>
   </div>
 </div>
@@ -219,10 +219,6 @@ body {
 <!-- LOB TABS -->
 <nav class="lob-tabs">
   <a href="#proposal" class="lob-tab active">✨ New Flow</a>
-  <a href="#psa" class="lob-tab">📋 PSA Script</a>
-  <a href="#billing" class="lob-tab">💳 Billing Script</a>
-  <a href="#defs" class="lob-tab">📖 Definitions</a>
-  <a href="#examples" class="lob-tab">🎬 Examples</a>
 </nav>
 
 <!-- ============================== PROPOSAL ============================== -->
@@ -236,9 +232,9 @@ body {
 
 <div class="principle-box">
   <div class="pl">Recommendation</div>
-  <div class="pt">Use one short spoken flow, then keep the current detail as backup</div>
+  <div class="pt">Use one short spoken flow and keep movement detail in the dashboard</div>
   <div class="pb">
-    The proposed change is not to review forecast movement at the individual-owner level each week. The dashboard should keep the snapshots and movement deltas, while the copied/read-aloud portion stays focused on projects that can impact the forecast, key risks, the owner's strategy to keep work in forecast, and any help needed from leadership. The existing PSA and Billing field breakdowns remain below as the explanation layer.
+    The proposed change is not to review forecast movement at the individual-owner level each week. The dashboard should keep the snapshots and movement deltas, while the copied/read-aloud portion stays focused on projects that can impact the forecast, key risks, the owner's strategy to keep work in forecast, and any help needed from leadership.
   </div>
 </div>
 
@@ -301,7 +297,7 @@ Help needed from leadership:
 </div><!-- end #proposal -->
 
 <!-- ============================== PSA ============================== -->
-<div id="psa">
+<div id="psa" hidden>
 
 <div class="section">
   <div class="section-label">PSA Forecast Script</div>
@@ -510,7 +506,7 @@ Help needed from leadership:
 </div><!-- end #psa -->
 
 <!-- ============================== BILLING ============================== -->
-<div id="billing">
+<div id="billing" hidden>
 
 <div class="section">
   <div class="section-label">Billing Forecast Script</div>
@@ -661,7 +657,7 @@ Help needed from leadership:
 </div><!-- end #billing -->
 
 <!-- ============================== DEFINITIONS ============================== -->
-<div id="defs">
+<div id="defs" hidden>
 
 <div class="section">
   <div class="section-label">Reference</div>
@@ -746,7 +742,7 @@ Help needed from leadership:
 </div><!-- end #defs -->
 
 <!-- ============================== EXAMPLES ============================== -->
-<div id="examples">
+<div id="examples" hidden>
 
 <div class="section">
   <div class="section-label">Example Flows</div>
