@@ -150,28 +150,55 @@ jobs:
             console.log(`SNAPSHOT_REFRESH_REQUESTED ${reason}`);
           }
 
+          function firstExistingProperty(properties, names) {
+            return names.find(name => Object.prototype.hasOwnProperty.call(properties || {}, name));
+          }
+
           function validateProjectPayload(input) {
             const id = String(input.id || input.projectId || '').trim();
             if (!id || !/^[0-9a-f-]{32,36}$/i.test(id)) throw new Error('Invalid project id');
-            const properties = {};
+            const fields = {};
             if (Object.prototype.hasOwnProperty.call(input, 'forecastDate')) {
-              const forecastDate = validateDate(input.forecastDate, 'forecast date');
-              properties['Forecasted Graduation Date'] = { date: forecastDate ? { start: forecastDate } : null };
+              fields.forecastDate = validateDate(input.forecastDate, 'forecast date');
             }
             if (Object.prototype.hasOwnProperty.call(input, 'confidence')) {
               const confidence = String(input.confidence || '').trim();
               if (confidence) {
                 if (confidence.length > 120) throw new Error('Invalid confidence');
-                properties.Confidence = { select: { name: confidence } };
-              } else {
-                properties.Confidence = { select: null };
               }
+              fields.confidence = confidence;
             }
             if (Object.prototype.hasOwnProperty.call(input, 'blockers')) {
-              properties.Blockers = { rich_text: propText(input.blockers, 1800) };
+              fields.blockers = String(input.blockers || '');
             }
-            if (!Object.keys(properties).length) throw new Error('No project fields provided');
-            return { id, properties };
+            if (!Object.keys(fields).length) throw new Error('No project fields provided');
+            return { id, fields };
+          }
+
+          function buildProjectProperties(fields, pageProperties) {
+            const properties = {};
+            if (Object.prototype.hasOwnProperty.call(fields, 'forecastDate')) {
+              const name = firstExistingProperty(pageProperties, ['Forecasted Graduation Date', 'Grad Date (Manual)', 'Current Graduation Date']);
+              if (!name) throw new Error('PSA project DB is missing a writable forecast date property');
+              properties[name] = { date: fields.forecastDate ? { start: fields.forecastDate } : null };
+            }
+            if (Object.prototype.hasOwnProperty.call(fields, 'confidence')) {
+              const name = firstExistingProperty(pageProperties, ['Confidence', 'Forecast Health']);
+              if (!name) throw new Error('PSA project DB is missing a writable confidence property');
+              const propertyType = pageProperties[name]?.type;
+              if (propertyType !== 'select' && propertyType !== 'status') {
+                throw new Error(`${name} is not a writable select/status property`);
+              }
+              properties[name] = propertyType === 'status'
+                ? { status: fields.confidence ? { name: fields.confidence } : null }
+                : { select: fields.confidence ? { name: fields.confidence } : null };
+            }
+            if (Object.prototype.hasOwnProperty.call(fields, 'blockers')) {
+              const name = firstExistingProperty(pageProperties, ['Blockers', 'Blocker']);
+              if (!name) throw new Error('PSA project DB is missing a writable blocker property');
+              properties[name] = { rich_text: propText(fields.blockers, 1800) };
+            }
+            return properties;
           }
 
           function validatePayload(input) {
@@ -408,7 +435,7 @@ jobs:
 
           async function updateProject(input) {
             const token = requiredEnv('NOTION_TOKEN');
-            const { id, properties } = validateProjectPayload(input);
+            const { id, fields } = validateProjectPayload(input);
             const page = await apiJson(`https://api.notion.com/v1/pages/${id}`, {
               method: 'GET',
               headers: {
@@ -420,6 +447,7 @@ jobs:
             if ((page.parent?.database_id || '').replace(/-/g, '') !== PROJECTS_DB.replace(/-/g, '')) {
               throw new Error('Project id is not in the PM Hub PSA client database');
             }
+            const properties = buildProjectProperties(fields, page.properties || {});
             const updated = await apiJson(`https://api.notion.com/v1/pages/${id}`, {
               method: 'PATCH',
               headers: {
