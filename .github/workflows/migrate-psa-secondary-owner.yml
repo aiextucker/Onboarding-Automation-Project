@@ -1,0 +1,178 @@
+name: Migrate PSA Secondary Owner
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Preview changes without writing to Notion"
+        required: false
+        default: "false"
+  repository_dispatch:
+    types: [migrate-psa-secondary-owner]
+
+permissions:
+  contents: read
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Add secondary owner and migrate multi-owner PSA clients
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          PSA_CLIENTS_DB_ID: dba0a0aac29e42d7ac7e968e0245f4c4
+          DRY_RUN: ${{ github.event.inputs.dry_run || github.event.client_payload.dryRun || 'false' }}
+        run: |
+          node - <<'EOF'
+          const NOTION_VERSION = '2022-06-28';
+          const token = process.env.NOTION_TOKEN;
+          const dbId = process.env.PSA_CLIENTS_DB_ID;
+          const dryRun = String(process.env.DRY_RUN || '').toLowerCase() === 'true';
+          const secondaryOwnerName = 'Secondary Owner';
+
+          if (!token) throw new Error('Missing NOTION_TOKEN');
+          if (!dbId) throw new Error('Missing PSA_CLIENTS_DB_ID');
+
+          async function notion(path, options = {}) {
+            const res = await fetch(`https://api.notion.com/v1${path}`, {
+              ...options,
+              headers: {
+                Authorization: `Bearer ${token}`,
+                'Notion-Version': NOTION_VERSION,
+                'Content-Type': 'application/json',
+                ...(options.headers || {}),
+              },
+            });
+            const text = await res.text();
+            let body = {};
+            try { body = text ? JSON.parse(text) : {}; } catch { body = { raw: text }; }
+            if (!res.ok || body.object === 'error') {
+              throw new Error(`Notion API ${res.status}: ${JSON.stringify(body).slice(0, 1200)}`);
+            }
+            return body;
+          }
+
+          async function getDatabase() {
+            return notion(`/databases/${dbId}`, { method: 'GET' });
+          }
+
+          function requirePeopleProperty(db, name) {
+            const prop = db.properties?.[name];
+            if (!prop) throw new Error(`Missing ${name} property`);
+            if (prop.type !== 'people') {
+              throw new Error(`${name} must be a people property; current type is ${prop.type}`);
+            }
+            return prop;
+          }
+
+          async function ensureSecondaryOwnerProperty(db) {
+            const existingName = ['Secondary Owner', 'Secondary owner', 'SecondaryOwner']
+              .find((name) => db.properties?.[name]?.type === 'people');
+            if (existingName) return existingName;
+            if (dryRun) {
+              console.log(`DRY_RUN would add people property "${secondaryOwnerName}"`);
+              return secondaryOwnerName;
+            }
+            await notion(`/databases/${dbId}`, {
+              method: 'PATCH',
+              body: JSON.stringify({
+                properties: {
+                  [secondaryOwnerName]: { people: {} },
+                },
+              }),
+            });
+            console.log(`SCHEMA_ADDED ${secondaryOwnerName}`);
+            return secondaryOwnerName;
+          }
+
+          async function queryMultiOwnerPages() {
+            const pages = [];
+            let start_cursor;
+            do {
+              const body = {
+                page_size: 100,
+                filter: {
+                  property: 'Owner',
+                  people: { is_not_empty: true },
+                },
+              };
+              if (start_cursor) body.start_cursor = start_cursor;
+              const res = await notion(`/databases/${dbId}/query`, {
+                method: 'POST',
+                body: JSON.stringify(body),
+              });
+              pages.push(...(res.results || []));
+              start_cursor = res.has_more ? res.next_cursor : null;
+            } while (start_cursor);
+            return pages.filter((page) => (page.properties?.Owner?.people || []).length >= 2);
+          }
+
+          function titleOf(page) {
+            for (const prop of Object.values(page.properties || {})) {
+              if (prop.type === 'title') {
+                return (prop.title || []).map((t) => t.plain_text || '').join('') || page.id;
+              }
+            }
+            return page.id;
+          }
+
+          function peopleRefs(people) {
+            return people.map((person) => ({ id: person.id }));
+          }
+
+          function dedupePeople(people) {
+            const seen = new Set();
+            const out = [];
+            for (const person of people) {
+              const id = person.id;
+              if (!id || seen.has(id)) continue;
+              seen.add(id);
+              out.push(person);
+            }
+            return out;
+          }
+
+          async function main() {
+            const db = await getDatabase();
+            requirePeopleProperty(db, 'Owner');
+            const secondaryName = await ensureSecondaryOwnerProperty(db);
+            const freshDb = dryRun ? db : await getDatabase();
+            if (!dryRun || freshDb.properties?.[secondaryName]) {
+              requirePeopleProperty(freshDb, secondaryName);
+            }
+
+            const pages = await queryMultiOwnerPages();
+            console.log(`MULTI_OWNER_PAGES ${pages.length}`);
+
+            let updated = 0;
+            for (const page of pages) {
+              const owners = page.properties.Owner.people || [];
+              const primaryOwner = owners[0];
+              const extraOwners = owners.slice(1);
+              const existingSecondary = page.properties?.[secondaryName]?.people || [];
+              const nextSecondary = dedupePeople([...existingSecondary, ...extraOwners]);
+              const label = titleOf(page);
+              console.log(`MIGRATE ${page.id} "${label}" owner_count=${owners.length} secondary_count=${nextSecondary.length}`);
+              if (dryRun) continue;
+              await notion(`/pages/${page.id}`, {
+                method: 'PATCH',
+                body: JSON.stringify({
+                  properties: {
+                    Owner: { people: peopleRefs([primaryOwner]) },
+                    [secondaryName]: { people: peopleRefs(nextSecondary) },
+                  },
+                }),
+              });
+              updated += 1;
+            }
+
+            const summary = `dry_run=${dryRun} multi_owner_pages=${pages.length} updated=${updated} secondary_property="${secondaryName}"`;
+            console.log(`MIGRATION_COMPLETE ${summary}`);
+            console.log(`::notice title=PSA Secondary Owner Migration::${summary}`);
+          }
+
+          main().catch((err) => {
+            console.error(err.stack || err.message);
+            process.exit(1);
+          });
+          EOF
