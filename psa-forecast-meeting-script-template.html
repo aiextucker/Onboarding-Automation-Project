@@ -190,7 +190,7 @@ body {
   <div class="hero-eyebrow">Rev.io Onboarding · Operations</div>
   <h1>Forecast Call <span>Script Review</span></h1>
   <div class="hero-sub">
-    Leadership review page for the simplified forecast-call flow. Dashboard snapshots retain the detailed movement analysis; the spoken readout stays focused on forecast impact, risks, strategy, and leadership help needed.
+    Leadership review page for the simplified forecast-call flow. Dashboard snapshots retain detailed movement analysis; the spoken readout stays limited to commitment, current most likely, delta, worst case, best case, actualized this month, and one risk prompt.
   </div>
   <div class="hero-badges">
     <div class="hero-badge"><span>✓</span> Leadership Review</div>
@@ -211,7 +211,7 @@ body {
     <div class="pt">Scripts are generated live from Notion data — not filled in manually</div>
     <div class="pb">
       Click <strong>Forecast Readout</strong> on any Team Overview card in the SLT Dashboard. The readout is built from the current Notion sync: forecast dates, statuses, blockers, Confidence, milestone progress, owner goals, and historical snapshots. Copy the output and use it to guide the forecast call.<br><br>
-      <strong>Source fields:</strong> Notion PSA Onboarding Clients (PSA) · Notion Billing Onboarding Clients (Billing) · Owner Goals on the Forecast database · dashboard snapshots for movement deltas.
+      <strong>Source fields:</strong> Notion PSA Onboarding Clients (PSA) · Notion Billing Onboarding Clients (Billing) · Owner Goals on the Forecast database · forecast history snapshots for committed baselines.
     </div>
   </div>
 </div>
@@ -234,7 +234,7 @@ body {
   <div class="pl">Recommendation</div>
   <div class="pt">Use one short spoken flow and keep movement detail in the dashboard</div>
   <div class="pb">
-    The proposed change is not to review forecast movement at the individual-owner level each week. The dashboard should keep the snapshots and movement deltas, while the copied/read-aloud portion stays focused on projects that can impact the forecast, key risks, the owner's strategy to keep work in forecast, and any help needed from leadership.
+    The proposed change is not to review forecast movement or per-project forecast detail in the copied/read-aloud portion. The dashboard should keep the snapshots, movement deltas, and underlying project evidence. The spoken readout should be a short metric summary, followed by one prompt to discuss key risks, active blockers, product blockers, or leadership help if needed.
   </div>
 </div>
 
@@ -246,24 +246,17 @@ body {
   <p>This is the proposed structure for the copied/read-aloud forecast script. Variables are shown as field names so leadership can review the flow without getting caught in placeholder math.</p>
   <div class="verbatim">[Owner Name] - [Line of Business] Forecast Readout
 
-I have [Active Project Count] active projects for [Active Project MRR].
-Of those, I committed [Original Monthly Commitment Count] to [Activation or Graduation Verb] this month for [Original Monthly Commitment MRR].
-[Completed This Month Count] have [Activated or Graduated Verb] so far for [Completed This Month MRR].
+My commitment for [Month] is [Commit Count] projects for [Commit MRR] MRR.
+My current most likely is [Most Likely Count] projects for [Most Likely MRR] MRR.
+Delta versus commit is [Delta Count] projects for [Delta MRR] MRR.
+Worst case is [Worst Count] projects for [Worst MRR] MRR.
+Best case is [Best Count] projects for [Best MRR] MRR.
+I have [Graduated or Activated Count] this month for [Actualized MRR] MRR.
 
-Projects that can impact my forecast:
-- [Client Name] is currently forecasted for [Forecast Date]. [Milestone Progress Summary]. [Confidence Summary]. The key item to protect the forecast is [Forecast Protection Strategy].
-
-Key risks:
-- [Client Name] is at risk because [Blocker or Risk Reason]. I will make a forecast decision if [Condition to Hold Forecast] is not resolved by [Decision Date].
-
-Strategy to keep them in forecast:
-- [Client Name]: [Owner Action or Recovery Plan]. I am watching [Decision Point or Dependency] by [Decision Date].
-
-Help needed from leadership:
-- [Client Name or Issue Area]: [Leadership Ask].</div>
+Be ready to discuss key project risks, active blockers, product blockers, and any help needed from leadership.</div>
   <div class="logic-box">
     <div class="logic-label">Important wording cleanup</div>
-    PSA should say <strong>graduate</strong>. Billing Phase 1 should say <strong>activate</strong>. Billing Phase 2 can use <strong>graduate</strong> or <strong>complete</strong>, but should remain separate from Phase 1 activation MRR.
+    PSA should use one graduation readout. Billing should use this same structure twice: <strong>Phase 1 activations</strong> using recognized MRR, and <strong>Phase 2 graduations</strong> using total MRR context. Do not blend Phase 2 completions into the Phase 1 activation commitment.
   </div>
 </div>
 
@@ -272,26 +265,17 @@ Help needed from leadership:
     <span class="script-section-num">Section 2</span>
     <span class="script-section-name">Sample Readout</span>
   </div>
-  <p>This is synthetic sample text only. It shows how the new flow would sound in the meeting once the field values are populated.</p>
+  <p>This is synthetic sample text only. It shows how the simplified flow should sound in the meeting once the field values are populated.</p>
   <div class="verbatim">Nicole Hills - PSA Forecast Readout
 
-I have 12 active projects for $10,850 MRR.
-Of those, I committed 6 to graduate this month for $5,400 MRR.
-2 have graduated so far for $1,750 MRR.
+My commitment for June 2026 is 6 projects for $5,400 MRR.
+My current most likely is 7 projects for $6,850 MRR.
+Delta versus commit is +1 project for +$1,450 MRR.
+Worst case is 5 projects for $4,900 MRR.
+Best case is 8 projects for $7,600 MRR.
+I have graduated 2 projects this month for $1,750 MRR.
 
-Projects that can impact my forecast:
-- Northstar Fiber is currently forecasted for June 24. Required milestones are 8 of 10 complete, overall milestones are 14 of 18 complete, and confidence is High. The key item to protect the forecast is keeping the client on schedule for final launch validation.
-- Summit Ridge IT is currently forecasted for June 28. The remaining item is final billing validation, and confidence is Medium. The key item to protect the forecast is confirming their finance lead can complete validation this week.
-
-Key risks:
-- Prairie Cloud Services is off track because the client has not returned final tax setup data. I will make a forecast decision if the data is not received by June 21.
-
-Strategy to keep them in forecast:
-- Prairie Cloud Services: I have the SA following up daily and will keep them in the forecast only if the tax data is received by June 21.
-- Summit Ridge IT: I am holding the June forecast date, but I need the billing validation call completed before the end of the week.
-
-Help needed from leadership:
-- Prairie Cloud Services: If the client misses the June 21 data deadline, I need support escalating with their sponsor so we can make a clean keep-or-remove decision.</div>
+Be ready to discuss key project risks, active blockers, product blockers, and any help needed from leadership.</div>
 </div>
 
 </div><!-- end #proposal -->
@@ -301,7 +285,7 @@ Help needed from leadership:
 
 <div class="section">
   <div class="section-label">PSA Forecast Script</div>
-  <div class="section-title">7 Sections — What Each One Contains</div>
+  <div class="section-title">Two Sections — What Each One Contains</div>
   <div class="section-divider"></div>
 </div>
 
@@ -311,24 +295,17 @@ Help needed from leadership:
     <span class="script-section-num">§ 1</span>
     <span class="script-section-name">Graduation Forecast Roll-Up</span>
   </div>
-  <p>The opening summary block. Every line is auto-populated from current Notion data. Read it verbatim to open the SA's readout.</p>
+  <p>The readout summary block. Every line is auto-populated from current Notion data. Read it verbatim to open the owner's readout.</p>
 
   <table class="field-table">
     <thead><tr><th>Field</th><th>What It Shows</th><th>Source</th></tr></thead>
     <tbody>
-      <tr><td class="field-name">Active onboarding count</td><td>Clients in Active status for this SA / MRR total</td><td>Notion status</td></tr>
-      <tr><td class="field-name">On hold count</td><td>Clients in On Hold status for this SA / MRR total</td><td>Notion status</td></tr>
-      <tr><td class="field-name">RTS count</td><td>Clients in any RTS status for this SA / MRR total</td><td>Notion status</td></tr>
-      <tr><td class="field-name">Graduated this month</td><td>Clients with an Actual Graduation Date in the selected month; names listed inline</td><td>Actual Graduation Date field</td></tr>
-      <tr><td class="field-name">Original monthly graduation commitment</td><td>The goal number set in Notion for this SA / month. Shows "Not set" if missing.</td><td>Forecast DB owner goals</td></tr>
-      <tr><td class="field-name">Current date-driven graduation forecast</td><td>All clients whose Forecasted Graduation Date falls in the selected month (regardless of confidence)</td><td>Forecasted Graduation Date</td></tr>
-      <tr><td class="field-name">Worst case forecast</td><td>High-confidence clients only — see scenario logic below</td><td>Confidence field + blocker logic</td></tr>
-      <tr><td class="field-name">Most likely forecast</td><td>High + Medium confidence clients</td><td>Confidence field + blocker logic</td></tr>
-      <tr><td class="field-name">Best case forecast</td><td>All non-canceled clients in the month</td><td>Status / Confidence field</td></tr>
-      <tr><td class="field-name">Delta vs original commitment</td><td>Worst / Most Likely / Best count minus the original commitment goal. <code>+2</code> = 2 above goal.</td><td>Calculated</td></tr>
-      <tr><td class="field-name">Tigerpaw migrations</td><td>Clients with Existing Tigerpaw = Yes in the forecast; names listed inline</td><td>Existing Tigerpaw field</td></tr>
-      <tr><td class="field-name">Forecasts sitting on last day of month</td><td>Clients whose forecast date = the last calendar day of the month (common placeholder sign)</td><td>Forecasted Graduation Date</td></tr>
-      <tr><td class="field-name">Movement since prior snapshot</td><td>Delta in client count and MRR vs. the previous snapshot for this month. Includes: Into RTS, Out of RTS, Into On Hold, Back from On Hold — with counts and names.</td><td>Forecast history snapshots</td></tr>
+      <tr><td class="field-name">Commitment</td><td>Month baseline commitment count and MRR for this owner.</td><td>Forecast DB owner goals or forecast history baseline</td></tr>
+      <tr><td class="field-name">Current most likely</td><td>Actualized clients plus remaining most-likely forecast clients for the month.</td><td>Forecast dates, actual dates, Confidence, status</td></tr>
+      <tr><td class="field-name">Delta versus commit</td><td>Current most likely count/MRR minus the committed count/MRR.</td><td>Calculated</td></tr>
+      <tr><td class="field-name">Worst case</td><td>Actualized clients plus remaining high-confidence clients.</td><td>Confidence field + blocker logic</td></tr>
+      <tr><td class="field-name">Best case</td><td>Actualized clients plus every non-canceled current-month forecast client.</td><td>Status / Confidence field</td></tr>
+      <tr><td class="field-name">Graduated this month</td><td>Clients with an Actual Graduation Date in the selected month, summarized as count and MRR.</td><td>Actual Graduation Date field</td></tr>
     </tbody>
   </table>
 </div>
@@ -376,7 +353,7 @@ Help needed from leadership:
     <span class="script-section-num">Logic</span>
     <span class="script-section-name">Milestone Progress — How It's Shown</span>
   </div>
-  <p>Every client line in §2–§4 includes a milestone progress summary: <code>Milestone progress: required X; overall Y</code>. The <strong>required</strong> figure covers critical-path milestones; <strong>overall</strong> covers all milestones. These pull from the Notion milestone snapshot.</p>
+  <p>Milestone progress remains available in the dashboard for follow-up questions, but it is no longer part of the default spoken readout. If a risk or blocker needs discussion, use the milestone snapshot to support that conversation. The <strong>required</strong> figure covers critical-path milestones; <strong>overall</strong> covers all milestones.</p>
   <p>Milestone completion contributes to the milestone progress percentage shown on the dashboard. The scoring weights each milestone by status:</p>
   <div class="logic-box">
     <div class="logic-label">Milestone Scoring</div>
@@ -391,116 +368,19 @@ Help needed from leadership:
 <div class="script-section" style="--section-color:#00d4aa;">
   <div class="script-section-header">
     <span class="script-section-num">§ 2</span>
-    <span class="script-section-name">Worst Case — Firmest Commitments</span>
+    <span class="script-section-name">Discussion Prompt</span>
   </div>
-  <p>Lists every client whose inferred/explicit Confidence = <span class="chip chip-high">High</span> and whose Forecasted Graduation Date falls in the selected month. These are the clients the SA can stand behind unconditionally.</p>
-  <p>Each client line includes:</p>
+  <p>The generated readout should not list every project by default. It should end with one instruction to be ready to discuss key risks, active blockers, product blockers, and any leadership help needed.</p>
   <table class="field-table">
-    <thead><tr><th>Field</th><th>Source</th></tr></thead>
+    <thead><tr><th>Prompt Area</th><th>Meaning</th></tr></thead>
     <tbody>
-      <tr><td class="field-name">Client name</td><td>Notion client name</td></tr>
-      <tr><td class="field-name">Forecast date</td><td>Forecasted Graduation Date</td></tr>
-      <tr><td class="field-name">MRR</td><td>MRR / Unit (MRRU)</td></tr>
-      <tr><td class="field-name">Milestone progress</td><td>required X; overall Y — see Logic above</td></tr>
-      <tr><td class="field-name">Confidence</td><td>Inferred or explicit — see Confidence Logic above</td></tr>
-      <tr><td class="field-name">Blocker status</td><td>Blocker field; "No blockers" if empty</td></tr>
-      <tr><td class="field-name">Recommendation</td><td>Auto-generated — see Recommendation Logic below</td></tr>
+      <tr><td class="field-name">Key risks</td><td>Anything likely to change the forecast date or confidence.</td></tr>
+      <tr><td class="field-name">Active blockers</td><td>Any blocker that needs ownership, due date, escalation, or a keep/remove decision.</td></tr>
+      <tr><td class="field-name">Product blockers</td><td>Product, catalog, package, integration, API, functionality, template, or engineering issues affecting delivery.</td></tr>
+      <tr><td class="field-name">Leadership help</td><td>Any decision, escalation, or unblock request that cannot be handled by the owner alone.</td></tr>
     </tbody>
   </table>
-  <div class="verbatim">- Acme Corp is forecast for May 28 at $2,500. Milestone progress: required 8/10; overall 12/15. Confidence is High. Blocker status: No blockers. Recommendation: Keep forecast date.</div>
-</div>
-
-<!-- PSA §3 -->
-<div class="script-section" style="--section-color:#ffa94d;">
-  <div class="script-section-header">
-    <span class="script-section-num">§ 3</span>
-    <span class="script-section-name">Most Likely Additions</span>
-  </div>
-  <p>Clients with inferred/explicit Confidence = <span class="chip chip-medium">Medium</span> who are <em>not</em> already in the Worst Case section. Same per-client format as §2. These are realistic additions that need a blocker cleared or a date to hold.</p>
-</div>
-
-<!-- PSA §4 -->
-<div class="script-section" style="--section-color:#7b7f9e;">
-  <div class="script-section-header">
-    <span class="script-section-num">§ 4</span>
-    <span class="script-section-name">Best Case / Outside Shots</span>
-  </div>
-  <p>Clients with Confidence = <span class="chip chip-low">Low</span> who are not in §2 or §3. These are acknowledged but not counted as commitments. Same per-client format as §2–§3.</p>
-</div>
-
-<!-- PSA §5 -->
-<div class="script-section" style="--section-color:#a78bfa;">
-  <div class="script-section-header">
-    <span class="script-section-num">§ 5</span>
-    <span class="script-section-name">Replacement / Pull-In Opportunities</span>
-  </div>
-  <p>Up to 5 clients whose Forecasted Graduation Date falls in the <em>next calendar month</em> and whose Confidence is Most Likely or better (High or Medium). These are candidates to accelerate if a current-month client slips.</p>
-  <p>Each line includes: current forecast date, MRR, milestone progress, blocker status, and a standard recommendation: <em>"only pull in if required milestones and client data are ready."</em></p>
-</div>
-
-<!-- PSA §6 -->
-<div class="script-section" style="--section-color:#38bdf8;">
-  <div class="script-section-header">
-    <span class="script-section-num">§ 6</span>
-    <span class="script-section-name">Not Kicked Off But Forecasted This Month</span>
-  </div>
-  <p>Clients who have a Forecasted Graduation Date in the selected month but <strong>no Kickoff Date set</strong> in Notion. These should be validated before being counted in any committed number — a graduation date without a kickoff date is almost always a placeholder.</p>
-  <p>Each line includes: client name, forecast date, milestone progress, and a fixed recommendation: <em>"validate kickoff status before counting in the committed forecast."</em></p>
-</div>
-
-<!-- PSA §7 -->
-<div class="script-section" style="--section-color:#ffa94d;">
-  <div class="script-section-header">
-    <span class="script-section-num">§ 7</span>
-    <span class="script-section-name">Product / Process Blockers / Follow-Ups</span>
-  </div>
-  <p>A catch-all attention list that aggregates three groups:</p>
-  <ul style="font-size:13px; color:var(--text-dim); padding-left:20px; margin-bottom:14px;">
-    <li>Any client in the month's forecast who has a <strong>blocker set</strong></li>
-    <li>Any client whose Confidence is not High (including auto-inferred Medium/Low)</li>
-    <li>All On Hold and RTS clients for this SA (regardless of forecast date)</li>
-  </ul>
-  <p>Each client line includes: blocker or status reason, milestone progress, Sales rep, days since last interaction, and recommendation. Sorted by forecast date then name.</p>
-
-  <div class="logic-box" style="margin-top:12px;">
-    <div class="logic-label">Recommendation Logic — Auto-Generated</div>
-    <table style="width:100%; border-collapse:collapse; font-size:12px;">
-      <tr style="border-bottom:1px solid rgba(255,255,255,0.07);">
-        <td style="padding:5px 10px 5px 0; color:var(--muted); width:42%;">Status contains RTS</td>
-        <td style="padding:5px 0; color:var(--text-dim);">Sales re-engagement required; keep out of worst/most-likely forecast until movement is confirmed.</td>
-      </tr>
-      <tr style="border-bottom:1px solid rgba(255,255,255,0.07);">
-        <td style="padding:5px 10px 5px 0; color:var(--muted);">Status contains On Hold</td>
-        <td style="padding:5px 0; color:var(--text-dim);">Confirm re-engagement path or move toward RTS/pre-cancel if no movement.</td>
-      </tr>
-      <tr style="border-bottom:1px solid rgba(255,255,255,0.07);">
-        <td style="padding:5px 10px 5px 0; color:var(--muted);">Blocked + Confidence Low</td>
-        <td style="padding:5px 0; color:var(--text-dim);">Move date unless blocker clears immediately.</td>
-      </tr>
-      <tr style="border-bottom:1px solid rgba(255,255,255,0.07);">
-        <td style="padding:5px 10px 5px 0; color:var(--muted);">Blocked + Confidence High or Medium</td>
-        <td style="padding:5px 0; color:var(--text-dim);">Keep date only if blocker has owner + due date.</td>
-      </tr>
-      <tr style="border-bottom:1px solid rgba(255,255,255,0.07);">
-        <td style="padding:5px 10px 5px 0; color:var(--muted);">Confidence Low, no blocker</td>
-        <td style="padding:5px 0; color:var(--text-dim);">Validate date; move if no clear path this week.</td>
-      </tr>
-      <tr>
-        <td style="padding:5px 10px 5px 0; color:var(--muted);">No blocker, not RTS/Hold, not Low</td>
-        <td style="padding:5px 0; color:var(--text-dim);">Keep forecast date.</td>
-      </tr>
-    </table>
-  </div>
-</div>
-
-<!-- Overall Script -->
-<div class="script-section" style="--section-color:#6c63ff;">
-  <div class="script-section-header">
-    <span class="script-section-num">Overall</span>
-    <span class="script-section-name">Overall PSA Forecast Script</span>
-  </div>
-  <p>Generated from the <strong>Generate Overall Script</strong> button in the SA section header on Team Overview. Aggregates all PSA Solutions Analysts into one combined readout — same 7-section structure, with the total goal set to the sum of all individual SA goals. Prior-snapshot movement uses the combined portfolio.</p>
-  <p>Month selector appears at the top of the modal to switch between forecast months (same months that have owner goals set in Notion).</p>
+  <div class="verbatim">Be ready to discuss key project risks, active blockers, product blockers, and any help needed from leadership.</div>
 </div>
 
 </div><!-- end #psa -->
@@ -510,7 +390,7 @@ Help needed from leadership:
 
 <div class="section">
   <div class="section-label">Billing Forecast Script</div>
-  <div class="section-title">4 Sections — What Each One Contains</div>
+  <div class="section-title">Two Readouts — Activation and Graduation</div>
   <div class="section-divider"></div>
 </div>
 
@@ -519,7 +399,7 @@ Help needed from leadership:
   <div class="pt">Billing separates activation from graduation</div>
   <div class="pb">
     PSA forecast discussions center on <strong>graduation</strong>. Billing forecast discussions have two tracks: <strong>Phase One activation</strong> and <strong>Phase Two graduation/completion</strong>. Phase One activation is the revenue-recognition event for Billing MRR. Billing graduation is later completion hygiene and should not be blended into the same forecast count as activation.<br><br>
-    Billing also uses an explicit Confidence field — no PSA-style auto-inference. The Confidence field on each Billing client must be set explicitly to High, Medium, or Low. If it is blank, it defaults to <span class="chip chip-blank">Low (blank)</span> — which means the client only appears in Best Case. Fill the field before using Billing scenario numbers in a commit conversation.<br><br>
+    The readout should repeat the same concise metric format for each track: commitment, current most likely, delta versus commit, worst case, best case, actualized this month, and the risk/product/leadership prompt.<br><br>
     Billing scripts are available to <strong>PMs and SAs only.</strong> DEs are excluded.
   </div>
 </div>
@@ -557,7 +437,7 @@ Help needed from leadership:
 
   <div class="warn-banner">
     <span>⚠️</span>
-    <div><strong>Until Billing Confidence is populated for all active clients,</strong> scenario buckets are directional only. Clients without a Confidence value appear in Best Case only — not in Worst Case or Most Likely. The script surfaces a count of missing Confidence records in §1 and §3.</div>
+    <div><strong>Until Billing Confidence is populated for all active clients,</strong> scenario buckets are directional only. Clients without a Confidence value appear in Best Case only — not in Worst Case or Most Likely. Missing Confidence should be handled through the final risk/blocker discussion prompt.</div>
   </div>
 </div>
 
@@ -573,30 +453,25 @@ Help needed from leadership:
     If no <strong>Activation Date</strong> exists → <strong>Phase One Activation track</strong> — uses <code>Current Forecast Date</code> / forecast activation date<br>
     If the client has an <strong>Activation Date</strong> set → <strong>Phase Two Graduation track</strong> — uses <code>Current Graduation Date</code> for completion/graduation
   </div>
-  <p style="margin-top:12px;">The script now separates these into different sections. Activation is the primary Billing forecast number tied to MRR recognition. Graduation/completion is a secondary Phase Two readout.</p>
+  <p style="margin-top:12px;">The script separates these into different readouts. Activation is the primary Billing forecast number tied to MRR recognition. Graduation/completion is a separate Phase Two readout and should not inflate the Phase One activation commitment.</p>
 </div>
 
 <!-- Billing §1 -->
 <div class="script-section" style="--section-color:#00d4aa;">
   <div class="script-section-header">
     <span class="script-section-num">§ 1</span>
-    <span class="script-section-name">Billing Forecast Roll-Up</span>
+    <span class="script-section-name">Phase One Activations</span>
   </div>
-  <p>Opening summary for the Billing readout. Always generated for the current calendar month.</p>
+  <p>Primary Billing forecast readout. Uses pre-activation clients and recognized MRR. Actualized line says activated this month.</p>
   <table class="field-table">
     <thead><tr><th>Field</th><th>What It Shows</th></tr></thead>
     <tbody>
-      <tr><td class="field-name">Active Billing count</td><td>Clients in Active status for this owner / MRR</td></tr>
-      <tr><td class="field-name">On hold count</td><td>Clients in On Hold status / MRR</td></tr>
-      <tr><td class="field-name">RTS count</td><td>Clients in any RTS status / MRR</td></tr>
-      <tr><td class="field-name">Phase One activation forecast</td><td>Pre-activation clients forecasted to activate this month. Uses recognized MRR and is the primary Billing forecast number.</td></tr>
-      <tr><td class="field-name">Phase Two graduation forecast</td><td>Already-activated clients forecasted to graduate/complete this month. This is completion posture, not first MRR recognition.</td></tr>
-      <tr><td class="field-name">Activated this month</td><td>Clients with Activation Date in the current month; shown with recognized MRR</td></tr>
-      <tr><td class="field-name">Graduated this month</td><td>Clients with Actual Graduation Date in the current month</td></tr>
-      <tr><td class="field-name">Confidence populated</td><td>X/Y active Billing clients with Confidence set. Names of missing clients listed if ≤12.</td></tr>
-      <tr><td class="field-name">Activation scenarios</td><td>Worst / Most Likely / Best Case for Phase One activations, using recognized MRR</td></tr>
-      <tr><td class="field-name">Graduation scenarios</td><td>Worst / Most Likely / Best Case for Phase Two graduation/completion, shown separately</td></tr>
-      <tr><td class="field-name">Blank Confidence warning</td><td>Appears if any forecasted client has blank Confidence — states how many are Best Case only</td></tr>
+      <tr><td class="field-name">Commitment</td><td>Phase One activation baseline count and recognized MRR.</td></tr>
+      <tr><td class="field-name">Current most likely</td><td>Activated this month plus remaining most-likely activation clients.</td></tr>
+      <tr><td class="field-name">Delta versus commit</td><td>Current most likely activation count/recognized MRR minus commitment.</td></tr>
+      <tr><td class="field-name">Worst case</td><td>Activated this month plus remaining High-confidence activations.</td></tr>
+      <tr><td class="field-name">Best case</td><td>Activated this month plus every non-canceled current-month activation forecast.</td></tr>
+      <tr><td class="field-name">Activated this month</td><td>Clients with Activation Date in the current month; shown with recognized MRR.</td></tr>
     </tbody>
   </table>
 </div>
@@ -605,53 +480,29 @@ Help needed from leadership:
 <div class="script-section" style="--section-color:#38bdf8;">
   <div class="script-section-header">
     <span class="script-section-num">§ 2</span>
-    <span class="script-section-name">Phase One Activation Forecast</span>
+    <span class="script-section-name">Phase Two Graduations</span>
   </div>
-  <p>One line per pre-activation Billing client forecasted to activate in the current month, sorted by forecasted activation date then name.</p>
+  <p>Separate Billing completion readout. Uses already-activated clients and total MRR context. Actualized line says graduated this month.</p>
   <table class="field-table">
-    <thead><tr><th>Field</th><th>Notes</th></tr></thead>
+    <thead><tr><th>Field</th><th>What It Shows</th></tr></thead>
     <tbody>
-      <tr><td class="field-name">Client name</td><td>Notion client name</td></tr>
-      <tr><td class="field-name">Forecast date</td><td>Forecasted activation date from Current Forecast Date / forecast activation date</td></tr>
-      <tr><td class="field-name">Recognized MRR</td><td>Billing MRR recognized at activation. Platform Fee is not blended into this Phase One number.</td></tr>
-      <tr><td class="field-name">Status</td><td>Notion status field; "Unknown" if blank</td></tr>
-      <tr><td class="field-name">Confidence</td><td>Explicit field value; blank shows as <code>Low (blank)</code></td></tr>
-      <tr><td class="field-name">Blocker status</td><td>Blocker field; "No blockers listed" if empty</td></tr>
+      <tr><td class="field-name">Commitment</td><td>Phase Two graduation baseline count and total MRR context.</td></tr>
+      <tr><td class="field-name">Current most likely</td><td>Graduated this month plus remaining most-likely graduation clients.</td></tr>
+      <tr><td class="field-name">Delta versus commit</td><td>Current most likely graduation count/MRR minus commitment.</td></tr>
+      <tr><td class="field-name">Worst case</td><td>Graduated this month plus remaining High-confidence graduations.</td></tr>
+      <tr><td class="field-name">Best case</td><td>Graduated this month plus every non-canceled current-month graduation forecast.</td></tr>
+      <tr><td class="field-name">Graduated this month</td><td>Clients with Actual Graduation Date in the current month.</td></tr>
     </tbody>
   </table>
-  <div class="verbatim">- Acme Corp: forecasted activation on May 15 with $1,800 recognized MRR. Status: Active. Confidence: High. Blocker status: No blockers listed.</div>
 </div>
 
 <!-- Billing §3 -->
 <div class="script-section" style="--section-color:#38bdf8;">
   <div class="script-section-header">
     <span class="script-section-num">§ 3</span>
-    <span class="script-section-name">Phase Two Graduation / Completion Forecast</span>
+    <span class="script-section-name">Discussion Prompt</span>
   </div>
-  <p>One line per already-activated Billing client forecasted to graduate or complete in the current month.</p>
-  <table class="field-table">
-    <thead><tr><th>Field</th><th>Notes</th></tr></thead>
-    <tbody>
-      <tr><td class="field-name">Client name</td><td>Notion client name</td></tr>
-      <tr><td class="field-name">Forecast date</td><td>Current Graduation Date for activated Billing clients</td></tr>
-      <tr><td class="field-name">MRR context</td><td>Total MRR context only; activation already drove the recognition event</td></tr>
-      <tr><td class="field-name">Status</td><td>Notion status field; "Unknown" if blank</td></tr>
-      <tr><td class="field-name">Confidence</td><td>Explicit field value; blank shows as <code>Low (blank)</code></td></tr>
-      <tr><td class="field-name">Blocker status</td><td>Blocker field; "No blockers listed" if empty</td></tr>
-    </tbody>
-  </table>
-  <div class="verbatim">- Beta LLC: already activated; forecasted graduation/completion on May 30 at $3,200 total MRR context. Status: Active. Confidence: Low (blank). Blocker status: No blockers listed.</div>
-</div>
-
-<!-- Billing §4 -->
-<div class="script-section" style="--section-color:#ffa94d;">
-  <div class="script-section-header">
-    <span class="script-section-num">§ 4</span>
-    <span class="script-section-name">Data Needed Before Reliable Scenario Reporting</span>
-  </div>
-  <p>This section appears at the bottom of every Billing script. It tells the reader whether Confidence data is complete.</p>
-  <p><strong>If all active clients have Confidence set:</strong> <em>"Billing Confidence is populated for all active Billing clients in this owner view."</em></p>
-  <p><strong>If any are missing:</strong> Two action lines appear — a PM/SA action item to fill Confidence, and a warning that scenario buckets are directional only until populated.</p>
+  <p>Billing ends with the same single prompt as PSA: be ready to discuss key project risks, active blockers, product blockers, and any help needed from leadership. Product blockers should be specifically called out when the blocker text points to product, catalog, package, configuration, integration, API, functionality, template, or engineering work.</p>
 </div>
 
 </div><!-- end #billing -->
@@ -678,17 +529,18 @@ Help needed from leadership:
       <tr><td class="field-name">Best Case</td><td>All non-canceled clients in the forecast period. The ceiling — includes every outside shot. Not a commit.</td></tr>
       <tr><td class="field-name">Confidence (PSA)</td><td>High / Medium / Low. Auto-inferred if blank: blank + no blocker = High; blank + blocker = Medium. Override by setting the field explicitly in Notion.</td></tr>
       <tr><td class="field-name">Confidence (Billing)</td><td>High / Medium / Low — explicit only. Blank defaults to Low for bucketing. Set in the Notion Billing Onboarding Clients database.</td></tr>
-      <tr><td class="field-name">Delta vs original commitment</td><td>Current scenario count minus the original monthly graduation commitment set in Notion. Positive = above commitment, negative = below.</td></tr>
-      <tr><td class="field-name">Movement since prior snapshot</td><td>Change in client count and MRR for this month's forecast vs. the previous snapshot capture. Includes Into RTS, Out of RTS, Into On Hold, Back from On Hold.</td></tr>
-      <tr><td class="field-name">Pull-In Opportunity</td><td>A client forecasted for next month with Most Likely or better confidence who could be accelerated to close the current month if a current client slips.</td></tr>
-      <tr><td class="field-name">Not Kicked Off</td><td>A client with no Kickoff Date set in Notion but with a forecast date in the current month. These should be validated — almost always a data gap or placeholder date.</td></tr>
+      <tr><td class="field-name">Commitment</td><td>The baseline count and MRR for the month. PSA uses the graduation commitment. Billing uses separate activation and graduation track baselines.</td></tr>
+      <tr><td class="field-name">Current Most Likely</td><td>Actualized clients this month plus remaining High/Medium confidence forecast clients.</td></tr>
+      <tr><td class="field-name">Delta vs commitment</td><td>Current most likely count and MRR minus the committed count and MRR. Positive = above commitment, negative = below.</td></tr>
+      <tr><td class="field-name">Actualized this month</td><td>PSA: graduated this month. Billing Phase One: activated this month. Billing Phase Two: graduated this month.</td></tr>
       <tr><td class="field-name">Milestone progress</td><td>Shown as <code>required X; overall Y</code>. Required = critical-path milestones only. Overall = all milestones. Scored: Completed = 1 pt, In Progress = ⅓ pt, all other = 0.</td></tr>
       <tr><td class="field-name">Phase One Activation track (Billing)</td><td>Client has no Activation Date yet. Forecast date = Current Forecast Date / forecast activation date. This is the primary Billing forecast because MRR is recognized at activation.</td></tr>
       <tr><td class="field-name">Phase Two Graduation track (Billing)</td><td>Client is already activated. Forecast date = Current Graduation Date. This is a completion/graduation forecast, not the first MRR recognition event.</td></tr>
       <tr><td class="field-name">Recognized MRR (Billing)</td><td>MRR counted at activation for Phase One Billing forecast discussions. Platform Fee is kept separate from the activation-recognition number.</td></tr>
+      <tr><td class="field-name">Product blocker</td><td>A blocker tied to product, catalog, package, configuration, integration, API, functionality, template, or engineering work. These should be called out explicitly in the discussion prompt.</td></tr>
       <tr><td class="field-name">RTS</td><td>Return to Sales — client engagement has stalled and Sales must re-engage before onboarding can resume. Excluded from Worst Case and Most Likely forecasts until movement is confirmed.</td></tr>
       <tr><td class="field-name">On Hold</td><td>Onboarding paused at client request or internal decision. Needs a confirmed re-engagement path or escalation to RTS / pre-cancel.</td></tr>
-      <tr><td class="field-name">Overall PSA Script</td><td>A combined readout across all PSA Solutions Analysts. Same 7-section structure. Goal = sum of all individual SA goals. Available via the Generate Overall Script button in Team Overview.</td></tr>
+      <tr><td class="field-name">Overall PSA Script</td><td>A combined readout across all PSA Solutions Analysts using the same concise commitment/current/delta/worst/best/actualized format.</td></tr>
       <tr><td class="field-name">Plain-Language Script (meeting readout)</td><td>A reformatted version of the raw script designed to be read verbatim in the forecast call — headings become spoken transitions, bullets become complete sentences.</td></tr>
     </tbody>
   </table>
@@ -700,7 +552,7 @@ Help needed from leadership:
     <span class="script-section-num">Guide</span>
     <span class="script-section-name">Facilitator Prompts</span>
   </div>
-  <p>Use these during the call to keep readouts honest and blockers actionable:</p>
+  <p>Use these only when the owner has risks, blockers, product blockers, or leadership asks to discuss after the metric readout:</p>
   <ul style="font-size:13px; color:var(--text-dim); padding-left:20px; display:grid; grid-template-columns:1fr 1fr; gap:4px 24px; margin-top:8px;">
     <li>"Any blocker?"</li>
     <li>"Who owns it?"</li>
@@ -708,13 +560,14 @@ Help needed from leadership:
     <li>"Does it threaten the forecast date?"</li>
     <li>"Is this forecast date real or a placeholder?"</li>
     <li>"Is the Confidence field accurate?"</li>
-    <li>"Has a kickoff happened yet?"</li>
+    <li>"Is this a product blocker?"</li>
+    <li>"Does Product or Engineering own the next action?"</li>
     <li>"Does Sales need to re-engage?"</li>
     <li>"Stay active, RTS, or pre-cancel?"</li>
     <li>"Is the last interaction logged?"</li>
     <li>"Is Confidence populated in Notion?" (Billing)</li>
-    <li>"Which activation scenario are we committing to?" (Billing)</li>
-    <li>"Which graduation/completion items are separate Phase Two follow-through?" (Billing)</li>
+    <li>"Are we discussing Billing activation or Billing graduation?"</li>
+    <li>"Does this affect recognized MRR or only completion follow-through?"</li>
   </ul>
 </div>
 
@@ -730,11 +583,11 @@ Help needed from leadership:
     <li>RTS / On Hold / pre-cancel decisions reflected in status</li>
     <li>Blockers updated with owner and due date</li>
     <li>Confidence field set for any clients where it was discussed</li>
-    <li>Billing Confidence populated for any missing clients surfaced in §4</li>
+    <li>Billing Confidence populated for any missing clients discussed during the prompt</li>
     <li>Billing activation forecast separated from Billing graduation/completion forecast</li>
     <li>Month-end placeholder dates replaced with real dates or marked Low confidence</li>
-    <li>Kickoff dates added for any clients surfaced in §6 (Not Kicked Off)</li>
-    <li>Client interactions logged for any stale accounts flagged in §7</li>
+    <li>Product blockers routed to the right Product or Engineering owner</li>
+    <li>Client interactions logged for any stale accounts discussed during the prompt</li>
     <li>Milestone statuses updated so progress reflects actual state</li>
   </ul>
 </div>
@@ -757,32 +610,21 @@ Help needed from leadership:
     <span class="script-section-num">Example</span>
     <span class="script-section-name">PSA Script — Jordan M., May 2026</span>
   </div>
-  <p>Jordan has 4 clients in view. The readout focuses on projects that can affect the forecast, the risks, the plan to protect the forecast, and where leadership help is needed.</p>
+  <p>Jordan's readout is the concise metric summary plus one prompt. Project detail stays in the dashboard unless the facilitator asks for risks, blockers, product blockers, or leadership help.</p>
 </div>
 
 <div class="verbatim" style="margin-top:0; border-top:none; border-radius:0 0 var(--radius) var(--radius); font-size:12px; line-height:1.8;"># PSA Weekly Forecast Call — Jordan M.
 Month: May 2026
 
 ## Forecast Readout
-I have 6 active onboarding clients representing $14,200 MRR.
-My original monthly graduation commitment is 3 graduations for May 2026.
-So far this month, 1 client has graduated representing $2,100 MRR: Prestige Managed Services.
+My commitment for May 2026 is 3 projects for $6,300 MRR.
+My current most likely is 4 projects for $8,900 MRR.
+Delta versus commit is +1 project for +$2,600 MRR.
+Worst case is 2 projects for $4,600 MRR.
+Best case is 5 projects for $11,400 MRR.
+I have graduated 1 project this month for $2,100 MRR.
 
-Projects that can impact my forecast:
-- Greenfield Technology is forecast for May 22 at $2,500. Required milestones are 9 of 10 complete, overall milestones are 14 of 16 complete, and confidence is High. The key item to protect the forecast is keeping final launch validation on schedule.
-- Quick Copper Technologies is forecast for May 29 at $3,200. Required milestones are 6 of 10 complete, overall milestones are 10 of 16 complete, and confidence is Medium. The key item to protect the forecast is clearing the technician contact-permission blocker.
-
-Key risks:
-- Quick Copper Technologies is at risk because technicians are receiving 403 permission errors when creating contacts. I will make a forecast decision if Ray/Engineering does not resolve the blocker by May 24.
-- Coastal Systems is at risk because it has a May forecast date but no kickoff date. It should not be treated as reliable until kickoff status is confirmed.
-
-Strategy to keep them in forecast:
-- Quick Copper Technologies: I am keeping the date only if the engineering blocker has an owner, due date, and visible progress by May 24.
-- Greenfield Technology: I am protecting the date by keeping the client on the final validation path and checking launch readiness daily.
-
-Help needed from leadership:
-- Quick Copper Technologies: I need help confirming Ray/Engineering has the permission blocker tracked and can hit the May 24 ETA.
-- Coastal Systems: I need a keep-or-remove decision if kickoff is still unconfirmed by the next forecast review.</div>
+Be ready to discuss key project risks, active blockers, product blockers, and any help needed from leadership. 1 possible product blocker is flagged in the current data.</div>
 
 <!-- PSA ANNOTATIONS -->
 <div class="section" style="margin-top:32px;">
@@ -793,28 +635,28 @@ Help needed from leadership:
 
 <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:14px; margin-bottom:32px;">
   <div class="script-section" style="--section-color:#00d4aa; margin-bottom:0;">
-    <div class="script-section-header"><span class="script-section-num">§1</span><span class="script-section-name">Roll-Up tells the story upfront</span></div>
-    <p>The opening anchors the discussion in active workload, original commitment, and completed graduations. The dashboard still holds the deeper snapshot and scenario detail.</p>
+    <div class="script-section-header"><span class="script-section-num">1</span><span class="script-section-name">Commitment anchors the readout</span></div>
+    <p>The first line states the month commitment in count and MRR. It is the comparison point for the rest of the readout.</p>
   </div>
   <div class="script-section" style="--section-color:#00d4aa; margin-bottom:0;">
-    <div class="script-section-header"><span class="script-section-num">§2</span><span class="script-section-name">Only Greenfield is a clean commit</span></div>
-    <p>One client, High confidence, no blocker, 9/10 required milestones done. The readout explains what must happen to protect the date.</p>
+    <div class="script-section-header"><span class="script-section-num">2</span><span class="script-section-name">Current most likely is the operating number</span></div>
+    <p>The current most likely line includes actual graduations plus the remaining most-likely forecast.</p>
   </div>
   <div class="script-section" style="--section-color:#ffa94d; margin-bottom:0;">
-    <div class="script-section-header"><span class="script-section-num">§3</span><span class="script-section-name">Quick Copper is the swing client</span></div>
-    <p>Medium confidence because it has a blocker — 403 errors, owned by Ray/Engineering, due May 24. The facilitator should ask: does Ray have this tracked? Is the ETA real?</p>
+    <div class="script-section-header"><span class="script-section-num">3</span><span class="script-section-name">Delta is simple</span></div>
+    <p>The delta line states count and MRR movement against commitment. It does not explain every moved client.</p>
   </div>
   <div class="script-section" style="--section-color:#7b7f9e; margin-bottom:0;">
-    <div class="script-section-header"><span class="script-section-num">§4</span><span class="script-section-name">Summit and Coastal are not commitments</span></div>
-    <p>Coastal is called out because the forecast date depends on kickoff status. The discussion is about the decision needed, not a separate movement bucket.</p>
+    <div class="script-section-header"><span class="script-section-num">4</span><span class="script-section-name">Worst and best set the range</span></div>
+    <p>Worst and best case provide the floor and ceiling without adding project-by-project narration.</p>
   </div>
   <div class="script-section" style="--section-color:#a78bfa; margin-bottom:0;">
-    <div class="script-section-header"><span class="script-section-num">Plan</span><span class="script-section-name">Strategy is explicit</span></div>
-    <p>The owner states the condition for keeping Quick Copper in forecast and the operating action for Greenfield. That makes the weekly follow-up concrete.</p>
+    <div class="script-section-header"><span class="script-section-num">5</span><span class="script-section-name">Actualized this month is separate</span></div>
+    <p>Graduated this month is stated explicitly so completed work is included in the readout instead of disappearing from forecast.</p>
   </div>
   <div class="script-section" style="--section-color:#ffa94d; margin-bottom:0;">
-    <div class="script-section-header"><span class="script-section-num">Ask</span><span class="script-section-name">Leadership help is visible</span></div>
-    <p>The script ends with the exact leadership help needed, so the call produces a decision or action item instead of a passive status review.</p>
+    <div class="script-section-header"><span class="script-section-num">Prompt</span><span class="script-section-name">Risks come only when needed</span></div>
+    <p>The final prompt tells the facilitator what to ask about: key risks, active blockers, product blockers, and leadership help.</p>
   </div>
 </div>
 
@@ -824,37 +666,30 @@ Help needed from leadership:
     <span class="script-section-num">Example</span>
     <span class="script-section-name">Billing Script — Sam T., May 2026</span>
   </div>
-  <p>Sam has 2 Phase One Billing activations forecasted in May and 1 Phase Two graduation/completion item. The activation readout is the primary Billing forecast because that is where MRR is recognized. The graduation readout stays separate so completion work does not inflate the activation commit.</p>
+  <p>Sam's Billing readout uses the same concise format twice: first for Phase One activations, then for Phase Two graduations. Activation uses recognized MRR; graduation uses total MRR context.</p>
 </div>
 
 <div class="verbatim" style="margin-top:0; border-top:none; border-radius:0 0 var(--radius) var(--radius); font-size:12px; line-height:1.8;"># Billing Forecast Call — Sam T.
 Month: May 2026
 
-## 1. Billing Forecast Roll-Up
-- I have 5 active Billing clients representing $11,400 MRR.
-- I have 1 Billing client on hold representing $2,200 MRR.
-- I have zero Billing clients in RTS.
-- For May 2026, my Phase One activation forecast is 2 clients representing $4,600 recognized MRR. This is the Billing forecast number tied to MRR recognition.
-- I also have 1 activated Billing client forecasted for Phase Two graduation/completion representing $3,100 MRR. This is completion hygiene, not first MRR recognition.
-- So far this month, 1 client has activated representing $3,100 recognized MRR: Harbor Digital.
-- So far this month, zero clients have graduated.
-- Confidence is populated for 4 of 5 active Billing clients.
-- I still need Billing Confidence populated for 1 client: Northgate Services.
-- Activation scenario range: zero clients in Worst Case, 1 client in Most Likely representing $2,800 recognized MRR, and 2 clients in Best Case representing $4,600 recognized MRR.
-- Graduation scenario range: 1 client in Worst Case representing $3,100 MRR, 1 client in Most Likely representing $3,100 MRR, and 1 client in Best Case representing $3,100 MRR.
-- 1 forecasted activation client has blank Confidence. Blank is treated as Low, so that client is included in Best Case only.
+## 1. Phase 1 Activations
+My commitment for May 2026 is 2 projects for $4,600 recognized MRR.
+My current most likely is 2 projects for $5,900 recognized MRR.
+Delta versus commit is 0 projects for +$1,300 recognized MRR.
+Worst case is 1 project for $3,100 recognized MRR.
+Best case is 3 projects for $7,700 recognized MRR.
+I have activated 1 project this month for $3,100 recognized MRR.
 
-## 2. Phase One Activation Forecast
-- Westside Networks: forecasted activation on May 23 with $2,800 recognized MRR. Status: Active. Confidence: Medium. Blocker status: Blocked by outstanding contract amendment — Legal, ETA May 20.
-- Northgate Services: forecasted activation on May 30 with $1,800 recognized MRR. Status: Active. Confidence: Low (blank). Blocker status: No blockers listed.
+## 2. Phase 2 Graduations
+My commitment for May 2026 is 1 project for $3,100 MRR.
+My current most likely is 2 projects for $6,200 MRR.
+Delta versus commit is +1 project for +$3,100 MRR.
+Worst case is 1 project for $3,100 MRR.
+Best case is 2 projects for $6,200 MRR.
+I have graduated 1 project this month for $3,100 MRR.
 
-## 3. Phase Two Graduation / Completion Forecast
-- Harbor Digital: already activated; forecasted graduation/completion on May 16 at $3,100 total MRR context. Status: Active. Confidence: High. Blocker status: No blockers listed.
-
-## 4. Data Needed Before Reliable Scenario Reporting
-- PM/SA action: fill Billing Confidence as High, Medium, or Low for the missing clients above.
-  - Missing: Northgate Services
-- Until Confidence is populated, scenario buckets are directional only and should not be treated as final forecast commitments.</div>
+## 3. Discussion Prompts
+Be ready to discuss key project risks, active blockers, product blockers, and any help needed from leadership. No specific product blockers are flagged in the current data.</div>
 
 <!-- BILLING ANNOTATIONS -->
 <div class="section" style="margin-top:32px;">
@@ -865,20 +700,16 @@ Month: May 2026
 
 <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:14px; margin-bottom:40px;">
   <div class="script-section" style="--section-color:#00d4aa; margin-bottom:0;">
-    <div class="script-section-header"><span class="script-section-num">§1</span><span class="script-section-name">Activation is the primary commit</span></div>
-    <p>Westside and Northgate are the Phase One activation forecast. That is the forecast number tied to recognized Billing MRR. Harbor is kept separate because it already activated.</p>
+    <div class="script-section-header"><span class="script-section-num">1</span><span class="script-section-name">Activation is the primary commit</span></div>
+    <p>The Phase One section is the recognized-MRR readout and should not include Phase Two completions.</p>
   </div>
   <div class="script-section" style="--section-color:#38bdf8; margin-bottom:0;">
-    <div class="script-section-header"><span class="script-section-num">§2</span><span class="script-section-name">Activation scenarios are separate</span></div>
-    <p>Worst Case is zero because neither activation is High. Westside is Medium, so it lands in Most Likely. Northgate is blank, so it is Best Case only until Confidence is populated.</p>
+    <div class="script-section-header"><span class="script-section-num">2</span><span class="script-section-name">Graduation is Phase Two</span></div>
+    <p>The Phase Two section is the completion/graduation readout and uses total MRR context only.</p>
   </div>
   <div class="script-section" style="--section-color:#ffa94d; margin-bottom:0;">
-    <div class="script-section-header"><span class="script-section-num">§3</span><span class="script-section-name">Graduation is Phase Two</span></div>
-    <p>Harbor Digital is already activated, so its May item is graduation/completion. It matters operationally, but it should not inflate the Phase One activation commit or recognized MRR forecast.</p>
-  </div>
-  <div class="script-section" style="--section-color:#6c63ff; margin-bottom:0;">
-    <div class="script-section-header"><span class="script-section-num">§4</span><span class="script-section-name">Northgate is a data action item</span></div>
-    <p>Northgate has no Confidence set. The script calls it out by name. Sam or the PM needs to set it in Notion before the next sync, or it stays Best Case only.</p>
+    <div class="script-section-header"><span class="script-section-num">Prompt</span><span class="script-section-name">Risks and blockers stay targeted</span></div>
+    <p>The script no longer lists every client. It prompts the facilitator to ask about risks, active blockers, product blockers, and leadership help.</p>
   </div>
 </div>
 
