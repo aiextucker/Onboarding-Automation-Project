@@ -6,6 +6,7 @@ const fs = require('fs');
 const TEAM_ID = process.env.PSA_GRADUATIONS_TEAM_ID || 'd29698dd-ac76-4d06-909e-e2bdd1c4e84b';
 const CHANNEL_ID = process.env.PSA_GRADUATIONS_CHANNEL_ID || '19:7bd5bd11caf6431dbebbe5051a0ccd0b@thread.tacv2';
 const CHANNEL_NAME = process.env.PSA_GRADUATIONS_CHANNEL_NAME || '- PSA Graduations';
+const MAX_TEAMS_MESSAGE_CHARS = 26000;
 
 function requiredEnv(name) {
   const value = process.env[name];
@@ -142,7 +143,8 @@ function sectionSummary(data) {
   }).join('<br>');
 }
 
-function teamsMessage(data) {
+function teamsMessage(data, options = {}) {
+  const includeNotes = options.includeNotes !== false;
   const rows = [
     `<b>${htmlEscape(data.clientName)}</b>`,
     `<b>Submitted:</b> ${htmlEscape(data.submittedAt)}`,
@@ -150,18 +152,45 @@ function teamsMessage(data) {
     `<b>Graduation date:</b> ${htmlEscape(data.graduationDate || 'Not provided')}`,
     `<b>CS handoff owner:</b> ${htmlEscape(data.csHandoffOwner || 'Not provided')}`,
   ];
-  if (data.notes) rows.push(`<b>Notes:</b> ${htmlEscape(data.notes.slice(0, 900))}`);
+  if (includeNotes && data.notes) rows.push(`<b>Notes:</b> ${htmlEscape(data.notes)}`);
   const sections = sectionSummary(data);
   if (sections) rows.push(`<br><b>Section rollup</b><br>${sections}`);
   if (data.sourceUrl) rows.push(`<br><a href="${htmlEscape(data.sourceUrl)}">Open completed checklist</a>`);
-  return rows.join('<br>').slice(0, 26000);
+  return rows.join('<br>');
+}
+
+function splitNotesMessages(notes) {
+  if (!notes) return [];
+  const prefix = '<b>Notes:</b> ';
+  const escaped = htmlEscape(notes);
+  const maxChunk = MAX_TEAMS_MESSAGE_CHARS - prefix.length - 100;
+  const messages = [];
+  for (let start = 0; start < escaped.length; start += maxChunk) {
+    messages.push(prefix + escaped.slice(start, start + maxChunk));
+  }
+  return messages;
+}
+
+function composeTeamsMessages(data) {
+  let content = teamsMessage(data);
+  const notesReplies = [];
+  if (content.length > MAX_TEAMS_MESSAGE_CHARS && data.notes) {
+    content = teamsMessage(data, { includeNotes: false });
+    notesReplies.push(...splitNotesMessages(data.notes));
+  }
+  if (content.length > MAX_TEAMS_MESSAGE_CHARS) {
+    console.error(`API ERROR Teams graduation message too large without notes (${content.length} chars)`);
+    process.exit(1);
+  }
+  return { content, notesReplies };
 }
 
 async function postTeamsMessage(token, data) {
+  const { content, notesReplies } = composeTeamsMessages(data);
   const payload = {
     body: {
       contentType: 'html',
-      content: teamsMessage(data),
+      content,
     },
   };
   const posted = await graphJson(
@@ -171,18 +200,29 @@ async function postTeamsMessage(token, data) {
     payload,
     'Teams graduation message'
   );
+  for (const noteContent of notesReplies) {
+    await graphJson(
+      'POST',
+      `/teams/${TEAM_ID}/channels/${encodeURIComponent(CHANNEL_ID)}/messages/${posted.id}/replies`,
+      token,
+      { body: { contentType: 'html', content: noteContent } },
+      'Teams graduation notes reply'
+    );
+  }
   console.log(`TEAMS_POST_STATUS ok ${posted.id || ''} ${CHANNEL_NAME}`);
 }
 
 async function main() {
   const data = validatePayload(readPayload());
   if (String(process.env.PSA_GRADUATIONS_DRY_RUN || '').toLowerCase() === 'true') {
+    const { content, notesReplies } = composeTeamsMessages(data);
     console.log(JSON.stringify({
       channel: CHANNEL_NAME,
       body: {
         contentType: 'html',
-        content: teamsMessage(data),
+        content,
       },
+      replies: notesReplies.map(content => ({ body: { contentType: 'html', content } })),
     }, null, 2));
     return;
   }
