@@ -7,10 +7,19 @@ const TEAM_ID = process.env.PSA_GRADUATIONS_TEAM_ID || 'd29698dd-ac76-4d06-909e-
 const CHANNEL_ID = process.env.PSA_GRADUATIONS_CHANNEL_ID || '19:7bd5bd11caf6431dbebbe5051a0ccd0b@thread.tacv2';
 const CHANNEL_NAME = process.env.PSA_GRADUATIONS_CHANNEL_NAME || '- PSA Graduations';
 const MAX_TEAMS_MESSAGE_CHARS = 26000;
-const GRADUATION_MENTION_EMAILS = [
-  'alexia.scottmorrison@rev.io',
-  'ryan.burton@rev.io',
-  'blaine.villafuerte@rev.io',
+const GRADUATION_MENTION_USERS = [
+  {
+    email: 'alexia.scottmorrison@rev.io',
+    displayName: 'Alexia Scottmorrison',
+  },
+  {
+    email: 'ryan.burton@rev.io',
+    displayName: 'Ryan Burton',
+  },
+  {
+    email: 'blaine.villafuerte@rev.io',
+    displayName: 'Blaine Villafuerte',
+  },
 ];
 
 function requiredEnv(name) {
@@ -133,19 +142,12 @@ function htmlEscape(value) {
   }[ch]));
 }
 
-function displayNameFromEmail(email) {
-  const name = String(email || '').split('@')[0] || email;
-  return name.split(/[._-]+/).filter(Boolean).map(part => (
-    part.charAt(0).toUpperCase() + part.slice(1)
-  )).join(' ') || email;
-}
-
-function mentionTargetsFromEmails(emails) {
-  return emails.map((email, index) => ({
+function mentionTargetsFromUsers(users) {
+  return users.map((user, index) => ({
     mentionId: index,
-    userId: email,
-    email,
-    displayName: displayNameFromEmail(email),
+    userId: user.id || user.email,
+    email: user.email,
+    displayName: user.displayName || user.email,
   }));
 }
 
@@ -221,27 +223,6 @@ function composeTeamsMessages(data, options = {}) {
   return { content, notesReplies };
 }
 
-async function resolveMentionTargets(token) {
-  const targets = [];
-  for (let index = 0; index < GRADUATION_MENTION_EMAILS.length; index += 1) {
-    const email = GRADUATION_MENTION_EMAILS[index];
-    const user = await graphJson(
-      'GET',
-      `/users/${encodeURIComponent(email)}?$select=id,displayName,mail,userPrincipalName`,
-      token,
-      null,
-      `Teams mention lookup ${email}`
-    );
-    targets.push({
-      mentionId: index,
-      userId: user.id,
-      email: user.mail || user.userPrincipalName || email,
-      displayName: user.displayName || displayNameFromEmail(email),
-    });
-  }
-  return targets;
-}
-
 function teamsMentions(mentionTargets) {
   return mentionTargets.map(target => ({
     id: target.mentionId,
@@ -257,7 +238,7 @@ function teamsMentions(mentionTargets) {
 }
 
 async function postTeamsMessage(token, data) {
-  const mentionTargets = await resolveMentionTargets(token);
+  const mentionTargets = mentionTargetsFromUsers(GRADUATION_MENTION_USERS);
   const { content, notesReplies } = composeTeamsMessages(data, { mentionTargets });
   const payload = {
     body: {
@@ -288,7 +269,7 @@ async function postTeamsMessage(token, data) {
 async function main() {
   const data = validatePayload(readPayload());
   if (String(process.env.PSA_GRADUATIONS_DRY_RUN || '').toLowerCase() === 'true') {
-    const mentionTargets = mentionTargetsFromEmails(GRADUATION_MENTION_EMAILS);
+    const mentionTargets = mentionTargetsFromUsers(GRADUATION_MENTION_USERS);
     const { content, notesReplies } = composeTeamsMessages(data, { mentionTargets });
     console.log(JSON.stringify({
       channel: CHANNEL_NAME,
