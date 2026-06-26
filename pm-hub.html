@@ -811,6 +811,95 @@ body {
 .bs-content li { padding: 2px 0 2px 14px; position: relative; }
 .bs-content li::before { content: '›'; position: absolute; left: 0; color: var(--text-mute); }
 
+/* ── Sales brief panel ── */
+.sales-brief-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+.sales-brief-header {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+.sales-brief-title { font-size: 0.95rem; font-weight: 700; color: var(--text); }
+.sales-brief-source { font-size: 0.75rem; color: var(--text-mute); margin-top: 2px; }
+.sales-brief-actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+.sales-brief-link {
+  color: var(--text-dim);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 5px 9px;
+  font-size: 0.76rem;
+  font-weight: 650;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.sales-brief-link:hover { color: var(--teal); border-color: var(--teal); }
+.sales-brief-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border-bottom: 1px solid var(--border);
+}
+@media (max-width: 860px) { .sales-brief-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .sales-brief-grid { grid-template-columns: 1fr; } }
+.sales-brief-field {
+  padding: 12px 14px;
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  min-width: 0;
+}
+.sales-brief-field:nth-child(4n) { border-right: none; }
+.sales-brief-label {
+  font-size: 0.66rem;
+  color: var(--text-mute);
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  margin-bottom: 4px;
+  font-weight: 750;
+}
+.sales-brief-value {
+  font-size: 0.84rem;
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+.sales-brief-value.muted { color: var(--text-mute); font-style: italic; }
+.sales-brief-notes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+@media (max-width: 760px) { .sales-brief-notes { grid-template-columns: 1fr; } }
+.sales-brief-note {
+  padding: 14px 18px;
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.sales-brief-note:nth-child(even) { border-right: none; }
+.sales-brief-note.full { grid-column: 1 / -1; border-right: none; }
+.sales-brief-note-text {
+  color: var(--text-dim);
+  font-size: 0.84rem;
+  line-height: 1.55;
+  white-space: pre-wrap;
+}
+.sales-brief-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: var(--yellow-bg);
+  color: var(--yellow);
+  border: 1px solid rgba(240,165,0,.25);
+  font-size: 0.7rem;
+  font-weight: 750;
+  margin-left: 8px;
+}
+
 /* ── Fireflies link ── */
 .ff-link {
   font-size: 0.75rem;
@@ -1407,6 +1496,9 @@ async function fetchClientData(clientId, days) {
   const allPsaBriefs = snapshot.psaBriefsByClientId?.[clientId] || [];
   const psaBriefs = allPsaBriefs.filter(b => !b.date || b.date >= cutoff).slice(0, 20);
 
+  // Sales briefs / Revay generated forms
+  const salesBriefs = snapshot.salesBriefsByClientId?.[clientId] || [];
+
   // Interactions
   const allInteractions = snapshot.interactionsByClientId?.[clientId] || [];
   const interactions = allInteractions.filter(i => !i.date || i.date >= cutoff).slice(0, 25);
@@ -1419,7 +1511,7 @@ async function fetchClientData(clientId, days) {
   const digest = hasBilling(client) ? (snapshot.digestsByClientId?.[clientId] || null) : null;
 
   const psaMilestones = hasPsa(client) ? (snapshot.psaMilestonesByClientId?.[clientId] || []) : [];
-  return { briefs, allBriefs, psaBriefs, allPsaBriefs, interactions, tickets, psaTickets, psaMilestones, digest, latestBilling, staleCall };
+  return { briefs, allBriefs, psaBriefs, allPsaBriefs, salesBriefs, interactions, tickets, psaTickets, psaMilestones, digest, latestBilling, staleCall };
 }
 
 // ── Autocomplete ──────────────────────────────────────────────────────────────
@@ -1659,7 +1751,7 @@ function renderPsaProjectSnapshot(client, data, showCriticalPath) {
 }
 
 function renderClientView(client, data) {
-  const { briefs = [], allBriefs = [], psaBriefs = [], allPsaBriefs = [], interactions = [], tickets = [], psaTickets = [], psaMilestones = [], digest } = data;
+  const { briefs = [], allBriefs = [], psaBriefs = [], allPsaBriefs = [], salesBriefs = [], interactions = [], tickets = [], psaTickets = [], psaMilestones = [], digest } = data;
   const main = document.getElementById('main');
   main.innerHTML = '';
 
@@ -1708,6 +1800,9 @@ function renderClientView(client, data) {
   if (isBilling) {
     stats.push(`<div class="stat-pill"><div class="val">${tickets.length}</div><div class="lbl">Tickets</div></div>`);
   }
+  if (salesBriefs.length) {
+    stats.push(`<div class="stat-pill"><div class="val">${salesBriefs.length}</div><div class="lbl">Sales Brief</div></div>`);
+  }
 
   main.insertAdjacentHTML('beforeend', `
     <div class="client-header">
@@ -1732,6 +1827,8 @@ function renderClientView(client, data) {
   if (client.wrikeUrl) links.push(`<a class="ql-link wrike" href="${esc(client.wrikeUrl)}" target="_blank">📊 Wrike</a>`);
   if (client.notionUrl && isBilling) links.push(`<a class="ql-link notion" href="${esc(client.notionUrl)}" target="_blank">📝 Notion</a>`);
   if (isPsa && client.psaNotionUrl) links.push(`<a class="ql-link psa-internal" href="${esc(client.psaNotionUrl)}" target="_blank">🔷 PSA Notion</a>`);
+  const primarySalesBrief = salesBriefs[0] || null;
+  if (primarySalesBrief?.revayUrl) links.push(`<a class="ql-link" href="${esc(primarySalesBrief.revayUrl)}" target="_blank">📋 Revay Brief</a>`);
 
   const trackerBtn = isPsa
     ? `<a class="tracker-btn" href="#" target="_blank" onclick="openTracker(event)">Open Client Preview</a>`
@@ -1748,6 +1845,10 @@ function renderClientView(client, data) {
 
   if (isPsa) {
     main.insertAdjacentHTML('beforeend', renderPsaProjectSnapshot(client, data, showCriticalPath));
+  }
+
+  if (salesBriefs.length) {
+    main.insertAdjacentHTML('beforeend', renderSalesBriefPanel(salesBriefs));
   }
 
   main.insertAdjacentHTML('beforeend', renderWorkSnapshot(client, data));
@@ -1966,6 +2067,87 @@ function renderClientView(client, data) {
   } else if (isBilling && !isPsa) {
     main.insertAdjacentHTML('beforeend', `<div class="no-latest-call">📭 No call briefs found in the selected time window.</div>`);
   }
+}
+
+// ── Sales brief panel ────────────────────────────────────────────────────────
+function renderSalesBriefPanel(salesBriefs) {
+  const brief = salesBriefs[0];
+  if (!brief) return '';
+  const sourceParts = [
+    brief.sourceLabel,
+    brief.type ? brief.type.toUpperCase() : null,
+    brief.match?.type ? `matched by ${brief.match.type.replace(/-/g, ' ')}` : null,
+  ].filter(Boolean);
+  const actions = [
+    brief.revayUrl ? `<a class="sales-brief-link" href="${esc(brief.revayUrl)}" target="_blank">Open Revay brief</a>` : '',
+    brief.notionUrl ? `<a class="sales-brief-link" href="${esc(brief.notionUrl)}" target="_blank">Open Notion row</a>` : '',
+    brief.salesforceUrl ? `<a class="sales-brief-link" href="${esc(brief.salesforceUrl)}" target="_blank">Salesforce</a>` : '',
+  ].filter(Boolean).join('');
+  const fields = [
+    ['Status', brief.status],
+    ['MRR', fmtMoney(brief.mrr)],
+    ['Close Date', brief.closeDate ? fmtDate(brief.closeDate) : ''],
+    ['Kickoff Target', brief.kickoffTarget ? fmtDate(brief.kickoffTarget) : ''],
+    ['Go-Live Target', brief.goLiveTarget ? fmtDate(brief.goLiveTarget) : ''],
+    ['AE', brief.ae],
+    ['SA', brief.sa],
+    ['Primary Contact', brief.primaryContact],
+    ['Contact Email', brief.contactEmail],
+    ['Platform', brief.platform],
+    ['Payment Processor', brief.paymentProcessor],
+    ['Data Quality', brief.dataQualityScore != null ? `${brief.dataQualityScore}` : ''],
+    ['Missing Info', brief.missingInfoCount != null ? `${brief.missingInfoCount}` : ''],
+    ['SF Opportunity', brief.sfOpportunityId],
+    ['Last Saved', brief.lastSavedAt ? fmtDate(brief.lastSavedAt) : ''],
+    ['Saved By', brief.lastSavedBy],
+  ];
+  const notes = [
+    ['Open Gaps', brief.openGaps, true],
+    ['Key Context', brief.keyContext, true],
+    ['Implementation Risks', brief.implementationRisks, false],
+    ['Sales Update Notes', brief.salesRepUpdateNotes, false],
+  ].filter(([, value]) => value);
+  const alternates = salesBriefs.slice(1).filter(b => b.revayUrl || b.notionUrl);
+  return `
+    <div class="section-title">Sales Brief${brief.type ? `<span class="lob-tag ${brief.type}">${esc(brief.type.toUpperCase())}</span>` : ''}</div>
+    <div class="sales-brief-panel">
+      <div class="sales-brief-header">
+        <div>
+          <div class="sales-brief-title">
+            ${esc(brief.title || 'Sales Brief')}
+            ${brief.needsSalesFollowUp ? '<span class="sales-brief-pill">Needs Sales Follow-up</span>' : ''}
+          </div>
+          <div class="sales-brief-source">${esc(sourceParts.join(' · '))}</div>
+        </div>
+        <div class="sales-brief-actions">${actions}</div>
+      </div>
+      <div class="sales-brief-grid">
+        ${fields.map(([label, value]) => `
+          <div class="sales-brief-field">
+            <div class="sales-brief-label">${esc(label)}</div>
+            <div class="sales-brief-value${value ? '' : ' muted'}">${value ? esc(value) : '—'}</div>
+          </div>
+        `).join('')}
+      </div>
+      ${notes.length ? `
+        <div class="sales-brief-notes">
+          ${notes.map(([label, value, full]) => `
+            <div class="sales-brief-note${full ? ' full' : ''}">
+              <div class="sales-brief-label">${esc(label)}</div>
+              <div class="sales-brief-note-text">${esc(value)}</div>
+            </div>
+          `).join('')}
+        </div>
+      ` : ''}
+      ${alternates.length ? `
+        <div class="sales-brief-note full">
+          <div class="sales-brief-label">Other matched briefs</div>
+          <div class="sales-brief-actions" style="justify-content:flex-start">
+            ${alternates.map(b => `<a class="sales-brief-link" href="${esc(b.revayUrl || b.notionUrl)}" target="_blank">${esc(b.sourceLabel || 'Sales Brief')}${b.closeDate ? ` · ${esc(fmtShortDate(b.closeDate))}` : ''}</a>`).join('')}
+          </div>
+        </div>
+      ` : ''}
+    </div>`;
 }
 
 // ── Interactions panel ────────────────────────────────────────────────────────
@@ -2456,6 +2638,13 @@ function fmtShortDate(d) {
   if (!d) return '';
   const dt = new Date(String(d).length === 10 ? d + 'T12:00:00' : d);
   return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+function fmtMoney(v) {
+  if (v == null || v === '') return '';
+  const n = Number(v);
+  if (!Number.isFinite(n)) return '';
+  return '$' + n.toLocaleString('en-US', { maximumFractionDigits: 0 });
 }
 
 function esc(s) {
