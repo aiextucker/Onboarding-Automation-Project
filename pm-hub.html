@@ -1391,6 +1391,10 @@ function isGithubPagesHost() {
   return location.hostname === 'aiextucker.github.io';
 }
 
+function shouldUseDispatchHandoff() {
+  return isGithubPagesHost() || !pmHubApiBase();
+}
+
 const PM_HUB_GITHUB_REPO = 'aiextucker/Onboarding-Automation-Project';
 const PM_HUB_DISPATCH_TOKEN = ['ghp_fmu9dXErfsuaxu', 'LIjcWp4e7h5a92R74ZhaYc'].join('');
 
@@ -3016,7 +3020,7 @@ async function submitProjectEdit() {
   };
 
   try {
-    if (isGithubPagesHost()) {
+    if (shouldUseDispatchHandoff()) {
       await dispatchPmHubAction('pm-hub-project-edit', { project: payload });
       applyProjectUpdate(payload);
       statusEl.innerHTML = '<span style="color:var(--green)">Saved. The shared snapshot will refresh shortly.</span>';
@@ -3068,7 +3072,7 @@ async function openMilestoneModal(id) {
   document.getElementById('milestoneNotes').value = fallback.notes || '';
   document.getElementById('milestoneModalOverlay').classList.add('open');
 
-  if (isGithubPagesHost()) {
+  if (shouldUseDispatchHandoff()) {
     document.getElementById('milestoneModalStatus').textContent = '';
     document.getElementById('milestoneSubmitBtn').disabled = false;
     return;
@@ -3144,7 +3148,7 @@ async function submitMilestoneEdit() {
   };
 
   try {
-    if (isGithubPagesHost()) {
+    if (shouldUseDispatchHandoff()) {
       await dispatchPmHubAction('pm-hub-milestone-edit', { milestone: payload });
       applyMilestoneUpdate(payload);
       statusEl.innerHTML = '<span style="color:var(--green)">Saved. The shared snapshot will refresh shortly.</span>';
@@ -3259,7 +3263,7 @@ async function submitInteraction() {
   status.textContent = 'Logging…';
 
   try {
-    if (isGithubPagesHost()) {
+    if (shouldUseDispatchHandoff()) {
       await dispatchPmHubAction('log-interaction', { interaction: payload });
       status.innerHTML = '<span style="color:var(--green)">✓ Interaction logged! It will appear in Notion shortly.</span>';
       submitBtn.textContent = 'Done';
