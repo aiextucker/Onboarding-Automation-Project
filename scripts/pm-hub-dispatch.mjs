@@ -20,6 +20,39 @@ const MILESTONES_DB = '06f1e10a-4531-4e0e-8190-7562c25b4805';
 const MILESTONE_STATUSES = new Set(['Not Started', 'In Progress', 'Completed', 'Blocked']);
 const OVERRIDES_FILE = 'data/teams-channel-overrides.json';
 const SMOKE_ID = '06f1e10a-4531-4e0e-8190-7562c25b4805';
+const summaryRows = [];
+
+function summaryStep(name, status, detail = '') {
+  summaryRows.push({ name, status, detail });
+}
+
+function escapeCommand(value) {
+  return String(value || '')
+    .replace(/%/g, '%25')
+    .replace(/\r/g, '%0D')
+    .replace(/\n/g, '%0A');
+}
+
+function workflowWarning(title, message) {
+  console.log(`::warning title=${escapeCommand(title)}::${escapeCommand(message)}`);
+}
+
+function writeStepSummary() {
+  const summaryPath = process.env.GITHUB_STEP_SUMMARY;
+  if (!summaryPath || !summaryRows.length) return;
+  const lines = [
+    '## PM Hub Dispatch Result',
+    '',
+    `- Event: \`${eventType || 'unknown'}\``,
+    `- Mode: \`${DRY_RUN ? 'dry-run' : 'live'}\``,
+    '',
+    '| Step | Status | Detail |',
+    '| --- | --- | --- |',
+    ...summaryRows.map(row => `| ${row.name} | ${row.status} | ${String(row.detail || '').replace(/\|/g, '\\|')} |`),
+    '',
+  ];
+  fs.appendFileSync(summaryPath, `${lines.join('\n')}\n`);
+}
 
 function requiredEnv(name) {
   const value = process.env[name];
@@ -117,11 +150,14 @@ function validateMilestonePayload(input) {
 async function triggerSnapshotRefresh(reason) {
   if (DRY_RUN) {
     console.log(`SNAPSHOT_REFRESH_DRY_RUN ${reason}`);
+    summaryStep('Snapshot refresh', 'dry-run', reason);
     return;
   }
   const token = process.env.GITHUB_TOKEN;
   if (!token) {
     console.log('SNAPSHOT_REFRESH_SKIPPED missing GITHUB_TOKEN');
+    summaryStep('Snapshot refresh', 'skipped', 'missing GITHUB_TOKEN');
+    workflowWarning('Snapshot refresh skipped', 'Missing GITHUB_TOKEN');
     return;
   }
   try {
@@ -136,8 +172,11 @@ async function triggerSnapshotRefresh(reason) {
       body: JSON.stringify({ ref: 'main', inputs: {} }),
     });
     console.log(`SNAPSHOT_REFRESH_REQUESTED ${reason}`);
+    summaryStep('Snapshot refresh', 'requested', reason);
   } catch (err) {
     console.log(`SNAPSHOT_REFRESH_FAILED ${reason}: ${err.message}`);
+    summaryStep('Snapshot refresh', 'failed', err.message);
+    workflowWarning('Snapshot refresh failed', err.message);
   }
 }
 
@@ -342,12 +381,14 @@ function teamsMessage(data, notionUrl) {
 async function createNotionInteraction(data) {
   if (DRY_RUN) {
     console.log(`NOTION_DRY_RUN interaction ${data.psaId}`);
+    summaryStep('Notion interaction', 'dry-run', data.psaId);
     return { id: 'dry-run-interaction', url: '' };
   }
   const token = requiredEnv('NOTION_TOKEN');
   const existing = await findExistingInteraction(data, token);
   if (existing) {
     console.log(`NOTION_STATUS existing ${existing.id}`);
+    summaryStep('Notion interaction', 'existing', existing.id);
     return existing;
   }
   const title = data.title || `${data.type} - ${data.date}`;
@@ -380,6 +421,7 @@ async function createNotionInteraction(data) {
     body: JSON.stringify(body),
   });
   console.log(`NOTION_STATUS ok ${page.id}`);
+  summaryStep('Notion interaction', 'created', page.id);
   return page;
 }
 
@@ -404,6 +446,7 @@ async function updateMilestone(input) {
   const { id, properties } = validateMilestonePayload(input);
   if (DRY_RUN) {
     console.log(`MILESTONE_DRY_RUN ${id} ${Object.keys(properties).join(',')}`);
+    summaryStep('Notion milestone', 'dry-run', id);
     return { id, status: input.status || null };
   }
   const token = requiredEnv('NOTION_TOKEN');
@@ -429,6 +472,7 @@ async function updateMilestone(input) {
   });
   const milestone = milestoneFromPage(updated);
   console.log(`MILESTONE_STATUS ok ${milestone.id} ${milestone.status || ''}`);
+  summaryStep('Notion milestone', 'updated', milestone.id);
   return milestone;
 }
 
@@ -436,6 +480,7 @@ async function updateProject(input) {
   const { id, fields } = validateProjectPayload(input);
   if (DRY_RUN) {
     console.log(`PROJECT_DRY_RUN ${id} ${Object.keys(fields).join(',')}`);
+    summaryStep('Notion project', 'dry-run', id);
     return { id, confidence: fields.confidence || null };
   }
   const token = requiredEnv('NOTION_TOKEN');
@@ -462,6 +507,7 @@ async function updateProject(input) {
   });
   const project = projectFromPage(updated);
   console.log(`PROJECT_STATUS ok ${project.id} ${project.confidence || ''}`);
+  summaryStep('Notion project', 'updated', project.id);
   return project;
 }
 
@@ -509,6 +555,7 @@ async function listChannels(teamId, token) {
 async function postTeams(data, notionUrl) {
   if (DRY_RUN) {
     console.log(`TEAMS_DRY_RUN ${data.clientName || ''}`);
+    summaryStep('Teams post', 'dry-run', data.clientName || '');
     return;
   }
   const config = readOverrides();
@@ -522,6 +569,7 @@ async function postTeams(data, notionUrl) {
   console.log(`TEAMS_MATCH ${match.status} ${match.confidence} ${match.selected?.displayName || ''}`);
   if (!match.selected || !['manual', 'high'].includes(match.confidence)) {
     console.log(`TEAMS_POST_SKIPPED ${match.status}: ${match.reason}`);
+    summaryStep('Teams post', 'skipped', `${match.status}: ${match.reason}`);
     return;
   }
   const response = await graphJson(
@@ -531,6 +579,7 @@ async function postTeams(data, notionUrl) {
     { body: { contentType: 'html', content: teamsMessage(data, notionUrl) } }
   );
   console.log(`TEAMS_POST_STATUS ok ${response.id || ''}`);
+  summaryStep('Teams post', 'posted', response.id || '');
 }
 
 async function runDispatchSmoke() {
@@ -589,8 +638,9 @@ async function main() {
       await updateProject(dispatchPayload.project || dispatchPayload);
       await triggerSnapshotRefresh('project-edit');
     } catch (err) {
+      summaryStep('Run', 'failed', err.message);
       console.error(`API ERROR project ${err.message}`);
-      process.exit(1);
+      throw err;
     }
     return;
   }
@@ -600,8 +650,9 @@ async function main() {
       await updateMilestone(dispatchPayload.milestone || dispatchPayload);
       await triggerSnapshotRefresh('milestone-edit');
     } catch (err) {
+      summaryStep('Run', 'failed', err.message);
       console.error(`API ERROR milestone ${err.message}`);
-      process.exit(1);
+      throw err;
     }
     return;
   }
@@ -610,8 +661,9 @@ async function main() {
   try {
     data = validatePayload(payload);
   } catch (err) {
+    summaryStep('Run', 'failed', err.message);
     console.error(`API ERROR payload ${err.message}`);
-    process.exit(1);
+    throw err;
   }
   const page = await createNotionInteraction(data);
   await triggerSnapshotRefresh('interaction-log');
@@ -619,10 +671,19 @@ async function main() {
     await postTeams(data, page.url);
   } catch (err) {
     console.log(`TEAMS_POST_FAILED ${err.message}`);
+    summaryStep('Teams post', 'failed', err.message);
+    workflowWarning('Teams post failed', err.message);
   }
 }
 
-main().catch(err => {
-  console.error(err.stack || err.message);
-  process.exit(1);
-});
+main()
+  .then(() => {
+    summaryStep('Run', 'completed', '');
+    writeStepSummary();
+  })
+  .catch(err => {
+    summaryStep('Run', 'failed', err.message);
+    writeStepSummary();
+    console.error(err.stack || err.message);
+    process.exit(1);
+  });
