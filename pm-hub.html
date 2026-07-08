@@ -1417,6 +1417,13 @@ async function dispatchPmHubAction(eventType, payload) {
   }
 }
 
+function dispatchTraceHtml(actionLabel, requestId, detail) {
+  return [
+    `<span style="color:var(--green)">${esc(actionLabel)} accepted. GitHub Actions will write this to Notion${detail ? ' and ' + esc(detail) : ''}.</span>`,
+    `<br><span style="color:var(--muted)">Request ID: <code>${esc(requestId || 'unknown')}</code></span>`,
+  ].join('');
+}
+
 function pmHubFetch(path, options = {}) {
   const base = pmHubApiBase();
   return fetch(base + path, {
@@ -3023,11 +3030,11 @@ async function submitProjectEdit() {
     if (shouldUseDispatchHandoff()) {
       await dispatchPmHubAction('pm-hub-project-edit', { project: payload });
       applyProjectUpdate(payload);
-      statusEl.innerHTML = '<span style="color:var(--green)">Handoff accepted. GitHub Actions will write this to Notion and refresh the shared snapshot.</span>';
+      statusEl.innerHTML = dispatchTraceHtml('Project update', payload.requestId, 'refresh the shared snapshot');
       setTimeout(() => {
         closeProjectModal();
         if (activeClient) loadClientView(activeClient.id);
-      }, 700);
+      }, 2500);
       return;
     }
 
@@ -3151,11 +3158,11 @@ async function submitMilestoneEdit() {
     if (shouldUseDispatchHandoff()) {
       await dispatchPmHubAction('pm-hub-milestone-edit', { milestone: payload });
       applyMilestoneUpdate(payload);
-      statusEl.innerHTML = '<span style="color:var(--green)">Handoff accepted. GitHub Actions will write this to Notion and refresh the shared snapshot.</span>';
+      statusEl.innerHTML = dispatchTraceHtml('Milestone update', payload.requestId, 'refresh the shared snapshot');
       setTimeout(() => {
         closeMilestoneModal();
         if (activeClient) loadClientView(activeClient.id);
-      }, 700);
+      }, 2500);
       return;
     }
 
@@ -3265,9 +3272,9 @@ async function submitInteraction() {
   try {
     if (shouldUseDispatchHandoff()) {
       await dispatchPmHubAction('log-interaction', { interaction: payload });
-      status.innerHTML = '<span style="color:var(--green)">Handoff accepted. GitHub Actions will write the interaction to Notion.</span>';
+      status.innerHTML = dispatchTraceHtml('Interaction log', payload.requestId, '');
       submitBtn.textContent = 'Done';
-      setTimeout(closeIntModal, 2000);
+      setTimeout(closeIntModal, 3000);
       return;
     }
 
