@@ -12,6 +12,7 @@ function parseDispatchPayload(value) {
 const dispatchPayload = parseDispatchPayload(process.env.DISPATCH_PAYLOAD);
 const eventType = process.env.DISPATCH_EVENT_TYPE || '';
 const ALLOWED_EVENTS = new Set(['log-interaction', 'pm-hub-milestone-edit', 'pm-hub-project-edit']);
+const DRY_RUN = process.env.PM_HUB_DRY_RUN === '1';
 const payload = dispatchPayload.interaction || dispatchPayload;
 const PROJECTS_DB = 'dba0a0aac29e42d7ac7e968e0245f4c4';
 const INTERACTIONS_DB = '6246303e-1e51-408f-ad7e-85ad865d449d';
@@ -113,6 +114,10 @@ function validateMilestonePayload(input) {
 }
 
 async function triggerSnapshotRefresh(reason) {
+  if (DRY_RUN) {
+    console.log(`SNAPSHOT_REFRESH_DRY_RUN ${reason}`);
+    return;
+  }
   const token = process.env.GITHUB_TOKEN;
   if (!token) {
     console.log('SNAPSHOT_REFRESH_SKIPPED missing GITHUB_TOKEN');
@@ -334,6 +339,10 @@ function teamsMessage(data, notionUrl) {
 }
 
 async function createNotionInteraction(data) {
+  if (DRY_RUN) {
+    console.log(`NOTION_DRY_RUN interaction ${data.psaId}`);
+    return { id: 'dry-run-interaction', url: '' };
+  }
   const token = requiredEnv('NOTION_TOKEN');
   const existing = await findExistingInteraction(data, token);
   if (existing) {
@@ -391,8 +400,12 @@ async function findExistingInteraction(data, token) {
 }
 
 async function updateMilestone(input) {
-  const token = requiredEnv('NOTION_TOKEN');
   const { id, properties } = validateMilestonePayload(input);
+  if (DRY_RUN) {
+    console.log(`MILESTONE_DRY_RUN ${id} ${Object.keys(properties).join(',')}`);
+    return { id, status: input.status || null };
+  }
+  const token = requiredEnv('NOTION_TOKEN');
   const page = await apiJson(`https://api.notion.com/v1/pages/${id}`, {
     method: 'GET',
     headers: {
@@ -419,8 +432,12 @@ async function updateMilestone(input) {
 }
 
 async function updateProject(input) {
-  const token = requiredEnv('NOTION_TOKEN');
   const { id, fields } = validateProjectPayload(input);
+  if (DRY_RUN) {
+    console.log(`PROJECT_DRY_RUN ${id} ${Object.keys(fields).join(',')}`);
+    return { id, confidence: fields.confidence || null };
+  }
+  const token = requiredEnv('NOTION_TOKEN');
   const page = await apiJson(`https://api.notion.com/v1/pages/${id}`, {
     method: 'GET',
     headers: {
@@ -489,6 +506,10 @@ async function listChannels(teamId, token) {
 }
 
 async function postTeams(data, notionUrl) {
+  if (DRY_RUN) {
+    console.log(`TEAMS_DRY_RUN ${data.clientName || ''}`);
+    return;
+  }
   const config = readOverrides();
   const teamId = process.env.PSA_CLIENT_LAUNCH_TEAM_ID || config.teamId;
   if (!teamId) {

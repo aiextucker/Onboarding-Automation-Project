@@ -19,7 +19,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Validate PM Hub dispatch script
-        run: node --check scripts/pm-hub-dispatch.mjs
+        run: |
+          node --check scripts/pm-hub-dispatch.mjs
+          node scripts/pm-hub-dispatch-smoke.mjs
 
   log:
     if: ${{ github.event_name == 'repository_dispatch' }}
