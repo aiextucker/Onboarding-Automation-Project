@@ -1395,15 +1395,18 @@ function shouldUseDispatchHandoff() {
   return isGithubPagesHost() || !pmHubApiBase();
 }
 
-const PM_HUB_GITHUB_REPO = 'aiextucker/Onboarding-Automation-Project';
-const PM_HUB_DISPATCH_TOKEN = ['ghp_fmu9dXErfsuaxu', 'LIjcWp4e7h5a92R74ZhaYc'].join('');
+const PM_HUB_BROKER_BASE = 'https://alfred-revio.msappproxy.net';
+
+function pmHubDispatchEndpoint() {
+  return isGithubPagesHost() ? PM_HUB_BROKER_BASE + '/api/pm-hub/dispatch' : pmHubApiBase() + '/api/pm-hub/dispatch';
+}
 
 async function dispatchPmHubAction(eventType, payload) {
-  const res = await fetch('https://api.github.com/repos/' + PM_HUB_GITHUB_REPO + '/dispatches', {
+  const res = await fetch(pmHubDispatchEndpoint(), {
     method: 'POST',
+    credentials: isGithubPagesHost() ? 'omit' : 'include',
     headers: {
-      'Authorization': 'Bearer ' + PM_HUB_DISPATCH_TOKEN,
-      'Accept': 'application/vnd.github+json',
+      'Accept': 'application/json',
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
@@ -1412,7 +1415,7 @@ async function dispatchPmHubAction(eventType, payload) {
     }),
   });
   const text = await res.text();
-  if (res.status !== 204) {
+  if (!res.ok) {
     throw new Error('Handoff failed: HTTP ' + res.status + ' ' + text.slice(0, 240));
   }
 }
