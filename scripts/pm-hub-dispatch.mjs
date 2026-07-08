@@ -11,14 +11,15 @@ function parseDispatchPayload(value) {
 
 const dispatchPayload = parseDispatchPayload(process.env.DISPATCH_PAYLOAD);
 const eventType = process.env.DISPATCH_EVENT_TYPE || '';
-const ALLOWED_EVENTS = new Set(['log-interaction', 'pm-hub-milestone-edit', 'pm-hub-project-edit']);
-const DRY_RUN = process.env.PM_HUB_DRY_RUN === '1';
+const ALLOWED_EVENTS = new Set(['log-interaction', 'pm-hub-milestone-edit', 'pm-hub-project-edit', 'pm-hub-dispatch-smoke']);
+const DRY_RUN = process.env.PM_HUB_DRY_RUN === '1' || eventType === 'pm-hub-dispatch-smoke';
 const payload = dispatchPayload.interaction || dispatchPayload;
 const PROJECTS_DB = 'dba0a0aac29e42d7ac7e968e0245f4c4';
 const INTERACTIONS_DB = '6246303e-1e51-408f-ad7e-85ad865d449d';
 const MILESTONES_DB = '06f1e10a-4531-4e0e-8190-7562c25b4805';
 const MILESTONE_STATUSES = new Set(['Not Started', 'In Progress', 'Completed', 'Blocked']);
 const OVERRIDES_FILE = 'data/teams-channel-overrides.json';
+const SMOKE_ID = '06f1e10a-4531-4e0e-8190-7562c25b4805';
 
 function requiredEnv(name) {
   const value = process.env[name];
@@ -532,9 +533,54 @@ async function postTeams(data, notionUrl) {
   console.log(`TEAMS_POST_STATUS ok ${response.id || ''}`);
 }
 
+async function runDispatchSmoke() {
+  await updateProject({
+    id: SMOKE_ID,
+    requestId: 'smoke-project-edit',
+    submittedAt: '2026-07-08T00:00:00.000Z',
+    clientName: 'Smoke Test Client',
+    forecastDate: '2026-08-15',
+    confidence: 'Medium',
+    blockers: 'Dry-run smoke test',
+  });
+  await updateMilestone({
+    id: SMOKE_ID,
+    requestId: 'smoke-milestone-edit',
+    submittedAt: '2026-07-08T00:00:00.000Z',
+    clientName: 'Smoke Test Client',
+    status: 'In Progress',
+    due: '2026-07-31',
+    completedDate: null,
+    notes: 'Dry-run smoke test',
+  });
+  const data = validatePayload({
+    requestId: 'smoke-log-interaction',
+    submittedAt: '2026-07-08T00:00:00.000Z',
+    psaId: SMOKE_ID,
+    clientName: 'Smoke Test Client',
+    title: 'Smoke test interaction',
+    date: '2026-07-08',
+    type: 'Status Call',
+    outcome: 'Neutral',
+    sentiment: '3',
+    notes: 'Dry-run smoke test',
+    followUpNeeded: false,
+    followUpDate: null,
+  });
+  const page = await createNotionInteraction(data);
+  await triggerSnapshotRefresh('dispatch-smoke');
+  await postTeams(data, page.url);
+  console.log('DISPATCH_SMOKE_OK');
+}
+
 async function main() {
   if (!ALLOWED_EVENTS.has(eventType)) {
     console.log(`DISPATCH_SKIPPED unsupported event ${eventType || 'unknown'}`);
+    return;
+  }
+
+  if (eventType === 'pm-hub-dispatch-smoke') {
+    await runDispatchSmoke();
     return;
   }
 

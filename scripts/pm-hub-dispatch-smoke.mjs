@@ -54,6 +54,13 @@ const cases = [
       },
     },
   },
+  {
+    name: 'pm-hub-dispatch-smoke',
+    event: 'pm-hub-dispatch-smoke',
+    payload: {
+      smoke: true,
+    },
+  },
 ];
 
 for (const testCase of cases) {

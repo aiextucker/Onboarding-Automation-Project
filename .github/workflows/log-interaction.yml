@@ -6,7 +6,7 @@ on:
       - '.github/workflows/log-interaction.yml'
       - 'scripts/pm-hub-dispatch.mjs'
   repository_dispatch:
-    types: [log-interaction, pm-hub-milestone-edit, pm-hub-project-edit]
+    types: [log-interaction, pm-hub-milestone-edit, pm-hub-project-edit, pm-hub-dispatch-smoke]
 
 permissions:
   actions: write
