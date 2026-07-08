@@ -39,8 +39,7 @@ jobs:
           function requiredEnv(name) {
             const value = process.env[name];
             if (!value) {
-              console.error(`API ERROR missing ${name}`);
-              process.exit(1);
+              throw new Error(`Missing ${name}`);
             }
             return value;
           }
@@ -51,8 +50,7 @@ jobs:
             let body = {};
             try { body = text ? JSON.parse(text) : {}; } catch { body = { raw: text }; }
             if (!res.ok || body.object === 'error' || body.error || body.errors) {
-              console.error(`API ERROR ${res.status} ${JSON.stringify(body).slice(0, 2000)}`);
-              process.exit(1);
+              throw new Error(`HTTP ${res.status}: ${JSON.stringify(body).slice(0, 2000)}`);
             }
             return body;
           }
@@ -137,17 +135,21 @@ jobs:
               console.log('SNAPSHOT_REFRESH_SKIPPED missing GITHUB_TOKEN');
               return;
             }
-            await apiJson('https://api.github.com/repos/aiextucker/Onboarding-Automation-Project/actions/workflows/pm-hub-snapshot.yml/dispatches', {
-              method: 'POST',
-              headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: 'application/vnd.github+json',
-                'X-GitHub-Api-Version': '2022-11-28',
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({ ref: 'main', inputs: {} }),
-            });
-            console.log(`SNAPSHOT_REFRESH_REQUESTED ${reason}`);
+            try {
+              await apiJson('https://api.github.com/repos/aiextucker/Onboarding-Automation-Project/actions/workflows/pm-hub-snapshot.yml/dispatches', {
+                method: 'POST',
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                  Accept: 'application/vnd.github+json',
+                  'X-GitHub-Api-Version': '2022-11-28',
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ ref: 'main', inputs: {} }),
+              });
+              console.log(`SNAPSHOT_REFRESH_REQUESTED ${reason}`);
+            } catch (err) {
+              console.log(`SNAPSHOT_REFRESH_FAILED ${reason}: ${err.message}`);
+            }
           }
 
           function firstExistingProperty(properties, names) {
@@ -507,8 +509,7 @@ jobs:
             const config = readOverrides();
             const teamId = process.env.PSA_CLIENT_LAUNCH_TEAM_ID || config.teamId;
             if (!teamId) {
-              console.error('API ERROR missing PSA_CLIENT_LAUNCH_TEAM_ID');
-              process.exit(1);
+              throw new Error('Missing PSA_CLIENT_LAUNCH_TEAM_ID');
             }
             const token = await getGraphToken();
             const channels = await listChannels(teamId, token);
@@ -558,7 +559,12 @@ jobs:
               process.exit(1);
             }
             const page = await createNotionInteraction(data);
-            await postTeams(data, page.url);
+            await triggerSnapshotRefresh('interaction-log');
+            try {
+              await postTeams(data, page.url);
+            } catch (err) {
+              console.log(`TEAMS_POST_FAILED ${err.message}`);
+            }
           }
 
           main().catch(err => {
