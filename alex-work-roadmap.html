@@ -54,8 +54,26 @@
     .stat strong { display: block; margin-top: 8px; font-size: 28px; }
     .controls {
       display: flex;
+      align-items: center;
+      gap: 12px;
       justify-content: flex-end;
       margin: -4px 0 16px;
+      flex-wrap: wrap;
+    }
+    .filter-control {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .filter-control select {
+      min-width: 220px;
+      width: auto;
+      padding: 7px 9px;
+      color: var(--ink);
+      text-transform: none;
     }
     .toggle {
       display: inline-flex;
@@ -292,6 +310,13 @@
           <span class="switch" aria-hidden="true"></span>
           <span>Show Done tasks</span>
         </label>
+        <label class="filter-control">
+          <span>Initiative</span>
+          <select id="initiativeFilter">
+            <option value="">All initiatives</option>
+            <option value="PM Hub Reliability &amp; Portfolio">PM Hub Reliability &amp; Portfolio</option><option value="Sales / GTM Systems">Sales / GTM Systems</option><option value="Forecasting &amp; Capacity Planning">Forecasting &amp; Capacity Planning</option><option value="Credential Request Automation">Credential Request Automation</option><option value="Quick Task">Quick Task</option><option value="Onboarding Intake &amp; RTS Governance">Onboarding Intake &amp; RTS Governance</option><option value="Roadmap &amp; Pipeline Visibility">Roadmap &amp; Pipeline Visibility</option><option value="Agent Operations">Agent Operations</option><option value="Budget Performance">Budget Performance</option><option value="Client-Facing Portal">Client-Facing Portal</option>
+          </select>
+        </label>
       </div>
     </section>
     <section class="submit-panel" id="submitPanel" hidden>
@@ -344,7 +369,7 @@
       <div class="meter"><span style="width:60%"></span></div>
       <div class="task-list">
 
-    <article class="task">
+    <article class="task" data-initiative="Credential Request Automation">
       <div>
         <a href="https://app.notion.com/p/Credential-Request-Automation-review-generated-workbooks-and-matching-quality-38fa59b7e7b28125bdfff22384d1ac2c">Credential Request Automation — review generated workbooks and matching quality</a>
         <small>Reginald produced the workbook QA report; Alex still needs to review representative workbooks before this can close.</small>
@@ -357,7 +382,7 @@
       </div>
     </article>
 
-    <article class="task">
+    <article class="task" data-initiative="Credential Request Automation">
       <div>
         <a href="https://app.notion.com/p/Auto-config-persistence-security-design-368a59b7e7b281cd9729cd2c72b687fc">Auto-config persistence/security design</a>
         <small>Design durable state for delayed questionnaire/instance flow without token exposure.</small>
@@ -370,7 +395,7 @@
       </div>
     </article>
 
-    <article class="task">
+    <article class="task" data-initiative="Onboarding Intake &amp; RTS Governance">
       <div>
         <a href="https://app.notion.com/p/PSA-Automation-Testing-358a59b7e7b280c687c7c14b95817a3e">PSA Automation Testing</a>
         <small>2026-05-29: Dependency clarified as ARTED. ARTED is rolling out changes next Tuesday (2026-06-02), so PSA demo pre-config remains parked until then. No PSA writes have been performed. Follow-up on/after 2026-06-02 using the no-write preview report reports/psa-config-preview-apex-systems-group-ii-2026-05-29T16-27-02-304Z.md.</small>
@@ -383,7 +408,7 @@
       </div>
     </article>
 
-    <article class="task">
+    <article class="task" data-initiative="Onboarding Intake &amp; RTS Governance">
       <div>
         <a href="https://app.notion.com/p/PSA-Demo-Pre-Configuration-Initial-Configs-with-ARTED-360a59b7e7b281f19bece3256f5046b5">PSA Demo Pre-Configuration — Initial Configs with ARTED</a>
         <small>2026-05-29: Dependency clarified as ARTED. ARTED is rolling out changes next Tuesday (2026-06-02), so PSA demo pre-config remains parked until then. No PSA writes have been performed. Follow-up on/after 2026-06-02 using the no-write preview report reports/psa-config-preview-apex-systems-group-ii-2026-05-29T16-27-02-304Z.md.</small>
@@ -396,7 +421,7 @@
       </div>
     </article>
 
-    <article class="task">
+    <article class="task" data-initiative="Quick Task">
       <div>
         <a href="https://app.notion.com/p/Phase-3-Rev-io-PSA-API-Config-Application-35ea59b7e7b281179c2ec698c0b4ef7a">Phase 3 — Rev.io PSA API Config Application</a>
         <small>Blocked pending ARTED/system-setting/API readiness and explicit approval before any PSA writes. Read/probe and config-preview paths exist; no production or demo write path should proceed until the ARTED gate and security review are clear.</small>
@@ -409,7 +434,7 @@
       </div>
     </article>
 
-    <article class="task">
+    <article class="task" data-initiative="Onboarding Intake &amp; RTS Governance">
       <div>
         <a href="https://app.notion.com/p/Onboarding-docs-Rev-io-onboarding-language-and-Things-You-Need-to-Know-refresh-397a59b7e7b28145aa0cf0646a3633e6">Onboarding docs — Rev.io onboarding language and Things You Need to Know refresh</a>
         <small>Update project plans/client-facing docs to say Rev.io onboarding and refresh Things You Need to Know for universal billing language.</small>
@@ -422,7 +447,7 @@
       </div>
     </article>
 
-    <article class="task">
+    <article class="task" data-initiative="Credential Request Automation">
       <div>
         <a href="https://app.notion.com/p/Credential-Request-Automation-decide-webhook-route-posture-38fa59b7e7b2813e9d1bd4b34741d5b9">Credential Request Automation — decide webhook route posture</a>
         <small>Decide whether to keep the credential-request webhook route enabled or remove/disable it while scheduled watcher mode is the production path.</small>
@@ -435,7 +460,7 @@
       </div>
     </article>
 
-    <article class="task is-done">
+    <article class="task is-done" data-initiative="Credential Request Automation">
       <div>
         <a href="https://app.notion.com/p/Credential-Request-Automation-decide-review-notice-routing-38fa59b7e7b281cba586cb05b7a9defb">Credential Request Automation — decide review notice routing</a>
         <small>Decision made: keep needs_review notices owner-directed; centralized exception routing remains unset.</small>
@@ -448,7 +473,7 @@
       </div>
     </article>
 
-    <article class="task is-done">
+    <article class="task is-done" data-initiative="PM Hub Reliability &amp; Portfolio">
       <div>
         <a href="https://app.notion.com/p/Graduation-Checklist-automate-submission-capture-375a59b7e7b281beb949f3f182d6543f">Graduation Checklist — automate submission capture</a>
         <small>Updated 2026-06-24. PSA graduation checklist Teams posting is complete and verified in the real - PSA Graduations channel at Onboarding-Automation-Project commit 84c0e3a. The flow preserves full notes, splits oversized notes into Teams thread replies, tags alexia.scottmorrison@rev.io / ryan.burton@rev.io / blaine.villafuerte@rev.io on the main post only, and avoids Graph /users email lookup because the workflow token lacks directory-read permission. Real repository_dispatch run 28106473165 logged TEAMS_POST_STATUS ok 1782311857130 - PSA Graduations, and Alex confirmed the message was visible and perfect.</small>
@@ -461,7 +486,7 @@
       </div>
     </article>
 
-    <article class="task is-done">
+    <article class="task is-done" data-initiative="Credential Request Automation">
       <div>
         <a href="https://app.notion.com/p/Post-Submission-Auto-Create-Notion-PSA-Client-Record-35ea59b7e7b28108bc28f5ab972c145a">Post-Submission — Auto-Create Notion PSA Client Record</a>
         <small>Implemented and pushed in revio-automations commit 5425834. Questionnaire submissions now upsert the raw submission, then create/update the matching PSA Clients record by exact Client name, storing billing/operational answers in Setup Snapshots and adding PSA Client links to the review card. Verified with node --check and workflow YAML parse; no live dispatch test run to avoid creating a fake client/email.</small>
@@ -474,7 +499,7 @@
       </div>
     </article>
 
-    <article class="task is-done">
+    <article class="task is-done" data-initiative="Credential Request Automation">
       <div>
         <a href="https://app.notion.com/p/Questionnaire-Add-Missing-Kickoff-Fields-35ea59b7e7b281d3b063e60e49ee2c4b">Questionnaire — Add Missing Kickoff Fields</a>
         <small>Completed 2026-05-28. Added required Step 4 operational kickoff fields to psa-questionnaire.html: current/prior PSA, accounting software, RMM tool, payment processor, SureTax status, invoice continuity, business hours, holiday calendar, and SMS. Added review-preview rendering, pre-dispatch validation, submission payload fields, and Sales Brief hash prefill export. Deployed to GitHub Pages via Onboarding-Automation-Project commit bb7fea1.</small>
@@ -487,7 +512,7 @@
       </div>
     </article>
 
-    <article class="task is-done">
+    <article class="task is-done" data-initiative="Forecasting &amp; Capacity Planning">
       <div>
         <a href="https://app.notion.com/p/Update-forecast-script-explainer-page-for-Billing-and-scenario-buckets-368a59b7e7b281d38e68c98374673e24">Update forecast script explainer page for Billing and scenario buckets</a>
         <small>Completed 2026-05-22. Billing forecast scripts and standalone reference page now document PSA vs Billing behavior, Billing activation vs graduation tracks, scenario buckets, and blank Billing Confidence = Low. Relevant commits: Rev-io/slt-forecasts 5865581; Onboarding-Automation-Project 81039a0.</small>
@@ -500,7 +525,7 @@
       </div>
     </article>
 
-    <article class="task is-done">
+    <article class="task is-done" data-initiative="Credential Request Automation">
       <div>
         <a href="https://app.notion.com/p/Document-current-auto-config-limitation-368a59b7e7b281b9811ee6df3a743c61">Document current auto-config limitation</a>
         <small>Closed 2026-05-29: documented current auto-config limitation in docs/auto-config-current-limitation.md. Core statement: no client has completed automated PSA configuration without manual intervention; current workflow is questionnaire-driven config preview and assisted PSA setup until end-to-end write path is tested and explicitly approved.</small>
@@ -513,7 +538,7 @@
       </div>
     </article>
 
-    <article class="task is-done">
+    <article class="task is-done" data-initiative="Onboarding Intake &amp; RTS Governance">
       <div>
         <a href="https://app.notion.com/p/PSA-Guidebook-34ba59b7e7b2809fae7ddfb38ed658ce">PSA Guidebook</a>
         <small>Closed 2026-05-29: PSA client guidebook work was completed and regenerated on 2026-05-14. Live PDF: https://aiextucker.github.io/Onboarding-Automation-Project/psa-onboarding-client-guide.pdf. Graduation criteria page also deployed at https://aiextucker.github.io/Onboarding-Automation-Project/psa-graduation-criteria.html.</small>
@@ -526,7 +551,7 @@
       </div>
     </article>
 
-    <article class="task is-done">
+    <article class="task is-done" data-initiative="Credential Request Automation">
       <div>
         <a href="https://app.notion.com/p/Questionnaire-Duplicate-Submission-Guard-35ea59b7e7b281e7b1e3dc92b8855ab0">Questionnaire — Duplicate Submission Guard</a>
         <small>Closed 2026-05-29: added server-side duplicate submission guard in aiextucker/revio-automations .github/scripts/handle-questionnaire-submission.js. The handler now checks the questionnaire Token before writes and skips Notion updates, PSA Client upsert, Teams card, and confirmation email when the submission has already reached Submitted, Approved, Changes Requested, or SA Notified. Verified with node --check and a live duplicate-path no-write test against token demo-apex-2026-05-04.</small>
@@ -539,7 +564,7 @@
       </div>
     </article>
 
-    <article class="task is-done">
+    <article class="task is-done" data-initiative="Quick Task">
       <div>
         <a href="https://app.notion.com/p/Post-Submission-Client-Confirmation-Email-Message-35ea59b7e7b281579cc9d098f706b8f2">Post-Submission — Client Confirmation Email/Message</a>
         <small>Implemented and pushed in revio-automations commit 5425834 as part of the submission workflow refactor. The workflow now sends the client confirmation email when an email is present; the prior broken inline heredoc/email block was replaced with a checked-in Node script. Verified with node --check and workflow YAML parse; no live dispatch test run to avoid emailing a test client.</small>
@@ -552,7 +577,7 @@
       </div>
     </article>
 
-    <article class="task is-done">
+    <article class="task is-done" data-initiative="Credential Request Automation">
       <div>
         <a href="https://app.notion.com/p/Questionnaire-Enforce-Expiry-Date-35ea59b7e7b2810b9afbeabae37561e9">Questionnaire — Enforce Expiry Date</a>
         <small>Closed 2026-05-29 in aiextucker/revio-automations. Expired questionnaire tokens now stop before submission writes, PSA Client upsert, SA notification, or Teams card; tokens are marked Expired and the client receives an expired-link email when a client email is available. Verified with node --check and a live expired-token no-write test.</small>
@@ -580,7 +605,7 @@
       <div class="meter"><span style="width:43%"></span></div>
       <div class="task-list">
 
-    <article class="task">
+    <article class="task" data-initiative="PM Hub Reliability &amp; Portfolio">
       <div>
         <a href="https://app.notion.com/p/Fireflies-summaries-into-editable-interactions-368a59b7e7b281f3a46ff91801835749">Fireflies summaries into editable interactions</a>
         <small>Partially advanced 2026-06-11. Fireflies extraction no longer depends on Anthropic/OpenAI; native Fireflies AI summary/action-item mode is active, gap backfill from 2026-05-27 through 2026-06-12 wrote 204 Call Briefs with 0 errors, and the Intelligence Brief has call data again. Remaining task is still to turn Fireflies summaries into editable PM Hub interaction records, not just Call Briefs.</small>
@@ -593,7 +618,7 @@
       </div>
     </article>
 
-    <article class="task">
+    <article class="task" data-initiative="PM Hub Reliability &amp; Portfolio">
       <div>
         <a href="https://app.notion.com/p/PM-Hub-Editable-Tracker-PDF-Export-Enhancements-352a59b7e7b281e5a1b0d18011f313ee">PM Hub — Editable Tracker / PDF Export Enhancements</a>
         <small>In progress. Updated 2026-07-08: PM Hub interaction writes through the active GitHub Pages dispatch path are now live-verified end-to-end through Notion and snapshot refresh. Remaining scope is durable editable tracker/PDF/export work plus cleanup of the temporary public dispatch-token pattern. Milestone edit and project edit paths have dry-run coverage but still need controlled live validation on safe reversible fields.</small>
@@ -606,7 +631,7 @@
       </div>
     </article>
 
-    <article class="task">
+    <article class="task" data-initiative="PM Hub Reliability &amp; Portfolio">
       <div>
         <a href="https://app.notion.com/p/PM-Hub-Phase-2-PSA-client-view-improvements-368a59b7e7b281f69cdbc0fbd3cea83d">PM Hub Phase 2 — PSA client view improvements</a>
         <small>Move PSA progress up top and add operational fields when PM Hub work resumes.</small>
@@ -619,7 +644,7 @@
       </div>
     </article>
 
-    <article class="task">
+    <article class="task" data-initiative="PM Hub Reliability &amp; Portfolio">
       <div>
         <a href="https://app.notion.com/p/DE-data-migration-milestone-and-roadmap-view-375a59b7e7b28193920ececb95a39eb7">DE data migration milestone and roadmap view</a>
         <small>Add data migration milestone/tracking layer and DE-specific view showing projects from a data migration standpoint. Coordinate with Jeremy on PSA milestone relationship and ensure DEs can speak directly to blockers in roadmap/project calls. Source: 2026-06-03 Forecast Review meeting.</small>
@@ -632,7 +657,7 @@
       </div>
     </article>
 
-    <article class="task">
+    <article class="task" data-initiative="PM Hub Reliability &amp; Portfolio">
       <div>
         <a href="https://app.notion.com/p/PM-Hub-replace-public-dispatch-token-with-server-side-broker-397a59b7e7b281a79cccf3d63fe19427">PM Hub — replace public dispatch token with server-side broker</a>
         <small>Security hardening follow-up from 2026-07-08 PM Hub sync handoff. Public PM Hub still embeds a GitHub repository_dispatch token. Current path works, but final architecture should replace the browser-visible token with a server-side broker, GitHub App-style flow, or equivalent authenticated relay.</small>
@@ -645,7 +670,7 @@
       </div>
     </article>
 
-    <article class="task">
+    <article class="task" data-initiative="PM Hub Reliability &amp; Portfolio">
       <div>
         <a href="https://app.notion.com/p/PM-Hub-Weekly-Team-Roll-Up-Summary-352a59b7e7b281bd98c6cf820ec361c4">PM Hub — Weekly Team Roll-Up Summary</a>
         <small>Weekly summary across all active projects. Covers: what's done vs. at-risk, progress vs. prior week, big action items. Pulls from Teams channels, Zendesk, call notes, Wrike tasks. Team-wide view, not just per-client.</small>
@@ -658,7 +683,7 @@
       </div>
     </article>
 
-    <article class="task">
+    <article class="task" data-initiative="PM Hub Reliability &amp; Portfolio">
       <div>
         <a href="https://app.notion.com/p/PM-Hub-Wrike-Dependency-Trigger-Notify-DE-352a59b7e7b2818086fce0ab169582ba">PM Hub — Wrike Dependency Trigger → Notify DE</a>
         <small>When a Wrike checkbox completes (e.g., Product Catalog Loaded), auto-notify the assigned DE: &quot;Product catalog done for [Client] — you're clear to start comparative.&quot; Scan dependency completions and alert relevant team member. Note: Wrike being phased out — may need workaround.</small>
@@ -671,7 +696,7 @@
       </div>
     </article>
 
-    <article class="task is-done">
+    <article class="task is-done" data-initiative="PM Hub Reliability &amp; Portfolio">
       <div>
         <a href="https://app.notion.com/p/PM-Hub-controlled-live-milestone-project-edit-validation-397a59b7e7b2814f96a5e6e39fdc3dce">PM Hub — controlled live milestone/project edit validation</a>
         <small>Follow-up from 2026-07-08 PM Hub sync handoff. Interaction logging is live-verified, but milestone edit and project edit were only dry-run validated after the workflow hardening. Run one controlled live milestone edit and one controlled live project edit on safe/reversible fields, verify Notion write, snapshot refresh, and portfolio.json reflection, then document exact rows/commits.</small>
@@ -684,7 +709,7 @@
       </div>
     </article>
 
-    <article class="task">
+    <article class="task" data-initiative="PM Hub Reliability &amp; Portfolio">
       <div>
         <a href="https://app.notion.com/p/PM-Hub-Ticket-Creation-Confirmation-Queue-352a59b7e7b28140b7ddde69d301d528">PM Hub — Ticket Creation Confirmation Queue</a>
         <small>When a call summary or content flags &quot;create a ticket&quot; intent, queue candidates and ask: &quot;Want me to create these X tickets?&quot; instead of auto-creating. Prevents noise. Safety gate before any ticket writes.</small>
@@ -697,7 +722,7 @@
       </div>
     </article>
 
-    <article class="task is-done">
+    <article class="task is-done" data-initiative="PM Hub Reliability &amp; Portfolio">
       <div>
         <a href="https://app.notion.com/p/PM-Hub-DE-project-workload-view-375a59b7e7b281cdb695df4cc47b36b7">PM Hub — DE project workload view</a>
         <small>Closed 2026-06-11. DE-focused PM Hub view is live in the rich PM Hub snapshot with 99 validated DE rows across Billing and PSA, split dual-LOB rows, no duplicate row IDs, and clean task/LOB invariants. Caveats for Evan: the public page still only has an Internal Only label, DE owner fields are sparse, and Billing DE task status is inferred from existing evidence because no dedicated Billing DE task feed exists yet.</small>
@@ -710,7 +735,7 @@
       </div>
     </article>
 
-    <article class="task is-done">
+    <article class="task is-done" data-initiative="PM Hub Reliability &amp; Portfolio">
       <div>
         <a href="https://app.notion.com/p/PM-Hub-Robust-Call-Action-Summary-Enhancements-358a59b7e7b281dd86a6e37331051408">PM Hub — Robust Call Action Summary Enhancements</a>
         <small>Closed 2026-06-02. PM Hub now includes work snapshot/actions evidence: action roll-up, blockers/risks, follow-ups, owner hints, due dates, last-heard date, stale-call warnings, fuzzy-match warnings, and Fireflies transcript links from snapshot data. Source: Onboarding-Automation-Project commit 16f90d8 and memory/CONTEXT PM Hub secure interaction sync + work snapshot entry.</small>
@@ -723,7 +748,7 @@
       </div>
     </article>
 
-    <article class="task is-done">
+    <article class="task is-done" data-initiative="PM Hub Reliability &amp; Portfolio">
       <div>
         <a href="https://app.notion.com/p/PM-Hub-DE-Filtered-View-352a59b7e7b2819695b4c93bb69b4aa4">PM Hub — DE Filtered View</a>
         <small>Closed 2026-06-11 as part of the DE View delivery. PM Hub now has a DE-focused view/data layer in portfolio.json, validated with 99 rows and clean invariants. Remaining caveats are data quality/access caveats rather than build blockers: many owner fields are still unassigned and Billing DE status is inferred.</small>
@@ -736,7 +761,7 @@
       </div>
     </article>
 
-    <article class="task is-done">
+    <article class="task is-done" data-initiative="PM Hub Reliability &amp; Portfolio">
       <div>
         <a href="https://app.notion.com/p/Create-Interaction-Teams-Sync-358a59b7e7b280bd96f0f550679944dc">Create Interaction Teams Sync</a>
         <small>Closed and refreshed. Original secure PM Hub interaction relay/watcher shipped 2026-06-02; watcher restored 2026-06-11 and converted to deterministic wrapper on 2026-06-12. Updated 2026-07-08 from original handoff: competing stale /hub and /api/pm-hub/* local write paths were retired; live /hub now redirects to GitHub Pages and /api/pm-hub/* returns 410. Active GitHub Pages repository_dispatch path was live-tested: log-interaction wrote Notion row 397a59b7-e7b2-81e6-97df-eab7bca741e7, requested snapshot refresh, and portfolio.json included the new interaction after snapshot commit ea12e6d. Teams remains best-effort and was intentionally skipped in the smoke test.</small>
@@ -764,7 +789,7 @@
       <div class="meter"><span style="width:0%"></span></div>
       <div class="task-list">
 
-    <article class="task">
+    <article class="task" data-initiative="Client-Facing Portal">
       <div>
         <a href="https://app.notion.com/p/Client-facing-onboarding-portal-Jeff-Getter-architecture-security-review-381a59b7e7b2815e89b2dec9280f3dae">Client-facing onboarding portal — Jeff Getter architecture/security review</a>
         <small>Get cloud/security architecture guidance before exposing customer onboarding data.</small>
@@ -792,7 +817,7 @@
       <div class="meter"><span style="width:66%"></span></div>
       <div class="task-list">
 
-    <article class="task">
+    <article class="task" data-initiative="Forecasting &amp; Capacity Planning">
       <div>
         <a href="https://app.notion.com/p/Forecast-dashboard-PM-self-tagged-monthly-commits-on-team-tiles-397a59b7e7b281bd853fe25bb9fc7142">Forecast dashboard — PM self-tagged monthly commits on team tiles</a>
         <small>Let PMs self-tag monthly committed deals and show current-month commit on each PM tile.</small>
@@ -805,7 +830,7 @@
       </div>
     </article>
 
-    <article class="task">
+    <article class="task" data-initiative="Forecasting &amp; Capacity Planning">
       <div>
         <a href="https://app.notion.com/p/Forecast-ops-Alex-Jeremy-monthly-commit-lock-cadence-381a59b7e7b2813b9ec2dedce90d5f98">Forecast ops — Alex/Jeremy monthly commit lock cadence</a>
         <small>Create the recurring month-end / first-business-day owner commit process.</small>
@@ -818,7 +843,7 @@
       </div>
     </article>
 
-    <article class="task">
+    <article class="task" data-initiative="Roadmap &amp; Pipeline Visibility">
       <div>
         <a href="https://app.notion.com/p/SLT-dashboard-sold-date-and-briefcase-time-visibility-for-active-onboarding-397a59b7e7b281c986bde676e902de40">SLT dashboard — sold date and briefcase-time visibility for active onboarding</a>
         <small>Add Sold Date and sold-to-kickoff “briefcase time” to the active onboarding dashboard.</small>
@@ -831,7 +856,7 @@
       </div>
     </article>
 
-    <article class="task">
+    <article class="task" data-initiative="Roadmap &amp; Pipeline Visibility">
       <div>
         <a href="https://app.notion.com/p/SLT-dashboard-unified-Pipeline-Management-page-with-rep-accountability-metrics-397a59b7e7b281c18e3be6aee837e85f">SLT dashboard — unified Pipeline Management page with rep accountability metrics</a>
         <small>Combine RTS, pipeline, and cancel views into one Pipeline Management page with rep/manager accountability metrics.</small>
@@ -844,7 +869,7 @@
       </div>
     </article>
 
-    <article class="task">
+    <article class="task" data-initiative="Budget Performance">
       <div>
         <a href="https://app.notion.com/p/Budget-Performance-Odin-Cyber-Protect-actuals-source-mapping-38ba59b7e7b28154bf8ff0d70882b92a">Budget Performance — Odin/Cyber Protect actuals source mapping</a>
         <small>Confirm the authoritative actual recognized MRR source for Odin and Cyber Protect before wiring those rows into the SLT Budget Performance page.</small>
@@ -857,7 +882,7 @@
       </div>
     </article>
 
-    <article class="task">
+    <article class="task" data-initiative="PM Hub Reliability &amp; Portfolio">
       <div>
         <a href="https://app.notion.com/p/Revise-health-score-model-for-Billing-and-PSA-clients-368a59b7e7b28166a4c3ecba3f97b5dc">Revise health score model for Billing and PSA clients</a>
         <small>Still open. Recent client digest/job-health work restored data freshness, but the actual redesign of Billing/PSA health scoring formulas has not been done. Keep as a future SLT/ops reporting improvement rather than marking complete.</small>
@@ -870,7 +895,7 @@
       </div>
     </article>
 
-    <article class="task is-done">
+    <article class="task is-done" data-initiative="Forecasting &amp; Capacity Planning">
       <div>
         <a href="https://app.notion.com/p/Forecast-dashboard-movement-tiles-and-most-likely-simplification-375a59b7e7b2814a8568c1e7bc25d3e5">Forecast dashboard movement tiles and most-likely simplification</a>
         <small>Build dashboard tiles for original commit, previous-week most likely, and current worst/most-likely/best. Show moved in/out projects with clear states; current forecast should collapse into most-likely rather than be a separate column.</small>
@@ -883,7 +908,7 @@
       </div>
     </article>
 
-    <article class="task is-done">
+    <article class="task is-done" data-initiative="Forecasting &amp; Capacity Planning">
       <div>
         <a href="https://app.notion.com/p/Forecast-dashboard-committed-forecast-line-cleanup-381a59b7e7b28154b546df3e73a583eb">Forecast dashboard — committed forecast line cleanup</a>
         <small>Reginald completed the forecast committed-forecast cleanup in slt-forecasts.</small>
@@ -896,7 +921,7 @@
       </div>
     </article>
 
-    <article class="task is-done">
+    <article class="task is-done" data-initiative="Forecasting &amp; Capacity Planning">
       <div>
         <a href="https://app.notion.com/p/Forecast-scripts-week-month-movement-and-LOB-language-cleanup-37aa59b7e7b2810093b5ffbcf0be5b7c">Forecast scripts — week/month movement and LOB language cleanup</a>
         <small>Closed 2026-06-09 and refreshed 2026-06-11. Forecast readouts now center on original baseline/current most-likely/prior movement, moved-in/moved-out projects, RTS/on-hold movement, and cleaner PSA/Billing language. Follow-up nested repo commit cd8df7d counts realized clients correctly in forecast movement scripts.</small>
@@ -909,7 +934,7 @@
       </div>
     </article>
 
-    <article class="task is-done">
+    <article class="task is-done" data-initiative="Forecasting &amp; Capacity Planning">
       <div>
         <a href="https://app.notion.com/p/Manual-monthly-forecast-commits-and-owner-rationale-375a59b7e7b281c69737e26650f34daa">Manual monthly forecast commits and owner rationale</a>
         <small>Closed 2026-06-04 with Forecast Operating Pack v0. The pack defines the manual first-business-day owner commit flow, required fields, owner rationale language, dependency categories, and meeting prompts. Live artifact: https://aiextucker.github.io/Onboarding-Automation-Project/forecast-operating-pack.html</small>
@@ -922,7 +947,7 @@
       </div>
     </article>
 
-    <article class="task is-done">
+    <article class="task is-done" data-initiative="Forecasting &amp; Capacity Planning">
       <div>
         <a href="https://app.notion.com/p/Populate-Billing-Confidence-for-active-Billing-clients-368a59b7e7b281929d68de6f4d7f88fd">Populate Billing Confidence for active Billing clients</a>
         <small>Closed 2026-05-29. Alfred cleaned the source data, excluded RTS/on-hold rows from the actionable ask, and handed the remaining 6 client Confidence values to PMs for update before next week. No further Alfred action pending unless follow-up audit still shows blanks.</small>
@@ -935,7 +960,7 @@
       </div>
     </article>
 
-    <article class="task is-done">
+    <article class="task is-done" data-initiative="PM Hub Reliability &amp; Portfolio">
       <div>
         <a href="https://app.notion.com/p/RTS-notification-workflow-dry-run-detector-and-guard-368a59b7e7b28145ba03f532de1da4e6">RTS notification workflow — dry-run detector and guard</a>
         <small>Dry-run detector and duplicate guard built in scripts/rts-communications.js. Reads PM Hub portfolio snapshot, classifies RTS / On Hold / Long-Term RTS candidates, writes timestamped Markdown reports under reports/, initializes data/rts-notification-state.json, and blocks Teams posting unless RTS_POST_APPROVED, RTS_COPY_APPROVED, and RTS_TIMING_APPROVED are all true. Latest validation: 29 active candidates from 2026-05-22 snapshot; no Teams posts sent.</small>
@@ -948,7 +973,7 @@
       </div>
     </article>
 
-    <article class="task is-done">
+    <article class="task is-done" data-initiative="Forecasting &amp; Capacity Planning">
       <div>
         <a href="https://app.notion.com/p/RTS-workflow-Teams-channel-access-and-copy-approval-368a59b7e7b28161a649ee58e1148d5f">RTS workflow — Teams channel access and copy approval</a>
         <small>2026-05-29: Closed as report-only/manual-ready. Added scripts/rts-workflow-report.js and baseline state data/rts-workflow-state.json. Baseline report reports/rts-workflow-report-2026-05-29T16-55-49-368Z.md scanned 205 PSA clients via Notion HTTP 200 and found 33 RTS/on-hold/long-term RTS rows: 14 pre-cancel, 5 initial RTS, 14 monitor-only. Follow-up report reports/rts-workflow-report-2026-05-29T16-56-47-741Z.md returned 0 new/materially changed notice candidates, confirming repeat suppression. No Teams posts were sent; external send/schedule remains approval-gated.</small>
@@ -961,7 +986,7 @@
       </div>
     </article>
 
-    <article class="task is-done">
+    <article class="task is-done" data-initiative="Forecasting &amp; Capacity Planning">
       <div>
         <a href="https://app.notion.com/p/SLT-dashboard-in-app-monthly-forecast-commits-37aa59b7e7b28100a99bf4448da65444">SLT dashboard — in-app monthly forecast commits</a>
         <small>Closed 2026-06-09. Forecast page now has a monthly commit panel with owner/count/MRR/rationale and original-commit badge. Current persistence is browser localStorage only; team-wide durable commit records would need a future shared backend or Notion storage decision.</small>
@@ -974,7 +999,7 @@
       </div>
     </article>
 
-    <article class="task is-done">
+    <article class="task is-done" data-initiative="Forecasting &amp; Capacity Planning">
       <div>
         <a href="https://app.notion.com/p/Billing-forecast-parity-targets-and-weekly-movement-368a59b7e7b281629dc1ec4eecc657e9">Billing forecast parity — targets and weekly movement</a>
         <small>Closed 2026-06-09. Billing script/readout now has parity with PSA movement framing, separate Billing forecast-history fetch, activation/recognized-MRR language, and owner-facing movement context.</small>
@@ -987,7 +1012,7 @@
       </div>
     </article>
 
-    <article class="task is-done">
+    <article class="task is-done" data-initiative="Forecasting &amp; Capacity Planning">
       <div>
         <a href="https://app.notion.com/p/End-of-month-forecast-prep-cadence-375a59b7e7b281f68327e68a9adcbec5">End-of-month forecast prep cadence</a>
         <small>Closed 2026-06-04 with Forecast Operating Pack v0. The pack defines the five-day, three-day, two-day, one-day, and first-business-day prep cadence with expected outputs. Live artifact: https://aiextucker.github.io/Onboarding-Automation-Project/forecast-operating-pack.html</small>
@@ -1000,7 +1025,7 @@
       </div>
     </article>
 
-    <article class="task is-done">
+    <article class="task is-done" data-initiative="Forecasting &amp; Capacity Planning">
       <div>
         <a href="https://app.notion.com/p/Forecast-assignment-cleanup-use-Owner-field-375a59b7e7b281898120e6ab1129d741">Forecast assignment cleanup — use Owner field</a>
         <small>Closed 2026-06-04. SLT forecast LOB configs now read PSA/Payments owner from the Notion Owner field instead of Solutions Analyst, and Team Overview fallback now uses c.owner before role fields/Unassigned so PM/functional owners are represented. Verified with Azure JS syntax checks, Next production build, and TypeScript check.</small>
@@ -1013,7 +1038,7 @@
       </div>
     </article>
 
-    <article class="task is-done">
+    <article class="task is-done" data-initiative="Forecasting &amp; Capacity Planning">
       <div>
         <a href="https://app.notion.com/p/Payments-forecast-script-with-JD-375a59b7e7b2815f8c07e7e7443db80b">Payments forecast script with JD</a>
         <small>Closed 2026-06-04 with Forecast Operating Pack v0. The pack includes a Payments forecast readout script aligned to PSA/Billing rhythm: count, movement, blockers, owner action, and confidence. Live artifact: https://aiextucker.github.io/Onboarding-Automation-Project/forecast-operating-pack.html</small>
@@ -1026,7 +1051,7 @@
       </div>
     </article>
 
-    <article class="task is-done">
+    <article class="task is-done" data-initiative="Forecasting &amp; Capacity Planning">
       <div>
         <a href="https://app.notion.com/p/PSA-metrics-baseline-and-remove-old-forecast-risk-qualifiers-368a59b7e7b281728679ef860b1db39a">PSA metrics baseline and remove old forecast risk qualifiers</a>
         <small>Closed 2026-06-03. May baseline analysis ran against live Notion PSA/Billing/Payments data with HTTP 200 responses, generated duration baselines, forecast movement, inferred push reasons, and SLT one-pager. Source files: reports/may-baseline-analysis-2026-06-03T13-55-33-366Z.md and reports/psa-slt-one-pager-may-baseline-2026-06-03.md.</small>
@@ -1039,7 +1064,7 @@
       </div>
     </article>
 
-    <article class="task is-done">
+    <article class="task is-done" data-initiative="Forecasting &amp; Capacity Planning">
       <div>
         <a href="https://app.notion.com/p/Pull-PSA-Duration-Data-358a59b7e7b280cda072ede54e153303">Pull PSA Duration Data</a>
         <small>Closed 2026-06-03 as part of the May baseline analysis. PSA rows scanned: 209. Duration baselines captured: Sold-to-kickoff n=191 median 9d/p75 15d/avg 25d; Kickoff-to-forecast n=38 median 55d/p75 80d/avg 72d; Kickoff-to-actual n=58 median 105d/p75 155d/avg 117d. Source: reports/may-baseline-analysis-2026-06-03T13-55-33-366Z.md.</small>
@@ -1052,7 +1077,7 @@
       </div>
     </article>
 
-    <article class="task is-done">
+    <article class="task is-done" data-initiative="Forecasting &amp; Capacity Planning">
       <div>
         <a href="https://app.notion.com/p/RTS-sold-date-and-briefcase-time-detail-views-375a59b7e7b2819cb4d7f8507dce51c4">RTS sold-date and briefcase-time detail views</a>
         <small>Closed 2026-06-03/04 through the May baseline and Forecast Operating Pack work. Sold-to-kickoff and kickoff-to-forecast/actual baselines were generated from live Notion data, and RTS/stick-rate cohort interpretation was incorporated into the SLT one-pager/forecast operating context.</small>
@@ -1065,7 +1090,7 @@
       </div>
     </article>
 
-    <article class="task is-done">
+    <article class="task is-done" data-initiative="Forecasting &amp; Capacity Planning">
       <div>
         <a href="https://app.notion.com/p/RTS-timing-policy-and-pre-cancel-template-368a59b7e7b281989100dfd2a263171f">RTS timing policy and pre-cancel template</a>
         <small>2026-05-29: Closed as report-only/manual-ready. Added scripts/rts-workflow-report.js and baseline state data/rts-workflow-state.json. Baseline report reports/rts-workflow-report-2026-05-29T16-55-49-368Z.md scanned 205 PSA clients via Notion HTTP 200 and found 33 RTS/on-hold/long-term RTS rows: 14 pre-cancel, 5 initial RTS, 14 monitor-only. Follow-up report reports/rts-workflow-report-2026-05-29T16-56-47-741Z.md returned 0 new/materially changed notice candidates, confirming repeat suppression. No Teams posts were sent; external send/schedule remains approval-gated.</small>
@@ -1093,7 +1118,7 @@
       <div class="meter"><span style="width:23%"></span></div>
       <div class="task-list">
 
-    <article class="task">
+    <article class="task" data-initiative="Sales / GTM Systems">
       <div>
         <a href="https://app.notion.com/p/Track-Ardit-sales-process-handoff-368a59b7e7b28106a9dec3fa6662af51">Track Ardit sales process handoff</a>
         <small>In progress. Recent Evan transcript says Alex met with Ardit; Ardit is working with Ryan on sales-team training/process changes for close-won automation, targeted for the following week. Remaining work is to capture the delivered handoff and turn it into durable automation requirements.</small>
@@ -1106,7 +1131,7 @@
       </div>
     </article>
 
-    <article class="task">
+    <article class="task" data-initiative="Sales / GTM Systems">
       <div>
         <a href="https://app.notion.com/p/Sales-AI-SDR-automation-discovery-with-Ryan-375a59b7e7b281a88a9dc4b7c7e394e8">Sales AI/SDR automation discovery with Ryan</a>
         <small>Waiting as of 2026-06-12. Alex prepared architecture/operating-model guidance for Chris after the Ryan Koontz payments/client-facing hub conversation. Hold implementation until feedback clarifies whether Sales automation and the client-facing onboarding hub should share one authenticated backend/relay and source-of-truth model.</small>
@@ -1119,7 +1144,7 @@
       </div>
     </article>
 
-    <article class="task">
+    <article class="task" data-initiative="Sales / GTM Systems">
       <div>
         <a href="https://app.notion.com/p/Pre-Config-Fireflies-Extraction-for-Sales-Calls-35ea59b7e7b281309024d233c188bfd1">Pre-Config — Fireflies Extraction for Sales Calls</a>
         <small>When generating a questionnaire, search Fireflies for any sales call transcripts and extract: prior PSA, accounting software, RMM tool, payment processor, key contacts, pain points, commitments. Pre-fill questionnaire fields where confident; flag gaps for SA. Currently no extraction logic exists.</small>
@@ -1132,7 +1157,7 @@
       </div>
     </article>
 
-    <article class="task">
+    <article class="task" data-initiative="Sales / GTM Systems">
       <div>
         <a href="https://app.notion.com/p/Sales-AI-toolkit-native-harness-and-Salesforce-connector-evaluation-381a59b7e7b281b18971f0f3087547d1">Sales AI toolkit — native harness and Salesforce connector evaluation</a>
         <small>Evaluate Claude/Codex/GPT native workflows and org-level Salesforce connector path.</small>
@@ -1145,7 +1170,7 @@
       </div>
     </article>
 
-    <article class="task is-done">
+    <article class="task is-done" data-initiative="Sales / GTM Systems">
       <div>
         <a href="https://app.notion.com/p/Talk-to-Ardit-re-Salesforce-Connected-App-34ba59b7e7b2816e81b3fa6a42afe84d">Talk to Ardit re: Salesforce Connected App</a>
         <small>Closed 2026-05-29: Salesforce OAuth 2.0 Client Credentials access is already connected and working for Opportunity, Account, and Contact reads. Credentials are stored in .env.salesforce; instance https://rev-io.my.salesforce.com; API v59.0. No further Ardit handoff needed for current read-only automation work.</small>
@@ -1173,7 +1198,7 @@
       <div class="meter"><span style="width:79%"></span></div>
       <div class="task-list">
 
-    <article class="task">
+    <article class="task" data-initiative="Roadmap &amp; Pipeline Visibility">
       <div>
         <a href="https://app.notion.com/p/Product-issue-escalation-loop-and-blocker-dashboard-375a59b7e7b28140b5c9f57c13273391">Product issue escalation loop and blocker dashboard</a>
         <small>Active next focus as of 2026-06-12 after Alex/Evan backlog review. Scope is read-only v1: use existing PM Hub portfolio.json plus PSA/Zendesk ticket evidence to group product blockers and escalation evidence. No product writes or external escalations yet. Paused local implementation exists in slt-forecasts stash/working tree under product-blockers/product-evidence files.</small>
@@ -1186,7 +1211,7 @@
       </div>
     </article>
 
-    <article class="task is-done">
+    <article class="task is-done" data-initiative="Quick Task">
       <div>
         <a href="https://app.notion.com/p/Add-SS-Items-to-ADO-33ba59b7e7b280b5ad86eef4bcffbb81">Add SS Items to ADO</a>
         <small>Closed per Alex on 2026-05-28: no further Sky Switch feedback received; task tracker has no Invalid status, so marked Done.</small>
@@ -1199,7 +1224,7 @@
       </div>
     </article>
 
-    <article class="task is-done">
+    <article class="task is-done" data-initiative="Quick Task">
       <div>
         <a href="https://app.notion.com/p/Get-prod-Rev-io-PSA-API-key-34ba59b7e7b2817f8739e188f3cd3f62">Get prod Rev.io PSA API key</a>
         <small>Closed 2026-05-29: production/internal PSA API key was located in the Agent Library and PSA API module work is complete for read/probe flows. Demo pre-config remains blocked separately on ARTED rollout and approval before writes; this credential-discovery task is no longer open.</small>
@@ -1227,7 +1252,7 @@
       <div class="meter"><span style="width:61%"></span></div>
       <div class="task-list">
 
-    <article class="task">
+    <article class="task" data-initiative="Agent Operations">
       <div>
         <a href="https://app.notion.com/p/Alfred-operating-stability-memory-cleanup-and-Reginald-handoff-model-381a59b7e7b28174af7efdb04792919a">Alfred operating stability — memory cleanup and Reginald handoff model</a>
         <small>Stabilize Alfred by keeping heavy coding and recurring operations separated.</small>
@@ -1240,7 +1265,7 @@
       </div>
     </article>
 
-    <article class="task">
+    <article class="task" data-initiative="Forecasting &amp; Capacity Planning">
       <div>
         <a href="https://app.notion.com/p/Automate-Complexity-Capacity-Scoring-34ba59b7e7b281aca2ccd670e2ee4867">Automate Complexity/Capacity Scoring</a>
         <small>Automation for scoring incoming billing client briefs is on hold, with a medium priority. The process involves three scores based on distinct rubrics, and a script skeleton has been built. A dry run showed a score of 37/100 for data quality. Key questions remain regarding data sources and scoring methods, with blockers including undefined intake form data and scoring thresholds pending a meeting with Lauren.</small>
@@ -1253,7 +1278,7 @@
       </div>
     </article>
 
-    <article class="task is-done">
+    <article class="task is-done" data-initiative="Roadmap &amp; Pipeline Visibility">
       <div>
         <a href="https://app.notion.com/p/Alex-work-roadmap-dashboard-v0-and-controls-375a59b7e7b281ad9e50e333392f441f">Alex work roadmap dashboard v0 and controls</a>
         <small>Completed 2026-06-04 from Evan transcript request: created Notion-backed Alex work roadmap dashboard, published GitHub Pages page/JSON feed, added collapsed workstream groups, Show Done toggle, grouping review page, PM Hub internal/client-facing split, and tracker audit page.</small>
@@ -1266,7 +1291,7 @@
       </div>
     </article>
 
-    <article class="task is-done">
+    <article class="task is-done" data-initiative="Credential Request Automation">
       <div>
         <a href="https://app.notion.com/p/Credential-Request-Automation-clean-commit-and-backup-shared-workspace-changes-38fa59b7e7b281b3a41bc8f7da1251cc">Credential Request Automation — clean commit and backup shared workspace changes</a>
         <small>Clean workspace backup path completed without pushing runtime DBs, generated workbooks, logs, env files, or heartbeat state.</small>
@@ -1294,7 +1319,7 @@
       <div class="meter"><span style="width:50%"></span></div>
       <div class="task-list">
 
-    <article class="task">
+    <article class="task" data-initiative="Quick Task">
       <div>
         <a href="https://app.notion.com/p/Acronis-SA-Training-33ba59b7e7b2802ea556eeeda818c468">Acronis SA Training</a>
         <small>Marked In Progress during 2026-06-04 tracker audit because the existing task summary says the Acronis SA Training task is in progress and assigned to Alex Tucker. Needs owner confirmation before marking Done.</small>
@@ -1307,7 +1332,7 @@
       </div>
     </article>
 
-    <article class="task">
+    <article class="task" data-initiative="Quick Task">
       <div>
         <a href="https://app.notion.com/p/Complete-Rev-io-Certifications-34ca59b7e7b28120b9cdf6fdcd93ea25">Complete Rev.io Certifications</a>
         <small>No content</small>
@@ -1320,7 +1345,7 @@
       </div>
     </article>
 
-    <article class="task is-done">
+    <article class="task is-done" data-initiative="PM Hub Reliability &amp; Portfolio">
       <div>
         <a href="https://app.notion.com/p/Communicate-milestone-scoring-behavior-to-PM-SA-team-368a59b7e7b2811b94a6dd0c1fa75ac1">Communicate milestone scoring behavior to PM/SA team</a>
         <small>Completed 2026-05-22. Alex confirmed the milestone scoring notification has already been sent to PMs/SAs: Completed = 100% credit, In Progress = 1/3 credit, all other statuses = 0%. Marked complete per Alex.</small>
@@ -1333,7 +1358,7 @@
       </div>
     </article>
 
-    <article class="task is-done">
+    <article class="task is-done" data-initiative="Quick Task">
       <div>
         <a href="https://app.notion.com/p/Admin-block-Alex-vacation-July-1-2-on-calendar-381a59b7e7b2811c8787ca932c0d45aa">Admin — block Alex vacation July 1-2 on calendar</a>
         <small>Calendar reminder from Evan 1:1.</small>
@@ -1482,10 +1507,11 @@
     </section>
   </main>
   <footer>
-    Source: <a href="https://app.notion.com/p/33ba59b7e7b2803486f0e749a312b51a">Notion Tasks Tracker</a>. Generated 2026-07-09T00:28:25.240Z. Rule: Done = 100%, In Progress = 50%, all other statuses = 0%, weighted by Effort level.
+    Source: <a href="https://app.notion.com/p/33ba59b7e7b2803486f0e749a312b51a">Notion Tasks Tracker</a>. Generated 2026-07-09T00:32:30.712Z. Rule: Done = 100%, In Progress = 50%, all other statuses = 0%, weighted by Effort level.
   </footer>
   <script>
     const showDoneToggle = document.getElementById('showDoneToggle');
+    const initiativeFilter = document.getElementById('initiativeFilter');
     const submitPanel = document.getElementById('submitPanel');
     const openSubmitWork = document.getElementById('openSubmitWork');
     const cancelSubmitWork = document.getElementById('cancelSubmitWork');
@@ -1495,12 +1521,31 @@
     const GITHUB_REPO = 'aiextucker/Onboarding-Automation-Project';
     const GITHUB_DISPATCH_TOKEN = ['ghp_fmu9dXErfsuaxu', 'LIjcWp4e7h5a92R74ZhaYc'].join('');
     const savedShowDone = localStorage.getItem('alex-roadmap-show-done') === 'true';
+    const savedInitiative = localStorage.getItem('alex-roadmap-initiative') || '';
     showDoneToggle.checked = savedShowDone;
+    if ([...initiativeFilter.options].some(option => option.value === savedInitiative)) {
+      initiativeFilter.value = savedInitiative;
+    }
     document.body.classList.toggle('show-done', savedShowDone);
+    applyInitiativeFilter();
     showDoneToggle.addEventListener('change', () => {
       document.body.classList.toggle('show-done', showDoneToggle.checked);
       localStorage.setItem('alex-roadmap-show-done', String(showDoneToggle.checked));
     });
+    initiativeFilter.addEventListener('change', () => {
+      localStorage.setItem('alex-roadmap-initiative', initiativeFilter.value);
+      applyInitiativeFilter();
+    });
+    function applyInitiativeFilter() {
+      const selected = initiativeFilter.value;
+      document.querySelectorAll('.task').forEach(task => {
+        task.hidden = Boolean(selected && task.dataset.initiative !== selected);
+      });
+      document.querySelectorAll('.group').forEach(group => {
+        const tasks = [...group.querySelectorAll('.task')];
+        group.hidden = Boolean(selected && tasks.every(task => task.hidden));
+      });
+    }
     openSubmitWork.addEventListener('click', () => {
       submitPanel.hidden = false;
       document.getElementById('workTitle').focus();
