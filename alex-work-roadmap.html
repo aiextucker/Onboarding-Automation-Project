@@ -43,7 +43,7 @@
     header p { max-width: 980px; margin: 0; color: var(--muted); }
     main { padding: 24px 32px 40px; max-width: 1480px; margin: 0 auto; }
     .stats { display: grid; grid-template-columns: repeat(6, minmax(120px, 1fr)); gap: 12px; margin-bottom: 20px; }
-    .stat, .group, .dependency, .script {
+    .stat, .group, .dependency, .script, .initiatives {
       background: var(--panel);
       border: 1px solid var(--line);
       border-radius: 8px;
@@ -236,8 +236,12 @@
     .pending-item strong { display: block; overflow-wrap: anywhere; }
     .pending-item small { display: block; color: var(--muted); margin-top: 3px; }
     aside { display: grid; gap: 16px; }
-    .dependency, .script { padding: 16px; }
-    .dependency h2, .script h2 { margin: 0 0 12px; font-size: 18px; }
+    .dependency, .script, .initiatives { padding: 16px; }
+    .dependency h2, .script h2, .initiatives h2 { margin: 0 0 12px; font-size: 18px; }
+    .initiative-item { border-top: 1px solid #edf0f4; padding: 9px 0; }
+    .initiative-item:first-of-type { border-top: 0; padding-top: 0; }
+    .initiative-item strong { display: block; font-size: 14px; }
+    .initiative-item span { color: var(--muted); font-size: 12px; }
     .dep-item { border-top: 1px solid #edf0f4; padding: 10px 0; }
     .dep-item:first-of-type { border-top: 0; padding-top: 0; }
     .dep-item strong { display: block; font-size: 14px; }
@@ -274,12 +278,12 @@
   </header>
   <main>
     <section class="stats">
-      <div class="stat"><span>Tracked Tasks</span><strong>58</strong></div>
-      <div class="stat"><span>Active</span><strong>25</strong></div>
-      <div class="stat"><span>Done</span><strong>33</strong></div>
+      <div class="stat"><span>Tracked Tasks</span><strong>69</strong></div>
+      <div class="stat"><span>Active</span><strong>31</strong></div>
+      <div class="stat"><span>Done</span><strong>38</strong></div>
       <div class="stat"><span>Blocked / Hold</span><strong>8</strong></div>
-      <div class="stat"><span>Now</span><strong>5</strong></div>
-      <div class="stat"><span>Next</span><strong>10</strong></div>
+      <div class="stat"><span>Now</span><strong>7</strong></div>
+      <div class="stat"><span>Next</span><strong>16</strong></div>
     </section>
     <section class="top-actions" aria-label="Roadmap actions">
       <div class="controls" aria-label="Roadmap display controls">
@@ -333,12 +337,25 @@
         <span class="group-toggle" aria-hidden="true"></span>
         <span class="group-title">
           <span class="group-name">Onboarding Automation</span>
-          <span class="group-meta">5 active · 9 done · 0 now · 1 next · 4 waiting</span>
+          <span class="group-meta">7 active · 10 done · 1 now · 1 next · 4 waiting</span>
         </span>
-        <span class="group-progress">63%</span>
+        <span class="group-progress">60%</span>
       </summary>
-      <div class="meter"><span style="width:63%"></span></div>
+      <div class="meter"><span style="width:60%"></span></div>
       <div class="task-list">
+
+    <article class="task">
+      <div>
+        <a href="https://app.notion.com/p/Credential-Request-Automation-review-generated-workbooks-and-matching-quality-38fa59b7e7b28125bdfff22384d1ac2c">Credential Request Automation — review generated workbooks and matching quality</a>
+        <small>Reginald produced the workbook QA report; Alex still needs to review representative workbooks before this can close.</small>
+      </div>
+      <div class="badges">
+        <span class="badge status-In-Progress">In Progress</span>
+        <span class="badge">Now</span>
+        <span class="badge">High</span>
+        <span class="badge">Medium</span>
+      </div>
+    </article>
 
     <article class="task">
       <div>
@@ -394,21 +411,47 @@
 
     <article class="task">
       <div>
-        <a href="https://app.notion.com/p/Questionnaire-Save-and-Resume-localStorage-35ea59b7e7b2816bab2ff583d81f6102">Questionnaire — Save-and-Resume (localStorage)</a>
-        <small>If a client closes the tab mid-way, they lose all progress. Add localStorage persistence so answers are saved as they go and restored on reload. Should also handle the pre-filled data not being overwritten on restore.</small>
+        <a href="https://app.notion.com/p/Onboarding-docs-Rev-io-onboarding-language-and-Things-You-Need-to-Know-refresh-397a59b7e7b28145aa0cf0646a3633e6">Onboarding docs — Rev.io onboarding language and Things You Need to Know refresh</a>
+        <small>Update project plans/client-facing docs to say Rev.io onboarding and refresh Things You Need to Know for universal billing language.</small>
       </div>
       <div class="badges">
         <span class="badge status-Not-Started">Not Started</span>
         <span class="badge">Next</span>
         <span class="badge">Medium</span>
-        <span class="badge">No effort</span>
+        <span class="badge">Medium</span>
+      </div>
+    </article>
+
+    <article class="task">
+      <div>
+        <a href="https://app.notion.com/p/Credential-Request-Automation-decide-webhook-route-posture-38fa59b7e7b2813e9d1bd4b34741d5b9">Credential Request Automation — decide webhook route posture</a>
+        <small>Decide whether to keep the credential-request webhook route enabled or remove/disable it while scheduled watcher mode is the production path.</small>
+      </div>
+      <div class="badges">
+        <span class="badge status-Not-Started">Not Started</span>
+        <span class="badge">Later</span>
+        <span class="badge">Low</span>
+        <span class="badge">Small</span>
+      </div>
+    </article>
+
+    <article class="task is-done">
+      <div>
+        <a href="https://app.notion.com/p/Credential-Request-Automation-decide-review-notice-routing-38fa59b7e7b281cba586cb05b7a9defb">Credential Request Automation — decide review notice routing</a>
+        <small>Decision made: keep needs_review notices owner-directed; centralized exception routing remains unset.</small>
+      </div>
+      <div class="badges">
+        <span class="badge status-Done">Done</span>
+        <span class="badge">Done</span>
+        <span class="badge">High</span>
+        <span class="badge">Small</span>
       </div>
     </article>
 
     <article class="task is-done">
       <div>
         <a href="https://app.notion.com/p/Graduation-Checklist-automate-submission-capture-375a59b7e7b281beb949f3f182d6543f">Graduation Checklist — automate submission capture</a>
-        <small>Implemented in Onboarding-Automation-Project commit 77c0781. PSA graduation checklist now submits via repository_dispatch to a GitHub Action, generates a PDF from the submitted checklist/sign-off data, uploads it to the Teams channel Files folder, and posts in - PSA Graduations with the PDF link/reference. Browser submit smoke test used an intercepted GitHub request; Graph read-only checks confirmed token, channel, and filesFolder access with HTTP 200. No live Teams test post was sent during setup.</small>
+        <small>Updated 2026-06-24. PSA graduation checklist Teams posting is complete and verified in the real - PSA Graduations channel at Onboarding-Automation-Project commit 84c0e3a. The flow preserves full notes, splits oversized notes into Teams thread replies, tags alexia.scottmorrison@rev.io / ryan.burton@rev.io / blaine.villafuerte@rev.io on the main post only, and avoids Graph /users email lookup because the workflow token lacks directory-read permission. Real repository_dispatch run 28106473165 logged TEAMS_POST_STATUS ok 1782311857130 - PSA Graduations, and Alex confirmed the message was visible and perfect.</small>
       </div>
       <div class="badges">
         <span class="badge status-Done">Done</span>
@@ -530,11 +573,11 @@
         <span class="group-toggle" aria-hidden="true"></span>
         <span class="group-title">
           <span class="group-name">PM Hub Internal Improvements</span>
-          <span class="group-meta">9 active · 4 done · 2 now · 4 next · 2 waiting</span>
+          <span class="group-meta">8 active · 5 done · 2 now · 5 next · 1 waiting</span>
         </span>
-        <span class="group-progress">35%</span>
+        <span class="group-progress">43%</span>
       </summary>
-      <div class="meter"><span style="width:35%"></span></div>
+      <div class="meter"><span style="width:43%"></span></div>
       <div class="task-list">
 
     <article class="task">
@@ -553,7 +596,7 @@
     <article class="task">
       <div>
         <a href="https://app.notion.com/p/PM-Hub-Editable-Tracker-PDF-Export-Enhancements-352a59b7e7b281e5a1b0d18011f313ee">PM Hub — Editable Tracker / PDF Export Enhancements</a>
-        <small>In progress. Recent shipped pieces: public PM Hub edits and milestone data restored through GitHub Actions dispatch; active GitHub Actions snapshot publisher now has guardrails, rich PM Hub fields, DE View rows, match diagnostics, milestones, interactions, Zendesk tickets, and PSA ticket links. Remaining work is the durable editable tracker/PDF/export layer and eventual cleanup of the temporary public dispatch-token pattern.</small>
+        <small>In progress. Updated 2026-07-08: PM Hub interaction writes through the active GitHub Pages dispatch path are now live-verified end-to-end through Notion and snapshot refresh. Remaining scope is durable editable tracker/PDF/export work plus cleanup of the temporary public dispatch-token pattern. Milestone edit and project edit paths have dry-run coverage but still need controlled live validation on safe reversible fields.</small>
       </div>
       <div class="badges">
         <span class="badge status-In-Progress">In Progress</span>
@@ -578,19 +621,6 @@
 
     <article class="task">
       <div>
-        <a href="https://app.notion.com/p/PSA-client-facing-tracker-and-PDF-export-368a59b7e7b281c1a76dcacda9194ea7">PSA client-facing tracker and PDF export</a>
-        <small>On hold as of 2026-06-12. Alex wants to wait for feedback on the Sales / Client-Facing Hub architecture before continuing this lane. Current public/static PM Hub approach is useful for demos, but client-facing portal work needs auth/source-of-truth/relay decisions before more build work.</small>
-      </div>
-      <div class="badges">
-        <span class="badge status-On-Hold">On Hold</span>
-        <span class="badge">Waiting</span>
-        <span class="badge">Medium</span>
-        <span class="badge">Large</span>
-      </div>
-    </article>
-
-    <article class="task">
-      <div>
         <a href="https://app.notion.com/p/DE-data-migration-milestone-and-roadmap-view-375a59b7e7b28193920ececb95a39eb7">DE data migration milestone and roadmap view</a>
         <small>Add data migration milestone/tracking layer and DE-specific view showing projects from a data migration standpoint. Coordinate with Jeremy on PSA milestone relationship and ensure DEs can speak directly to blockers in roadmap/project calls. Source: 2026-06-03 Forecast Review meeting.</small>
       </div>
@@ -604,14 +634,14 @@
 
     <article class="task">
       <div>
-        <a href="https://app.notion.com/p/Billing-tracker-cleanup-368a59b7e7b281f6ad68d9af38ec8806">Billing tracker cleanup</a>
-        <small>Clean billing tracker notes/components/questionnaire links.</small>
+        <a href="https://app.notion.com/p/PM-Hub-replace-public-dispatch-token-with-server-side-broker-397a59b7e7b281a79cccf3d63fe19427">PM Hub — replace public dispatch token with server-side broker</a>
+        <small>Security hardening follow-up from 2026-07-08 PM Hub sync handoff. Public PM Hub still embeds a GitHub repository_dispatch token. Current path works, but final architecture should replace the browser-visible token with a server-side broker, GitHub App-style flow, or equivalent authenticated relay.</small>
       </div>
       <div class="badges">
         <span class="badge status-Not-Started">Not Started</span>
         <span class="badge">Next</span>
-        <span class="badge">Medium</span>
-        <span class="badge">Medium</span>
+        <span class="badge">High</span>
+        <span class="badge">No effort</span>
       </div>
     </article>
 
@@ -638,6 +668,19 @@
         <span class="badge">Next</span>
         <span class="badge">Medium</span>
         <span class="badge">Medium</span>
+      </div>
+    </article>
+
+    <article class="task is-done">
+      <div>
+        <a href="https://app.notion.com/p/PM-Hub-controlled-live-milestone-project-edit-validation-397a59b7e7b2814f96a5e6e39fdc3dce">PM Hub — controlled live milestone/project edit validation</a>
+        <small>Follow-up from 2026-07-08 PM Hub sync handoff. Interaction logging is live-verified, but milestone edit and project edit were only dry-run validated after the workflow hardening. Run one controlled live milestone edit and one controlled live project edit on safe/reversible fields, verify Notion write, snapshot refresh, and portfolio.json reflection, then document exact rows/commits.</small>
+      </div>
+      <div class="badges">
+        <span class="badge status-Done">Done</span>
+        <span class="badge">Next</span>
+        <span class="badge">Medium</span>
+        <span class="badge">No effort</span>
       </div>
     </article>
 
@@ -696,7 +739,7 @@
     <article class="task is-done">
       <div>
         <a href="https://app.notion.com/p/Create-Interaction-Teams-Sync-358a59b7e7b280bd96f0f550679944dc">Create Interaction Teams Sync</a>
-        <small>Closed and refreshed. Original secure PM Hub interaction relay/watcher shipped 2026-06-02. Restored missing watcher script on 2026-06-11, verified dry-run/channel resolution, reset watermark to avoid back-post noise, and confirmed clean runs. On 2026-06-12 Merple converted the high-frequency watcher from an OpenClaw AI/model cron to plain scheduled wrapper scripts/cron-pm-hub-interactions.sh -&gt; node scripts/notion-interactions-teams-sync.js --limit 25, eliminating repeated model turns while preserving script behavior.</small>
+        <small>Closed and refreshed. Original secure PM Hub interaction relay/watcher shipped 2026-06-02; watcher restored 2026-06-11 and converted to deterministic wrapper on 2026-06-12. Updated 2026-07-08 from original handoff: competing stale /hub and /api/pm-hub/* local write paths were retired; live /hub now redirects to GitHub Pages and /api/pm-hub/* returns 410. Active GitHub Pages repository_dispatch path was live-tested: log-interaction wrote Notion row 397a59b7-e7b2-81e6-97df-eab7bca741e7, requested snapshot refresh, and portfolio.json included the new interaction after snapshot commit ea12e6d. Teams remains best-effort and was intentionally skipped in the smoke test.</small>
       </div>
       <div class="badges">
         <span class="badge status-Done">Done</span>
@@ -713,13 +756,106 @@
       <summary class="group-summary">
         <span class="group-toggle" aria-hidden="true"></span>
         <span class="group-title">
-          <span class="group-name">Forecast &amp; SLT Reporting</span>
-          <span class="group-meta">1 active · 15 done · 0 now · 2 next</span>
+          <span class="group-name">Client-Facing Portal</span>
+          <span class="group-meta">1 active · 0 done · 0 now · 0 next · 1 waiting</span>
         </span>
-        <span class="group-progress">87%</span>
+        <span class="group-progress">0%</span>
       </summary>
-      <div class="meter"><span style="width:87%"></span></div>
+      <div class="meter"><span style="width:0%"></span></div>
       <div class="task-list">
+
+    <article class="task">
+      <div>
+        <a href="https://app.notion.com/p/Client-facing-onboarding-portal-Jeff-Getter-architecture-security-review-381a59b7e7b2815e89b2dec9280f3dae">Client-facing onboarding portal — Jeff Getter architecture/security review</a>
+        <small>Get cloud/security architecture guidance before exposing customer onboarding data.</small>
+      </div>
+      <div class="badges">
+        <span class="badge status-Blocked">Blocked</span>
+        <span class="badge">Waiting</span>
+        <span class="badge">High</span>
+        <span class="badge">Medium</span>
+      </div>
+    </article>
+
+      </div>
+    </details>
+
+    <details class="group">
+      <summary class="group-summary">
+        <span class="group-toggle" aria-hidden="true"></span>
+        <span class="group-title">
+          <span class="group-name">Forecast &amp; SLT Reporting</span>
+          <span class="group-meta">6 active · 16 done · 0 now · 7 next</span>
+        </span>
+        <span class="group-progress">66%</span>
+      </summary>
+      <div class="meter"><span style="width:66%"></span></div>
+      <div class="task-list">
+
+    <article class="task">
+      <div>
+        <a href="https://app.notion.com/p/Forecast-dashboard-PM-self-tagged-monthly-commits-on-team-tiles-397a59b7e7b281bd853fe25bb9fc7142">Forecast dashboard — PM self-tagged monthly commits on team tiles</a>
+        <small>Let PMs self-tag monthly committed deals and show current-month commit on each PM tile.</small>
+      </div>
+      <div class="badges">
+        <span class="badge status-Not-Started">Not Started</span>
+        <span class="badge">Next</span>
+        <span class="badge">High</span>
+        <span class="badge">Medium</span>
+      </div>
+    </article>
+
+    <article class="task">
+      <div>
+        <a href="https://app.notion.com/p/Forecast-ops-Alex-Jeremy-monthly-commit-lock-cadence-381a59b7e7b2813b9ec2dedce90d5f98">Forecast ops — Alex/Jeremy monthly commit lock cadence</a>
+        <small>Create the recurring month-end / first-business-day owner commit process.</small>
+      </div>
+      <div class="badges">
+        <span class="badge status-Not-Started">Not Started</span>
+        <span class="badge">Next</span>
+        <span class="badge">High</span>
+        <span class="badge">Small</span>
+      </div>
+    </article>
+
+    <article class="task">
+      <div>
+        <a href="https://app.notion.com/p/SLT-dashboard-sold-date-and-briefcase-time-visibility-for-active-onboarding-397a59b7e7b281c986bde676e902de40">SLT dashboard — sold date and briefcase-time visibility for active onboarding</a>
+        <small>Add Sold Date and sold-to-kickoff “briefcase time” to the active onboarding dashboard.</small>
+      </div>
+      <div class="badges">
+        <span class="badge status-Not-Started">Not Started</span>
+        <span class="badge">Next</span>
+        <span class="badge">High</span>
+        <span class="badge">Medium</span>
+      </div>
+    </article>
+
+    <article class="task">
+      <div>
+        <a href="https://app.notion.com/p/SLT-dashboard-unified-Pipeline-Management-page-with-rep-accountability-metrics-397a59b7e7b281c18e3be6aee837e85f">SLT dashboard — unified Pipeline Management page with rep accountability metrics</a>
+        <small>Combine RTS, pipeline, and cancel views into one Pipeline Management page with rep/manager accountability metrics.</small>
+      </div>
+      <div class="badges">
+        <span class="badge status-Not-Started">Not Started</span>
+        <span class="badge">Next</span>
+        <span class="badge">High</span>
+        <span class="badge">Large</span>
+      </div>
+    </article>
+
+    <article class="task">
+      <div>
+        <a href="https://app.notion.com/p/Budget-Performance-Odin-Cyber-Protect-actuals-source-mapping-38ba59b7e7b28154bf8ff0d70882b92a">Budget Performance — Odin/Cyber Protect actuals source mapping</a>
+        <small>Confirm the authoritative actual recognized MRR source for Odin and Cyber Protect before wiring those rows into the SLT Budget Performance page.</small>
+      </div>
+      <div class="badges">
+        <span class="badge status-Not-Started">Not Started</span>
+        <span class="badge">Next</span>
+        <span class="badge">Medium</span>
+        <span class="badge">Small</span>
+      </div>
+    </article>
 
     <article class="task">
       <div>
@@ -744,6 +880,19 @@
         <span class="badge">Next</span>
         <span class="badge">High</span>
         <span class="badge">Large</span>
+      </div>
+    </article>
+
+    <article class="task is-done">
+      <div>
+        <a href="https://app.notion.com/p/Forecast-dashboard-committed-forecast-line-cleanup-381a59b7e7b28154b546df3e73a583eb">Forecast dashboard — committed forecast line cleanup</a>
+        <small>Reginald completed the forecast committed-forecast cleanup in slt-forecasts.</small>
+      </div>
+      <div class="badges">
+        <span class="badge status-Done">Done</span>
+        <span class="badge">Done</span>
+        <span class="badge">High</span>
+        <span class="badge">Small</span>
       </div>
     </article>
 
@@ -937,11 +1086,11 @@
         <span class="group-toggle" aria-hidden="true"></span>
         <span class="group-title">
           <span class="group-name">Sales / GTM Automation</span>
-          <span class="group-meta">3 active · 1 done · 1 now · 1 next · 1 waiting</span>
+          <span class="group-meta">4 active · 1 done · 1 now · 2 next · 1 waiting</span>
         </span>
-        <span class="group-progress">31%</span>
+        <span class="group-progress">23%</span>
       </summary>
-      <div class="meter"><span style="width:31%"></span></div>
+      <div class="meter"><span style="width:23%"></span></div>
       <div class="task-list">
 
     <article class="task">
@@ -983,6 +1132,19 @@
       </div>
     </article>
 
+    <article class="task">
+      <div>
+        <a href="https://app.notion.com/p/Sales-AI-toolkit-native-harness-and-Salesforce-connector-evaluation-381a59b7e7b281b18971f0f3087547d1">Sales AI toolkit — native harness and Salesforce connector evaluation</a>
+        <small>Evaluate Claude/Codex/GPT native workflows and org-level Salesforce connector path.</small>
+      </div>
+      <div class="badges">
+        <span class="badge status-Not-Started">Not Started</span>
+        <span class="badge">Next</span>
+        <span class="badge">Medium</span>
+        <span class="badge">Medium</span>
+      </div>
+    </article>
+
     <article class="task is-done">
       <div>
         <a href="https://app.notion.com/p/Talk-to-Ardit-re-Salesforce-Connected-App-34ba59b7e7b2816e81b3fa6a42afe84d">Talk to Ardit re: Salesforce Connected App</a>
@@ -1004,11 +1166,11 @@
         <span class="group-toggle" aria-hidden="true"></span>
         <span class="group-title">
           <span class="group-name">Product Evidence / Roadmap</span>
-          <span class="group-meta">4 active · 2 done · 1 now · 1 next</span>
+          <span class="group-meta">1 active · 2 done · 1 now · 0 next</span>
         </span>
-        <span class="group-progress">39%</span>
+        <span class="group-progress">79%</span>
       </summary>
-      <div class="meter"><span style="width:39%"></span></div>
+      <div class="meter"><span style="width:79%"></span></div>
       <div class="task-list">
 
     <article class="task">
@@ -1021,45 +1183,6 @@
         <span class="badge">Now</span>
         <span class="badge">High</span>
         <span class="badge">Medium</span>
-      </div>
-    </article>
-
-    <article class="task">
-      <div>
-        <a href="https://app.notion.com/p/Viking-UX-evidence-loop-from-Jeremy-videos-375a59b7e7b2817cb0f6c70d22aa8bc1">Viking UX evidence loop from Jeremy videos</a>
-        <small>Use Jeremy/Viking UX videos plus onboarding data to identify where users consistently get stuck by module/topic and package evidence for Product. Source: 2026-05-29 Product Development meeting and 2026-06-03 Forecast Review.</small>
-      </div>
-      <div class="badges">
-        <span class="badge status-Not-Started">Not Started</span>
-        <span class="badge">Next</span>
-        <span class="badge">Medium</span>
-        <span class="badge">Medium</span>
-      </div>
-    </article>
-
-    <article class="task">
-      <div>
-        <a href="https://app.notion.com/p/Halo-competitive-benchmarking-and-battlecards-375a59b7e7b281e4b366c45af249f2fe">Halo competitive benchmarking and battlecards</a>
-        <small>Get access/subscriptions for Halo or available competitive references, benchmark Rev.io against competitor workflows/pricing/setup, and turn findings into battlecards or onboarding/product evidence. Source: 2026-06-03 Forecast Review meeting.</small>
-      </div>
-      <div class="badges">
-        <span class="badge status-Not-Started">Not Started</span>
-        <span class="badge">Later</span>
-        <span class="badge">Medium</span>
-        <span class="badge">Medium</span>
-      </div>
-    </article>
-
-    <article class="task">
-      <div>
-        <a href="https://app.notion.com/p/Workflow-replacement-UX-review-with-Jeremy-375a59b7e7b281719850f23f068cb557">Workflow-replacement UX review with Jeremy</a>
-        <small>Review workflows as possible process replacements with Jeremy and assess what is viable for onboarding/product change. Source: 2026-06-03 Forecast Review meeting.</small>
-      </div>
-      <div class="badges">
-        <span class="badge status-Not-Started">Not Started</span>
-        <span class="badge">Later</span>
-        <span class="badge">Medium</span>
-        <span class="badge">Small</span>
       </div>
     </article>
 
@@ -1097,16 +1220,29 @@
         <span class="group-toggle" aria-hidden="true"></span>
         <span class="group-title">
           <span class="group-name">Operations Maintenance</span>
-          <span class="group-meta">1 active · 1 done · 0 now · 0 next · 1 waiting</span>
+          <span class="group-meta">2 active · 2 done · 1 now · 0 next · 1 waiting</span>
         </span>
-        <span class="group-progress">60%</span>
+        <span class="group-progress">61%</span>
       </summary>
-      <div class="meter"><span style="width:60%"></span></div>
+      <div class="meter"><span style="width:61%"></span></div>
       <div class="task-list">
 
     <article class="task">
       <div>
-        <a href="https://app.notion.com/p/Billing-brief-complexity-scoring-automation-34ba59b7e7b281aca2ccd670e2ee4867">Billing brief complexity scoring automation</a>
+        <a href="https://app.notion.com/p/Alfred-operating-stability-memory-cleanup-and-Reginald-handoff-model-381a59b7e7b28174af7efdb04792919a">Alfred operating stability — memory cleanup and Reginald handoff model</a>
+        <small>Stabilize Alfred by keeping heavy coding and recurring operations separated.</small>
+      </div>
+      <div class="badges">
+        <span class="badge status-In-Progress">In Progress</span>
+        <span class="badge">Now</span>
+        <span class="badge">High</span>
+        <span class="badge">Medium</span>
+      </div>
+    </article>
+
+    <article class="task">
+      <div>
+        <a href="https://app.notion.com/p/Automate-Complexity-Capacity-Scoring-34ba59b7e7b281aca2ccd670e2ee4867">Automate Complexity/Capacity Scoring</a>
         <small>Automation for scoring incoming billing client briefs is on hold, with a medium priority. The process involves three scores based on distinct rubrics, and a script skeleton has been built. A dry run showed a score of 37/100 for data quality. Key questions remain regarding data sources and scoring methods, with blockers including undefined intake form data and scoring thresholds pending a meeting with Lauren.</small>
       </div>
       <div class="badges">
@@ -1130,6 +1266,19 @@
       </div>
     </article>
 
+    <article class="task is-done">
+      <div>
+        <a href="https://app.notion.com/p/Credential-Request-Automation-clean-commit-and-backup-shared-workspace-changes-38fa59b7e7b281b3a41bc8f7da1251cc">Credential Request Automation — clean commit and backup shared workspace changes</a>
+        <small>Clean workspace backup path completed without pushing runtime DBs, generated workbooks, logs, env files, or heartbeat state.</small>
+      </div>
+      <div class="badges">
+        <span class="badge status-Done">Done</span>
+        <span class="badge">Done</span>
+        <span class="badge">Medium</span>
+        <span class="badge">Small</span>
+      </div>
+    </article>
+
       </div>
     </details>
 
@@ -1138,11 +1287,11 @@
         <span class="group-toggle" aria-hidden="true"></span>
         <span class="group-title">
           <span class="group-name">Training / Admin</span>
-          <span class="group-meta">2 active · 1 done · 1 now · 1 next</span>
+          <span class="group-meta">2 active · 2 done · 1 now · 1 next</span>
         </span>
-        <span class="group-progress">40%</span>
+        <span class="group-progress">50%</span>
       </summary>
-      <div class="meter"><span style="width:40%"></span></div>
+      <div class="meter"><span style="width:50%"></span></div>
       <div class="task-list">
 
     <article class="task">
@@ -1184,10 +1333,77 @@
       </div>
     </article>
 
+    <article class="task is-done">
+      <div>
+        <a href="https://app.notion.com/p/Admin-block-Alex-vacation-July-1-2-on-calendar-381a59b7e7b2811c8787ca932c0d45aa">Admin — block Alex vacation July 1-2 on calendar</a>
+        <small>Calendar reminder from Evan 1:1.</small>
+      </div>
+      <div class="badges">
+        <span class="badge status-Done">Done</span>
+        <span class="badge">Done</span>
+        <span class="badge">Low</span>
+        <span class="badge">Small</span>
+      </div>
+    </article>
+
       </div>
     </details>
   </div>
       <aside>
+        <section class="initiatives">
+          <h2>Initiatives</h2>
+
+    <div class="initiative-item">
+      <strong>PM Hub Reliability &amp; Portfolio</strong>
+      <span>9 active · 17 total · 1 blocked/hold</span>
+    </div>
+
+    <div class="initiative-item">
+      <strong>Sales / GTM Systems</strong>
+      <span>4 active · 5 total · 1 blocked/hold</span>
+    </div>
+
+    <div class="initiative-item">
+      <strong>Forecasting &amp; Capacity Planning</strong>
+      <span>3 active · 19 total · 1 blocked/hold</span>
+    </div>
+
+    <div class="initiative-item">
+      <strong>Credential Request Automation</strong>
+      <span>3 active · 10 total · 1 blocked/hold</span>
+    </div>
+
+    <div class="initiative-item">
+      <strong>Quick Task</strong>
+      <span>3 active · 7 total · 1 blocked/hold</span>
+    </div>
+
+    <div class="initiative-item">
+      <strong>Onboarding Intake &amp; RTS Governance</strong>
+      <span>3 active · 4 total · 2 blocked/hold</span>
+    </div>
+
+    <div class="initiative-item">
+      <strong>Roadmap &amp; Pipeline Visibility</strong>
+      <span>3 active · 4 total</span>
+    </div>
+
+    <div class="initiative-item">
+      <strong>Agent Operations</strong>
+      <span>1 active · 1 total</span>
+    </div>
+
+    <div class="initiative-item">
+      <strong>Budget Performance</strong>
+      <span>1 active · 1 total</span>
+    </div>
+
+    <div class="initiative-item">
+      <strong>Client-Facing Portal</strong>
+      <span>1 active · 1 total · 1 blocked/hold</span>
+    </div>
+
+        </section>
         <section class="dependency">
           <h2>Dependency Watch</h2>
 
@@ -1203,7 +1419,7 @@
 
             <div class="dep-item">
               <strong>PM Hub — Editable Tracker / PDF Export Enhancements</strong>
-              <span>PM Hub Internal Improvements · In Progress · Future cleanup should replace public dispatch token pattern with an authenticated backend/edge relay and rotated exposed token.</span>
+              <span>PM Hub Internal Improvements · In Progress · Token/security cleanup should be handled as its own hardening task; do not treat public dispatch token as the final architecture.</span>
             </div>
 
             <div class="dep-item">
@@ -1214,6 +1430,11 @@
             <div class="dep-item">
               <strong>Auto-config persistence/security design</strong>
               <span>Onboarding Automation · Blocked · Blocked on approved persistence/security design.</span>
+            </div>
+
+            <div class="dep-item">
+              <strong>Client-facing onboarding portal — Jeff Getter architecture/security review</strong>
+              <span>Client-Facing Portal · Blocked · Waiting on Jeff Getter cloud architecture/security guidance.</span>
             </div>
 
             <div class="dep-item">
@@ -1237,7 +1458,7 @@
             </div>
 
             <div class="dep-item">
-              <strong>Billing brief complexity scoring automation</strong>
+              <strong>Automate Complexity/Capacity Scoring</strong>
               <span>Operations Maintenance · On Hold · On hold; resume when this lane becomes active again.</span>
             </div>
 
@@ -1246,18 +1467,14 @@
               <span>PM Hub Internal Improvements · On Hold · On hold; resume when this lane becomes active again.</span>
             </div>
 
-            <div class="dep-item">
-              <strong>PSA client-facing tracker and PDF export</strong>
-              <span>PM Hub Internal Improvements · On Hold · Waiting on client-facing hub architecture feedback: auth, source of truth, safe exposed fields, and backend/relay model.</span>
-            </div>
-
         </section>
         <section class="script">
           <h2>Meeting Readout</h2>
           <ol>
-            <li>25 active tasks are visible across 7 workstreams.</li>
+            <li>31 active tasks are visible across 8 workstreams.</li>
+            <li>10 initiatives are represented across the visible roadmap.</li>
             <li>8 items are blocked or on hold and need dependency movement before execution.</li>
-            <li>5 items are in the Now increment; 10 are queued Next.</li>
+            <li>7 items are in the Now increment; 16 are queued Next.</li>
             <li>0 submitted items are pending review and excluded from completion rollups.</li>
           </ol>
         </section>
@@ -1265,7 +1482,7 @@
     </section>
   </main>
   <footer>
-    Source: <a href="https://app.notion.com/p/33ba59b7e7b2803486f0e749a312b51a">Notion Tasks Tracker</a>. Generated 2026-06-12T17:51:25.830Z. Rule: Done = 100%, In Progress = 50%, all other statuses = 0%, weighted by Effort level.
+    Source: <a href="https://app.notion.com/p/33ba59b7e7b2803486f0e749a312b51a">Notion Tasks Tracker</a>. Generated 2026-07-09T00:28:25.240Z. Rule: Done = 100%, In Progress = 50%, all other statuses = 0%, weighted by Effort level.
   </footer>
   <script>
     const showDoneToggle = document.getElementById('showDoneToggle');
