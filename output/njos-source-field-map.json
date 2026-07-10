@@ -1,0 +1,445 @@
+{
+  "clientName": "New Jersey Office Systems",
+  "summary": {
+    "totalTargets": 23,
+    "completeTargets": 9,
+    "missingTargets": 14
+  },
+  "fields": [
+    {
+      "target": "clientName",
+      "source": "client.name",
+      "status": "complete",
+      "value": "New Jersey Office Systems",
+      "candidateSources": [
+        "client.name",
+        "account.name",
+        "companyName"
+      ]
+    },
+    {
+      "target": "mrr",
+      "source": "deal.mrr",
+      "status": "complete",
+      "value": "$560 / mo",
+      "candidateSources": [
+        "deal.mrr",
+        "opportunity.mrr",
+        "mrr"
+      ]
+    },
+    {
+      "target": "packageDetails",
+      "source": "deal.packageDetails",
+      "status": "complete",
+      "value": "PSA onboarding - $560 MRR from sales brief",
+      "candidateSources": [
+        "deal.packageDetails",
+        "opportunity.packageDetails",
+        "packageDetails",
+        "package"
+      ]
+    },
+    {
+      "target": "kickoffDate",
+      "source": "",
+      "status": "missing",
+      "value": "",
+      "candidateSources": [
+        "deal.kickoffDate",
+        "opportunity.kickoffDate",
+        "kickoffDate"
+      ]
+    },
+    {
+      "target": "mainBuyingMotivator",
+      "source": "brief.mainBuyingMotivator",
+      "status": "complete",
+      "value": "Replace E-Automate workflow friction",
+      "candidateSources": [
+        "brief.mainBuyingMotivator",
+        "brief.buyingMotivator",
+        "salesforce.mainBuyingMotivator",
+        "mainBuyingMotivator",
+        "buyingMotivator"
+      ]
+    },
+    {
+      "target": "expectedValue",
+      "source": "brief.expectedValue",
+      "status": "complete",
+      "value": "Shared service, field, billing, and AR visibility",
+      "candidateSources": [
+        "brief.expectedValue",
+        "brief.businessOutcome",
+        "salesforce.expectedValue",
+        "expectedValue",
+        "businessOutcome",
+        "value"
+      ]
+    },
+    {
+      "target": "priorityModules",
+      "source": "brief.priorityModules",
+      "status": "complete",
+      "value": [
+        "Mobile App",
+        "Rev.io Payments",
+        "Inventory",
+        "Project Management"
+      ],
+      "candidateSources": [
+        "brief.priorityModules",
+        "brief.modules",
+        "salesforce.priorityModules",
+        "priorityModules",
+        "modules"
+      ]
+    },
+    {
+      "target": "motivations",
+      "source": "",
+      "status": "missing",
+      "value": [],
+      "candidateSources": [
+        "brief.motivations",
+        "brief.painPoints",
+        "salesforce.painPoints",
+        "motivations",
+        "painPoints"
+      ]
+    },
+    {
+      "target": "solutions",
+      "source": "brief.solutions",
+      "status": "complete",
+      "value": [
+        "Simpler ticket and work-order workspace",
+        "Centralized operations and payment visibility"
+      ],
+      "candidateSources": [
+        "brief.solutions",
+        "salesforce.solutions",
+        "solutions"
+      ]
+    },
+    {
+      "target": "standardLicenseCount",
+      "source": "",
+      "status": "missing",
+      "value": "",
+      "candidateSources": [
+        "contract.standardLicenseCount",
+        "deal.standardLicenseCount",
+        "standardLicenseCount"
+      ]
+    },
+    {
+      "target": "standardLicensePrice",
+      "source": "",
+      "status": "missing",
+      "value": "",
+      "candidateSources": [
+        "contract.standardLicensePrice",
+        "deal.standardLicensePrice",
+        "standardLicensePrice"
+      ]
+    },
+    {
+      "target": "fieldLicenseCount",
+      "source": "",
+      "status": "missing",
+      "value": "",
+      "candidateSources": [
+        "contract.fieldLicenseCount",
+        "deal.fieldLicenseCount",
+        "fieldLicenseCount"
+      ]
+    },
+    {
+      "target": "fieldLicensePrice",
+      "source": "",
+      "status": "missing",
+      "value": "",
+      "candidateSources": [
+        "contract.fieldLicensePrice",
+        "deal.fieldLicensePrice",
+        "fieldLicensePrice"
+      ]
+    },
+    {
+      "target": "billingStartDate",
+      "source": "",
+      "status": "missing",
+      "value": "",
+      "candidateSources": [
+        "contract.billingStartDate",
+        "deal.billingStartDate",
+        "billingStartDate",
+        "contract.startDate"
+      ]
+    },
+    {
+      "target": "instanceUrl",
+      "source": "",
+      "status": "missing",
+      "value": "",
+      "candidateSources": [
+        "instance.url",
+        "psa.instanceUrl",
+        "instanceUrl"
+      ]
+    },
+    {
+      "target": "integrations",
+      "source": "brief.integrations",
+      "status": "complete",
+      "value": [
+        "QuickBooks Desktop workaround",
+        "Authorize.net",
+        "Rev.io Payments"
+      ],
+      "candidateSources": [
+        "brief.integrations",
+        "salesforce.integrations",
+        "integrations"
+      ]
+    },
+    {
+      "target": "nextSteps",
+      "source": "brief.nextSteps",
+      "status": "complete",
+      "value": [
+        "Set kickoff target date and time",
+        "Confirm Vanessa vs. Shawn onboarding ownership and approval authority",
+        "Confirm Sue O'Keefe role",
+        "Collect merchant statements for Rev.io Payments migration",
+        "Confirm QuickBooks Desktop workaround and accounting plan",
+        "Collect GL/chart of accounts details",
+        "Confirm field mobile workflow priorities"
+      ],
+      "candidateSources": [
+        "brief.nextSteps",
+        "nextSteps",
+        "openItems"
+      ]
+    },
+    {
+      "target": "logoPath",
+      "source": "",
+      "status": "missing",
+      "value": "",
+      "candidateSources": [
+        "brand.logoPath",
+        "logoPath"
+      ]
+    },
+    {
+      "target": "logoUrl",
+      "source": "",
+      "status": "missing",
+      "value": "",
+      "candidateSources": [
+        "brand.logoUrl",
+        "account.logoUrl",
+        "logoUrl"
+      ]
+    },
+    {
+      "target": "logoSourceUrl",
+      "source": "",
+      "status": "missing",
+      "value": "",
+      "candidateSources": [
+        "brand.logoSourceUrl",
+        "logoSourceUrl"
+      ]
+    },
+    {
+      "target": "briefUrl",
+      "source": "",
+      "status": "missing",
+      "value": "",
+      "candidateSources": [
+        "links.briefUrl",
+        "brief.url",
+        "briefUrl"
+      ]
+    },
+    {
+      "target": "notionProjectUrl",
+      "source": "",
+      "status": "missing",
+      "value": "",
+      "candidateSources": [
+        "links.notionProjectUrl",
+        "notionProjectUrl"
+      ]
+    },
+    {
+      "target": "orderFormUrl",
+      "source": "",
+      "status": "missing",
+      "value": "",
+      "candidateSources": [
+        "links.orderFormUrl",
+        "orderFormUrl"
+      ]
+    }
+  ],
+  "missingFields": [
+    {
+      "target": "kickoffDate",
+      "source": "",
+      "status": "missing",
+      "value": "",
+      "candidateSources": [
+        "deal.kickoffDate",
+        "opportunity.kickoffDate",
+        "kickoffDate"
+      ]
+    },
+    {
+      "target": "motivations",
+      "source": "",
+      "status": "missing",
+      "value": [],
+      "candidateSources": [
+        "brief.motivations",
+        "brief.painPoints",
+        "salesforce.painPoints",
+        "motivations",
+        "painPoints"
+      ]
+    },
+    {
+      "target": "standardLicenseCount",
+      "source": "",
+      "status": "missing",
+      "value": "",
+      "candidateSources": [
+        "contract.standardLicenseCount",
+        "deal.standardLicenseCount",
+        "standardLicenseCount"
+      ]
+    },
+    {
+      "target": "standardLicensePrice",
+      "source": "",
+      "status": "missing",
+      "value": "",
+      "candidateSources": [
+        "contract.standardLicensePrice",
+        "deal.standardLicensePrice",
+        "standardLicensePrice"
+      ]
+    },
+    {
+      "target": "fieldLicenseCount",
+      "source": "",
+      "status": "missing",
+      "value": "",
+      "candidateSources": [
+        "contract.fieldLicenseCount",
+        "deal.fieldLicenseCount",
+        "fieldLicenseCount"
+      ]
+    },
+    {
+      "target": "fieldLicensePrice",
+      "source": "",
+      "status": "missing",
+      "value": "",
+      "candidateSources": [
+        "contract.fieldLicensePrice",
+        "deal.fieldLicensePrice",
+        "fieldLicensePrice"
+      ]
+    },
+    {
+      "target": "billingStartDate",
+      "source": "",
+      "status": "missing",
+      "value": "",
+      "candidateSources": [
+        "contract.billingStartDate",
+        "deal.billingStartDate",
+        "billingStartDate",
+        "contract.startDate"
+      ]
+    },
+    {
+      "target": "instanceUrl",
+      "source": "",
+      "status": "missing",
+      "value": "",
+      "candidateSources": [
+        "instance.url",
+        "psa.instanceUrl",
+        "instanceUrl"
+      ]
+    },
+    {
+      "target": "logoPath",
+      "source": "",
+      "status": "missing",
+      "value": "",
+      "candidateSources": [
+        "brand.logoPath",
+        "logoPath"
+      ]
+    },
+    {
+      "target": "logoUrl",
+      "source": "",
+      "status": "missing",
+      "value": "",
+      "candidateSources": [
+        "brand.logoUrl",
+        "account.logoUrl",
+        "logoUrl"
+      ]
+    },
+    {
+      "target": "logoSourceUrl",
+      "source": "",
+      "status": "missing",
+      "value": "",
+      "candidateSources": [
+        "brand.logoSourceUrl",
+        "logoSourceUrl"
+      ]
+    },
+    {
+      "target": "briefUrl",
+      "source": "",
+      "status": "missing",
+      "value": "",
+      "candidateSources": [
+        "links.briefUrl",
+        "brief.url",
+        "briefUrl"
+      ]
+    },
+    {
+      "target": "notionProjectUrl",
+      "source": "",
+      "status": "missing",
+      "value": "",
+      "candidateSources": [
+        "links.notionProjectUrl",
+        "notionProjectUrl"
+      ]
+    },
+    {
+      "target": "orderFormUrl",
+      "source": "",
+      "status": "missing",
+      "value": "",
+      "candidateSources": [
+        "links.orderFormUrl",
+        "orderFormUrl"
+      ]
+    }
+  ]
+}

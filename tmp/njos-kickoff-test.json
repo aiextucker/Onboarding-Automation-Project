@@ -1,0 +1,47 @@
+{
+  "clientName": "New Jersey Office Systems",
+  "kickoffDate": "TBD - not set in sales brief",
+  "mainBuyingMotivator": "Replace E-Automate workflow friction",
+  "expectedValue": "Shared service, field, billing, and AR visibility",
+  "priorityModules": [
+    "Mobile App",
+    "Rev.io Payments",
+    "Inventory",
+    "Project Management"
+  ],
+  "motivations": [
+    "E-Automate is cumbersome, freezes frequently, and has too many workflow steps",
+    "Mobile app issues and split billing/collections make service and AR visibility harder"
+  ],
+  "solutions": [
+    "Simpler ticket and work-order workspace",
+    "Centralized operations and payment visibility"
+  ],
+  "packageDetails": "PSA onboarding - $560 MRR from sales brief",
+  "standardLicenseCount": "TBD",
+  "standardLicensePrice": "TBD",
+  "fieldLicenseCount": "TBD",
+  "fieldLicensePrice": "TBD",
+  "billingStartDate": "TBD - contract start not in sales brief",
+  "instanceUrl": "TBD - instance URL not in sales brief",
+  "optionalModules": [
+    "Mobile App",
+    "Rev.io Payments",
+    "Inventory",
+    "Project Management"
+  ],
+  "integrations": [
+    "QuickBooks Desktop workaround",
+    "Authorize.net",
+    "Rev.io Payments"
+  ],
+  "nextSteps": [
+    "Set kickoff target date and time",
+    "Confirm Vanessa vs. Shawn onboarding ownership and approval authority",
+    "Confirm Sue O'Keefe role",
+    "Collect merchant statements for Rev.io Payments migration",
+    "Confirm QuickBooks Desktop workaround and accounting plan",
+    "Collect GL/chart of accounts details",
+    "Confirm field mobile workflow priorities"
+  ]
+}

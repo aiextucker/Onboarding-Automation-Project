@@ -1,0 +1,30 @@
+{
+  "deck": "output/njos-psa-kickoff-cobranded-logo-align-v4.pptx",
+  "revLogo": {
+    "name": "Freeform 3",
+    "off": {
+      "x": "522891",
+      "y": "891013"
+    },
+    "ext": {
+      "cx": "2544517",
+      "cy": "653755"
+    },
+    "centerY": 1217890
+  },
+  "clientLogo": {
+    "name": "Client Logo",
+    "off": {
+      "x": "4733254",
+      "y": "991576"
+    },
+    "ext": {
+      "cx": "1508760",
+      "cy": "452628"
+    },
+    "centerY": 1217890,
+    "right": 6242014,
+    "bottom": 1444204
+  },
+  "errors": []
+}

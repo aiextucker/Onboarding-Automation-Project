@@ -1,0 +1,44 @@
+{
+  "clientName": "New Jersey Office Systems",
+  "kickoffDate": "TBD - kickoff date",
+  "mainBuyingMotivator": "Replace E-Automate workflow friction",
+  "expectedValue": "Shared service, field, billing, and AR visibility",
+  "priorityModules": [
+    "Mobile App",
+    "Rev.io Payments",
+    "Inventory",
+    "Project Management"
+  ],
+  "motivations": [],
+  "solutions": [
+    "Simpler ticket and work-order workspace",
+    "Centralized operations and payment visibility"
+  ],
+  "packageDetails": "PSA onboarding - $560 MRR from sales brief",
+  "standardLicenseCount": "TBD - standard license count",
+  "standardLicensePrice": "TBD - standard license price",
+  "fieldLicenseCount": "TBD - field license count",
+  "fieldLicensePrice": "TBD - field license price",
+  "billingStartDate": "TBD - billing start date",
+  "instanceUrl": "TBD - instance URL",
+  "integrations": [
+    "QuickBooks Desktop workaround",
+    "Authorize.net",
+    "Rev.io Payments"
+  ],
+  "nextSteps": [
+    "Set kickoff target date and time",
+    "Confirm Vanessa vs. Shawn onboarding ownership and approval authority",
+    "Confirm Sue O'Keefe role",
+    "Collect merchant statements for Rev.io Payments migration",
+    "Confirm QuickBooks Desktop workaround and accounting plan",
+    "Collect GL/chart of accounts details",
+    "Confirm field mobile workflow priorities"
+  ],
+  "logoPath": "assets/logos/njos-logo.png",
+  "logoUrl": "https://njosllc.com/wp-content/uploads/2019/04/njos_logo_transparent_bg.fw_.png",
+  "logoSourceUrl": "https://njosllc.com/",
+  "briefUrl": "",
+  "notionProjectUrl": "",
+  "orderFormUrl": ""
+}

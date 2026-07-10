@@ -1,0 +1,21 @@
+{
+  "deck": "output/njos-psa-kickoff-cobranded-position-v2.pptx",
+  "pictures": [
+    {
+      "name": "Client Logo",
+      "rId": "rId4",
+      "off": {
+        "x": "5175214",
+        "y": "1395000"
+      },
+      "ext": {
+        "cx": "1066800",
+        "cy": "320040"
+      },
+      "right": 6242014,
+      "bottom": 1715040,
+      "target": "../media/client-logo.png"
+    }
+  ],
+  "errors": []
+}

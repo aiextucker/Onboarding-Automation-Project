@@ -1,0 +1,20 @@
+{
+  "deck": "output/njos-psa-kickoff-cobranded-logo-size-v3.pptx",
+  "pictures": [
+    {
+      "name": "Client Logo",
+      "rId": "rId4",
+      "off": {
+        "x": "4733254",
+        "y": "1275000"
+      },
+      "ext": {
+        "cx": "1508760",
+        "cy": "452628"
+      },
+      "right": 6242014,
+      "bottom": 1727628
+    }
+  ],
+  "errors": []
+}

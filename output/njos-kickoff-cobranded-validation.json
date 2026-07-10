@@ -1,0 +1,78 @@
+{
+  "deck": "output/njos-psa-kickoff-cobranded-sample.pptx",
+  "needs": [
+    {
+      "slide": 1,
+      "text": "NEEDS: Kickoff date",
+      "color": "1D3756",
+      "highlight": "00FF00",
+      "shapeFill": "00FF00"
+    },
+    {
+      "slide": 3,
+      "text": "NEEDS: Qty",
+      "color": "6EBE4F",
+      "highlight": "00FF00",
+      "shapeFill": null
+    },
+    {
+      "slide": 3,
+      "text": "NEEDS: Price",
+      "color": "6EBE4F",
+      "highlight": "00FF00",
+      "shapeFill": null
+    },
+    {
+      "slide": 3,
+      "text": "NEEDS: Qty",
+      "color": "6EBE4F",
+      "highlight": "00FF00",
+      "shapeFill": null
+    },
+    {
+      "slide": 3,
+      "text": "NEEDS: Price",
+      "color": "6EBE4F",
+      "highlight": "00FF00",
+      "shapeFill": null
+    },
+    {
+      "slide": 3,
+      "text": "NEEDS: Start date",
+      "color": "1D3756",
+      "highlight": "00FF00",
+      "shapeFill": "00FF00"
+    },
+    {
+      "slide": 4,
+      "text": "NEEDS: Instance URL",
+      "color": "1D3756",
+      "highlight": "00FF00",
+      "shapeFill": "00FF00"
+    }
+  ],
+  "checkboxes": [
+    {
+      "shapeId": "119",
+      "label": "Quoting",
+      "text": ""
+    },
+    {
+      "shapeId": "121",
+      "label": "Inventory",
+      "text": "\u2713"
+    },
+    {
+      "shapeId": "123",
+      "label": "Project Management",
+      "text": "\u2713"
+    },
+    {
+      "shapeId": "125",
+      "label": "Mobile App",
+      "text": "\u2713"
+    }
+  ],
+  "inlineCheckboxLabels": [],
+  "errors": []
+}

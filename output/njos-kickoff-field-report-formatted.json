@@ -1,0 +1,464 @@
+{
+  "clientName": "New Jersey Office Systems",
+  "summary": {
+    "totalFields": 25,
+    "completeFields": 18,
+    "missingFields": 7
+  },
+  "missingFields": [
+    {
+      "slide": 1,
+      "label": "Kickoff date",
+      "templateText": "January 30, 2026",
+      "value": "",
+      "renderedText": "NEEDS: Kickoff date",
+      "status": "missing",
+      "highlighted": true
+    },
+    {
+      "slide": 3,
+      "label": "Standard license count",
+      "templateText": "6",
+      "value": "",
+      "renderedText": "NEEDS: Standard license count",
+      "status": "missing",
+      "highlighted": true
+    },
+    {
+      "slide": 3,
+      "label": "Standard license price",
+      "templateText": "100",
+      "value": "",
+      "renderedText": "NEEDS: Standard license price",
+      "status": "missing",
+      "highlighted": true
+    },
+    {
+      "slide": 3,
+      "label": "Field license count",
+      "templateText": "17",
+      "value": "",
+      "renderedText": "NEEDS: Field license count",
+      "status": "missing",
+      "highlighted": true
+    },
+    {
+      "slide": 3,
+      "label": "Field license price",
+      "templateText": "25",
+      "value": "",
+      "renderedText": "NEEDS: Field license price",
+      "status": "missing",
+      "highlighted": true
+    },
+    {
+      "slide": 3,
+      "label": "Billing start date",
+      "templateText": "02/01/2026",
+      "value": "",
+      "renderedText": "NEEDS: Billing start date",
+      "status": "missing",
+      "highlighted": true
+    },
+    {
+      "slide": 4,
+      "label": "Instance URL",
+      "templateText": "https://psademo.rev.io",
+      "value": "",
+      "renderedText": "NEEDS: Instance URL",
+      "status": "missing",
+      "highlighted": true
+    }
+  ],
+  "completeFields": [
+    {
+      "slide": 1,
+      "label": "Client name",
+      "templateText": "Customer Name",
+      "value": "New Jersey Office Systems",
+      "renderedText": "New Jersey Office Systems",
+      "status": "complete",
+      "highlighted": false
+    },
+    {
+      "slide": 3,
+      "label": "Main buying motivator",
+      "templateText": "Using Separate Platforms",
+      "value": "Move away from E-Automate because it is cumbersome, freezes frequently, and slows common workflows",
+      "renderedText": "Move away from E-Automate because it is cumbersome, freezes frequently, and slows common workflows",
+      "status": "complete",
+      "highlighted": false
+    },
+    {
+      "slide": 3,
+      "label": "Expected value / business outcome",
+      "templateText": "No Way to Track Work Orders/Tickets",
+      "value": "Give service, field, billing, and collections teams shared visibility without manual workarounds",
+      "renderedText": "Give service, field, billing, and collections teams shared visibility without manual workarounds",
+      "status": "complete",
+      "highlighted": false
+    },
+    {
+      "slide": 3,
+      "label": "Rev.io solution point 1",
+      "templateText": "Consolidated Platform including Dispatch Board",
+      "value": "Rev.io PSA gives NJOS a simpler shared workspace for tickets, work orders, and field activity",
+      "renderedText": "Rev.io PSA gives NJOS a simpler shared workspace for tickets, work orders, and field activity",
+      "status": "complete",
+      "highlighted": false
+    },
+    {
+      "slide": 3,
+      "label": "Rev.io solution point 2",
+      "templateText": "Centralized Ticketing Management Dashboard",
+      "value": "Centralized operational visibility across service, billing context, payments, and customer follow-up",
+      "renderedText": "Centralized operational visibility across service, billing context, payments, and customer follow-up",
+      "status": "complete",
+      "highlighted": false
+    },
+    {
+      "slide": 3,
+      "label": "Package details",
+      "templateText": "Basic Implementation Package",
+      "value": "PSA onboarding - $560 MRR from sales brief",
+      "renderedText": "PSA onboarding - $560 MRR from sales brief",
+      "status": "complete",
+      "highlighted": false
+    },
+    {
+      "slide": 4,
+      "label": "Quoting module requirement",
+      "templateText": "Quoting",
+      "value": "\u2610 Quoting",
+      "renderedText": "\u2610 Quoting",
+      "status": "complete",
+      "highlighted": false
+    },
+    {
+      "slide": 4,
+      "label": "Inventory module requirement",
+      "templateText": "Inventory",
+      "value": "\u2713 Inventory",
+      "renderedText": "\u2713 Inventory",
+      "status": "complete",
+      "highlighted": false
+    },
+    {
+      "slide": 4,
+      "label": "Project Management module requirement",
+      "templateText": "Project Management",
+      "value": "\u2713 Project Management",
+      "renderedText": "\u2713 Project Management",
+      "status": "complete",
+      "highlighted": false
+    },
+    {
+      "slide": 4,
+      "label": "Mobile App module requirement",
+      "templateText": "Mobile App",
+      "value": "\u2713 Mobile App",
+      "renderedText": "\u2713 Mobile App",
+      "status": "complete",
+      "highlighted": false
+    },
+    {
+      "slide": 4,
+      "label": "Interested integrations",
+      "templateText": "Acronis, HubSpot, QuickBooks Online",
+      "value": "QuickBooks Desktop workaround, Authorize.net, Rev.io Payments",
+      "renderedText": "QuickBooks Desktop workaround, Authorize.net, Rev.io Payments",
+      "status": "complete",
+      "highlighted": false
+    },
+    {
+      "slide": 11,
+      "label": "Next step 1",
+      "templateText": "Confirm access to your instance and add users as needed",
+      "value": "Set kickoff target date and time",
+      "renderedText": "Set kickoff target date and time",
+      "status": "complete",
+      "highlighted": false
+    },
+    {
+      "slide": 11,
+      "label": "Next step 2",
+      "templateText": "Determine primary admin for checklist",
+      "value": "Confirm Vanessa vs. Shawn onboarding ownership and approval authority",
+      "renderedText": "Confirm Vanessa vs. Shawn onboarding ownership and approval authority",
+      "status": "complete",
+      "highlighted": false
+    },
+    {
+      "slide": 11,
+      "label": "Next step 3",
+      "templateText": "Sign up for Rev.io Community",
+      "value": "Confirm Sue O'Keefe role",
+      "renderedText": "Confirm Sue O'Keefe role",
+      "status": "complete",
+      "highlighted": false
+    },
+    {
+      "slide": 11,
+      "label": "Next step 4",
+      "templateText": "Confirm tax credential request information",
+      "value": "Collect merchant statements for Rev.io Payments migration",
+      "renderedText": "Collect merchant statements for Rev.io Payments migration",
+      "status": "complete",
+      "highlighted": false
+    },
+    {
+      "slide": 11,
+      "label": "Next step 5",
+      "templateText": "Schedule Recurring Weekly Configuration Calls",
+      "value": "Confirm QuickBooks Desktop workaround and accounting plan",
+      "renderedText": "Confirm QuickBooks Desktop workaround and accounting plan",
+      "status": "complete",
+      "highlighted": false
+    },
+    {
+      "slide": 11,
+      "label": "Next step 6",
+      "templateText": "Send Company Logo",
+      "value": "Collect GL/chart of accounts details",
+      "renderedText": "Collect GL/chart of accounts details",
+      "status": "complete",
+      "highlighted": false
+    },
+    {
+      "slide": 11,
+      "label": "Next step 7",
+      "templateText": "Gather product list to build catalog",
+      "value": "Confirm field mobile workflow priorities",
+      "renderedText": "Confirm field mobile workflow priorities",
+      "status": "complete",
+      "highlighted": false
+    }
+  ],
+  "fields": [
+    {
+      "slide": 1,
+      "label": "Client name",
+      "templateText": "Customer Name",
+      "value": "New Jersey Office Systems",
+      "renderedText": "New Jersey Office Systems",
+      "status": "complete",
+      "highlighted": false
+    },
+    {
+      "slide": 1,
+      "label": "Kickoff date",
+      "templateText": "January 30, 2026",
+      "value": "",
+      "renderedText": "NEEDS: Kickoff date",
+      "status": "missing",
+      "highlighted": true
+    },
+    {
+      "slide": 3,
+      "label": "Main buying motivator",
+      "templateText": "Using Separate Platforms",
+      "value": "Move away from E-Automate because it is cumbersome, freezes frequently, and slows common workflows",
+      "renderedText": "Move away from E-Automate because it is cumbersome, freezes frequently, and slows common workflows",
+      "status": "complete",
+      "highlighted": false
+    },
+    {
+      "slide": 3,
+      "label": "Expected value / business outcome",
+      "templateText": "No Way to Track Work Orders/Tickets",
+      "value": "Give service, field, billing, and collections teams shared visibility without manual workarounds",
+      "renderedText": "Give service, field, billing, and collections teams shared visibility without manual workarounds",
+      "status": "complete",
+      "highlighted": false
+    },
+    {
+      "slide": 3,
+      "label": "Rev.io solution point 1",
+      "templateText": "Consolidated Platform including Dispatch Board",
+      "value": "Rev.io PSA gives NJOS a simpler shared workspace for tickets, work orders, and field activity",
+      "renderedText": "Rev.io PSA gives NJOS a simpler shared workspace for tickets, work orders, and field activity",
+      "status": "complete",
+      "highlighted": false
+    },
+    {
+      "slide": 3,
+      "label": "Rev.io solution point 2",
+      "templateText": "Centralized Ticketing Management Dashboard",
+      "value": "Centralized operational visibility across service, billing context, payments, and customer follow-up",
+      "renderedText": "Centralized operational visibility across service, billing context, payments, and customer follow-up",
+      "status": "complete",
+      "highlighted": false
+    },
+    {
+      "slide": 3,
+      "label": "Package details",
+      "templateText": "Basic Implementation Package",
+      "value": "PSA onboarding - $560 MRR from sales brief",
+      "renderedText": "PSA onboarding - $560 MRR from sales brief",
+      "status": "complete",
+      "highlighted": false
+    },
+    {
+      "slide": 3,
+      "label": "Standard license count",
+      "templateText": "6",
+      "value": "",
+      "renderedText": "NEEDS: Standard license count",
+      "status": "missing",
+      "highlighted": true
+    },
+    {
+      "slide": 3,
+      "label": "Standard license price",
+      "templateText": "100",
+      "value": "",
+      "renderedText": "NEEDS: Standard license price",
+      "status": "missing",
+      "highlighted": true
+    },
+    {
+      "slide": 3,
+      "label": "Field license count",
+      "templateText": "17",
+      "value": "",
+      "renderedText": "NEEDS: Field license count",
+      "status": "missing",
+      "highlighted": true
+    },
+    {
+      "slide": 3,
+      "label": "Field license price",
+      "templateText": "25",
+      "value": "",
+      "renderedText": "NEEDS: Field license price",
+      "status": "missing",
+      "highlighted": true
+    },
+    {
+      "slide": 3,
+      "label": "Billing start date",
+      "templateText": "02/01/2026",
+      "value": "",
+      "renderedText": "NEEDS: Billing start date",
+      "status": "missing",
+      "highlighted": true
+    },
+    {
+      "slide": 4,
+      "label": "Instance URL",
+      "templateText": "https://psademo.rev.io",
+      "value": "",
+      "renderedText": "NEEDS: Instance URL",
+      "status": "missing",
+      "highlighted": true
+    },
+    {
+      "slide": 4,
+      "label": "Quoting module requirement",
+      "templateText": "Quoting",
+      "value": "\u2610 Quoting",
+      "renderedText": "\u2610 Quoting",
+      "status": "complete",
+      "highlighted": false
+    },
+    {
+      "slide": 4,
+      "label": "Inventory module requirement",
+      "templateText": "Inventory",
+      "value": "\u2713 Inventory",
+      "renderedText": "\u2713 Inventory",
+      "status": "complete",
+      "highlighted": false
+    },
+    {
+      "slide": 4,
+      "label": "Project Management module requirement",
+      "templateText": "Project Management",
+      "value": "\u2713 Project Management",
+      "renderedText": "\u2713 Project Management",
+      "status": "complete",
+      "highlighted": false
+    },
+    {
+      "slide": 4,
+      "label": "Mobile App module requirement",
+      "templateText": "Mobile App",
+      "value": "\u2713 Mobile App",
+      "renderedText": "\u2713 Mobile App",
+      "status": "complete",
+      "highlighted": false
+    },
+    {
+      "slide": 4,
+      "label": "Interested integrations",
+      "templateText": "Acronis, HubSpot, QuickBooks Online",
+      "value": "QuickBooks Desktop workaround, Authorize.net, Rev.io Payments",
+      "renderedText": "QuickBooks Desktop workaround, Authorize.net, Rev.io Payments",
+      "status": "complete",
+      "highlighted": false
+    },
+    {
+      "slide": 11,
+      "label": "Next step 1",
+      "templateText": "Confirm access to your instance and add users as needed",
+      "value": "Set kickoff target date and time",
+      "renderedText": "Set kickoff target date and time",
+      "status": "complete",
+      "highlighted": false
+    },
+    {
+      "slide": 11,
+      "label": "Next step 2",
+      "templateText": "Determine primary admin for checklist",
+      "value": "Confirm Vanessa vs. Shawn onboarding ownership and approval authority",
+      "renderedText": "Confirm Vanessa vs. Shawn onboarding ownership and approval authority",
+      "status": "complete",
+      "highlighted": false
+    },
+    {
+      "slide": 11,
+      "label": "Next step 3",
+      "templateText": "Sign up for Rev.io Community",
+      "value": "Confirm Sue O'Keefe role",
+      "renderedText": "Confirm Sue O'Keefe role",
+      "status": "complete",
+      "highlighted": false
+    },
+    {
+      "slide": 11,
+      "label": "Next step 4",
+      "templateText": "Confirm tax credential request information",
+      "value": "Collect merchant statements for Rev.io Payments migration",
+      "renderedText": "Collect merchant statements for Rev.io Payments migration",
+      "status": "complete",
+      "highlighted": false
+    },
+    {
+      "slide": 11,
+      "label": "Next step 5",
+      "templateText": "Schedule Recurring Weekly Configuration Calls",
+      "value": "Confirm QuickBooks Desktop workaround and accounting plan",
+      "renderedText": "Confirm QuickBooks Desktop workaround and accounting plan",
+      "status": "complete",
+      "highlighted": false
+    },
+    {
+      "slide": 11,
+      "label": "Next step 6",
+      "templateText": "Send Company Logo",
+      "value": "Collect GL/chart of accounts details",
+      "renderedText": "Collect GL/chart of accounts details",
+      "status": "complete",
+      "highlighted": false
+    },
+    {
+      "slide": 11,
+      "label": "Next step 7",
+      "templateText": "Gather product list to build catalog",
+      "value": "Confirm field mobile workflow priorities",
+      "renderedText": "Confirm field mobile workflow priorities",
+      "status": "complete",
+      "highlighted": false
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "clientName": "Customer Name",
+  "kickoffDate": "January 30, 2026",
+  "mainBuyingMotivator": "Using Separate Platforms",
+  "expectedValue": "No Way to Track Work Orders/Tickets",
+  "priorityModules": [
+    "Quoting",
+    "Inventory",
+    "Project Management",
+    "Mobile App"
+  ],
+  "motivations": [
+    "Using Separate Platforms",
+    "No Way to Track Work Orders/Tickets"
+  ],
+  "solutions": [
+    "Consolidated Platform including Dispatch Board",
+    "Centralized Ticketing Management Dashboard"
+  ],
+  "packageDetails": "Basic Implementation Package",
+  "standardLicenseCount": "6",
+  "standardLicensePrice": "100",
+  "fieldLicenseCount": "17",
+  "fieldLicensePrice": "25",
+  "billingStartDate": "02/01/2026",
+  "instanceUrl": "https://psademo.rev.io",
+  "optionalModules": [
+    "Quoting",
+    "Inventory",
+    "Project Management",
+    "Mobile App"
+  ],
+  "integrations": [
+    "Acronis",
+    "HubSpot",
+    "QuickBooks Online"
+  ],
+  "nextSteps": [
+    "Confirm access to your instance and add users as needed",
+    "Determine primary admin for checklist",
+    "Sign up for Rev.io Community",
+    "Confirm tax credential request information",
+    "Schedule Recurring Weekly Configuration Calls",
+    "Send Company Logo",
+    "Gather product list to build catalog"
+  ]
+}

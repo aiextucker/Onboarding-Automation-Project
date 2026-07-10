@@ -1,0 +1,1112 @@
+{
+  "1": [
+    {
+      "id": "5",
+      "name": "TextBox 5",
+      "off": {
+        "x": "522891",
+        "y": "1880847"
+      },
+      "ext": {
+        "cx": "5719123",
+        "cy": "297454"
+      },
+      "texts": [
+        {
+          "paragraph": "Customer Name Onboarding Kick-off Call",
+          "runs": [
+            {
+              "text": "Customer Name ",
+              "sz": null,
+              "highlight": true
+            },
+            {
+              "text": "Onboarding Kick-off Call",
+              "sz": null,
+              "highlight": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "7",
+      "name": "TextBox 5",
+      "off": {
+        "x": "522890",
+        "y": "2178301"
+      },
+      "ext": {
+        "cx": "4791079",
+        "cy": "284758"
+      },
+      "texts": [
+        {
+          "paragraph": "January 30, 2026 ",
+          "runs": [
+            {
+              "text": "January 30, 2026 ",
+              "sz": "1400",
+              "highlight": true
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "3": [
+    {
+      "id": "40",
+      "name": "Text 2",
+      "off": {
+        "x": "441894",
+        "y": "315695"
+      },
+      "ext": {
+        "cx": "8229600",
+        "cy": "274320"
+      },
+      "texts": [
+        {
+          "paragraph": "CLIENT OVERVIEW",
+          "runs": [
+            {
+              "text": "CLIENT OVERVIEW",
+              "sz": "1400",
+              "highlight": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "4",
+      "name": "Text 3",
+      "off": {
+        "x": "446820",
+        "y": "452855"
+      },
+      "ext": {
+        "cx": "3983355",
+        "cy": "1244293"
+      },
+      "texts": [
+        {
+          "paragraph": "Contract & Business Case Review",
+          "runs": [
+            {
+              "text": "Contract & Business Case Review",
+              "sz": "2800",
+              "highlight": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "7",
+      "name": "Text 6",
+      "off": {
+        "x": "548640",
+        "y": "2249424"
+      },
+      "ext": {
+        "cx": "3474720",
+        "cy": "274320"
+      },
+      "texts": [
+        {
+          "paragraph": "Motivations for Investment",
+          "runs": [
+            {
+              "text": "Motivations for Investment",
+              "sz": "1400",
+              "highlight": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "8",
+      "name": "Text 7",
+      "off": {
+        "x": "640080",
+        "y": "2660904"
+      },
+      "ext": {
+        "cx": "3474720",
+        "cy": "502920"
+      },
+      "texts": [
+        {
+          "paragraph": "Using Separate Platforms",
+          "runs": [
+            {
+              "text": "Using Separate Platforms",
+              "sz": "1200",
+              "highlight": true
+            }
+          ]
+        },
+        {
+          "paragraph": "No Way to Track Work Orders/Tickets",
+          "runs": [
+            {
+              "text": "No Way to Track Work Orders/Tickets",
+              "sz": "1200",
+              "highlight": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "11",
+      "name": "Text 10",
+      "off": {
+        "x": "548640",
+        "y": "3643884"
+      },
+      "ext": {
+        "cx": "3657600",
+        "cy": "274320"
+      },
+      "texts": [
+        {
+          "paragraph": "How Rev.io Solves These Issues",
+          "runs": [
+            {
+              "text": "How Rev.io Solves These Issues",
+              "sz": "1400",
+              "highlight": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "12",
+      "name": "Text 11",
+      "off": {
+        "x": "640080",
+        "y": "4123943"
+      },
+      "ext": {
+        "cx": "3474720",
+        "cy": "584975"
+      },
+      "texts": [
+        {
+          "paragraph": "Consolidated Platform including Dispatch Board",
+          "runs": [
+            {
+              "text": "Consolidated Platform including Dispatch Board",
+              "sz": "1200",
+              "highlight": true
+            }
+          ]
+        },
+        {
+          "paragraph": "Centralized Ticketing Management Dashboard",
+          "runs": [
+            {
+              "text": "Centralized Ticketing Management Dashboard",
+              "sz": "1200",
+              "highlight": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "15",
+      "name": "Text 14",
+      "off": {
+        "x": "4892040",
+        "y": "1243583"
+      },
+      "ext": {
+        "cx": "3566160",
+        "cy": "366631"
+      },
+      "texts": [
+        {
+          "paragraph": "YOUR CONTRACT SPECIFICS",
+          "runs": [
+            {
+              "text": "YOUR CONTRACT SPECIFICS",
+              "sz": "1400",
+              "highlight": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "16",
+      "name": "Text 15",
+      "off": {
+        "x": "4892040",
+        "y": "1792223"
+      },
+      "ext": {
+        "cx": "3566160",
+        "cy": "274973"
+      },
+      "texts": [
+        {
+          "paragraph": "Package Details",
+          "runs": [
+            {
+              "text": "Package Details",
+              "sz": "1400",
+              "highlight": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "17",
+      "name": "Text 16",
+      "off": {
+        "x": "4892040",
+        "y": "2112263"
+      },
+      "ext": {
+        "cx": "3566160",
+        "cy": "274973"
+      },
+      "texts": [
+        {
+          "paragraph": "Basic Implementation Package",
+          "runs": [
+            {
+              "text": "Basic Implementation Package",
+              "sz": "1300",
+              "highlight": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "19",
+      "name": "Text 18",
+      "off": {
+        "x": "4892040",
+        "y": "2706623"
+      },
+      "ext": {
+        "cx": "3566160",
+        "cy": "274973"
+      },
+      "texts": [
+        {
+          "paragraph": "Recurring Fees",
+          "runs": [
+            {
+              "text": "Recurring Fees",
+              "sz": "1400",
+              "highlight": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "20",
+      "name": "Text 19",
+      "off": {
+        "x": "4892040",
+        "y": "3026664"
+      },
+      "ext": {
+        "cx": "3566160",
+        "cy": "549946"
+      },
+      "texts": [
+        {
+          "paragraph": "6 Standard Licenses at $100 per seat",
+          "runs": [
+            {
+              "text": "6",
+              "sz": "1300",
+              "highlight": true
+            },
+            {
+              "text": " Standard Licenses at $",
+              "sz": "1300",
+              "highlight": false
+            },
+            {
+              "text": "100",
+              "sz": "1300",
+              "highlight": true
+            },
+            {
+              "text": " per seat",
+              "sz": "1300",
+              "highlight": false
+            }
+          ]
+        },
+        {
+          "paragraph": "17 Field Licenses at $25 per seat",
+          "runs": [
+            {
+              "text": "17",
+              "sz": "1300",
+              "highlight": true
+            },
+            {
+              "text": " Field Licenses at $",
+              "sz": "1300",
+              "highlight": false
+            },
+            {
+              "text": "25",
+              "sz": "1300",
+              "highlight": true
+            },
+            {
+              "text": " per seat",
+              "sz": "1300",
+              "highlight": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "22",
+      "name": "Text 21",
+      "off": {
+        "x": "4892040",
+        "y": "3849623"
+      },
+      "ext": {
+        "cx": "3566160",
+        "cy": "274973"
+      },
+      "texts": [
+        {
+          "paragraph": "Billing Start Date",
+          "runs": [
+            {
+              "text": "Billing Start Date",
+              "sz": "1400",
+              "highlight": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "23",
+      "name": "Text 22",
+      "off": {
+        "x": "4892040",
+        "y": "4169663"
+      },
+      "ext": {
+        "cx": "3566160",
+        "cy": "274973"
+      },
+      "texts": [
+        {
+          "paragraph": "02/01/2026",
+          "runs": [
+            {
+              "text": "02/01/2026",
+              "sz": "1300",
+              "highlight": true
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "4": [
+    {
+      "id": "40",
+      "name": "Text 2",
+      "off": {
+        "x": "441894",
+        "y": "315695"
+      },
+      "ext": {
+        "cx": "8229600",
+        "cy": "274320"
+      },
+      "texts": [
+        {
+          "paragraph": "OPTIONAL MODULE DISCOVERY",
+          "runs": [
+            {
+              "text": "OPTIONAL MODULE DISCOVERY",
+              "sz": "1400",
+              "highlight": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "41",
+      "name": "Text 3",
+      "off": {
+        "x": "441894",
+        "y": "681455"
+      },
+      "ext": {
+        "cx": "8229600",
+        "cy": "457200"
+      },
+      "texts": [
+        {
+          "paragraph": "Setup Facts",
+          "runs": [
+            {
+              "text": "Setup Facts",
+              "sz": "2800",
+              "highlight": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "114",
+      "name": "Text 5",
+      "off": {
+        "x": "731520",
+        "y": "1586484"
+      },
+      "ext": {
+        "cx": "7772400",
+        "cy": "274320"
+      },
+      "texts": [
+        {
+          "paragraph": "Instance URL:  https://psademo.rev.io",
+          "runs": [
+            {
+              "text": "Instance URL:  ",
+              "sz": "1400",
+              "highlight": false
+            },
+            {
+              "text": "https://psademo.rev.io",
+              "sz": "1400",
+              "highlight": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "118",
+      "name": "Text 8",
+      "off": {
+        "x": "731520",
+        "y": "2313432"
+      },
+      "ext": {
+        "cx": "7772400",
+        "cy": "274320"
+      },
+      "texts": [
+        {
+          "paragraph": "Optional module requirements?",
+          "runs": [
+            {
+              "text": "Optional module requirements?",
+              "sz": "1400",
+              "highlight": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "120",
+      "name": "Text 10",
+      "off": {
+        "x": "1234440",
+        "y": "2724912"
+      },
+      "ext": {
+        "cx": "1645920",
+        "cy": "228600"
+      },
+      "texts": [
+        {
+          "paragraph": "Quoting",
+          "runs": [
+            {
+              "text": "Quoting",
+              "sz": "1200",
+              "highlight": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "122",
+      "name": "Text 12",
+      "off": {
+        "x": "3200400",
+        "y": "2724912"
+      },
+      "ext": {
+        "cx": "1645920",
+        "cy": "228600"
+      },
+      "texts": [
+        {
+          "paragraph": "Inventory",
+          "runs": [
+            {
+              "text": "Inventory",
+              "sz": "1200",
+              "highlight": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "124",
+      "name": "Text 14",
+      "off": {
+        "x": "5166360",
+        "y": "2724912"
+      },
+      "ext": {
+        "cx": "1645920",
+        "cy": "228600"
+      },
+      "texts": [
+        {
+          "paragraph": "Project Management",
+          "runs": [
+            {
+              "text": "Project Management",
+              "sz": "1200",
+              "highlight": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "126",
+      "name": "Text 16",
+      "off": {
+        "x": "7132320",
+        "y": "2724912"
+      },
+      "ext": {
+        "cx": "1645920",
+        "cy": "228600"
+      },
+      "texts": [
+        {
+          "paragraph": "Mobile App",
+          "runs": [
+            {
+              "text": "Mobile App",
+              "sz": "1200",
+              "highlight": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "128",
+      "name": "Text 19",
+      "off": {
+        "x": "731520",
+        "y": "3410712"
+      },
+      "ext": {
+        "cx": "4343400",
+        "cy": "274320"
+      },
+      "texts": [
+        {
+          "paragraph": "What integrations are you interested in?",
+          "runs": [
+            {
+              "text": "What integrations are you interested in?",
+              "sz": "1400",
+              "highlight": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "135",
+      "name": "Text 10",
+      "off": {
+        "x": "731520",
+        "y": "3753612"
+      },
+      "ext": {
+        "cx": "7534656",
+        "cy": "228600"
+      },
+      "texts": [
+        {
+          "paragraph": "Acronis, HubSpot, QuickBooks Online",
+          "runs": [
+            {
+              "text": "Acronis, HubSpot, QuickBooks Online",
+              "sz": "1200",
+              "highlight": false
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "11": [
+    {
+      "id": "21",
+      "name": "Text 19",
+      "off": {
+        "x": "6324600",
+        "y": "1456398"
+      },
+      "ext": {
+        "cx": "2448306",
+        "cy": "186630"
+      },
+      "texts": [
+        {
+          "paragraph": "Security Aligns Naturally",
+          "runs": [
+            {
+              "text": "Security Aligns Naturally",
+              "sz": "1050",
+              "highlight": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "4",
+      "name": "Text 3",
+      "off": {
+        "x": "457200",
+        "y": "320040"
+      },
+      "ext": {
+        "cx": "8229600",
+        "cy": "274320"
+      },
+      "texts": [
+        {
+          "paragraph": "DISCUSSION TOPICS",
+          "runs": [
+            {
+              "text": "DISCUSSION TOPICS",
+              "sz": "1400",
+              "highlight": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "5",
+      "name": "Text 4",
+      "off": {
+        "x": "457200",
+        "y": "685800"
+      },
+      "ext": {
+        "cx": "8229600",
+        "cy": "548640"
+      },
+      "texts": [
+        {
+          "paragraph": "What\u2019s Next?",
+          "runs": [
+            {
+              "text": "What\u2019s Next?",
+              "sz": "2800",
+              "highlight": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "6",
+      "name": "Text 5",
+      "off": {
+        "x": "457200",
+        "y": "1325880"
+      },
+      "ext": {
+        "cx": "8229600",
+        "cy": "274320"
+      },
+      "texts": [
+        {
+          "paragraph": "Your action items to get started",
+          "runs": [
+            {
+              "text": "Your action items to get started",
+              "sz": "1400",
+              "highlight": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "7",
+      "name": "Text 8",
+      "off": {
+        "x": "1188720",
+        "y": "1920240"
+      },
+      "ext": {
+        "cx": "7223760",
+        "cy": "320040"
+      },
+      "texts": [
+        {
+          "paragraph": "Confirm access to your instance and add users as needed",
+          "runs": [
+            {
+              "text": "Confirm access to your instance and add users as needed",
+              "sz": "1400",
+              "highlight": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "9",
+      "name": "Text 10",
+      "off": {
+        "x": "731520",
+        "y": "2331720"
+      },
+      "ext": {
+        "cx": "320040",
+        "cy": "320040"
+      },
+      "texts": [
+        {
+          "paragraph": "\u2713",
+          "runs": [
+            {
+              "text": "\u2713",
+              "sz": "1800",
+              "highlight": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "10",
+      "name": "Text 11",
+      "off": {
+        "x": "1188720",
+        "y": "2331720"
+      },
+      "ext": {
+        "cx": "7223760",
+        "cy": "320040"
+      },
+      "texts": [
+        {
+          "paragraph": "Determine primary admin for checklist",
+          "runs": [
+            {
+              "text": "Determine primary admin for checklist",
+              "sz": "1400",
+              "highlight": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "12",
+      "name": "Text 13",
+      "off": {
+        "x": "731520",
+        "y": "2743200"
+      },
+      "ext": {
+        "cx": "320040",
+        "cy": "320040"
+      },
+      "texts": [
+        {
+          "paragraph": "\u2713",
+          "runs": [
+            {
+              "text": "\u2713",
+              "sz": "1800",
+              "highlight": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "13",
+      "name": "Text 14",
+      "off": {
+        "x": "1188720",
+        "y": "2743200"
+      },
+      "ext": {
+        "cx": "7223760",
+        "cy": "320040"
+      },
+      "texts": [
+        {
+          "paragraph": "Sign up for Rev.io Community",
+          "runs": [
+            {
+              "text": "Sign up for Rev.io Community",
+              "sz": "1400",
+              "highlight": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "15",
+      "name": "Text 16",
+      "off": {
+        "x": "731520",
+        "y": "3154680"
+      },
+      "ext": {
+        "cx": "320040",
+        "cy": "320040"
+      },
+      "texts": [
+        {
+          "paragraph": "\u2713",
+          "runs": [
+            {
+              "text": "\u2713",
+              "sz": "1800",
+              "highlight": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "16",
+      "name": "Text 17",
+      "off": {
+        "x": "1188720",
+        "y": "3154680"
+      },
+      "ext": {
+        "cx": "7223760",
+        "cy": "320040"
+      },
+      "texts": [
+        {
+          "paragraph": "Confirm tax credential request information",
+          "runs": [
+            {
+              "text": "Confirm tax credential request information",
+              "sz": "1400",
+              "highlight": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "19",
+      "name": "Text 19",
+      "off": {
+        "x": "731520",
+        "y": "3566160"
+      },
+      "ext": {
+        "cx": "320040",
+        "cy": "320040"
+      },
+      "texts": [
+        {
+          "paragraph": "\u2713",
+          "runs": [
+            {
+              "text": "\u2713",
+              "sz": "1800",
+              "highlight": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "20",
+      "name": "Text 20",
+      "off": {
+        "x": "1188720",
+        "y": "3566160"
+      },
+      "ext": {
+        "cx": "7223760",
+        "cy": "320040"
+      },
+      "texts": [
+        {
+          "paragraph": "Schedule Recurring Weekly Configuration Calls",
+          "runs": [
+            {
+              "text": "Schedule Recurring Weekly Configuration Calls",
+              "sz": "1400",
+              "highlight": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "23",
+      "name": "Text 22",
+      "off": {
+        "x": "731520",
+        "y": "3977640"
+      },
+      "ext": {
+        "cx": "320040",
+        "cy": "320040"
+      },
+      "texts": [
+        {
+          "paragraph": "\u2713",
+          "runs": [
+            {
+              "text": "\u2713",
+              "sz": "1800",
+              "highlight": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "24",
+      "name": "Text 23",
+      "off": {
+        "x": "1188720",
+        "y": "3977640"
+      },
+      "ext": {
+        "cx": "7223760",
+        "cy": "320040"
+      },
+      "texts": [
+        {
+          "paragraph": "Send Company Logo",
+          "runs": [
+            {
+              "text": "Send Company Logo",
+              "sz": "1400",
+              "highlight": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "26",
+      "name": "Text 25",
+      "off": {
+        "x": "731520",
+        "y": "4389120"
+      },
+      "ext": {
+        "cx": "320040",
+        "cy": "320040"
+      },
+      "texts": [
+        {
+          "paragraph": "\u2713",
+          "runs": [
+            {
+              "text": "\u2713",
+              "sz": "1800",
+              "highlight": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "27",
+      "name": "Text 26",
+      "off": {
+        "x": "1188720",
+        "y": "4389120"
+      },
+      "ext": {
+        "cx": "7223760",
+        "cy": "320040"
+      },
+      "texts": [
+        {
+          "paragraph": "Gather product list to build catalog",
+          "runs": [
+            {
+              "text": "Gather product list to build catalog",
+              "sz": "1400",
+              "highlight": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "31",
+      "name": "Text 10",
+      "off": {
+        "x": "737616",
+        "y": "2000216"
+      },
+      "ext": {
+        "cx": "320040",
+        "cy": "320040"
+      },
+      "texts": [
+        {
+          "paragraph": "\u2713",
+          "runs": [
+            {
+              "text": "\u2713",
+              "sz": null,
+              "highlight": false
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
