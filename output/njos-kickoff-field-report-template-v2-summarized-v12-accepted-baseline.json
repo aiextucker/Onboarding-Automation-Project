@@ -1,0 +1,428 @@
+{
+  "clientName": "New Jersey Office Systems",
+  "summary": {
+    "totalFields": 23,
+    "completeFields": 16,
+    "missingFields": 7
+  },
+  "missingFields": [
+    {
+      "slide": 1,
+      "label": "Kickoff date",
+      "templateText": "January 30, 2026",
+      "value": "",
+      "renderedText": "NEEDS: Kickoff date",
+      "status": "missing",
+      "highlighted": true
+    },
+    {
+      "slide": 3,
+      "label": "Standard license count",
+      "templateText": "6",
+      "value": "",
+      "renderedText": "NEEDS: Qty",
+      "status": "missing",
+      "highlighted": true
+    },
+    {
+      "slide": 3,
+      "label": "Standard license price",
+      "templateText": "100",
+      "value": "",
+      "renderedText": "NEEDS: Price",
+      "status": "missing",
+      "highlighted": true
+    },
+    {
+      "slide": 3,
+      "label": "Field license count",
+      "templateText": "17",
+      "value": "",
+      "renderedText": "NEEDS: Qty",
+      "status": "missing",
+      "highlighted": true
+    },
+    {
+      "slide": 3,
+      "label": "Field license price",
+      "templateText": "25",
+      "value": "",
+      "renderedText": "NEEDS: Price",
+      "status": "missing",
+      "highlighted": true
+    },
+    {
+      "slide": 3,
+      "label": "Billing start date",
+      "templateText": "XX/XX/XXXX",
+      "value": "",
+      "renderedText": "NEEDS: Start date",
+      "status": "missing",
+      "highlighted": true
+    },
+    {
+      "slide": 6,
+      "label": "Instance URL",
+      "templateText": "https://psademo.rev.io",
+      "value": "",
+      "renderedText": "NEEDS: Instance URL",
+      "status": "missing",
+      "highlighted": true
+    }
+  ],
+  "completeFields": [
+    {
+      "slide": 1,
+      "label": "Client name",
+      "templateText": "Customer Name",
+      "value": "New Jersey Office Systems",
+      "renderedText": "New Jersey Office Systems",
+      "status": "complete",
+      "highlighted": false
+    },
+    {
+      "slide": 3,
+      "label": "Package details",
+      "templateText": "Insert Package Details",
+      "value": "$560 MRR",
+      "renderedText": "$560 MRR",
+      "status": "complete",
+      "highlighted": false
+    },
+    {
+      "slide": 6,
+      "label": "Quoting module requirement",
+      "templateText": "Quoting",
+      "value": "Quoting",
+      "renderedText": "Quoting",
+      "status": "complete",
+      "highlighted": false
+    },
+    {
+      "slide": 6,
+      "label": "Inventory module requirement",
+      "templateText": "Inventory",
+      "value": "Inventory",
+      "renderedText": "Inventory",
+      "status": "complete",
+      "highlighted": false
+    },
+    {
+      "slide": 6,
+      "label": "Project Management module requirement",
+      "templateText": "Project Management",
+      "value": "Project Management",
+      "renderedText": "Project Management",
+      "status": "complete",
+      "highlighted": false
+    },
+    {
+      "slide": 6,
+      "label": "Mobile App module requirement",
+      "templateText": "Mobile App",
+      "value": "Mobile App",
+      "renderedText": "Mobile App",
+      "status": "complete",
+      "highlighted": false
+    },
+    {
+      "slide": 6,
+      "label": "Interested integrations",
+      "templateText": "Acronis, HubSpot, QuickBooks Online",
+      "value": "QuickBooks Desktop workaround, Authorize.net, Rev.io Payments",
+      "renderedText": "QuickBooks Desktop workaround, Authorize.net, Rev.io Payments",
+      "status": "complete",
+      "highlighted": false
+    },
+    {
+      "slide": 13,
+      "label": "Next step 1",
+      "templateText": "Confirm access to your instance and add users as needed",
+      "value": "Set kickoff target date and time",
+      "renderedText": "Set kickoff target date and time",
+      "status": "complete",
+      "highlighted": false
+    },
+    {
+      "slide": 13,
+      "label": "Next step 2",
+      "templateText": "Determine primary admin for checklist",
+      "value": "Confirm Vanessa vs. Shawn onboarding ownership and approval authority",
+      "renderedText": "Confirm Vanessa vs. Shawn onboarding ownership and approval authority",
+      "status": "complete",
+      "highlighted": false
+    },
+    {
+      "slide": 13,
+      "label": "Next step 3",
+      "templateText": "Sign up for Rev.io Community",
+      "value": "Confirm Sue O'Keefe role",
+      "renderedText": "Confirm Sue O'Keefe role",
+      "status": "complete",
+      "highlighted": false
+    },
+    {
+      "slide": 13,
+      "label": "Next step 4",
+      "templateText": "Confirm tax credential request information",
+      "value": "Collect merchant statements for Rev.io Payments migration",
+      "renderedText": "Collect merchant statements for Rev.io Payments migration",
+      "status": "complete",
+      "highlighted": false
+    },
+    {
+      "slide": 13,
+      "label": "Next step 5",
+      "templateText": "Schedule Recurring Weekly Configuration Calls",
+      "value": "Confirm QuickBooks Desktop workaround and accounting plan",
+      "renderedText": "Confirm QuickBooks Desktop workaround and accounting plan",
+      "status": "complete",
+      "highlighted": false
+    },
+    {
+      "slide": 13,
+      "label": "Next step 6",
+      "templateText": "Send Company Logo",
+      "value": "Collect GL/chart of accounts details",
+      "renderedText": "Collect GL/chart of accounts details",
+      "status": "complete",
+      "highlighted": false
+    },
+    {
+      "slide": 13,
+      "label": "Next step 7",
+      "templateText": "Gather product list to build catalog",
+      "value": "Confirm field mobile workflow priorities",
+      "renderedText": "Confirm field mobile workflow priorities",
+      "status": "complete",
+      "highlighted": false
+    },
+    {
+      "slide": 4,
+      "label": "Business Issues & Current Pain Points",
+      "templateText": "Business Issues & Current Pain Points",
+      "value": "E-Automate workflow friction slows service, field, billing, and collections\nDisconnected service workflows\nLimited field visibility\nManual billing and collections follow-up",
+      "renderedText": "E-Automate workflow friction slows service, field, billing, and collections\nDisconnected service workflows\nLimited field visibility\nManual billing and collections follow-up",
+      "status": "complete",
+      "highlighted": false
+    },
+    {
+      "slide": 5,
+      "label": "Rev.io Value & Solutions",
+      "templateText": "Rev.io Value & Solutions",
+      "value": "Shared visibility for service, field, billing, and AR with fewer handoffs\nCentralized PSA workspace for tickets, work orders, and field activity\nOperational visibility across service, billing, payments, and follow-up\nModule path aligned to mobile field work, inventory, and projects",
+      "renderedText": "Shared visibility for service, field, billing, and AR with fewer handoffs\nCentralized PSA workspace for tickets, work orders, and field activity\nOperational visibility across service, billing, payments, and follow-up\nModule path aligned to mobile field work, inventory, and projects",
+      "status": "complete",
+      "highlighted": false
+    }
+  ],
+  "fields": [
+    {
+      "slide": 1,
+      "label": "Client name",
+      "templateText": "Customer Name",
+      "value": "New Jersey Office Systems",
+      "renderedText": "New Jersey Office Systems",
+      "status": "complete",
+      "highlighted": false
+    },
+    {
+      "slide": 1,
+      "label": "Kickoff date",
+      "templateText": "January 30, 2026",
+      "value": "",
+      "renderedText": "NEEDS: Kickoff date",
+      "status": "missing",
+      "highlighted": true
+    },
+    {
+      "slide": 3,
+      "label": "Package details",
+      "templateText": "Insert Package Details",
+      "value": "$560 MRR",
+      "renderedText": "$560 MRR",
+      "status": "complete",
+      "highlighted": false
+    },
+    {
+      "slide": 3,
+      "label": "Standard license count",
+      "templateText": "6",
+      "value": "",
+      "renderedText": "NEEDS: Qty",
+      "status": "missing",
+      "highlighted": true
+    },
+    {
+      "slide": 3,
+      "label": "Standard license price",
+      "templateText": "100",
+      "value": "",
+      "renderedText": "NEEDS: Price",
+      "status": "missing",
+      "highlighted": true
+    },
+    {
+      "slide": 3,
+      "label": "Field license count",
+      "templateText": "17",
+      "value": "",
+      "renderedText": "NEEDS: Qty",
+      "status": "missing",
+      "highlighted": true
+    },
+    {
+      "slide": 3,
+      "label": "Field license price",
+      "templateText": "25",
+      "value": "",
+      "renderedText": "NEEDS: Price",
+      "status": "missing",
+      "highlighted": true
+    },
+    {
+      "slide": 3,
+      "label": "Billing start date",
+      "templateText": "XX/XX/XXXX",
+      "value": "",
+      "renderedText": "NEEDS: Start date",
+      "status": "missing",
+      "highlighted": true
+    },
+    {
+      "slide": 6,
+      "label": "Instance URL",
+      "templateText": "https://psademo.rev.io",
+      "value": "",
+      "renderedText": "NEEDS: Instance URL",
+      "status": "missing",
+      "highlighted": true
+    },
+    {
+      "slide": 6,
+      "label": "Quoting module requirement",
+      "templateText": "Quoting",
+      "value": "Quoting",
+      "renderedText": "Quoting",
+      "status": "complete",
+      "highlighted": false
+    },
+    {
+      "slide": 6,
+      "label": "Inventory module requirement",
+      "templateText": "Inventory",
+      "value": "Inventory",
+      "renderedText": "Inventory",
+      "status": "complete",
+      "highlighted": false
+    },
+    {
+      "slide": 6,
+      "label": "Project Management module requirement",
+      "templateText": "Project Management",
+      "value": "Project Management",
+      "renderedText": "Project Management",
+      "status": "complete",
+      "highlighted": false
+    },
+    {
+      "slide": 6,
+      "label": "Mobile App module requirement",
+      "templateText": "Mobile App",
+      "value": "Mobile App",
+      "renderedText": "Mobile App",
+      "status": "complete",
+      "highlighted": false
+    },
+    {
+      "slide": 6,
+      "label": "Interested integrations",
+      "templateText": "Acronis, HubSpot, QuickBooks Online",
+      "value": "QuickBooks Desktop workaround, Authorize.net, Rev.io Payments",
+      "renderedText": "QuickBooks Desktop workaround, Authorize.net, Rev.io Payments",
+      "status": "complete",
+      "highlighted": false
+    },
+    {
+      "slide": 13,
+      "label": "Next step 1",
+      "templateText": "Confirm access to your instance and add users as needed",
+      "value": "Set kickoff target date and time",
+      "renderedText": "Set kickoff target date and time",
+      "status": "complete",
+      "highlighted": false
+    },
+    {
+      "slide": 13,
+      "label": "Next step 2",
+      "templateText": "Determine primary admin for checklist",
+      "value": "Confirm Vanessa vs. Shawn onboarding ownership and approval authority",
+      "renderedText": "Confirm Vanessa vs. Shawn onboarding ownership and approval authority",
+      "status": "complete",
+      "highlighted": false
+    },
+    {
+      "slide": 13,
+      "label": "Next step 3",
+      "templateText": "Sign up for Rev.io Community",
+      "value": "Confirm Sue O'Keefe role",
+      "renderedText": "Confirm Sue O'Keefe role",
+      "status": "complete",
+      "highlighted": false
+    },
+    {
+      "slide": 13,
+      "label": "Next step 4",
+      "templateText": "Confirm tax credential request information",
+      "value": "Collect merchant statements for Rev.io Payments migration",
+      "renderedText": "Collect merchant statements for Rev.io Payments migration",
+      "status": "complete",
+      "highlighted": false
+    },
+    {
+      "slide": 13,
+      "label": "Next step 5",
+      "templateText": "Schedule Recurring Weekly Configuration Calls",
+      "value": "Confirm QuickBooks Desktop workaround and accounting plan",
+      "renderedText": "Confirm QuickBooks Desktop workaround and accounting plan",
+      "status": "complete",
+      "highlighted": false
+    },
+    {
+      "slide": 13,
+      "label": "Next step 6",
+      "templateText": "Send Company Logo",
+      "value": "Collect GL/chart of accounts details",
+      "renderedText": "Collect GL/chart of accounts details",
+      "status": "complete",
+      "highlighted": false
+    },
+    {
+      "slide": 13,
+      "label": "Next step 7",
+      "templateText": "Gather product list to build catalog",
+      "value": "Confirm field mobile workflow priorities",
+      "renderedText": "Confirm field mobile workflow priorities",
+      "status": "complete",
+      "highlighted": false
+    },
+    {
+      "slide": 4,
+      "label": "Business Issues & Current Pain Points",
+      "templateText": "Business Issues & Current Pain Points",
+      "value": "E-Automate workflow friction slows service, field, billing, and collections\nDisconnected service workflows\nLimited field visibility\nManual billing and collections follow-up",
+      "renderedText": "E-Automate workflow friction slows service, field, billing, and collections\nDisconnected service workflows\nLimited field visibility\nManual billing and collections follow-up",
+      "status": "complete",
+      "highlighted": false
+    },
+    {
+      "slide": 5,
+      "label": "Rev.io Value & Solutions",
+      "templateText": "Rev.io Value & Solutions",
+      "value": "Shared visibility for service, field, billing, and AR with fewer handoffs\nCentralized PSA workspace for tickets, work orders, and field activity\nOperational visibility across service, billing, payments, and follow-up\nModule path aligned to mobile field work, inventory, and projects",
+      "renderedText": "Shared visibility for service, field, billing, and AR with fewer handoffs\nCentralized PSA workspace for tickets, work orders, and field activity\nOperational visibility across service, billing, payments, and follow-up\nModule path aligned to mobile field work, inventory, and projects",
+      "status": "complete",
+      "highlighted": false
+    }
+  ]
+}

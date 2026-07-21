@@ -1,9 +1,9 @@
 {
   "clientName": "New Jersey Office Systems",
   "summary": {
-    "totalTargets": 23,
-    "completeTargets": 9,
-    "missingTargets": 14
+    "totalTargets": 28,
+    "completeTargets": 15,
+    "missingTargets": 13
   },
   "fields": [
     {
@@ -32,7 +32,7 @@
       "target": "packageDetails",
       "source": "deal.packageDetails",
       "status": "complete",
-      "value": "PSA onboarding - $560 MRR from sales brief",
+      "value": "$560 MRR",
       "candidateSources": [
         "deal.packageDetails",
         "opportunity.packageDetails",
@@ -79,6 +79,84 @@
       ]
     },
     {
+      "target": "salesforceBusinessIssuesDetails",
+      "source": "salesforce.businessIssuesDetails",
+      "status": "complete",
+      "value": "E-Automate is slowing common service workflows and forces teams to work across disconnected billing, field, and collections views.",
+      "candidateSources": [
+        "salesforce.businessIssuesDetails",
+        "salesforce.businessIssueDetails",
+        "brief.businessIssuesDetails",
+        "businessIssuesDetails",
+        "businessIssueDetails"
+      ]
+    },
+    {
+      "target": "salesforceBusinessIssuePickList",
+      "source": "salesforce.businessIssuePickList",
+      "status": "complete",
+      "value": [
+        "Disconnected service workflows",
+        "Limited field visibility",
+        "Manual billing and collections follow-up"
+      ],
+      "candidateSources": [
+        "salesforce.businessIssuePickList",
+        "salesforce.businessIssues",
+        "brief.businessIssuePickList",
+        "businessIssuePickList",
+        "businessIssues"
+      ]
+    },
+    {
+      "target": "salesforceProblems",
+      "source": "salesforce.problems",
+      "status": "complete",
+      "value": [
+        "Service teams do not have one reliable workspace for tickets and work orders.",
+        "Field activity and back-office billing context are split across tools.",
+        "Payment and AR follow-up require manual workarounds."
+      ],
+      "candidateSources": [
+        "salesforce.problems",
+        "salesforce.currentSystemProblems",
+        "brief.problems",
+        "brief.currentSystemProblems",
+        "problems",
+        "currentSystemProblems"
+      ]
+    },
+    {
+      "target": "salesforceValue",
+      "source": "salesforce.value",
+      "status": "complete",
+      "value": "Rev.io gives service, field, billing, and AR teams shared visibility with fewer handoffs and less manual reconciliation.",
+      "candidateSources": [
+        "salesforce.value",
+        "salesforce.expectedValue",
+        "brief.salesforceValue",
+        "brief.expectedValue",
+        "expectedValue",
+        "value"
+      ]
+    },
+    {
+      "target": "salesforceSolutions",
+      "source": "salesforce.solutions",
+      "status": "complete",
+      "value": [
+        "Centralized PSA workspace for tickets, work orders, and field activity.",
+        "Operational visibility across service, billing context, payments, and follow-up.",
+        "Module path aligned to mobile field work, inventory, project management, and Rev.io Payments."
+      ],
+      "candidateSources": [
+        "salesforce.solutions",
+        "brief.salesforceSolutions",
+        "brief.solutions",
+        "solutions"
+      ]
+    },
+    {
       "target": "priorityModules",
       "source": "brief.priorityModules",
       "status": "complete",
@@ -98,13 +176,18 @@
     },
     {
       "target": "motivations",
-      "source": "",
-      "status": "missing",
-      "value": [],
+      "source": "salesforce.problems",
+      "status": "complete",
+      "value": [
+        "Service teams do not have one reliable workspace for tickets and work orders.",
+        "Field activity and back-office billing context are split across tools."
+      ],
       "candidateSources": [
         "brief.motivations",
         "brief.painPoints",
         "salesforce.painPoints",
+        "salesforce.problems",
+        "salesforce.currentSystemProblems",
         "motivations",
         "painPoints"
       ]
@@ -297,19 +380,6 @@
         "deal.kickoffDate",
         "opportunity.kickoffDate",
         "kickoffDate"
-      ]
-    },
-    {
-      "target": "motivations",
-      "source": "",
-      "status": "missing",
-      "value": [],
-      "candidateSources": [
-        "brief.motivations",
-        "brief.painPoints",
-        "salesforce.painPoints",
-        "motivations",
-        "painPoints"
       ]
     },
     {

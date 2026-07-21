@@ -3,18 +3,38 @@
   "kickoffDate": "TBD - kickoff date",
   "mainBuyingMotivator": "Replace E-Automate workflow friction",
   "expectedValue": "Shared service, field, billing, and AR visibility",
+  "salesforceBusinessIssuesDetails": "E-Automate is slowing common service workflows and forces teams to work across disconnected billing, field, and collections views.",
+  "salesforceBusinessIssuePickList": [
+    "Disconnected service workflows",
+    "Limited field visibility",
+    "Manual billing and collections follow-up"
+  ],
+  "salesforceProblems": [
+    "Service teams do not have one reliable workspace for tickets and work orders.",
+    "Field activity and back-office billing context are split across tools.",
+    "Payment and AR follow-up require manual workarounds."
+  ],
+  "salesforceValue": "Rev.io gives service, field, billing, and AR teams shared visibility with fewer handoffs and less manual reconciliation.",
+  "salesforceSolutions": [
+    "Centralized PSA workspace for tickets, work orders, and field activity.",
+    "Operational visibility across service, billing context, payments, and follow-up.",
+    "Module path aligned to mobile field work, inventory, project management, and Rev.io Payments."
+  ],
   "priorityModules": [
     "Mobile App",
     "Rev.io Payments",
     "Inventory",
     "Project Management"
   ],
-  "motivations": [],
+  "motivations": [
+    "Service teams do not have one reliable workspace for tickets and work orders.",
+    "Field activity and back-office billing context are split across tools."
+  ],
   "solutions": [
     "Simpler ticket and work-order workspace",
     "Centralized operations and payment visibility"
   ],
-  "packageDetails": "PSA onboarding - $560 MRR from sales brief",
+  "packageDetails": "$560 MRR",
   "standardLicenseCount": "TBD - standard license count",
   "standardLicensePrice": "TBD - standard license price",
   "fieldLicenseCount": "TBD - field license count",
@@ -35,10 +55,347 @@
     "Collect GL/chart of accounts details",
     "Confirm field mobile workflow priorities"
   ],
-  "logoPath": "assets/logos/njos-logo.png",
-  "logoUrl": "https://njosllc.com/wp-content/uploads/2019/04/njos_logo_transparent_bg.fw_.png",
-  "logoSourceUrl": "https://njosllc.com/",
+  "logoPath": "",
+  "logoUrl": "",
+  "logoSourceUrl": "",
   "briefUrl": "",
   "notionProjectUrl": "",
-  "orderFormUrl": ""
+  "orderFormUrl": "",
+  "_sourceFields": {
+    "clientName": {
+      "source": "client.name",
+      "status": "complete",
+      "value": "New Jersey Office Systems",
+      "candidateSources": [
+        "client.name",
+        "account.name",
+        "companyName"
+      ]
+    },
+    "mrr": {
+      "source": "deal.mrr",
+      "status": "complete",
+      "value": "$560 / mo",
+      "candidateSources": [
+        "deal.mrr",
+        "opportunity.mrr",
+        "mrr"
+      ]
+    },
+    "packageDetails": {
+      "source": "deal.packageDetails",
+      "status": "complete",
+      "value": "$560 MRR",
+      "candidateSources": [
+        "deal.packageDetails",
+        "opportunity.packageDetails",
+        "packageDetails",
+        "package"
+      ]
+    },
+    "kickoffDate": {
+      "source": "",
+      "status": "missing",
+      "value": "",
+      "candidateSources": [
+        "deal.kickoffDate",
+        "opportunity.kickoffDate",
+        "kickoffDate"
+      ]
+    },
+    "mainBuyingMotivator": {
+      "source": "brief.mainBuyingMotivator",
+      "status": "complete",
+      "value": "Replace E-Automate workflow friction",
+      "candidateSources": [
+        "brief.mainBuyingMotivator",
+        "brief.buyingMotivator",
+        "salesforce.mainBuyingMotivator",
+        "mainBuyingMotivator",
+        "buyingMotivator"
+      ]
+    },
+    "expectedValue": {
+      "source": "brief.expectedValue",
+      "status": "complete",
+      "value": "Shared service, field, billing, and AR visibility",
+      "candidateSources": [
+        "brief.expectedValue",
+        "brief.businessOutcome",
+        "salesforce.expectedValue",
+        "expectedValue",
+        "businessOutcome",
+        "value"
+      ]
+    },
+    "salesforceBusinessIssuesDetails": {
+      "source": "salesforce.businessIssuesDetails",
+      "status": "complete",
+      "value": "E-Automate is slowing common service workflows and forces teams to work across disconnected billing, field, and collections views.",
+      "candidateSources": [
+        "salesforce.businessIssuesDetails",
+        "salesforce.businessIssueDetails",
+        "brief.businessIssuesDetails",
+        "businessIssuesDetails",
+        "businessIssueDetails"
+      ]
+    },
+    "salesforceBusinessIssuePickList": {
+      "source": "salesforce.businessIssuePickList",
+      "status": "complete",
+      "value": [
+        "Disconnected service workflows",
+        "Limited field visibility",
+        "Manual billing and collections follow-up"
+      ],
+      "candidateSources": [
+        "salesforce.businessIssuePickList",
+        "salesforce.businessIssues",
+        "brief.businessIssuePickList",
+        "businessIssuePickList",
+        "businessIssues"
+      ]
+    },
+    "salesforceProblems": {
+      "source": "salesforce.problems",
+      "status": "complete",
+      "value": [
+        "Service teams do not have one reliable workspace for tickets and work orders.",
+        "Field activity and back-office billing context are split across tools.",
+        "Payment and AR follow-up require manual workarounds."
+      ],
+      "candidateSources": [
+        "salesforce.problems",
+        "salesforce.currentSystemProblems",
+        "brief.problems",
+        "brief.currentSystemProblems",
+        "problems",
+        "currentSystemProblems"
+      ]
+    },
+    "salesforceValue": {
+      "source": "salesforce.value",
+      "status": "complete",
+      "value": "Rev.io gives service, field, billing, and AR teams shared visibility with fewer handoffs and less manual reconciliation.",
+      "candidateSources": [
+        "salesforce.value",
+        "salesforce.expectedValue",
+        "brief.salesforceValue",
+        "brief.expectedValue",
+        "expectedValue",
+        "value"
+      ]
+    },
+    "salesforceSolutions": {
+      "source": "salesforce.solutions",
+      "status": "complete",
+      "value": [
+        "Centralized PSA workspace for tickets, work orders, and field activity.",
+        "Operational visibility across service, billing context, payments, and follow-up.",
+        "Module path aligned to mobile field work, inventory, project management, and Rev.io Payments."
+      ],
+      "candidateSources": [
+        "salesforce.solutions",
+        "brief.salesforceSolutions",
+        "brief.solutions",
+        "solutions"
+      ]
+    },
+    "priorityModules": {
+      "source": "brief.priorityModules",
+      "status": "complete",
+      "value": [
+        "Mobile App",
+        "Rev.io Payments",
+        "Inventory",
+        "Project Management"
+      ],
+      "candidateSources": [
+        "brief.priorityModules",
+        "brief.modules",
+        "salesforce.priorityModules",
+        "priorityModules",
+        "modules"
+      ]
+    },
+    "motivations": {
+      "source": "salesforce.problems",
+      "status": "complete",
+      "value": [
+        "Service teams do not have one reliable workspace for tickets and work orders.",
+        "Field activity and back-office billing context are split across tools."
+      ],
+      "candidateSources": [
+        "brief.motivations",
+        "brief.painPoints",
+        "salesforce.painPoints",
+        "salesforce.problems",
+        "salesforce.currentSystemProblems",
+        "motivations",
+        "painPoints"
+      ]
+    },
+    "solutions": {
+      "source": "brief.solutions",
+      "status": "complete",
+      "value": [
+        "Simpler ticket and work-order workspace",
+        "Centralized operations and payment visibility"
+      ],
+      "candidateSources": [
+        "brief.solutions",
+        "salesforce.solutions",
+        "solutions"
+      ]
+    },
+    "standardLicenseCount": {
+      "source": "",
+      "status": "missing",
+      "value": "",
+      "candidateSources": [
+        "contract.standardLicenseCount",
+        "deal.standardLicenseCount",
+        "standardLicenseCount"
+      ]
+    },
+    "standardLicensePrice": {
+      "source": "",
+      "status": "missing",
+      "value": "",
+      "candidateSources": [
+        "contract.standardLicensePrice",
+        "deal.standardLicensePrice",
+        "standardLicensePrice"
+      ]
+    },
+    "fieldLicenseCount": {
+      "source": "",
+      "status": "missing",
+      "value": "",
+      "candidateSources": [
+        "contract.fieldLicenseCount",
+        "deal.fieldLicenseCount",
+        "fieldLicenseCount"
+      ]
+    },
+    "fieldLicensePrice": {
+      "source": "",
+      "status": "missing",
+      "value": "",
+      "candidateSources": [
+        "contract.fieldLicensePrice",
+        "deal.fieldLicensePrice",
+        "fieldLicensePrice"
+      ]
+    },
+    "billingStartDate": {
+      "source": "",
+      "status": "missing",
+      "value": "",
+      "candidateSources": [
+        "contract.billingStartDate",
+        "deal.billingStartDate",
+        "billingStartDate",
+        "contract.startDate"
+      ]
+    },
+    "instanceUrl": {
+      "source": "",
+      "status": "missing",
+      "value": "",
+      "candidateSources": [
+        "instance.url",
+        "psa.instanceUrl",
+        "instanceUrl"
+      ]
+    },
+    "integrations": {
+      "source": "brief.integrations",
+      "status": "complete",
+      "value": [
+        "QuickBooks Desktop workaround",
+        "Authorize.net",
+        "Rev.io Payments"
+      ],
+      "candidateSources": [
+        "brief.integrations",
+        "salesforce.integrations",
+        "integrations"
+      ]
+    },
+    "nextSteps": {
+      "source": "brief.nextSteps",
+      "status": "complete",
+      "value": [
+        "Set kickoff target date and time",
+        "Confirm Vanessa vs. Shawn onboarding ownership and approval authority",
+        "Confirm Sue O'Keefe role",
+        "Collect merchant statements for Rev.io Payments migration",
+        "Confirm QuickBooks Desktop workaround and accounting plan",
+        "Collect GL/chart of accounts details",
+        "Confirm field mobile workflow priorities"
+      ],
+      "candidateSources": [
+        "brief.nextSteps",
+        "nextSteps",
+        "openItems"
+      ]
+    },
+    "logoPath": {
+      "source": "",
+      "status": "missing",
+      "value": "",
+      "candidateSources": [
+        "brand.logoPath",
+        "logoPath"
+      ]
+    },
+    "logoUrl": {
+      "source": "",
+      "status": "missing",
+      "value": "",
+      "candidateSources": [
+        "brand.logoUrl",
+        "account.logoUrl",
+        "logoUrl"
+      ]
+    },
+    "logoSourceUrl": {
+      "source": "",
+      "status": "missing",
+      "value": "",
+      "candidateSources": [
+        "brand.logoSourceUrl",
+        "logoSourceUrl"
+      ]
+    },
+    "briefUrl": {
+      "source": "",
+      "status": "missing",
+      "value": "",
+      "candidateSources": [
+        "links.briefUrl",
+        "brief.url",
+        "briefUrl"
+      ]
+    },
+    "notionProjectUrl": {
+      "source": "",
+      "status": "missing",
+      "value": "",
+      "candidateSources": [
+        "links.notionProjectUrl",
+        "notionProjectUrl"
+      ]
+    },
+    "orderFormUrl": {
+      "source": "",
+      "status": "missing",
+      "value": "",
+      "candidateSources": [
+        "links.orderFormUrl",
+        "orderFormUrl"
+      ]
+    }
+  }
 }

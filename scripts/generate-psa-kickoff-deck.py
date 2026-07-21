@@ -27,13 +27,21 @@ NS = {
     "r": "http://schemas.openxmlformats.org/officeDocument/2006/relationships",
 }
 RELS_NS = "http://schemas.openxmlformats.org/package/2006/relationships"
+CONTENT_TYPES_NS = "http://schemas.openxmlformats.org/package/2006/content-types"
+EXTENDED_PROPS_NS = "http://schemas.openxmlformats.org/officeDocument/2006/extended-properties"
+SLIDE_REL_TYPE = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide"
+SLIDE_CONTENT_TYPE = "application/vnd.openxmlformats-officedocument.presentationml.slide+xml"
 
-DEFAULT_TEMPLATE = Path("templates/revio-psa-onboarding-kickoff-template.pptx")
+DEFAULT_TEMPLATE = Path("templates/revio-psa-onboarding-kickoff-template-v2.pptx")
 GREEN_TEXT = "6EBE4F"
 GREEN_HIGHLIGHT = "00FF00"
 WHITE_TEXT = "FFFFFF"
 MUTED_TEXT = "B0B4CC"
 DARK_TEXT = "1D3756"
+SECTION_BLUE = "1D3756"
+BODY_BLUE = "31516F"
+GENERATED_FONT = "Montserrat"
+TEMPLATE_BODY_TEXT = DARK_TEXT
 
 
 @dataclass(frozen=True)
@@ -119,6 +127,67 @@ def string_list(config: dict, key: str, expected: int | None = None) -> list[str
     return items
 
 
+def string_list_any(config: dict, keys: list[str], expected: int | None = None) -> list[str]:
+    for key in keys:
+        value = config.get(key)
+        if value is None:
+            continue
+        if isinstance(value, list):
+            items = [str(item).strip() for item in value if str(item).strip()]
+        else:
+            items = [part.strip() for part in re.split(r"[\n;]+", str(value)) if part.strip()]
+        if items:
+            if expected is not None and len(items) > expected:
+                raise ValueError(f"{key} supports at most {expected} item(s)")
+            return items
+    return []
+
+
+def clean_sentence(value: str, max_length: int = 95) -> str:
+    text = re.sub(r"\s+", " ", str(value or "")).strip(" .,;:-")
+    if len(text) <= max_length:
+        return text
+    trimmed = text[: max_length - 1].rsplit(" ", 1)[0].strip(" .,;:-")
+    trailing_fillers = {"and", "or", "with", "without", "across", "for", "to", "from", "of", "the"}
+    words = trimmed.split()
+    while words and words[-1].lower() in trailing_fillers:
+        words.pop()
+    trimmed = " ".join(words).strip(" .,;:-")
+    return f"{trimmed}."
+
+
+def polish_bullet(value: str) -> str:
+    text = clean_sentence(value, max_length=140)
+    normalized = normalize_text(text)
+    if "e automate" in normalized and "workflow" in normalized:
+        return "E-Automate workflow friction slows service, field, billing, and collections."
+    if "shared service field billing and ar visibility" in normalized or (
+        "service field billing" in normalized and "visibility" in normalized
+    ):
+        return "Shared visibility for service, field, billing, and AR with fewer handoffs."
+    if "operational visibility across service billing context payments" in normalized:
+        return "Operational visibility across service, billing, payments, and follow-up."
+    if "module path aligned to mobile field work inventory project management" in normalized:
+        return "Module path aligned to mobile field work, inventory, and projects."
+    return text
+
+
+def presentation_bullets(values: list[str], *, limit: int = 3, max_length: int = 95) -> list[str]:
+    bullets = []
+    seen = set()
+    for value in values:
+        for part in re.split(r"[\n;]+", str(value or "")):
+            text = clean_sentence(polish_bullet(part), max_length=max_length)
+            key = normalize_text(text)
+            if not text or key in seen:
+                continue
+            bullets.append(text)
+            seen.add(key)
+            if len(bullets) >= limit:
+                return bullets
+    return bullets
+
+
 def first_present(config: dict, keys: list[str]) -> str:
     for key in keys:
         value = config.get(key)
@@ -172,17 +241,9 @@ def normalize_text(value: str) -> str:
 
 
 def build_replacements(config: dict) -> dict[int, list[Replacement]]:
-    main_buying_motivator = first_present(config, ["mainBuyingMotivator", "buyingMotivator"])
-    expected_value = first_present(config, ["expectedValue", "businessOutcome", "value"])
     modules = first_list(config, ["priorityModules", "optionalModules"], expected=4)
     integrations = string_list(config, "integrations")
-    motivations = string_list(config, "motivations", expected=2)
-    solutions = string_list(config, "solutions", expected=2)
     next_steps = string_list(config, "nextSteps", expected=7)
-    motivation_1 = main_buying_motivator or (motivations[0] if len(motivations) > 0 else "")
-    motivation_2 = expected_value or (motivations[1] if len(motivations) > 1 else "")
-    solution_1 = solutions[0] if len(solutions) > 0 else ""
-    solution_2 = solutions[1] if len(solutions) > 1 else expected_value
 
     replacements: dict[int, list[Replacement]] = {
         1: [
@@ -190,34 +251,14 @@ def build_replacements(config: dict) -> dict[int, list[Replacement]]:
             repl("January 30, 2026", require_text(config, "kickoffDate"), "Kickoff date"),
         ],
         3: [
-            repl(
-                "Using Separate Platforms",
-                motivation_1,
-                "Main buying motivator",
-            ),
-            repl(
-                "No Way to Track Work Orders/Tickets",
-                motivation_2,
-                "Expected value / business outcome",
-            ),
-            repl(
-                "Consolidated Platform including Dispatch Board",
-                solution_1,
-                "Rev.io solution point 1",
-            ),
-            repl(
-                "Centralized Ticketing Management Dashboard",
-                solution_2,
-                "Rev.io solution point 2",
-            ),
-            repl("Basic Implementation Package", require_text(config, "packageDetails"), "Package details"),
+            repl("Insert Package Details", require_text(config, "packageDetails"), "Package details"),
             compact_missing_repl("6", optional_text(config, "standardLicenseCount", "6"), "Standard license count", "NEEDS: Qty"),
             compact_missing_repl("100", optional_text(config, "standardLicensePrice", "100"), "Standard license price", "NEEDS: Price"),
             compact_missing_repl("17", optional_text(config, "fieldLicenseCount", "17"), "Field license count", "NEEDS: Qty"),
             compact_missing_repl("25", optional_text(config, "fieldLicensePrice", "25"), "Field license price", "NEEDS: Price"),
-            compact_missing_repl("02/01/2026", require_text(config, "billingStartDate"), "Billing start date", "NEEDS: Start date"),
+            compact_missing_repl("XX/XX/XXXX", require_text(config, "billingStartDate"), "Billing start date", "NEEDS: Start date"),
         ],
-        4: [
+        6: [
             repl("https://psademo.rev.io", require_text(config, "instanceUrl"), "Instance URL"),
             module_repl("Quoting", modules),
             module_repl("Inventory", modules),
@@ -225,7 +266,7 @@ def build_replacements(config: dict) -> dict[int, list[Replacement]]:
             module_repl("Mobile App", modules),
             repl("Acronis, HubSpot, QuickBooks Online", ", ".join(integrations), "Interested integrations"),
         ],
-        11: [
+        13: [
             repl(
                 "Confirm access to your instance and add users as needed",
                 next_steps[0] if len(next_steps) > 0 else "",
@@ -257,6 +298,116 @@ def build_replacements(config: dict) -> dict[int, list[Replacement]]:
     }
 
     return replacements
+
+
+def build_brief_slides(config: dict) -> list[dict]:
+    motivations = string_list(config, "motivations")
+    solutions = string_list(config, "solutions")
+    issue_details = first_present(config, [
+        "salesforceBusinessIssuesDetails",
+        "businessIssuesDetails",
+        "mainBuyingMotivator",
+        "buyingMotivator",
+    ])
+    issue_pick_list = string_list_any(config, [
+        "salesforceBusinessIssuePickList",
+        "businessIssuePickList",
+        "businessIssues",
+        "painPointPickList",
+    ])
+    problems = string_list_any(config, [
+        "salesforceProblems",
+        "currentSystemProblems",
+        "problems",
+        "painPoints",
+    ]) or motivations
+    value = first_present(config, [
+        "salesforceValue",
+        "valueIntroduced",
+        "expectedValue",
+        "businessOutcome",
+        "value",
+    ])
+    salesforce_solutions = string_list_any(config, [
+        "salesforceSolutions",
+        "revioSolutions",
+        "solutionPoints",
+    ]) or solutions
+
+    return [
+        {
+            "kicker": "SALESFORCE BUSINESS ISSUES",
+            "title": "Business Issues & Problems",
+            "sections": [
+                {
+                    "heading": "Salesforce Business Issues Details",
+                    "items": [issue_details],
+                    "missing": "NEEDS: Salesforce business issue details",
+                },
+                {
+                    "heading": "Salesforce Business Issue Pick List",
+                    "items": issue_pick_list,
+                    "missing": "NEEDS: Salesforce business issue pick list",
+                },
+                {
+                    "heading": "Salesforce Problems",
+                    "items": problems,
+                    "missing": "NEEDS: Salesforce problems / current system pain points",
+                },
+            ],
+        },
+        {
+            "kicker": "SALESFORCE VALUE",
+            "title": "Value Rev.io Is Introducing",
+            "sections": [
+                {
+                    "heading": "Salesforce Value",
+                    "items": [value],
+                    "missing": "NEEDS: Salesforce value from brief",
+                },
+            ],
+        },
+        {
+            "kicker": "SALESFORCE SOLUTIONS",
+            "title": "Salesforce Solutions",
+            "sections": [
+                {
+                    "heading": "Salesforce Solutions",
+                    "items": salesforce_solutions,
+                    "missing": "NEEDS: Salesforce solutions from brief",
+                },
+            ],
+        },
+    ]
+
+
+def build_existing_template_brief_slides(config: dict) -> dict[int, dict]:
+    slides = build_brief_slides(config)
+    issue_sections = slides[0]["sections"]
+    value_section = slides[1]["sections"][0]
+    solution_section = slides[2]["sections"][0]
+
+    issue_values: list[str] = []
+    for section in issue_sections:
+        issue_values.extend(section["items"])
+    issue_bullets = presentation_bullets(issue_values, limit=4, max_length=82)
+
+    value_bullets = presentation_bullets(value_section["items"], limit=1, max_length=82)
+    solution_bullets = presentation_bullets(solution_section["items"], limit=3, max_length=78)
+    value_solution_bullets = value_bullets + solution_bullets
+
+    return {
+        4: {
+            "heading": "Business Issues & Current Pain Points",
+            "items": issue_bullets,
+            "missing": "NEEDS: Salesforce business issues and current pain points",
+        },
+        5: {
+            "heading": "Rev.io Value & Solutions",
+            "items": value_solution_bullets,
+            "missing": "NEEDS: Salesforce value and solutions",
+        },
+    }
 
 
 def qname(tag: str) -> str:
@@ -307,9 +458,31 @@ def set_run_bold(run: ET.Element, enabled: bool) -> None:
         del rpr.attrib["b"]
 
 
-def make_run(text: str, *, color: str | None = None, size: int | None = None, bold: bool = False, highlight: bool = False) -> ET.Element:
+def set_run_font_face(run: ET.Element, typeface: str = GENERATED_FONT) -> None:
+    rpr = ensure_run_properties(run)
+    for tag in ["a:latin", "a:ea", "a:cs"]:
+        for child in list(rpr.findall(tag, NS)):
+            rpr.remove(child)
+    ET.SubElement(rpr, qname("a:latin"), {"typeface": typeface})
+    ET.SubElement(rpr, qname("a:ea"), {"typeface": typeface})
+    ET.SubElement(rpr, qname("a:cs"), {"typeface": typeface})
+
+
+def make_run(
+    text: str,
+    *,
+    color: str | None = None,
+    size: int | None = None,
+    bold: bool = False,
+    highlight: bool = False,
+    font: str | None = None,
+) -> ET.Element:
     run = ET.Element(qname("a:r"))
     rpr = ET.SubElement(run, qname("a:rPr"), {"lang": "en-US"})
+    if font:
+        ET.SubElement(rpr, qname("a:latin"), {"typeface": font})
+        ET.SubElement(rpr, qname("a:ea"), {"typeface": font})
+        ET.SubElement(rpr, qname("a:cs"), {"typeface": font})
     if size is not None:
         rpr.set("sz", str(size))
     if bold:
@@ -362,6 +535,15 @@ def find_shape_by_id(root: ET.Element, wanted_id: str) -> ET.Element | None:
     return None
 
 
+def remove_shape_by_id(root: ET.Element, wanted_id: str) -> bool:
+    for parent in root.iter():
+        for child in list(parent):
+            if child.tag == qname("p:sp") and shape_id(child) == wanted_id:
+                parent.remove(child)
+                return True
+    return False
+
+
 def set_shape_geometry(shape: ET.Element, *, x: int | None = None, y: int | None = None, cx: int | None = None, cy: int | None = None) -> None:
     xfrm = shape.find("p:spPr/a:xfrm", NS)
     if xfrm is None:
@@ -409,6 +591,17 @@ def set_shape_no_line(shape: ET.Element) -> None:
     ET.SubElement(line, qname("a:noFill"))
 
 
+def set_shape_line_color(shape: ET.Element, color: str) -> None:
+    shape_props = shape.find("p:spPr", NS)
+    if shape_props is None:
+        return
+    for line in list(shape_props.findall("a:ln", NS)):
+        shape_props.remove(line)
+    line = ET.SubElement(shape_props, qname("a:ln"), {"w": "12700"})
+    fill = ET.SubElement(line, qname("a:solidFill"))
+    ET.SubElement(fill, qname("a:srgbClr"), {"val": color})
+
+
 def apply_missing_box_style(shape: ET.Element) -> None:
     set_shape_fill(shape, GREEN_HIGHLIGHT)
     set_shape_no_line(shape)
@@ -433,7 +626,12 @@ def apply_original_spacing(original: str, replacement: str) -> str:
     return f"{leading}{replacement}{trailing}"
 
 
-def replace_slide_text(xml_bytes: bytes, replacements: list[Replacement], slide_number: int) -> tuple[bytes, int]:
+def replace_slide_text(
+    xml_bytes: bytes,
+    replacements: list[Replacement],
+    slide_number: int,
+    existing_brief_slide: dict | None = None,
+) -> tuple[bytes, int]:
     root = ET.fromstring(xml_bytes)
     changed = 0
     parents = {child: parent for parent in root.iter() for child in parent}
@@ -463,6 +661,8 @@ def replace_slide_text(xml_bytes: bytes, replacements: list[Replacement], slide_
             changed += 1
 
     changed += patch_shape_aware_slide(root, replacements, slide_number)
+    if existing_brief_slide is not None:
+        changed += patch_existing_template_brief_slide(root, existing_brief_slide)
     return ET.tostring(root, encoding="utf-8", xml_declaration=True), changed
 
 
@@ -581,6 +781,22 @@ def patch_billing_start_missing_box(root: ET.Element, replacements: list[Replace
     return 1
 
 
+def patch_contract_only_slide(root: ET.Element) -> int:
+    changed = 0
+    title_shape = find_shape_by_id(root, "4")
+    if title_shape is not None:
+        set_shape_paragraphs(
+            title_shape,
+            [make_paragraph([make_run("Contract Specifics", color=WHITE_TEXT, size=2800)], align="l")],
+            anchor="ctr",
+        )
+        changed += 1
+    for old_shape_id in ["7", "8", "11", "12"]:
+        if remove_shape_by_id(root, old_shape_id):
+            changed += 1
+    return changed
+
+
 def patch_instance_url_missing_box(root: ET.Element, replacements: list[Replacement]) -> int:
     instance = next((item for item in replacements if item.label == "Instance URL"), None)
     shape = find_shape_by_id(root, "114")
@@ -669,10 +885,230 @@ def patch_shape_aware_slide(root: ET.Element, replacements: list[Replacement], s
     if slide_number == 1:
         return patch_title_slide(root, replacements)
     if slide_number == 3:
-        return patch_recurring_fees(root, replacements) + patch_billing_start_missing_box(root, replacements)
-    if slide_number == 4:
+        return (
+            patch_recurring_fees(root, replacements)
+            + patch_billing_start_missing_box(root, replacements)
+        )
+    if slide_number in {4, 6}:
         return patch_module_checkboxes(root, replacements) + patch_instance_url_missing_box(root, replacements)
     return 0
+
+
+def missing_text(text: str) -> bool:
+    return text.startswith("NEEDS:")
+
+
+def bullet_paragraph(text: str, *, size: int = 1150) -> ET.Element:
+    if missing_text(text):
+        return make_paragraph([
+            make_run(text, color=DARK_TEXT, size=size, bold=True, highlight=True)
+        ])
+    return make_paragraph([
+        make_run("\u2022 ", color=WHITE_TEXT, size=size, bold=True),
+        make_run(text, color=WHITE_TEXT, size=size),
+    ])
+
+
+def section_paragraph(text: str) -> ET.Element:
+    return make_paragraph([make_run(text, color=WHITE_TEXT, size=1350, bold=True)])
+
+
+def template_section_paragraph(text: str) -> ET.Element:
+    return make_paragraph([make_run(text, color=WHITE_TEXT, size=1100, bold=True, font=GENERATED_FONT)])
+
+
+def template_bullet_paragraph(text: str, *, size: int = 1000) -> ET.Element:
+    if missing_text(text):
+        return make_paragraph([
+            make_run(text, color=TEMPLATE_BODY_TEXT, size=size, bold=True, highlight=True, font=GENERATED_FONT)
+        ])
+    return make_paragraph([
+        make_run("\u2022 ", color=TEMPLATE_BODY_TEXT, size=size, bold=True, font=GENERATED_FONT),
+        make_run(text, color=TEMPLATE_BODY_TEXT, size=size, font=GENERATED_FONT),
+    ])
+
+
+def patch_brief_slide(base_slide_bytes: bytes, slide_def: dict) -> bytes:
+    root = ET.fromstring(base_slide_bytes)
+
+    title_shape = find_shape_by_id(root, "4")
+    if title_shape is not None:
+        set_shape_geometry(title_shape, x=446820, y=452855, cx=7600000, cy=620000)
+        set_shape_paragraphs(
+            title_shape,
+            [make_paragraph([make_run(slide_def["title"], color=WHITE_TEXT, size=2500)], align="l")],
+            anchor="ctr",
+        )
+
+    kicker_shape = find_shape_by_id(root, "40")
+    if kicker_shape is not None:
+        set_shape_paragraphs(
+            kicker_shape,
+            [make_paragraph([make_run(slide_def["kicker"], color=WHITE_TEXT, size=1250)], align="l")],
+            anchor="ctr",
+        )
+
+    sections = slide_def["sections"]
+    layout_by_count = {
+        1: [("7", "8", 548640, 1600000, 7950000, 500000, 640080, 2250000, 7750000, 1900000)],
+        3: [
+            ("7", "8", 548640, 1450000, 7950000, 330000, 640080, 1880000, 7750000, 760000),
+            ("11", "12", 548640, 2770000, 7950000, 330000, 640080, 3200000, 7750000, 760000),
+            ("15", "17", 548640, 4090000, 7950000, 330000, 640080, 4520000, 7750000, 760000),
+        ],
+    }
+    layout = layout_by_count.get(len(sections), layout_by_count[1])
+    section_shape_ids = set()
+    for index, section in enumerate(sections):
+        heading_id, body_id, hx, hy, hcx, hcy, bx, by, bcx, bcy = layout[index]
+        section_shape_ids.update({heading_id, body_id})
+        heading_shape = find_shape_by_id(root, heading_id)
+        body_shape = find_shape_by_id(root, body_id)
+        if heading_shape is not None:
+            set_shape_geometry(heading_shape, x=hx, y=hy, cx=hcx, cy=hcy)
+            set_shape_fill(heading_shape, SECTION_BLUE)
+            set_shape_line_color(heading_shape, SECTION_BLUE)
+            set_shape_paragraphs(heading_shape, [section_paragraph(section["heading"])], anchor="ctr")
+        if body_shape is not None:
+            set_shape_geometry(body_shape, x=bx, y=by, cx=bcx, cy=bcy)
+            items = [str(item).strip() for item in section["items"] if str(item).strip()]
+            if not items:
+                items = [section["missing"]]
+                apply_missing_box_style(body_shape)
+            else:
+                set_shape_fill(body_shape, BODY_BLUE)
+                set_shape_line_color(body_shape, BODY_BLUE)
+            paragraph_size = 1200 if len(items) <= 2 else 1050
+            set_shape_paragraphs(
+                body_shape,
+                [bullet_paragraph(item, size=paragraph_size) for item in items],
+                anchor="ctr",
+            )
+
+    for old_shape_id in ["16", "19", "20", "22", "23"]:
+        remove_shape_by_id(root, old_shape_id)
+    for reusable_id in ["7", "8", "11", "12", "15", "17"]:
+        if reusable_id not in section_shape_ids:
+            remove_shape_by_id(root, reusable_id)
+
+    return ET.tostring(root, encoding="utf-8", xml_declaration=True)
+
+
+def patch_existing_template_brief_slide(root: ET.Element, slide_def: dict) -> int:
+    heading_shape = find_shape_by_id(root, "7")
+    body_shape = find_shape_by_id(root, "8")
+    if heading_shape is None or body_shape is None:
+        return 0
+
+    items = [str(item).strip() for item in slide_def["items"] if str(item).strip()]
+    if not items:
+        items = [slide_def["missing"]]
+    set_shape_paragraphs(heading_shape, [template_section_paragraph(slide_def["heading"])], anchor="ctr")
+
+    set_shape_paragraphs(
+        body_shape,
+        [template_bullet_paragraph(item, size=1200) for item in items],
+        anchor="ctr",
+    )
+    return 2
+
+
+def source_entry(config: dict, target: str) -> dict:
+    return (config.get("_sourceFields") or {}).get(target, {})
+
+
+def source_note_line(config: dict, target: str, label: str) -> str:
+    entry = source_entry(config, target)
+    source = entry.get("source") or "(no source field found)"
+    value = entry.get("value")
+    if isinstance(value, list):
+        value_text = "; ".join(str(item) for item in value if str(item).strip())
+    else:
+        value_text = str(value or "").strip()
+    if not value_text:
+        value_text = "(missing)"
+    return f"{label}: source field `{source}`; context/value: {value_text}"
+
+
+def notes_for_slide(config: dict, slide_number: int) -> list[str]:
+    lines_by_slide = {
+        1: [
+            source_note_line(config, "clientName", "Client name"),
+            source_note_line(config, "kickoffDate", "Kickoff date"),
+        ],
+        3: [
+            source_note_line(config, "packageDetails", "Package details"),
+            source_note_line(config, "standardLicenseCount", "Standard license count"),
+            source_note_line(config, "standardLicensePrice", "Standard license price"),
+            source_note_line(config, "fieldLicenseCount", "Field license count"),
+            source_note_line(config, "fieldLicensePrice", "Field license price"),
+            source_note_line(config, "billingStartDate", "Billing start date"),
+        ],
+        4: [
+            source_note_line(config, "salesforceBusinessIssuesDetails", "Salesforce Business Issues Details"),
+            source_note_line(config, "salesforceBusinessIssuePickList", "Salesforce Business Issue Pick List"),
+            source_note_line(config, "salesforceProblems", "Salesforce Problems"),
+            source_note_line(config, "motivations", "Fallback motivation/pain-point context"),
+        ],
+        5: [
+            source_note_line(config, "salesforceValue", "Salesforce Value"),
+            source_note_line(config, "salesforceSolutions", "Salesforce Solutions"),
+            source_note_line(config, "expectedValue", "Fallback expected value"),
+            source_note_line(config, "solutions", "Fallback solution context"),
+        ],
+        6: [
+            source_note_line(config, "instanceUrl", "Instance URL"),
+            source_note_line(config, "priorityModules", "Priority modules"),
+            source_note_line(config, "integrations", "Integrations"),
+        ],
+        13: [
+            source_note_line(config, "nextSteps", "Next steps"),
+        ],
+    }
+    lines = lines_by_slide.get(slide_number, [])
+    if not lines:
+        return []
+    return ["Generated source context:", *lines]
+
+
+def notes_target_for_slide_rels(rels_bytes: bytes) -> str:
+    root = ET.fromstring(rels_bytes)
+    for rel in root.findall("rel:Relationship", {"rel": RELS_NS}):
+        if rel.get("Type", "").endswith("/notesSlide"):
+            target = rel.get("Target", "")
+            if target.startswith("../"):
+                return f"ppt/{target[3:]}"
+            if target.startswith("/"):
+                return target[1:]
+            return f"ppt/slides/{target}"
+    return ""
+
+
+def build_notes_map(source: zipfile.ZipFile, config: dict) -> dict[str, list[str]]:
+    notes: dict[str, list[str]] = {}
+    for slide_number in [1, 3, 4, 5, 6, 13]:
+        rels_path = f"ppt/slides/_rels/slide{slide_number}.xml.rels"
+        if rels_path not in source.namelist():
+            continue
+        target = notes_target_for_slide_rels(source.read(rels_path))
+        lines = notes_for_slide(config, slide_number)
+        if target and lines:
+            notes[target] = lines
+    return notes
+
+
+def patch_notes_slide(notes_bytes: bytes, lines: list[str]) -> bytes:
+    root = ET.fromstring(notes_bytes)
+    notes_shape = find_shape_by_id(root, "3")
+    if notes_shape is None:
+        return notes_bytes
+    paragraphs = [
+        make_paragraph([make_run(lines[0], color=DARK_TEXT, size=1000, bold=True)])
+    ]
+    for line in lines[1:]:
+        paragraphs.append(make_paragraph([make_run(line, color=DARK_TEXT, size=800)]))
+    set_shape_paragraphs(notes_shape, paragraphs)
+    return ET.tostring(root, encoding="utf-8", xml_declaration=True)
 
 
 def logo_source(config: dict) -> str:
@@ -777,7 +1213,116 @@ def add_logo_to_slide(slide_bytes: bytes, relationship_id: str) -> bytes:
     return ET.tostring(root, encoding="utf-8", xml_declaration=True)
 
 
-def write_deck(template: Path, output: Path, replacements: dict[int, list[Replacement]], logo: tuple[bytes, str] | None = None) -> dict[int, int]:
+def max_slide_number(names: list[str]) -> int:
+    max_number = 0
+    for name in names:
+        match = re.fullmatch(r"ppt/slides/slide(\d+)\.xml", name)
+        if match:
+            max_number = max(max_number, int(match.group(1)))
+    return max_number
+
+
+def strip_notes_slide_relationship(rels_bytes: bytes) -> bytes:
+    root = ET.fromstring(rels_bytes)
+    for rel in list(root.findall("rel:Relationship", {"rel": RELS_NS})):
+        if rel.get("Type", "").endswith("/notesSlide"):
+            root.remove(rel)
+    return ET.tostring(root, encoding="utf-8", xml_declaration=True)
+
+
+def update_content_types(content_types_bytes: bytes, slide_numbers: list[int]) -> bytes:
+    root = ET.fromstring(content_types_bytes)
+    existing = {
+        override.get("PartName")
+        for override in root.findall(f"{{{CONTENT_TYPES_NS}}}Override")
+    }
+    for slide_number in slide_numbers:
+        part_name = f"/ppt/slides/slide{slide_number}.xml"
+        if part_name not in existing:
+            ET.SubElement(
+                root,
+                f"{{{CONTENT_TYPES_NS}}}Override",
+                {"PartName": part_name, "ContentType": SLIDE_CONTENT_TYPE},
+            )
+    return ET.tostring(root, encoding="utf-8", xml_declaration=True)
+
+
+def update_presentation_rels(rels_bytes: bytes, slide_numbers: list[int]) -> tuple[bytes, list[str]]:
+    root = ET.fromstring(rels_bytes)
+    max_id = 0
+    for rel in root.findall("rel:Relationship", {"rel": RELS_NS}):
+        match = re.fullmatch(r"rId(\d+)", rel.get("Id", ""))
+        if match:
+            max_id = max(max_id, int(match.group(1)))
+    relationship_ids = []
+    for slide_number in slide_numbers:
+        max_id += 1
+        relationship_id = f"rId{max_id}"
+        ET.SubElement(
+            root,
+            rel_qname("Relationship"),
+            {
+                "Id": relationship_id,
+                "Type": SLIDE_REL_TYPE,
+                "Target": f"slides/slide{slide_number}.xml",
+            },
+        )
+        relationship_ids.append(relationship_id)
+    return ET.tostring(root, encoding="utf-8", xml_declaration=True), relationship_ids
+
+
+def update_presentation_xml(presentation_bytes: bytes, relationship_ids: list[str]) -> bytes:
+    root = ET.fromstring(presentation_bytes)
+    slide_list = root.find("p:sldIdLst", NS)
+    if slide_list is None:
+        return presentation_bytes
+    max_id = 255
+    for slide_id in slide_list.findall("p:sldId", NS):
+        try:
+            max_id = max(max_id, int(slide_id.get("id", "0")))
+        except ValueError:
+            continue
+    insert_at = min(3, len(list(slide_list)))
+    for relationship_id in relationship_ids:
+        max_id += 1
+        slide_id = ET.Element(qname("p:sldId"), {"id": str(max_id), qname("r:id"): relationship_id})
+        slide_list.insert(insert_at, slide_id)
+        insert_at += 1
+    return ET.tostring(root, encoding="utf-8", xml_declaration=True)
+
+
+def update_app_slide_count(app_bytes: bytes, add_count: int) -> bytes:
+    root = ET.fromstring(app_bytes)
+    slides = root.find(f"{{{EXTENDED_PROPS_NS}}}Slides")
+    if slides is not None and slides.text and slides.text.isdigit():
+        slides.text = str(int(slides.text) + add_count)
+    return ET.tostring(root, encoding="utf-8", xml_declaration=True)
+
+
+def slide_contains(source: zipfile.ZipFile, slide_number: int, text: str) -> bool:
+    path = f"ppt/slides/slide{slide_number}.xml"
+    if path not in source.namelist():
+        return False
+    return text in source.read(path).decode("utf-8", errors="ignore")
+
+
+def template_has_existing_brief_slides(source: zipfile.ZipFile) -> bool:
+    return (
+        slide_contains(source, 4, "Motivations for Investment")
+        and slide_contains(source, 5, "Rev.io")
+        and slide_contains(source, 6, "https://psademo.rev.io")
+    )
+
+
+def write_deck(
+    template: Path,
+    output: Path,
+    config: dict,
+    replacements: dict[int, list[Replacement]],
+    brief_slides: list[dict],
+    existing_brief_slides: dict[int, dict],
+    logo: tuple[bytes, str] | None = None,
+) -> dict[int, int]:
     output.parent.mkdir(parents=True, exist_ok=True)
     counts: dict[int, int] = {}
 
@@ -786,6 +1331,31 @@ def write_deck(template: Path, output: Path, replacements: dict[int, list[Replac
         with zipfile.ZipFile(template, "r") as source, zipfile.ZipFile(
             tmp_output, "w", zipfile.ZIP_DEFLATED
         ) as dest:
+            source_names = source.namelist()
+            notes_map = build_notes_map(source, config)
+            use_existing_brief_slides = template_has_existing_brief_slides(source)
+            new_slide_numbers: list[int] = []
+            new_slide_rels = b""
+            new_slide_xml: list[bytes] = []
+            presentation_rels_data = source.read("ppt/_rels/presentation.xml.rels")
+            content_types_data = source.read("[Content_Types].xml")
+            presentation_data = source.read("ppt/presentation.xml")
+            app_data = source.read("docProps/app.xml")
+            if not use_existing_brief_slides:
+                max_number = max_slide_number(source_names)
+                new_slide_numbers = list(range(max_number + 1, max_number + 1 + len(brief_slides)))
+                presentation_rels_data, new_relationship_ids = update_presentation_rels(
+                    presentation_rels_data,
+                    new_slide_numbers,
+                )
+                content_types_data = update_content_types(content_types_data, new_slide_numbers)
+                presentation_data = update_presentation_xml(presentation_data, new_relationship_ids)
+                app_data = update_app_slide_count(app_data, len(brief_slides))
+                new_slide_rels = strip_notes_slide_relationship(source.read("ppt/slides/_rels/slide3.xml.rels"))
+                new_slide_xml = [
+                    patch_brief_slide(source.read("ppt/slides/slide3.xml"), slide_def)
+                    for slide_def in brief_slides
+                ]
             logo_media_name = ""
             logo_relationship_id = ""
             logo_rels_data = None
@@ -798,6 +1368,16 @@ def write_deck(template: Path, output: Path, replacements: dict[int, list[Replac
                 )
             for info in source.infolist():
                 data = source.read(info.filename)
+                if info.filename == "[Content_Types].xml":
+                    data = content_types_data
+                elif info.filename == "ppt/presentation.xml":
+                    data = presentation_data
+                elif info.filename == "ppt/_rels/presentation.xml.rels":
+                    data = presentation_rels_data
+                elif info.filename == "docProps/app.xml":
+                    data = app_data
+                elif info.filename in notes_map:
+                    data = patch_notes_slide(data, notes_map[info.filename])
                 if logo_rels_data is not None and info.filename == "ppt/slides/_rels/slide1.xml.rels":
                     data = logo_rels_data
                 match = re.fullmatch(r"ppt/slides/slide(\d+)\.xml", info.filename)
@@ -806,9 +1386,20 @@ def write_deck(template: Path, output: Path, replacements: dict[int, list[Replac
                     if slide_number in replacements:
                         data, changed = replace_slide_text(data, replacements[slide_number], slide_number)
                         counts[slide_number] = changed
+                    elif use_existing_brief_slides and slide_number in existing_brief_slides:
+                        data, changed = replace_slide_text(
+                            data,
+                            [],
+                            slide_number,
+                            existing_brief_slide=existing_brief_slides[slide_number],
+                        )
+                        counts[slide_number] = changed
                     if logo is not None and slide_number == 1:
                         data = add_logo_to_slide(data, logo_relationship_id)
                 dest.writestr(info, data)
+            for slide_number, slide_xml in zip(new_slide_numbers, new_slide_xml):
+                dest.writestr(f"ppt/slides/slide{slide_number}.xml", slide_xml)
+                dest.writestr(f"ppt/slides/_rels/slide{slide_number}.xml.rels", new_slide_rels)
             if logo is not None:
                 dest.writestr(f"ppt/media/{logo_media_name}", logo[0])
 
@@ -817,7 +1408,12 @@ def write_deck(template: Path, output: Path, replacements: dict[int, list[Replac
     return counts
 
 
-def field_report(config: dict, replacements: dict[int, list[Replacement]]) -> dict:
+def field_report(
+    config: dict,
+    replacements: dict[int, list[Replacement]],
+    brief_slides: list[dict],
+    existing_brief_slides: dict[int, dict] | None = None,
+) -> dict:
     fields = []
     for slide_number, items in replacements.items():
         for item in items:
@@ -830,6 +1426,35 @@ def field_report(config: dict, replacements: dict[int, list[Replacement]]) -> di
                 "status": "missing" if item.missing else "complete",
                 "highlighted": item.missing,
             })
+    if existing_brief_slides:
+        for slide_number, slide_def in sorted(existing_brief_slides.items()):
+            items = [str(item).strip() for item in slide_def["items"] if str(item).strip()]
+            missing = not items
+            fields.append({
+                "slide": slide_number,
+                "label": slide_def["heading"],
+                "templateText": slide_def["heading"],
+                "value": "" if missing else "\n".join(items),
+                "renderedText": slide_def["missing"] if missing else "\n".join(items),
+                "status": "missing" if missing else "complete",
+                "highlighted": missing,
+            })
+    else:
+        inserted_slide_start = 4
+        for offset, slide_def in enumerate(brief_slides):
+            slide_number = inserted_slide_start + offset
+            for section in slide_def["sections"]:
+                items = [str(item).strip() for item in section["items"] if str(item).strip()]
+                missing = not items
+                fields.append({
+                    "slide": slide_number,
+                    "label": section["heading"],
+                    "templateText": section["heading"],
+                    "value": "" if missing else "\n".join(items),
+                    "renderedText": section["missing"] if missing else "\n".join(items),
+                    "status": "missing" if missing else "complete",
+                    "highlighted": missing,
+                })
     missing = [field for field in fields if field["status"] == "missing"]
     complete = [field for field in fields if field["status"] == "complete"]
     return {
@@ -863,8 +1488,10 @@ def main() -> int:
         config = json.load(handle)
 
     replacements = build_replacements(config)
+    brief_slides = build_brief_slides(config)
+    existing_brief_slides = build_existing_template_brief_slides(config)
     output = output_path_for(config, args.output)
-    report = field_report(config, replacements)
+    report = field_report(config, replacements, brief_slides, existing_brief_slides)
     logo = None
     logo_ref = logo_source(config)
     if logo_ref:
@@ -878,6 +1505,10 @@ def main() -> int:
         for item in items:
             status = "missing" if item.missing else "complete"
             print(f"    [{status}] {item.old!r} -> {item.output!r}")
+    print(f"  Existing brief slide summaries: {len(existing_brief_slides)}")
+    for slide_number, slide_def in sorted(existing_brief_slides.items()):
+        status = "complete" if slide_def["items"] else "missing"
+        print(f"    Slide {slide_number}: {slide_def['heading']} ({status})")
 
     if args.report_json:
         write_report(args.report_json, report)
@@ -886,7 +1517,7 @@ def main() -> int:
     if args.dry_run:
         return 0
 
-    counts = write_deck(args.template, output, replacements, logo=logo)
+    counts = write_deck(args.template, output, config, replacements, brief_slides, existing_brief_slides, logo=logo)
     print(f"Wrote {output}")
     for slide_number in sorted(replacements):
         print(f"  Slide {slide_number}: {counts.get(slide_number, 0)} text node(s) changed")

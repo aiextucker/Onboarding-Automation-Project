@@ -4,7 +4,7 @@
   },
   "deal": {
     "mrr": "$560 / mo",
-    "packageDetails": "PSA onboarding - $560 MRR from sales brief",
+    "packageDetails": "$560 MRR",
     "kickoffDate": "",
     "billingStartDate": ""
   },
@@ -34,6 +34,25 @@
       "Confirm QuickBooks Desktop workaround and accounting plan",
       "Collect GL/chart of accounts details",
       "Confirm field mobile workflow priorities"
+    ]
+  },
+  "salesforce": {
+    "businessIssuesDetails": "E-Automate is slowing common service workflows and forces teams to work across disconnected billing, field, and collections views.",
+    "businessIssuePickList": [
+      "Disconnected service workflows",
+      "Limited field visibility",
+      "Manual billing and collections follow-up"
+    ],
+    "problems": [
+      "Service teams do not have one reliable workspace for tickets and work orders.",
+      "Field activity and back-office billing context are split across tools.",
+      "Payment and AR follow-up require manual workarounds."
+    ],
+    "value": "Rev.io gives service, field, billing, and AR teams shared visibility with fewer handoffs and less manual reconciliation.",
+    "solutions": [
+      "Centralized PSA workspace for tickets, work orders, and field activity.",
+      "Operational visibility across service, billing context, payments, and follow-up.",
+      "Module path aligned to mobile field work, inventory, project management, and Rev.io Payments."
     ]
   },
   "contract": {

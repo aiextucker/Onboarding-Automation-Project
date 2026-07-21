@@ -139,6 +139,42 @@ def build_config(data: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]:
             "businessOutcome",
             "value",
         ]),
+        "salesforceBusinessIssuesDetails": map_field(data, fields, "salesforceBusinessIssuesDetails", [
+            "salesforce.businessIssuesDetails",
+            "salesforce.businessIssueDetails",
+            "brief.businessIssuesDetails",
+            "businessIssuesDetails",
+            "businessIssueDetails",
+        ]),
+        "salesforceBusinessIssuePickList": map_list(data, fields, "salesforceBusinessIssuePickList", [
+            "salesforce.businessIssuePickList",
+            "salesforce.businessIssues",
+            "brief.businessIssuePickList",
+            "businessIssuePickList",
+            "businessIssues",
+        ]),
+        "salesforceProblems": map_list(data, fields, "salesforceProblems", [
+            "salesforce.problems",
+            "salesforce.currentSystemProblems",
+            "brief.problems",
+            "brief.currentSystemProblems",
+            "problems",
+            "currentSystemProblems",
+        ]),
+        "salesforceValue": map_field(data, fields, "salesforceValue", [
+            "salesforce.value",
+            "salesforce.expectedValue",
+            "brief.salesforceValue",
+            "brief.expectedValue",
+            "expectedValue",
+            "value",
+        ]),
+        "salesforceSolutions": map_list(data, fields, "salesforceSolutions", [
+            "salesforce.solutions",
+            "brief.salesforceSolutions",
+            "brief.solutions",
+            "solutions",
+        ]),
         "priorityModules": map_list(data, fields, "priorityModules", [
             "brief.priorityModules",
             "brief.modules",
@@ -150,6 +186,8 @@ def build_config(data: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]:
             "brief.motivations",
             "brief.painPoints",
             "salesforce.painPoints",
+            "salesforce.problems",
+            "salesforce.currentSystemProblems",
             "motivations",
             "painPoints",
         ], limit=2),
@@ -226,6 +264,15 @@ def build_config(data: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]:
             "links.orderFormUrl",
             "orderFormUrl",
         ]),
+    }
+    config["_sourceFields"] = {
+        field["target"]: {
+            "source": field["source"],
+            "status": field["status"],
+            "value": field["value"],
+            "candidateSources": field["candidateSources"],
+        }
+        for field in fields
     }
 
     report = {

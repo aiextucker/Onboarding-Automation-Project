@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 import zipfile
 from pathlib import Path
@@ -99,8 +100,18 @@ def main() -> int:
         if bad_member:
             errors.append(f"PPTX zip integrity failed at {bad_member}")
 
-        for slide_number in [1, 3, 4]:
-            root = ET.fromstring(deck.read(f"ppt/slides/slide{slide_number}.xml"))
+        slide_paths = sorted(
+            (
+                name
+                for name in deck.namelist()
+                if re.fullmatch(r"ppt/slides/slide\d+\.xml", name)
+            ),
+            key=lambda name: int(re.search(r"slide(\d+)\.xml", name).group(1)),
+        )
+
+        for slide_path in slide_paths:
+            slide_number = int(re.search(r"slide(\d+)\.xml", slide_path).group(1))
+            root = ET.fromstring(deck.read(slide_path))
             parents = {child: parent for parent in root.iter() for child in parent}
             for run in root.findall(".//a:r", NS):
                 item = run_report(run, slide_number, parents)
@@ -120,14 +131,13 @@ def main() -> int:
                         f"Slide {slide_number} {item['text']!r} has highlight {item['highlight']}, expected {GREEN_HIGHLIGHT}"
                     )
 
-            if slide_number == 4:
-                for shape in root.findall(".//p:sp", NS):
-                    sid = shape_id(shape)
-                    text = text_for(shape)
-                    if sid in CHECKBOX_SHAPES:
-                        checkboxes.append({"shapeId": sid, "label": CHECKBOX_SHAPES[sid], "text": text})
-                    elif text.startswith(("\u2713 ", "\u2610 ")):
-                        inline_checkbox_labels.append({"shapeId": sid, "text": text})
+            for shape in root.findall(".//p:sp", NS):
+                sid = shape_id(shape)
+                text = text_for(shape)
+                if sid in CHECKBOX_SHAPES:
+                    checkboxes.append({"slide": slide_number, "shapeId": sid, "label": CHECKBOX_SHAPES[sid], "text": text})
+                elif text.startswith(("\u2713 ", "\u2610 ")):
+                    inline_checkbox_labels.append({"slide": slide_number, "shapeId": sid, "text": text})
 
     if inline_checkbox_labels:
         errors.append(f"Inline checkbox label text found: {inline_checkbox_labels}")

@@ -5,9 +5,9 @@ Rev.io PowerPoint template.
 
 ## Template
 
-The source template is:
+The current source template is:
 
-`templates/revio-psa-onboarding-kickoff-template.pptx`
+`templates/revio-psa-onboarding-kickoff-template-v2.pptx`
 
 The first pass focuses on the client-specific fields surfaced in the kickoff
 template:
@@ -15,15 +15,22 @@ template:
 | Slide | Field group |
 | --- | --- |
 | 1 | Client name, kickoff date |
-| 3 | Business case, Rev.io solution points, package, licenses, billing start date |
-| 4 | Instance URL, optional modules, integrations |
-| 11 | Client-specific next steps |
+| 3 | Contract specifics: package, licenses, billing start date |
+| 4 | Summarized Salesforce business issues and current pain points |
+| 5 | Summarized Salesforce value and Rev.io solutions |
+| 6 | Instance URL, optional modules, integrations |
+| 13 | Client-specific next steps |
 
 Canonical leadership-facing fields now take precedence when present:
 
 - `mainBuyingMotivator`
 - `expectedValue`
 - `priorityModules`
+- `salesforceBusinessIssuesDetails`
+- `salesforceBusinessIssuePickList`
+- `salesforceProblems`
+- `salesforceValue`
+- `salesforceSolutions`
 
 Legacy/test fields still work:
 
@@ -83,8 +90,20 @@ python3 scripts/build-psa-kickoff-config.py \
   exactly what to fill in.
 - Blank values and values beginning with `TBD`, `TODO`, `Unknown`, `Not set`,
   `Not provided`, or `Missing` are treated as missing.
+- Slide 3 is kept contract-only.
+- Slides 4 and 5 use the green-highlighted areas in the v2 template. The
+  generator turns the Salesforce issue/value/solution fields into concise
+  PowerPoint bullets instead of pasting raw sales brief field text.
+- The accepted formatting baseline is
+  `output/njos-psa-kickoff-template-v2-summarized-v11-from-v4.pptx`.
+- Do not apply Montserrat globally. Ordinary template replacements should keep
+  their existing PowerPoint run styling.
+- On slides 4 and 5 only, the inserted brief-field body bullets are Montserrat
+  12 pt and the summary headings are Montserrat Bold.
+- Speaker notes on adjusted slides include source-field context from the
+  normalized payload, including Salesforce field paths where available.
 - Current substitutions preserve the source template styling by replacing text
-  inside existing PowerPoint text runs.
+  inside existing PowerPoint text runs and filling the v2 summary areas.
 - `--report-json` emits slide-level complete/missing field status for brief
   cleanup and leadership gap review.
 - `mainBuyingMotivator`, `expectedValue`, and `priorityModules` are preferred
