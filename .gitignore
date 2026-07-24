@@ -1,2 +1,13 @@
 __pycache__/
 *.py[cod]
+
+# Generated NJOS deck iteration scratch files. Accepted baselines are tracked
+# explicitly by name and are not affected by these ignore patterns.
+output/njos-kickoff-brief-breakout-v1-validation.json
+output/njos-kickoff-field-report-brief-breakout-v1.json
+output/njos-kickoff-field-report-template-v2-summarized-v[0-9].json
+output/njos-kickoff-template-v2-summarized-v[0-9]-validation.json
+output/njos-kickoff-template-v2-summarized-v10-from-v4-validation.json
+output/njos-psa-kickoff-brief-breakout-v1.pptx
+output/njos-psa-kickoff-template-v2-summarized-v[0-9].pptx
+output/njos-psa-kickoff-template-v2-summarized-v10-from-v4.pptx
