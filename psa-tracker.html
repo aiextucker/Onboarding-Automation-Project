@@ -587,7 +587,7 @@ async function init() {
   const res = await fetch('data/portfolio.json?_=' + Date.now());
   if (!res.ok) throw new Error('Unable to load portfolio data');
   snapshot = await res.json();
-  const client = (snapshot.clients || []).find(c => c.id === clientId);
+  const client = (snapshot.clients || []).find(c => c.id === clientId || c.psaId === clientId);
   if (!client) {
     document.getElementById('app').innerHTML = '<div class="error">Client was not found in the latest portfolio data.</div>';
     return;

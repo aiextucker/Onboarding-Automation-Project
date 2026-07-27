@@ -617,38 +617,66 @@ jobs:
             });
 
             // ── 3. Merge dual-LOB clients ─────────────────────────────────────
-            // PSA records with existingBilling=true → find matching billing client by name
+            // PSA records with existingBilling=true → find matching billing client by name.
+            // Some legacy billing records need explicit PSA page pairing when names/source
+            // fields have drifted enough for the generic matcher to pick the wrong record.
+            const manualDualLobPsaByBillingId = new Map([
+              ['322a59b7-e7b2-812c-b278-c4ea6b37b919', '5b3f886a-7bfb-4807-bc98-78c5dfd5924c'], // Wyoming.com → Wyoming PSA
+            ]);
+            const psaById = new Map(psaClients.map(psa => [psa.psaId, psa]));
             const mergedBillingIds = new Set();
+
+            function mergePsaIntoBilling(match, psa) {
+              match.lob        = ['billing','psa'];
+              match.psaId      = psa.psaId;
+              match.psaNotionUrl = psa.psaNotionUrl;
+              match.psaStatus  = psa.psaStatus;
+              match.psaStatusGroup = psa.psaStatusGroup;
+              match.psaSa      = psa.psaSa;
+              match.psaDe      = psa.psaDe;
+              match.psaKoDate  = psa.psaKoDate;
+              match.psaGradDate = psa.psaGradDate;
+              match.psaActualGradDate = psa.psaActualGradDate;
+              match.psaAccountId = psa.psaAccountId;
+              match.psaRevioCustomerId = psa.psaRevioCustomerId;
+              match.psaCurrentBalanceStatus = psa.psaCurrentBalanceStatus;
+              match.psaDaysActive = psa.psaDaysActive;
+              match.psaMrr     = psa.psaMrr;
+              match.psaMilestonePercent = psa.psaMilestonePercent;
+              match.psaOnboardingHealth = psa.psaOnboardingHealth;
+              match.psaHealthDrivers = psa.psaHealthDrivers;
+              match.psaForecastHealth = psa.psaForecastHealth;
+              match.psaConfidence = psa.psaConfidence;
+              match.psaBlockers = psa.psaBlockers;
+              match.psaDaysSinceContact = psa.psaDaysSinceContact;
+              match.psaAvgSentiment = psa.psaAvgSentiment;
+              match.psaOverdueMilestones = psa.psaOverdueMilestones;
+              match.psaTotalMilestones = psa.psaTotalMilestones;
+              match.psaLongTermRts = psa.psaLongTermRts;
+              match.interactionIds = psa.interactionIds;
+              mergedBillingIds.add(psa.psaId);
+            }
+
+            for (const [billingId, psaId] of manualDualLobPsaByBillingId.entries()) {
+              const match = billingClients.find(b => b.id === billingId);
+              const psa = psaById.get(psaId);
+              if (match && psa) {
+                mergePsaIntoBilling(match, psa);
+                console.log(`  Dual-LOB manually matched: ${match.name} (billing: ${match.id.slice(0,8)}… / psa: ${psa.psaId.slice(0,8)}…)`);
+              } else {
+                console.warn(`  Manual dual-LOB match skipped: billing=${billingId} psa=${psaId}`);
+              }
+            }
+
             for (const psa of psaClients) {
               if (!psa.existingBilling || !psa.name) continue;
               const match = billingClients.find(b => b.name && nameMatch(b.name, psa.name));
               if (match) {
-                match.lob        = ['billing','psa'];
-                match.psaId      = psa.psaId;
-                match.psaNotionUrl = psa.psaNotionUrl;
-                match.psaStatus  = psa.psaStatus;
-                match.psaStatusGroup = psa.psaStatusGroup;
-                match.psaSa      = psa.psaSa;
-                match.psaDe      = psa.psaDe;
-                match.psaKoDate  = psa.psaKoDate;
-                match.psaGradDate = psa.psaGradDate;
-                match.psaActualGradDate = psa.psaActualGradDate;
-                match.psaAccountId = psa.psaAccountId;
-                match.psaRevioCustomerId = psa.psaRevioCustomerId;
-                match.psaCurrentBalanceStatus = psa.psaCurrentBalanceStatus;
-                match.psaDaysActive = psa.psaDaysActive;
-                match.psaMrr     = psa.psaMrr;
-                match.psaMilestonePercent = psa.psaMilestonePercent;
-                match.psaOnboardingHealth = psa.psaOnboardingHealth;
-                match.psaHealthDrivers = psa.psaHealthDrivers;
-                match.psaForecastHealth = psa.psaForecastHealth;
-                match.psaDaysSinceContact = psa.psaDaysSinceContact;
-                match.psaAvgSentiment = psa.psaAvgSentiment;
-                match.psaOverdueMilestones = psa.psaOverdueMilestones;
-                match.psaTotalMilestones = psa.psaTotalMilestones;
-                match.psaLongTermRts = psa.psaLongTermRts;
-                match.interactionIds = psa.interactionIds;
-                mergedBillingIds.add(psa.psaId);
+                if (match.psaId && match.psaId !== psa.psaId) {
+                  console.warn(`  Dual-LOB generic match skipped for ${psa.name}: ${match.name} already mapped to ${match.psaId}`);
+                  continue;
+                }
+                mergePsaIntoBilling(match, psa);
                 console.log(`  Dual-LOB matched: ${psa.name} (billing: ${match.id.slice(0,8)}… / psa: ${psa.psaId.slice(0,8)}…)`);
               }
             }

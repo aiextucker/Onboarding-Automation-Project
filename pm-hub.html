@@ -2776,7 +2776,7 @@ function openTracker(e) {
   if (!activeClient) { e.preventDefault(); return; }
   const a = e.currentTarget;
   a.href = hasPsa(activeClient)
-    ? 'psa-tracker.html?client=' + encodeURIComponent(activeClient.id)
+    ? 'psa-tracker.html?client=' + encodeURIComponent(activeClient.psaId || activeClient.id)
     : 'tracker.html?client=' + encodeURIComponent(activeClient.id);
 }
 
