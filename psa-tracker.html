@@ -508,9 +508,14 @@ function renderList(items, empty) {
 }
 
 function render(client) {
-  const milestones = snapshot.psaMilestonesByClientId?.[client.id] || [];
-  const calls = snapshot.psaBriefsByClientId?.[client.id] || [];
-  const interactions = snapshot.interactionsByClientId?.[client.id] || [];
+  const clientIds = Array.from(new Set([client.id, client.psaId].filter(Boolean)));
+  const milestoneRows = clientIds.flatMap(id => snapshot.psaMilestonesByClientId?.[id] || []);
+  const callRows = clientIds.flatMap(id => snapshot.psaBriefsByClientId?.[id] || []);
+  const interactionRows = clientIds.flatMap(id => snapshot.interactionsByClientId?.[id] || []);
+  const byId = rows => Array.from(new Map(rows.map(row => [row.id || JSON.stringify(row), row])).values());
+  const milestones = byId(milestoneRows);
+  const calls = byId(callRows);
+  const interactions = byId(interactionRows);
   const activity = latestActivity(calls, interactions);
   const safeUpdate = activity?.detail
     ? compact(activity.detail)
