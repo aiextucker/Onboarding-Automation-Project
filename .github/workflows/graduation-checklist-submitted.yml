@@ -15,6 +15,7 @@ jobs:
           MS_TENANT_ID: ${{ secrets.MS_TENANT_ID }}
           MS_CLIENT_ID: ${{ secrets.MS_CLIENT_ID }}
           MS_REFRESH_TOKEN: ${{ secrets.MS_REFRESH_TOKEN }}
+          PSA_GRADUATIONS_WEBHOOK_URL: ${{ secrets.PSA_GRADUATIONS_WEBHOOK_URL }}
           PSA_GRADUATIONS_TEAM_ID: d29698dd-ac76-4d06-909e-e2bdd1c4e84b
           PSA_GRADUATIONS_CHANNEL_ID: 19:7bd5bd11caf6431dbebbe5051a0ccd0b@thread.tacv2
           PSA_GRADUATIONS_CHANNEL_NAME: "- PSA Graduations"

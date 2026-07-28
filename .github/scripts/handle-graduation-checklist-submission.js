@@ -6,6 +6,7 @@ const fs = require('fs');
 const TEAM_ID = process.env.PSA_GRADUATIONS_TEAM_ID || 'd29698dd-ac76-4d06-909e-e2bdd1c4e84b';
 const CHANNEL_ID = process.env.PSA_GRADUATIONS_CHANNEL_ID || '19:7bd5bd11caf6431dbebbe5051a0ccd0b@thread.tacv2';
 const CHANNEL_NAME = process.env.PSA_GRADUATIONS_CHANNEL_NAME || '- PSA Graduations';
+const WEBHOOK_URL = process.env.PSA_GRADUATIONS_WEBHOOK_URL || '';
 const MAX_TEAMS_MESSAGE_CHARS = 26000;
 const GRADUATION_MENTION_USERS = [
   {
@@ -45,6 +46,16 @@ async function apiJson(url, options = {}, label = 'API') {
     process.exit(1);
   }
   return body;
+}
+
+async function apiText(url, options = {}, label = 'API') {
+  const res = await fetch(url, options);
+  const text = await res.text();
+  if (!res.ok) {
+    console.error(`API ERROR ${label} ${res.status} ${text.slice(0, 2000)}`);
+    process.exit(1);
+  }
+  return text;
 }
 
 async function getGraphToken() {
@@ -142,6 +153,10 @@ function htmlEscape(value) {
   }[ch]));
 }
 
+function markdownEscape(value) {
+  return String(value == null ? '' : value);
+}
+
 function mentionTargetsFromUsers(users) {
   return users.map((user, index) => ({
     mentionId: index,
@@ -176,6 +191,39 @@ function sectionSummary(data) {
   }).join('<br>');
 }
 
+function sectionSummaryText(data) {
+  const sections = new Map();
+  for (const item of data.criteria) {
+    const section = item.section || 'Checklist';
+    if (!sections.has(section)) sections.set(section, { total: 0, satisfied: 0 });
+    const stats = sections.get(section);
+    stats.total += 1;
+    if (item.checked || item.notApplicable) stats.satisfied += 1;
+  }
+  return Array.from(sections.entries()).map(([section, stats]) => {
+    const label = stats.satisfied === stats.total ? 'Complete' : `${stats.satisfied}/${stats.total} complete`;
+    return `- ${markdownEscape(section)}: ${markdownEscape(label)}`;
+  }).join('\n');
+}
+
+function teamsWebhookMessage(data, options = {}) {
+  const includeNotes = options.includeNotes !== false;
+  const reviewerNames = GRADUATION_MENTION_USERS.map(user => user.displayName).join(', ');
+  const rows = [
+    `**Heads up:** ${markdownEscape(reviewerNames)}`,
+    `**${markdownEscape(data.clientName)}**`,
+    `**Submitted:** ${markdownEscape(data.submittedAt)}`,
+    `**SA:** ${markdownEscape(data.saName || 'Not provided')}`,
+    `**Graduation date:** ${markdownEscape(data.graduationDate || 'Not provided')}`,
+    `**CS handoff owner:** ${markdownEscape(data.csHandoffOwner || 'Not provided')}`,
+  ];
+  if (includeNotes && data.notes) rows.push(`**Notes:** ${markdownEscape(data.notes)}`);
+  const sections = sectionSummaryText(data);
+  if (sections) rows.push(`**Section rollup**\n${sections}`);
+  if (data.sourceUrl) rows.push(`[Open completed checklist](${data.sourceUrl})`);
+  return rows.join('\n\n');
+}
+
 function teamsMessage(data, options = {}) {
   const includeNotes = options.includeNotes !== false;
   const mentionTargets = Array.isArray(options.mentionTargets) ? options.mentionTargets : [];
@@ -208,6 +256,18 @@ function splitNotesMessages(notes) {
   return messages;
 }
 
+function splitWebhookNotesMessages(notes) {
+  if (!notes) return [];
+  const prefix = '**Notes:** ';
+  const escaped = markdownEscape(notes);
+  const maxChunk = MAX_TEAMS_MESSAGE_CHARS - prefix.length - 100;
+  const messages = [];
+  for (let start = 0; start < escaped.length; start += maxChunk) {
+    messages.push(prefix + escaped.slice(start, start + maxChunk));
+  }
+  return messages;
+}
+
 function composeTeamsMessages(data, options = {}) {
   const mentionTargets = Array.isArray(options.mentionTargets) ? options.mentionTargets : [];
   let content = teamsMessage(data, { mentionTargets });
@@ -221,6 +281,20 @@ function composeTeamsMessages(data, options = {}) {
     process.exit(1);
   }
   return { content, notesReplies };
+}
+
+function composeTeamsWebhookMessages(data) {
+  let text = teamsWebhookMessage(data);
+  const notesMessages = [];
+  if (text.length > MAX_TEAMS_MESSAGE_CHARS && data.notes) {
+    text = teamsWebhookMessage(data, { includeNotes: false });
+    notesMessages.push(...splitWebhookNotesMessages(data.notes));
+  }
+  if (text.length > MAX_TEAMS_MESSAGE_CHARS) {
+    console.error(`API ERROR Teams graduation webhook message too large without notes (${text.length} chars)`);
+    process.exit(1);
+  }
+  return [text, ...notesMessages];
 }
 
 function teamsMentions(mentionTargets) {
@@ -266,6 +340,18 @@ async function postTeamsMessage(token, data) {
   console.log(`TEAMS_POST_STATUS ok ${posted.id || ''} ${CHANNEL_NAME}`);
 }
 
+async function postTeamsWebhook(data) {
+  const messages = composeTeamsWebhookMessages(data);
+  for (const text of messages) {
+    await apiText(WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text }),
+    }, 'Teams graduation webhook');
+  }
+  console.log(`TEAMS_WEBHOOK_STATUS ok ${messages.length} ${CHANNEL_NAME}`);
+}
+
 async function main() {
   const data = validatePayload(readPayload());
   if (String(process.env.PSA_GRADUATIONS_DRY_RUN || '').toLowerCase() === 'true') {
@@ -273,6 +359,9 @@ async function main() {
     const { content, notesReplies } = composeTeamsMessages(data, { mentionTargets });
     console.log(JSON.stringify({
       channel: CHANNEL_NAME,
+      webhook: WEBHOOK_URL ? {
+        messages: composeTeamsWebhookMessages(data).map(text => ({ text })),
+      } : null,
       body: {
         contentType: 'html',
         content,
@@ -280,6 +369,10 @@ async function main() {
       mentions: teamsMentions(mentionTargets),
       replies: notesReplies.map(content => ({ body: { contentType: 'html', content } })),
     }, null, 2));
+    return;
+  }
+  if (WEBHOOK_URL) {
+    await postTeamsWebhook(data);
     return;
   }
   const token = await getGraphToken();
