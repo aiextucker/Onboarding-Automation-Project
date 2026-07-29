@@ -258,9 +258,9 @@ function splitNotesMessages(notes) {
 
 function splitWebhookNotesMessages(notes) {
   if (!notes) return [];
-  const prefix = '**Notes:** ';
+  const prefix = 'Notes: ';
   const escaped = markdownEscape(notes);
-  const maxChunk = MAX_TEAMS_MESSAGE_CHARS - prefix.length - 100;
+  const maxChunk = 8000 - prefix.length;
   const messages = [];
   for (let start = 0; start < escaped.length; start += maxChunk) {
     messages.push(prefix + escaped.slice(start, start + maxChunk));
@@ -295,6 +295,113 @@ function composeTeamsWebhookMessages(data) {
     process.exit(1);
   }
   return [text, ...notesMessages];
+}
+
+function textBlock(text, options = {}) {
+  return {
+    type: 'TextBlock',
+    text: String(text == null ? '' : text),
+    wrap: true,
+    ...options,
+  };
+}
+
+function fact(title, value) {
+  return {
+    title: String(title == null ? '' : title),
+    value: String(value == null || value === '' ? 'Not provided' : value),
+  };
+}
+
+function sectionFacts(data) {
+  const sections = new Map();
+  for (const item of data.criteria) {
+    const section = item.section || 'Checklist';
+    if (!sections.has(section)) sections.set(section, { total: 0, satisfied: 0 });
+    const stats = sections.get(section);
+    stats.total += 1;
+    if (item.checked || item.notApplicable) stats.satisfied += 1;
+  }
+  return Array.from(sections.entries()).map(([section, stats]) => {
+    const label = stats.satisfied === stats.total ? 'Complete' : `${stats.satisfied}/${stats.total} complete`;
+    return fact(section, label);
+  });
+}
+
+function adaptiveCard(body, actions = []) {
+  return {
+    type: 'AdaptiveCard',
+    version: '1.4',
+    $schema: 'http://adaptivecards.io/schemas/adaptive-card.json',
+    body,
+    actions,
+  };
+}
+
+function teamsWebhookCard(data, options = {}) {
+  const includeNotes = options.includeNotes !== false;
+  const reviewerNames = GRADUATION_MENTION_USERS.map(user => user.displayName).join(', ');
+  const body = [
+    textBlock('PSA Graduation Checklist Submitted', {
+      weight: 'Bolder',
+      size: 'Medium',
+    }),
+    textBlock(data.clientName, {
+      weight: 'Bolder',
+      size: 'Large',
+    }),
+    {
+      type: 'FactSet',
+      facts: [
+        fact('Submitted', data.submittedAt),
+        fact('SA', data.saName),
+        fact('Graduation date', data.graduationDate),
+        fact('CS handoff owner', data.csHandoffOwner),
+        fact('Reviewers', reviewerNames),
+      ],
+    },
+  ];
+
+  const sections = sectionFacts(data);
+  if (sections.length) {
+    body.push(textBlock('Section rollup', { weight: 'Bolder' }));
+    body.push({ type: 'FactSet', facts: sections });
+  }
+
+  if (includeNotes && data.notes) {
+    body.push(textBlock('Notes', { weight: 'Bolder' }));
+    body.push(textBlock(data.notes));
+  }
+
+  const actions = data.sourceUrl
+    ? [{ type: 'Action.OpenUrl', title: 'Open completed checklist', url: data.sourceUrl }]
+    : [];
+
+  return adaptiveCard(body, actions);
+}
+
+function composeTeamsWebhookCards(data) {
+  const card = teamsWebhookCard(data);
+  const notesCards = [];
+  const serialized = JSON.stringify(card);
+  if (serialized.length > MAX_TEAMS_MESSAGE_CHARS && data.notes) {
+    const cardWithoutNotes = teamsWebhookCard(data, { includeNotes: false });
+    notesCards.push(...splitWebhookNotesMessages(data.notes).map(text => adaptiveCard([
+      textBlock(`${data.clientName} notes`, { weight: 'Bolder', size: 'Medium' }),
+      textBlock(text),
+    ])));
+    const withoutNotesLength = JSON.stringify(cardWithoutNotes).length;
+    if (withoutNotesLength > MAX_TEAMS_MESSAGE_CHARS) {
+      console.error(`API ERROR Teams graduation webhook card too large without notes (${withoutNotesLength} chars)`);
+      process.exit(1);
+    }
+    return [cardWithoutNotes, ...notesCards];
+  }
+  if (serialized.length > MAX_TEAMS_MESSAGE_CHARS) {
+    console.error(`API ERROR Teams graduation webhook card too large (${serialized.length} chars)`);
+    process.exit(1);
+  }
+  return [card];
 }
 
 function teamsMentions(mentionTargets) {
@@ -341,15 +448,15 @@ async function postTeamsMessage(token, data) {
 }
 
 async function postTeamsWebhook(data) {
-  const messages = composeTeamsWebhookMessages(data);
-  for (const text of messages) {
+  const cards = composeTeamsWebhookCards(data);
+  for (const card of cards) {
     await apiText(WEBHOOK_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text }),
+      body: JSON.stringify(card),
     }, 'Teams graduation webhook');
   }
-  console.log(`TEAMS_WEBHOOK_STATUS ok ${messages.length} ${CHANNEL_NAME}`);
+  console.log(`TEAMS_WEBHOOK_STATUS ok ${cards.length} ${CHANNEL_NAME}`);
 }
 
 async function main() {
@@ -360,7 +467,7 @@ async function main() {
     console.log(JSON.stringify({
       channel: CHANNEL_NAME,
       webhook: WEBHOOK_URL ? {
-        messages: composeTeamsWebhookMessages(data).map(text => ({ text })),
+        cards: composeTeamsWebhookCards(data),
       } : null,
       body: {
         contentType: 'html',
