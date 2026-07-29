@@ -2561,12 +2561,34 @@ renderUserTable();
   // ── Submission ID (set from hash on load) ──────────────────────────────────
   var _submissionId = null;
 
-  // ── GitHub dispatch config ──────────────────────────────────────────────────
-  // Fine-grained PAT with Actions: write on aiextucker/Onboarding-Automation-Project only.
-  // Visible in dev tools by design — this PAT can only trigger this workflow.
-  // Token split to avoid static secret-scanning false positives (still visible in dev tools by design)
+  // ── Server-side dispatch relay ──────────────────────────────────────────────
+  var DISPATCH_RELAY_PATH = '/api/repository-dispatch';
   var GITHUB_DISPATCH_TOKEN = ['ghp_fmu9dXErfsuaxu', 'LIjcWp4e7h5a92R74ZhaYc'].join('');
   var GITHUB_REPO           = 'aiextucker/revio-automations';
+
+  function dispatchRelayUrl() {
+    var configured = window.ONBOARDING_DISPATCH_RELAY_URL || (document.querySelector('meta[name="onboarding-dispatch-relay"]') || {}).content || '';
+    return configured || '';
+  }
+
+  async function dispatchRepositoryEvent(eventType, clientPayload) {
+    var relayUrl = dispatchRelayUrl();
+    var url = relayUrl || 'https://api.github.com/repos/' + GITHUB_REPO + '/dispatches';
+    var headers = { 'Content-Type': 'application/json' };
+    if (!relayUrl) {
+      headers.Authorization = 'token ' + GITHUB_DISPATCH_TOKEN;
+      headers.Accept = 'application/vnd.github.v3+json';
+    }
+    var res = await fetch(url, {
+      method: 'POST',
+      headers: headers,
+      body: JSON.stringify({ event_type: eventType, client_payload: clientPayload }),
+    });
+    if (relayUrl ? !res.ok : res.status !== 204) {
+      var text = await res.text();
+      throw new Error('Submission handoff failed: HTTP ' + res.status + ' ' + text.slice(0, 300));
+    }
+  }
 
   // ── Load pre-fill data from URL hash ────────────────────────────────────────
   function loadSalesBriefFromHash() {
@@ -2697,22 +2719,7 @@ renderUserTable();
     if (btn) { btn.disabled = true; btn.textContent = 'Saving…'; }
 
     try {
-      var res = await fetch('https://api.github.com/repos/' + GITHUB_REPO + '/dispatches', {
-        method: 'POST',
-        headers: {
-          'Authorization': 'token ' + GITHUB_DISPATCH_TOKEN,
-          'Accept':        'application/vnd.github.v3+json',
-          'Content-Type':  'application/json',
-        },
-        body: JSON.stringify({
-          event_type: 'questionnaire-submitted',
-          client_payload: dispatchPayload,
-        }),
-      });
-      if (res.status !== 204) {
-        var text = await res.text();
-        throw new Error('Submission handoff failed: HTTP ' + res.status + ' ' + text.slice(0, 300));
-      }
+      await dispatchRepositoryEvent('questionnaire-submitted', dispatchPayload);
       console.log('[submit] Dispatched to GitHub Actions ✓');
       _origApprove();
     } catch (err) {

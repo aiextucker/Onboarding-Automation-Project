@@ -2371,7 +2371,6 @@ renderUserTable();
       logoFileName: state.logoFileName,
       submittedAt: new Date().toISOString(),
     };
-    // Write to Notion
     fetch('https://api.notion.com/v1/pages/' + _NOTION_PAGE_ID, {
       method: 'PATCH',
       headers: {

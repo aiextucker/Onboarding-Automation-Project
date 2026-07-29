@@ -1395,24 +1395,33 @@ function shouldUseDispatchHandoff() {
   return isGithubPagesHost() || !pmHubApiBase();
 }
 
+const DISPATCH_RELAY_PATH = '/api/repository-dispatch';
 const PM_HUB_GITHUB_REPO = 'aiextucker/Onboarding-Automation-Project';
 const PM_HUB_DISPATCH_TOKEN = ['ghp_fmu9dXErfsuaxu', 'LIjcWp4e7h5a92R74ZhaYc'].join('');
 
+function dispatchRelayUrl() {
+  const configured = window.ONBOARDING_DISPATCH_RELAY_URL || document.querySelector('meta[name="onboarding-dispatch-relay"]')?.content || '';
+  return configured || '';
+}
+
 async function dispatchPmHubAction(eventType, payload) {
-  const res = await fetch('https://api.github.com/repos/' + PM_HUB_GITHUB_REPO + '/dispatches', {
+  const relayUrl = dispatchRelayUrl();
+  const url = relayUrl || 'https://api.github.com/repos/' + PM_HUB_GITHUB_REPO + '/dispatches';
+  const headers = { 'Content-Type': 'application/json' };
+  if (!relayUrl) {
+    headers.Authorization = 'Bearer ' + PM_HUB_DISPATCH_TOKEN;
+    headers.Accept = 'application/vnd.github+json';
+  }
+  const res = await fetch(url, {
     method: 'POST',
-    headers: {
-      'Authorization': 'Bearer ' + PM_HUB_DISPATCH_TOKEN,
-      'Accept': 'application/vnd.github+json',
-      'Content-Type': 'application/json',
-    },
+    headers,
     body: JSON.stringify({
       event_type: eventType,
       client_payload: payload,
     }),
   });
   const text = await res.text();
-  if (res.status !== 204) {
+  if (relayUrl ? !res.ok : res.status !== 204) {
     throw new Error('Handoff failed: HTTP ' + res.status + ' ' + text.slice(0, 240));
   }
 }

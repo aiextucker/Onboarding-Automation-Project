@@ -684,7 +684,7 @@
     <div class="progress-bar-wrap">
       <div class="progress-label-row">
         <span class="progress-title">Completion</span>
-        <span class="progress-count" id="progressCount">0 of 16 criteria met</span>
+        <span class="progress-count" id="progressCount">0 criteria met</span>
       </div>
       <div class="progress-track">
         <div class="progress-fill" id="progressFill"></div>
@@ -945,8 +945,38 @@
 <script>
   const NA_IDS = ['int-qbo', 'int-cal'];
   const printValueClass = 'print-value';
+  const DISPATCH_RELAY_PATH = '/api/repository-dispatch';
   const GITHUB_REPO = 'aiextucker/Onboarding-Automation-Project';
   const GITHUB_DISPATCH_TOKEN = ['ghp_fmu9dXErfsuaxu', 'LIjcWp4e7h5a92R74ZhaYc'].join('');
+
+  function dispatchRelayUrl() {
+    const configured = window.ONBOARDING_DISPATCH_RELAY_URL || document.querySelector('meta[name="onboarding-dispatch-relay"]')?.content || '';
+    return configured || '';
+  }
+
+  async function dispatchRepositoryEvent(eventType, clientPayload) {
+    const relayUrl = dispatchRelayUrl();
+    const url = relayUrl || 'https://api.github.com/repos/' + GITHUB_REPO + '/dispatches';
+    const headers = {
+      'Content-Type': 'application/json',
+    };
+    if (!relayUrl) {
+      headers.Authorization = 'token ' + GITHUB_DISPATCH_TOKEN;
+      headers.Accept = 'application/vnd.github.v3+json';
+    }
+    const res = await fetch(url, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({
+        event_type: eventType,
+        client_payload: clientPayload,
+      }),
+    });
+    if (relayUrl ? !res.ok : res.status !== 204) {
+      const text = await res.text();
+      throw new Error('Submission failed: HTTP ' + res.status + ' ' + text.slice(0, 220));
+    }
+  }
 
   function totalCriteria() {
     return document.querySelectorAll('.criterion').length;
@@ -1145,24 +1175,7 @@
     btn.textContent = 'Submitting...';
     setSubmitStatus('Submitting to Teams...', '');
     try {
-      const res = await fetch('https://api.github.com/repos/' + GITHUB_REPO + '/dispatches', {
-        method: 'POST',
-        headers: {
-          'Authorization': 'token ' + GITHUB_DISPATCH_TOKEN,
-          'Accept': 'application/vnd.github.v3+json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          event_type: 'graduation-checklist-submitted',
-          client_payload: {
-            submission: payload,
-          },
-        }),
-      });
-      if (res.status !== 204) {
-        const text = await res.text();
-        throw new Error('Submission failed: HTTP ' + res.status + ' ' + text.slice(0, 220));
-      }
+      await dispatchRepositoryEvent('graduation-checklist-submitted', { submission: payload });
       setSubmitStatus('Submitted. Teams post will appear after the action finishes.', 'success');
     } catch (error) {
       setSubmitStatus(error.message || String(error), 'error');
@@ -1195,6 +1208,7 @@
   window.addEventListener('beforeprint', syncPrintValues);
   syncPrintValues();
   restoreSubmissionFromUrl();
+  updateProgress();
 </script>
 
 </body>

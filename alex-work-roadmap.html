@@ -1518,8 +1518,31 @@
     const submitWorkForm = document.getElementById('submitWorkForm');
     const submitStatus = document.getElementById('submitStatus');
     const pendingReviewList = document.getElementById('pendingReviewList');
+    const DISPATCH_RELAY_PATH = '/api/repository-dispatch';
     const GITHUB_REPO = 'aiextucker/Onboarding-Automation-Project';
     const GITHUB_DISPATCH_TOKEN = ['ghp_fmu9dXErfsuaxu', 'LIjcWp4e7h5a92R74ZhaYc'].join('');
+    function dispatchRelayUrl() {
+      const configured = window.ONBOARDING_DISPATCH_RELAY_URL || document.querySelector('meta[name="onboarding-dispatch-relay"]')?.content || '';
+      return configured || '';
+    }
+    async function dispatchRepositoryEvent(eventType, clientPayload) {
+      const relayUrl = dispatchRelayUrl();
+      const url = relayUrl || 'https://api.github.com/repos/' + GITHUB_REPO + '/dispatches';
+      const headers = { 'Content-Type': 'application/json' };
+      if (!relayUrl) {
+        headers.Authorization = 'token ' + GITHUB_DISPATCH_TOKEN;
+        headers.Accept = 'application/vnd.github.v3+json';
+      }
+      const res = await fetch(url, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ event_type: eventType, client_payload: clientPayload }),
+      });
+      if (relayUrl ? !res.ok : res.status !== 204) {
+        const text = await res.text();
+        throw new Error('Submission failed: HTTP ' + res.status + ' ' + text.slice(0, 200));
+      }
+    }
     const savedShowDone = localStorage.getItem('alex-roadmap-show-done') === 'true';
     const savedInitiative = localStorage.getItem('alex-roadmap-initiative') || '';
     showDoneToggle.checked = savedShowDone;
@@ -1571,22 +1594,7 @@
       submitStatus.textContent = 'Submitting...';
       submitStatus.className = 'form-status';
       try {
-        const res = await fetch('https://api.github.com/repos/' + GITHUB_REPO + '/dispatches', {
-          method: 'POST',
-          headers: {
-            'Authorization': 'token ' + GITHUB_DISPATCH_TOKEN,
-            'Accept': 'application/vnd.github.v3+json',
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            event_type: 'alex-roadmap-task-submitted',
-            client_payload: payload,
-          }),
-        });
-        if (res.status !== 204) {
-          const text = await res.text();
-          throw new Error('GitHub dispatch failed: HTTP ' + res.status + ' ' + text.slice(0, 200));
-        }
+        await dispatchRepositoryEvent('alex-roadmap-task-submitted', payload);
         submitStatus.textContent = 'Submitted for review. It will appear here after the action finishes.';
         submitStatus.className = 'form-status success';
         submitWorkForm.reset();

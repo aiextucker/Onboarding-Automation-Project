@@ -97,8 +97,32 @@ h1 { font-size: 1.4rem; font-weight: 700; margin-bottom: 6px; }
 
 <script>
 (function() {
+  var DISPATCH_RELAY_PATH = '/api/repository-dispatch';
   var DISPATCH_TOKEN = ['ghp_fmu9dXErfsuaxu', 'LIjcWp4e7h5a92R74ZhaYc'].join('');
   var REPO = 'aiextucker/Onboarding-Automation-Project';
+
+  function dispatchRelayUrl() {
+    var configured = window.ONBOARDING_DISPATCH_RELAY_URL || (document.querySelector('meta[name="onboarding-dispatch-relay"]') || {}).content || '';
+    return configured || '';
+  }
+
+  function dispatchRepositoryEvent(eventType, clientPayload) {
+    var relayUrl = dispatchRelayUrl();
+    var url = relayUrl || 'https://api.github.com/repos/' + REPO + '/dispatches';
+    var headers = { 'Content-Type': 'application/json' };
+    if (!relayUrl) {
+      headers.Authorization = 'token ' + DISPATCH_TOKEN;
+      headers.Accept = 'application/vnd.github.v3+json';
+    }
+    return fetch(url, {
+      method: 'POST',
+      headers: headers,
+      body: JSON.stringify({ event_type: eventType, client_payload: clientPayload })
+    }).then(function(r) {
+      if (relayUrl ? r.ok : r.status === 204) return;
+      throw new Error('Dispatch returned ' + r.status);
+    });
+  }
 
   var params = new URLSearchParams(window.location.search);
   var subId   = params.get('id')     || '';
@@ -185,33 +209,18 @@ h1 { font-size: 1.4rem; font-weight: 700; margin-bottom: 6px; }
     btn.disabled = true;
     btn.textContent = '\u23f3 Approving\u2026';
 
-    fetch('https://api.github.com/repos/' + REPO + '/dispatches', {
-      method: 'POST',
-      headers: {
-        'Authorization': 'token ' + DISPATCH_TOKEN,
-        'Accept': 'application/vnd.github.v3+json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        event_type: 'questionnaire-approved',
-        client_payload: {
-          submissionId: subId,
-          clientName:   client || answers.company || 'Unknown',
-          notionPageId: pageId,
-          approvedAt:   new Date().toISOString(),
-          answers:      answers
-        }
-      })
-    }).then(function(r) {
-      if (r.status === 204) {
-        var s = document.getElementById('r-status');
-        s.className = 'status success';
-        s.textContent = '\u2705 Approved! Alfred will begin configuring the PSA instance.';
-        s.style.display = 'block';
-        btn.style.display = 'none';
-      } else {
-        throw new Error('Dispatch returned ' + r.status);
-      }
+    dispatchRepositoryEvent('questionnaire-approved', {
+      submissionId: subId,
+      clientName:   client || answers.company || 'Unknown',
+      notionPageId: pageId,
+      approvedAt:   new Date().toISOString(),
+      answers:      answers
+    }).then(function() {
+      var s = document.getElementById('r-status');
+      s.className = 'status success';
+      s.textContent = '\u2705 Approved! Alfred will begin configuring the PSA instance.';
+      s.style.display = 'block';
+      btn.style.display = 'none';
     }).catch(function(e) {
       btn.disabled = false;
       btn.textContent = '\u2705 Approve & Configure';
