@@ -1,0 +1,30 @@
+name: PSA Graduation Checklist Alert
+
+on:
+  workflow_run:
+    workflows: ["PSA Graduation Checklist Submitted"]
+    types: [completed]
+
+permissions:
+  actions: read
+  issues: write
+  contents: read
+
+jobs:
+  alert:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Open or close failure alert issue
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          WORKFLOW_NAME: ${{ github.event.workflow_run.name }}
+          WORKFLOW_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+          WORKFLOW_RUN_ID: ${{ github.event.workflow_run.id }}
+          WORKFLOW_RUN_URL: ${{ github.event.workflow_run.html_url }}
+          WORKFLOW_HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+          WORKFLOW_CREATED_AT: ${{ github.event.workflow_run.created_at }}
+          WORKFLOW_UPDATED_AT: ${{ github.event.workflow_run.updated_at }}
+        run: node .github/scripts/alert-graduation-workflow-failure.js
