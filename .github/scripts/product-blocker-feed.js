@@ -266,7 +266,8 @@ function projectRecord(page, lob, indexes) {
   const pageUrl = notionUrl(page);
   const wrikeUrl = wrikeProjectId ? `https://www.wrike.com/open.htm?id=${wrikeProjectId}` : null;
   const affectedAreas = parseMulti(firstProperty(properties, ['PB Affected Areas', 'Affected Areas', 'System Area', 'Product Area']));
-  const approvalOwner = parseMulti(firstProperty(properties, ['PB Approval Owner', 'Approval Owner', 'Owner', 'Solutions Analyst']))[0] || null;
+  const approvalOwner = parseMulti(firstProperty(properties, ['PB Approval Owner', 'Approval Owner', 'Owner', 'Solutions Analyst']))
+    .find(value => !/^[0-9a-f]{8}-[0-9a-f-]{27}$/i.test(value)) || null;
   const productTriageRoute = clean(firstProperty(properties, ['PB Product Triage Route', 'Product Triage Route'])) || null;
   const mrrImpact = parseNumber(firstProperty(properties, lob === 'billing' ? ['Activation MRR', 'MRR'] : ['Fees (MRR)', 'MRRC', 'Activation MRR']));
   const sourceId = wrikeProjectId || page.id;
