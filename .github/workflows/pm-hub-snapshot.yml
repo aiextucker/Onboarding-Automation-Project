@@ -24,16 +24,23 @@ jobs:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
           REVAY_TOKEN:  ${{ secrets.REVAY_TOKEN }}
           ZD_AUTH:      ${{ secrets.ZD_AUTH }}
-          PSA_API_KEY:  ${{ secrets.PSA_API_KEY }}
+          PSA_API_KEY:    ${{ secrets.PSA_API_KEY }}
+          WRIKE_TOKEN:    ${{ secrets.WRIKE_TOKEN }}
+          WRIKE_API_TOKEN: ${{ secrets.WRIKE_API_TOKEN }}
         run: |
           node << 'SCRIPT'
           const fs = require('fs');
+          const {
+            buildProductBlockers,
+            fetchWrikeProductBlockerReviews,
+          } = require('./.github/scripts/product-blocker-feed');
 
           const NOTION_TOKEN = process.env.NOTION_TOKEN;
           const REVAY_TOKEN  = process.env.REVAY_TOKEN || NOTION_TOKEN;
           const ZD_AUTH      = process.env.ZD_AUTH || '';
           const ZD_BASE      = 'https://rev-io.zendesk.com/api/v2';
           const PSA_API_KEY  = process.env.PSA_API_KEY || '';
+          const WRIKE_TOKEN  = process.env.WRIKE_TOKEN || process.env.WRIKE_API_TOKEN || '';
           const PSA_HOST     = 'psainternal.psarev.io';
           const PSA_API_BASE = 'https://api.psarev.io';
 
@@ -525,13 +532,18 @@ jobs:
               .map(m => ({ ...m, key: canonicalMilestoneKey(m.task) }));
             console.log(`  ${psaCriticalMilestones.length} required milestones`);
 
+            // Start the read-only Wrike review fetch while Notion data loads.
+            // The Product Blocker feed intentionally does not use Zendesk/PSA
+            // ticket keyword matches as blocker candidates.
+            const productBlockerReviewPromise = fetchWrikeProductBlockerReviews(WRIKE_TOKEN);
+
             // ── 1. Billing clients ────────────────────────────────────────────
             console.log('Fetching billing clients…');
             const BILLING_SKIP = new Set(['Graduated','Canceled','Completed']);
-            const billingFilter = { and: [...BILLING_SKIP].map(s => ({ property:'Status', status:{ does_not_equal:s } })) };
-            const billingPages = await notionQuery(DB_BILLING_CLIENTS, billingFilter,
+            const allBillingPages = await notionQuery(DB_BILLING_CLIENTS, null,
               [{ property:'Health Score', direction:'ascending' }], NOTION_TOKEN);
-            console.log(`  ${billingPages.length} billing clients`);
+            const billingPages = allBillingPages.filter(page => !BILLING_SKIP.has(nStat(page.properties['Status'])));
+            console.log(`  ${billingPages.length} active billing clients (${allBillingPages.length} total projects scanned for blockers)`);
 
             const billingClients = billingPages.map(page => {
               const pr = page.properties;
@@ -567,10 +579,10 @@ jobs:
 
             // ── 2. PSA clients ────────────────────────────────────────────────
             console.log('Fetching PSA clients…');
-            const PSA_SKIP = ["Graduated","Canceled - Functionality","Canceled - Client Business","Canceled - Client Ghosted","Canceled - Sales Unable to KO","Canceled - Client Bandwidth"];
-          const psaFilter = { and: PSA_SKIP.map(s => ({ property:"Status", status:{ does_not_equal:s } })) };
-          const psaPages = await notionQuery(DB_PSA_CLIENTS, psaFilter, null, REVAY_TOKEN);
-            console.log(`  ${psaPages.length} PSA client records`);
+            const PSA_SKIP = new Set(["Graduated","Canceled - Functionality","Canceled - Client Business","Canceled - Client Ghosted","Canceled - Sales Unable to KO","Canceled - Client Bandwidth"]);
+            const allPsaPages = await notionQuery(DB_PSA_CLIENTS, null, null, REVAY_TOKEN);
+            const psaPages = allPsaPages.filter(page => !PSA_SKIP.has(nStat(page.properties['Status'])));
+            console.log(`  ${psaPages.length} active PSA client records (${allPsaPages.length} total projects scanned for blockers)`);
 
             const ACTIVE_PSA = new Set(['In Progress','On Hold','RTS - Client','RTS - Functionality','RTS - Competitor','RTS - Pricing']);
             const psaClients = psaPages.map(page => {
@@ -1011,10 +1023,24 @@ jobs:
             const matchDiagnostics = buildMatchDiagnostics(allClients, briefsByClientId, psaBriefsByClientId);
             console.log(`  Match diagnostics: ${matchDiagnostics.multiClientFireflies.length} shared Fireflies IDs, ${matchDiagnostics.duplicatePsaClientNames.length} duplicate PSA names`);
 
-            // ── 12. Write snapshot ───────────────────────────────────────────
+            // ── 12. Canonical Product Blocker feed ───────────────────────────
+            console.log('Building canonical Product Blocker feed…');
+            const productBlockerReviewData = await productBlockerReviewPromise;
+            const productBlockers = buildProductBlockers({
+              ...productBlockerReviewData,
+              billingPages: allBillingPages,
+              psaPages: allPsaPages,
+              clients: allClients,
+            });
+            const productBlockerReviews = productBlockers.filter(item => item.sourceKind === 'review').length;
+            const productBlockerProjects = productBlockers.filter(item => item.sourceKind === 'project').length;
+            console.log(`  ${productBlockers.length} blockers (${productBlockerReviews} review, ${productBlockerProjects} project)`);
+
+            // ── 13. Write snapshot ───────────────────────────────────────────
             const snapshot = {
               updatedAt: new Date().toISOString(),
               clients: allClients,
+              productBlockers,
               briefsByClientId,
               psaBriefsByClientId,
               psaTicketsByClientId,
@@ -1148,6 +1174,62 @@ jobs:
             fail('psaCriticalMilestones missing or empty');
           }
 
+          if (!Array.isArray(snapshot.productBlockers)) {
+            fail('productBlockers missing or not an array');
+          }
+
+          if (snapshot.productBlockers.length < 1) {
+            fail('productBlockers is empty');
+          }
+
+          const productBlockerRequiredKeys = [
+            'id', 'dedupeKey', 'sourceKind', 'client', 'clientId', 'lob', 'projectStatus',
+            'blockerSummary', 'evidence', 'affectedAreas', 'approvalStatus', 'lifecycleBucket',
+            'routingState', 'resolutionOutcome', 'approvalOwner', 'productTriageRoute', 'mrrImpact',
+            'sourceLinks', 'createdAt', 'updatedAt', 'missingRequiredFields',
+          ];
+          const productBlockerArrayKeys = ['evidence', 'affectedAreas', 'sourceLinks', 'missingRequiredFields'];
+          const allowedProductBlockerSources = new Set(['review', 'project']);
+          const allowedLifecycleBuckets = new Set([
+            'not_yet_in_review', 'needs_review', 'approved', 'routed', 'resolved',
+            'closed_not_product', 'closed_duplicate',
+          ]);
+          const productBlockerIds = new Set();
+          const productBlockerDedupeKeys = new Set();
+          for (const [index, blocker] of snapshot.productBlockers.entries()) {
+            if (!blocker || typeof blocker !== 'object' || Array.isArray(blocker)) {
+              fail(`productBlockers[${index}] is not an object`);
+            }
+            const missingKeys = productBlockerRequiredKeys.filter(key => !Object.prototype.hasOwnProperty.call(blocker, key));
+            if (missingKeys.length) {
+              fail(`productBlockers[${index}] missing schema keys: ${missingKeys.join(', ')}`);
+            }
+            if (!blocker.id || !blocker.dedupeKey) {
+              fail(`productBlockers[${index}] is missing stable id/dedupeKey`);
+            }
+            if (productBlockerIds.has(blocker.id)) fail(`duplicate Product Blocker id: ${blocker.id}`);
+            if (productBlockerDedupeKeys.has(blocker.dedupeKey)) fail(`duplicate Product Blocker dedupeKey: ${blocker.dedupeKey}`);
+            productBlockerIds.add(blocker.id);
+            productBlockerDedupeKeys.add(blocker.dedupeKey);
+            if (!allowedProductBlockerSources.has(blocker.sourceKind)) {
+              fail(`productBlockers[${index}] has invalid sourceKind: ${blocker.sourceKind}`);
+            }
+            if (!allowedLifecycleBuckets.has(blocker.lifecycleBucket)) {
+              fail(`productBlockers[${index}] has invalid lifecycleBucket: ${blocker.lifecycleBucket}`);
+            }
+            for (const key of productBlockerArrayKeys) {
+              if (!Array.isArray(blocker[key])) fail(`productBlockers[${index}].${key} is not an array`);
+            }
+            if (blocker.mrrImpact !== null && typeof blocker.mrrImpact !== 'number') {
+              fail(`productBlockers[${index}].mrrImpact is not numeric/null`);
+            }
+            for (const key of ['createdAt', 'updatedAt']) {
+              if (blocker[key] && Number.isNaN(Date.parse(blocker[key]))) {
+                fail(`productBlockers[${index}].${key} is invalid: ${blocker[key]}`);
+              }
+            }
+          }
+
           if (!snapshot.matchDiagnostics || typeof snapshot.matchDiagnostics !== 'object' || Array.isArray(snapshot.matchDiagnostics)) {
             fail('matchDiagnostics missing or not an object');
           }
@@ -1171,6 +1253,14 @@ jobs:
             deViewRows: snapshot.deView?.length || 0,
             hasPsaTickets: !!snapshot.psaTicketsByClientId,
             criticalMilestones: snapshot.psaCriticalMilestones?.length || 0,
+            productBlockers: snapshot.productBlockers.length,
+            productBlockerReviews: snapshot.productBlockers.filter(item => item.sourceKind === 'review').length,
+            productBlockerProjects: snapshot.productBlockers.filter(item => item.sourceKind === 'project').length,
+            productBlockersMissingRequiredFields: snapshot.productBlockers.filter(item => item.missingRequiredFields.length > 0).length,
+            productBlockerLifecycleCounts: snapshot.productBlockers.reduce((counts, item) => {
+              counts[item.lifecycleBucket] = (counts[item.lifecycleBucket] || 0) + 1;
+              return counts;
+            }, {}),
           };
 
           console.log(`SNAPSHOT_VALIDATION_OK ${JSON.stringify(summary)}`);
