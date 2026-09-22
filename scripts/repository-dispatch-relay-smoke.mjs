@@ -11,6 +11,13 @@ assert.throws(() => validatePayload({
   client_payload: {},
 }), /Unsupported dispatch event/);
 
+for (const retiredEvent of ['log-interaction', 'pm-hub-milestone-edit', 'pm-hub-project-edit']) {
+  assert.throws(() => validatePayload({
+    event_type: retiredEvent,
+    client_payload: {},
+  }), /Unsupported dispatch event/);
+}
+
 const originalFetch = globalThis.fetch;
 try {
   let forwarded;

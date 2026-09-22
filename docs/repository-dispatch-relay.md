@@ -17,12 +17,13 @@ Allowed dispatch events:
 
 - `graduation-checklist-submitted`
 - `alex-roadmap-task-submitted`
-- `log-interaction`
-- `pm-hub-milestone-edit`
-- `pm-hub-project-edit`
 - `questionnaire-approved`
 - `questionnaire-submitted`
 
 `questionnaire-submitted` is forwarded to `aiextucker/revio-automations`; other events default to `aiextucker/Onboarding-Automation-Project`.
+
+The former PM Hub events (`log-interaction`, `pm-hub-milestone-edit`, and
+`pm-hub-project-edit`) were retired on 2026-09-22 and are intentionally
+rejected by the relay.
 
 After deploying the relay, rotate the old GitHub token because it was previously present in public HTML.

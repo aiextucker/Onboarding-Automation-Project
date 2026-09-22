@@ -3,9 +3,6 @@ const MAX_BODY_BYTES = 64 * 1024;
 const ALLOWED_EVENTS = new Set([
   'graduation-checklist-submitted',
   'alex-roadmap-task-submitted',
-  'log-interaction',
-  'pm-hub-milestone-edit',
-  'pm-hub-project-edit',
   'questionnaire-approved',
   'questionnaire-submitted',
 ]);
