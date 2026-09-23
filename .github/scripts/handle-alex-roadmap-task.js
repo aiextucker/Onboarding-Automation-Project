@@ -162,8 +162,8 @@ async function queryPending() {
 }
 
 async function main() {
-  const data = cleanPayload(readPayload());
-  const page = await createTask(data);
+  const refreshOnly = process.env.ALEX_ROADMAP_REFRESH_ONLY === '1';
+  const page = refreshOnly ? null : await createTask(cleanPayload(readPayload()));
   const pendingReviewTasks = await queryPending();
   fs.mkdirSync(path.dirname(OUTPUT_PATH), { recursive: true });
   fs.writeFileSync(OUTPUT_PATH, JSON.stringify({
@@ -171,7 +171,7 @@ async function main() {
     source: 'Notion Tasks Tracker',
     pendingReviewTasks,
   }, null, 2) + '\n');
-  console.log(JSON.stringify({ ok: true, pageId: page.id, pendingReview: pendingReviewTasks.length }));
+  console.log(JSON.stringify({ ok: true, pageId: page?.id || null, refreshOnly, pendingReview: pendingReviewTasks.length }));
 }
 
 main().catch(error => {
