@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PSA Config Approval — Rev.io</title>
+<title>PSA Configuration Review — Rev.io</title>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
   --bg: #0f1117; --surface: #181c27; --surface2: #1e2436;
   --border: #2a3050; --accent: #6c63ff; --teal: #00d4aa;
   --text: #e8e8f0; --text-dim: #8a90b0; --error: #ff5a6e;
-  --success: #00d4aa; --warning: #f0a500;
+  --warning: #f0a500;
   --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 body { background: var(--bg); color: var(--text); font-family: var(--font); min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; }
@@ -20,6 +20,8 @@ body { background: var(--bg); color: var(--text); font-family: var(--font); min-
 .logo-text { font-size: 0.85rem; font-weight: 700; letter-spacing: 0.08em; color: var(--text-dim); text-transform: uppercase; }
 h1 { font-size: 1.4rem; font-weight: 700; margin-bottom: 6px; }
 .client-name { font-size: 1.1rem; color: var(--teal); font-weight: 600; margin-bottom: 20px; }
+.notice { margin: 20px 0; padding: 16px 18px; border-radius: 10px; background: rgba(240,165,0,0.10); border: 1px solid var(--warning); color: var(--text); font-size: 0.9rem; line-height: 1.55; }
+.notice strong { color: var(--warning); }
 .meta { font-size: 0.82rem; color: var(--text-dim); margin-bottom: 24px; border-top: 1px solid var(--border); padding-top: 16px; }
 .meta p { margin-bottom: 4px; }
 .section { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; margin-bottom: 20px; }
@@ -34,13 +36,8 @@ h1 { font-size: 1.4rem; font-weight: 700; margin-bottom: 6px; }
 .users-list li:last-child { border-bottom: none; }
 .user-name { font-weight: 500; }
 .user-meta { color: var(--text-dim); font-size: 0.8rem; text-align: right; }
-.actions { margin-top: 28px; }
-.btn { width: 100%; padding: 13px 20px; border: none; border-radius: 8px; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: opacity 0.15s, transform 0.1s; background: var(--teal); color: #0f1117; }
-.btn:active { transform: scale(0.98); }
-.btn:disabled { opacity: 0.5; cursor: not-allowed; }
-.status { margin-top: 20px; padding: 14px 18px; border-radius: 8px; font-size: 0.9rem; font-weight: 600; display: none; }
-.status.success { background: rgba(0,212,170,0.12); border: 1px solid var(--teal); color: var(--teal); }
-.status.error { background: rgba(255,90,110,0.12); border: 1px solid var(--error); color: var(--error); }
+.status { margin-top: 20px; padding: 14px 18px; border-radius: 8px; font-size: 0.9rem; font-weight: 600; background: rgba(108,99,255,0.10); border: 1px solid var(--accent); color: var(--text); line-height: 1.45; }
+.status.error { background: rgba(255,90,110,0.12); border-color: var(--error); color: var(--error); }
 .loading { text-align: center; color: var(--text-dim); padding: 40px 0; }
 .spinner { width: 32px; height: 32px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 12px; }
 @keyframes spin { to { transform: rotate(360deg); } }
@@ -56,8 +53,11 @@ h1 { font-size: 1.4rem; font-weight: 700; margin-bottom: 6px; }
   </div>
 
   <div id="app-content" style="display:none">
-    <h1>Review &amp; Approve Configuration</h1>
+    <h1>Questionnaire Review Record</h1>
     <div class="client-name" id="r-client"></div>
+    <div class="notice">
+      <strong>This page is read-only.</strong> Configuration approval is handled and recorded by the assigned Solutions Architect through Rev.io's internal process. This link cannot approve a questionnaire or configure a PSA instance. Historical questionnaire records and setup snapshots remain unchanged.
+    </div>
     <div class="meta">
       <p><span style="color:var(--text-dim)">Submission ID:</span> <code id="r-id" style="font-size:0.8rem;color:var(--accent)"></code></p>
       <p><span style="color:var(--text-dim)">Submitted:</span> <span id="r-time"></span></p>
@@ -88,45 +88,14 @@ h1 { font-size: 1.4rem; font-weight: 700; margin-bottom: 6px; }
       <p id="r-notes" style="font-size:0.88rem;line-height:1.6;color:var(--text-dim)"></p>
     </div>
 
-    <div class="actions">
-      <button class="btn" id="r-btn" onclick="doApprove()">&#x2705; Approve &amp; Configure</button>
-    </div>
-    <div class="status" id="r-status"></div>
+    <div class="status" id="r-status">No action was taken. Contact the assigned Solutions Architect for approval status or next steps.</div>
   </div>
 </div>
 
 <script>
 (function() {
-  var DISPATCH_RELAY_PATH = '/api/repository-dispatch';
-  var DISPATCH_TOKEN = ['ghp_fmu9dXErfsuaxu', 'LIjcWp4e7h5a92R74ZhaYc'].join('');
-  var REPO = 'aiextucker/Onboarding-Automation-Project';
-
-  function dispatchRelayUrl() {
-    var configured = window.ONBOARDING_DISPATCH_RELAY_URL || (document.querySelector('meta[name="onboarding-dispatch-relay"]') || {}).content || '';
-    return configured || '';
-  }
-
-  function dispatchRepositoryEvent(eventType, clientPayload) {
-    var relayUrl = dispatchRelayUrl();
-    var url = relayUrl || 'https://api.github.com/repos/' + REPO + '/dispatches';
-    var headers = { 'Content-Type': 'application/json' };
-    if (!relayUrl) {
-      headers.Authorization = 'token ' + DISPATCH_TOKEN;
-      headers.Accept = 'application/vnd.github.v3+json';
-    }
-    return fetch(url, {
-      method: 'POST',
-      headers: headers,
-      body: JSON.stringify({ event_type: eventType, client_payload: clientPayload })
-    }).then(function(r) {
-      if (relayUrl ? r.ok : r.status === 204) return;
-      throw new Error('Dispatch returned ' + r.status);
-    });
-  }
-
   var params = new URLSearchParams(window.location.search);
-  var subId   = params.get('id')     || '';
-  var pageId  = params.get('page')   || '';
+  var subId   = params.get('id') || '';
   var client  = params.get('client') || '';
   var answers = {};
 
@@ -152,81 +121,65 @@ h1 { font-size: 1.4rem; font-weight: 700; margin-bottom: 6px; }
     show();
     var s = document.getElementById('r-status');
     s.className = 'status error';
-    s.textContent = '\u26a0\ufe0f ' + msg;
-    s.style.display = 'block';
-    var actions = document.querySelector('.actions');
-    if (actions) actions.style.display = 'none';
+    s.textContent = '\u26a0\ufe0f ' + msg + ' No approval action is available on this page.';
+  }
+
+  function renderUsers(users) {
+    var ul = document.getElementById('r-users');
+    ul.replaceChildren();
+    if (!users.length) {
+      var empty = document.createElement('li');
+      empty.style.color = 'var(--warning)';
+      empty.textContent = '\u26a0\ufe0f No users submitted';
+      ul.appendChild(empty);
+      return;
+    }
+    users.forEach(function(u) {
+      var li = document.createElement('li');
+      var name = document.createElement('span');
+      name.className = 'user-name';
+      name.textContent = u.name || '(unnamed)';
+      var meta = document.createElement('span');
+      meta.className = 'user-meta';
+      if (u.email) {
+        meta.append(document.createTextNode(u.email), document.createElement('br'), document.createTextNode(u.role || 'Unknown role'));
+      } else {
+        meta.style.color = 'var(--warning)';
+        meta.textContent = '\u26a0\ufe0f no email';
+      }
+      li.append(name, meta);
+      ul.appendChild(li);
+    });
   }
 
   function render() {
     show();
-    if (!subId) { showError('No submission ID found in URL.'); return; }
+    if (!subId) { showError('No submission ID was found in this historical link.'); return; }
 
     var a = answers;
-    setVal('r-client',  client || a.company || 'Unknown');
-    setVal('r-id',      subId);
-    setVal('r-time',    a.submittedAt ? new Date(a.submittedAt).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' }) : '\u2014');
+    setVal('r-client', client || a.company || 'Unknown');
+    setVal('r-id', subId);
+    setVal('r-time', a.submittedAt ? new Date(a.submittedAt).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' }) : '\u2014');
     setVal('r-contact', (a.contact || '\u2014') + (a.email ? '  \u00b7  ' + a.email : ''));
-
-    setVal('r-cycle',
-      a.billingCycle === 'cycle' ? 'Cycle-based' :
-      a.billingCycle === 'anniversary' ? 'Anniversary date' : '', true);
-    setVal('r-dates',
-      (a.cycleDates && a.cycleDates.length) ? a.cycleDates.join(' & ') : '', true);
-    setVal('r-arrears',
-      a.arrears === 'yes' ? 'Yes \u2014 after service period' :
-      a.arrears === 'no'  ? 'No \u2014 bill in advance' : '', true);
-    setVal('r-multi',
-      a.multiProfile === 'yes' ? 'Yes' : a.multiProfile === 'no' ? 'No' : '', true);
+    setVal('r-cycle', a.billingCycle === 'cycle' ? 'Cycle-based' : a.billingCycle === 'anniversary' ? 'Anniversary date' : '', true);
+    setVal('r-dates', (a.cycleDates && a.cycleDates.length) ? a.cycleDates.join(' & ') : '', true);
+    setVal('r-arrears', a.arrears === 'yes' ? 'Yes \u2014 after service period' : a.arrears === 'no' ? 'No \u2014 bill in advance' : '', true);
+    setVal('r-multi', a.multiProfile === 'yes' ? 'Yes' : a.multiProfile === 'no' ? 'No' : '', true);
 
     var fees = 'None';
     if (a.lateFees === 'yes') {
-      var amt = a.lateFeeType === 'percent' ? (a.lateFeeAmount||'?') + '%' : '$' + (a.lateFeeAmount||'?');
-      fees = amt + (a.gracePeriod === 'yes' ? ' (' + (a.graceDays||'?') + '-day grace)' : ', no grace');
+      var amt = a.lateFeeType === 'percent' ? (a.lateFeeAmount || '?') + '%' : '$' + (a.lateFeeAmount || '?');
+      fees = amt + (a.gracePeriod === 'yes' ? ' (' + (a.graceDays || '?') + '-day grace)' : ', no grace');
     }
     setVal('r-fees', fees);
-
-    setVal('r-inv',
-      a.inventory === 'yes' ? 'Yes' : a.inventory === 'none' ? 'No' : '', true);
-
-    var ul = document.getElementById('r-users');
-    var users = a.users || [];
-    ul.innerHTML = users.length ? users.map(function(u) {
-      var em = u.email
-        ? '<span class="user-meta">' + u.email + '<br>' + (u.role||'Unknown role') + '</span>'
-        : '<span class="user-meta" style="color:var(--warning)">\u26a0\ufe0f no email</span>';
-      return '<li><span class="user-name">' + (u.name||'(unnamed)') + '</span>' + em + '</li>';
-    }).join('') : '<li style="color:var(--warning)">\u26a0\ufe0f No users submitted</li>';
+    setVal('r-inv', a.inventory === 'yes' ? 'Yes' : a.inventory === 'none' ? 'No' : '', true);
+    renderUsers(Array.isArray(a.users) ? a.users : []);
 
     if (a.saNotes) {
       setVal('r-notes', a.saNotes);
       document.getElementById('r-notes-section').style.display = 'block';
     }
   }
-
-  window.doApprove = function() {
-    var btn = document.getElementById('r-btn');
-    btn.disabled = true;
-    btn.textContent = '\u23f3 Approving\u2026';
-
-    dispatchRepositoryEvent('questionnaire-approved', {
-      submissionId: subId,
-      clientName:   client || answers.company || 'Unknown',
-      notionPageId: pageId,
-      approvedAt:   new Date().toISOString(),
-      answers:      answers
-    }).then(function() {
-      var s = document.getElementById('r-status');
-      s.className = 'status success';
-      s.textContent = '\u2705 Approved! Alfred will begin configuring the PSA instance.';
-      s.style.display = 'block';
-      btn.style.display = 'none';
-    }).catch(function(e) {
-      btn.disabled = false;
-      btn.textContent = '\u2705 Approve & Configure';
-      showError('Something went wrong: ' + e.message);
-    });
-  };
 
   render();
 })();

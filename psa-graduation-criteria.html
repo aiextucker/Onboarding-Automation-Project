@@ -945,37 +945,30 @@
 <script>
   const NA_IDS = ['int-qbo', 'int-cal'];
   const printValueClass = 'print-value';
-  const DISPATCH_RELAY_PATH = '/api/repository-dispatch';
-  const GITHUB_REPO = 'aiextucker/Onboarding-Automation-Project';
-  const GITHUB_DISPATCH_TOKEN = ['ghp_fmu9dXErfsuaxu', 'LIjcWp4e7h5a92R74ZhaYc'].join('');
-
-  function dispatchRelayUrl() {
-    const configured = window.ONBOARDING_DISPATCH_RELAY_URL || document.querySelector('meta[name="onboarding-dispatch-relay"]')?.content || '';
-    return configured || '';
-  }
+  const DISPATCH_RELAY_URL = 'https://alfred-revio.msappproxy.net/api/repository-dispatch';
+  const RELAY_SESSION_URL = 'https://alfred-revio.msappproxy.net/api/relay-session';
 
   async function dispatchRepositoryEvent(eventType, clientPayload) {
-    const relayUrl = dispatchRelayUrl();
-    const url = relayUrl || 'https://api.github.com/repos/' + GITHUB_REPO + '/dispatches';
-    const headers = {
-      'Content-Type': 'application/json',
-    };
-    if (!relayUrl) {
-      headers.Authorization = 'token ' + GITHUB_DISPATCH_TOKEN;
-      headers.Accept = 'application/vnd.github.v3+json';
+    let res;
+    try {
+      res = await fetch(DISPATCH_RELAY_URL, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ event_type: eventType, client_payload: clientPayload }),
+      });
+    } catch (error) {
+      throw new Error('Secure Rev.io sign-in is required. Open ' + RELAY_SESSION_URL + ' in a new tab, sign in, then retry.');
     }
-    const res = await fetch(url, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify({
-        event_type: eventType,
-        client_payload: clientPayload,
-      }),
-    });
-    if (relayUrl ? !res.ok : res.status !== 204) {
+    const contentType = res.headers.get('content-type') || '';
+    if (!res.ok || !contentType.includes('application/json')) {
       const text = await res.text();
+      if (res.redirected || !contentType.includes('application/json')) {
+        throw new Error('Secure Rev.io sign-in is required. Open ' + RELAY_SESSION_URL + ' in a new tab, sign in, then retry.');
+      }
       throw new Error('Submission failed: HTTP ' + res.status + ' ' + text.slice(0, 220));
     }
+    return res.json();
   }
 
   function totalCriteria() {

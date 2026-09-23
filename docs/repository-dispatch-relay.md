@@ -1,29 +1,29 @@
-# Repository Dispatch Relay
+# Protected form submission service
 
-The public GitHub Pages tools must not call `api.github.com/repos/.../dispatches` with a browser-visible token.
+The PSA graduation checklist and Alex roadmap page submit to:
 
-Deploy `workers/repository-dispatch-relay.mjs` as a server-side relay at `/api/repository-dispatch` or set `window.ONBOARDING_DISPATCH_RELAY_URL` to the deployed endpoint before the page scripts run.
+`https://alfred-revio.msappproxy.net/api/repository-dispatch`
 
-Required secret:
+The route is protected by Microsoft Entra pre-authentication through Azure Application Proxy. Browser code contains no GitHub or downstream service credential and has no direct GitHub fallback.
 
-- `GITHUB_DISPATCH_TOKEN`: GitHub token allowed to create `repository_dispatch` events for `aiextucker/Onboarding-Automation-Project`.
-
-Optional environment:
-
-- `GITHUB_REPO`: defaults to `aiextucker/Onboarding-Automation-Project`.
-- `ALLOWED_ORIGINS`: comma-separated browser origins allowed to submit, for example `https://aiextucker.github.io`.
-
-Allowed dispatch events:
+## Accepted events
 
 - `graduation-checklist-submitted`
 - `alex-roadmap-task-submitted`
-- `questionnaire-approved`
-- `questionnaire-submitted`
 
-`questionnaire-submitted` is forwarded to `aiextucker/revio-automations`; other events default to `aiextucker/Onboarding-Automation-Project`.
+The internal service validates the request, serializes processing, and deduplicates completed `requestId` values.
 
-The former PM Hub events (`log-interaction`, `pm-hub-milestone-edit`, and
-`pm-hub-project-edit`) were retired on 2026-09-22 and are intentionally
-rejected by the relay.
+- Graduation submissions run the existing Teams handler server-side and retain the `- PSA Graduations` channel output.
+- Roadmap submissions create the same pending-review Notion task and publish the refreshed pending-review feed through a repository-scoped SSH deploy key.
 
-After deploying the relay, rotate the old GitHub token because it was previously present in public HTML.
+The former GitHub `repository_dispatch` workflows for these events are retired. The old browser-based `questionnaire-approved` action is also retired; questionnaire approval remains a Solutions Architect responsibility and is not accepted by this service.
+
+If a browser session is not authenticated, open:
+
+`https://alfred-revio.msappproxy.net/api/relay-session`
+
+Sign in with a Rev.io account, return to the form, and retry.
+
+## Operational source
+
+The runtime service, route configuration, health check, idempotency state, and credentials are maintained in the private Alfred workspace. No downstream secret belongs in this public repository.

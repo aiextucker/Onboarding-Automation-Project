@@ -1,4 +1,6 @@
-# PSA Graduation Checklist - Alfred Handoff
+# PSA Graduation Checklist — Alfred Handoff
+
+> **Superseded 2026-09-23:** Browser-to-GitHub dispatch and its workflow/alert files were retired. The live checklist now uses the Entra-protected Alfred submission service documented in `docs/repository-dispatch-relay.md`; the Teams rendering handler remains authoritative.
 
 Date: 2026-07-29
 Status: Production form path restored, webhook posting verified, failure alerting added.
